@@ -26,7 +26,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 	REAL8 transp = 0; //transpiratin for the tree groves
 	REAL8 evap_f = 0; //total evaporation for the entire cell
 	REAL8 transp_f = 0; //total transpiration for the entire cell
-	REAL8 ETP;
+	//REAL8 ETP;
 
 	//canopy storage parameters
 	REAL8 D = 0; //canopy trascolation
@@ -49,9 +49,21 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 	UINT4 nsp;
 	REAL8 p;//fraction of species s
 
-
-	for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
+	unsigned int j;
+	UINT4 s;
+	int  thre;
+//double init = omp_get_wtime();
+/*#pragma omp parallel for default(none) \
+			private(j, s, r,c, p, gc, treeheight, wind, za, z0o, zdo, \
+					Tp, maxTp, minTp, snow, rain, evap, \
+					transp, evap_f, transp_f, D, DelCanStor, theta, ra, \
+					soildepth, thetar, fc) \
+			shared(nsp, atm, ctrl, dt, thre)*/
+	for (j = 0; j < _vSortedGrid.cells.size() ; j++)
 	{
+//		 thre = omp_get_num_threads();
+
+
 					r = _vSortedGrid.cells[j].row;
 					c = _vSortedGrid.cells[j].col;
 
@@ -64,7 +76,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 					transp_f = 0;
 
 
-		for(UINT4 s = 0; s < nsp ; s++)
+		for(s = 0; s < nsp ; s++)
 		{
 				p = fForest->getPropSpecies(s, r, c);
 					if(p == 0) continue;//if no species j present, continue
@@ -165,10 +177,10 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 						_ponding->matrix[r][c] += rain * dt * p;
 
 
-		}
+		}//end for
 
 		_Evaporation->matrix[r][c] = evap_f + transp_f; //total evaporation for the entire cell
-	}
+	}//end for
 
 	return EXIT_SUCCESS;
 }

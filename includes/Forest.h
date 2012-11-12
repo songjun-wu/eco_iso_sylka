@@ -46,6 +46,9 @@ class Forest {
 			int GrowLAI(UINT4 spec, UINT4 row, UINT4 col, REAL8 dt);
 			int GrowRoots(UINT4 spec, UINT4 row, UINT4 col, REAL8 dt);
 
+			int GrowGrass(UINT4 j, UINT4 r, UINT4 c, REAL8 dt);
+			int GrowGrassLAI(UINT4 spec, UINT4 row, UINT4 col, REAL8 dt);
+
 			double NetRadCanopy(Atmosphere &atm, const double &Ts, REAL8 emiss, REAL8 albedo, REAL8 Kbeers, REAL8 lai, int row, int col);
 			double LatHeatCanopy(Atmosphere &atm, double soilrelhumid, double ra, const double &Ts, int row, int col);
 			double SensHeatCanopy(Atmosphere &atm, double ra, const double &Ts, int row, int col);
@@ -60,6 +63,7 @@ public:
    UINT4 SolveCanopyEnergyBalance(Atmosphere &atm, Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 fc, REAL8 soildepth, REAL8 ra, REAL8 gc, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, UINT4 s, UINT4 r, UINT4 c);
    int CanopyInterception(Atmosphere &atm, Control &ctrl, REAL8 &DelCanStor, REAL8 &D, UINT4 s, UINT4 r, UINT4 c);
    int GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl);
+
 
     //getters
     UINT4 getNumSpecies() const {

@@ -21,8 +21,8 @@ struct Grove {
 	REAL8 TempOpt; //optimal temperature of species degC
 	REAL8 TempMax; //maximum temperature in which specie can grow degC
 	REAL8 TempMin; //maximum temperature in which specie can grow degC
-	REAL8 Fprn; //coefficient n for allocation of NPP to foliage
-	REAL8 Fpra; //coefficient a for allocation of NPP to foliage
+	REAL8 Fprn; //coefficient n for allocation of NPP to foliage or dead grass leaf turnover rate if is_grass = 1
+	REAL8 Fpra; //coefficient a for allocation of NPP to foliage or dead grass leaf turnover adjustment rate if is_grass = 1
 	REAL8 Sprn; //coefficient n for allocation of NPP to stems
 	REAL8 Spra; //coefficient a for allocation of NPP to stems
 	REAL8 gs_light_coeff; //curvature coefficient for light factor in stomatal conductance
@@ -42,11 +42,14 @@ struct Grove {
 	REAL8 emissivity; //emissivity of dry canopy
 	REAL8 KBeers; //Extinction coefficient in Beers law of light extinction
 	REAL8 beta; //canopy water efficiency (gC m-1)
+	bool is_grass; //switch to indicate the species is of type grass
 
 	/*state variables*/
 	grid *_fraction;
 	grid *_StemDensity; //number of trees per square meter (trees m-2)
 	grid *_LAI;
+	grid *_grassLAI_g;//Leaf area index of green grass
+	grid *_grassLAI_d;//Leaf area index of dry grass
 	grid *_AGE; //stand age in years
 	grid *_CanopyConductance;//canopy conductance in m s-1
 	grid *_GPP; //gross primary production in gCm-2

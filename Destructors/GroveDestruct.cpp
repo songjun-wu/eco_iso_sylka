@@ -15,6 +15,10 @@ Grove::~Grove(){
 		delete _StemDensity;
 	if(_LAI)
 		delete _LAI;
+	if(_grassLAI_g)
+		delete _grassLAI_g;
+	if(_grassLAI_d)
+		delete _grassLAI_d;
 	if(_AGE)
 		delete _AGE;
 	if(_CanopyConductance)

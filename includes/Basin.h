@@ -16,6 +16,7 @@
 #include "InitConf.h"
 #include "SortGrid.h"
 
+#include <omp.h>
 #include <errno.h>
 
 

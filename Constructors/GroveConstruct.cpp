@@ -12,6 +12,8 @@ Grove::Grove(){
 	_fraction = NULL;
 	_StemDensity = NULL;
 	_LAI = NULL;
+	_grassLAI_g = NULL;
+	_grassLAI_d = NULL;
 	_AGE = NULL;
 	_CanopyConductance = NULL;
 	_GPP = NULL;

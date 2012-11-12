@@ -7,7 +7,7 @@
 
 #include "Forest.h"
 
-int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl){
+int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
 
 	UINT4 r, c;
 	REAL8 dt;
@@ -67,6 +67,10 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl){
 		    	_species[j]._GPP->matrix[r][c] = sqrtl(alpha * par * beta * E) * fa * ft;// * fw;
 		    	_species[j]._NPP->matrix[r][c] = _species[j]._GPP->matrix[r][c] / _species[j].GPP2NPP;
 
+
+		    if(_species[j].is_grass)
+		    	GrowGrass(j, r, c, dt);
+		    else
 		    	GrowTrees(j, r, c, dt, fa, ft, fw);
 
 		    }

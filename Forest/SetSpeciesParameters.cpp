@@ -25,8 +25,8 @@ int Forest::SetSpeciesParameters(Control &ctrl){
 				cout << "ERROR: number of species in config.ini larger than species provided in table " << ctrl.fn_paramtable << endl;
 				throw(EXIT_FAILURE);
 			}
-			if(_tableParams->c !=29){
-				cout << "ERROR: number of parameters in " << ctrl.fn_paramtable << " is different from the 29 parameters expected"  << endl;
+			if(_tableParams->c !=30){
+				cout << "ERROR: number of parameters in " << ctrl.fn_paramtable << " is different from the 30 parameters expected"  << endl;
 				throw(EXIT_FAILURE);
 			}
 
@@ -61,6 +61,7 @@ int Forest::SetSpeciesParameters(Control &ctrl){
 				 _species[i].emissivity = _tableParams->matrix[i][26];
 				 _species[i].KBeers = _tableParams->matrix[i][27];
 				 _species[i].beta = _tableParams->matrix[i][28];
+				 _species[i].is_grass = _tableParams->matrix[i][29];
 
 			 }
 

@@ -104,6 +104,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Atmosphere &atm, Control &ctrl, REAL8 the
 						if (k>=MAX_ITER)
 							std::cout << "WARNING: non-convergence in canopy energy balance at cell row: " << r << " col: " << c << " closure err: " << (Ts1 - Ts) << endl;
 
+
 						if(Ts1 < atm.getTemperature()->matrix[r][c]){ //if teh calcualted canopy temperature is lower than air temperature make it air temperature
 							Ts1 = atm.getTemperature()->matrix[r][c];
 							LET = LatHeatCanopy(atm, soilRH, ra_t, Ts, r, c);

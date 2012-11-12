@@ -25,6 +25,7 @@ int Forest::SetStateVarsMaps(Control &ctrl){
 				fn.str(""); fn << "lai[" << j << "].map";
 				if(_species[j]._LAI->PCRMap2grid(ctrl.path_BasinFolder + fn.str())==-1)
 					throw fn.str();
+				*_species[j]._grassLAI_g = *_species[j]._LAI; //needed to initialize lai for grasses
 				fn.str(""); fn << "age[" << j << "].map";
 				if(_species[j]._AGE->PCRMap2grid(ctrl.path_BasinFolder + fn.str())==-1)
 					throw fn.str();

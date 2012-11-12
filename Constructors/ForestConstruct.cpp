@@ -27,6 +27,8 @@ Forest::Forest(Control &ctrl)
 		for (UINT4 i = 0; i < _Nsp; i++) //initializes the grids in each Grove object
 			_species[i].CreateGrids(_patches);
 
+		SetSpeciesParameters(ctrl);
+
 		if(!ctrl.ForestStateVarsInputType.compare("tables"))
 			SetStateVarsTabs(ctrl);
 		else if(!ctrl.ForestStateVarsInputType.compare("maps"))
@@ -36,7 +38,7 @@ Forest::Forest(Control &ctrl)
 			throw;
 		}
 
-		SetSpeciesParameters(ctrl);
+		//SetSpeciesParameters(ctrl);
 
         checkForestDatabase(); //check the sanity of the database
 

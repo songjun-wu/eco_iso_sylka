@@ -13,6 +13,8 @@ int Grove::CreateGrids(grid *base){
 		_fraction = new grid (*base);
 		_StemDensity = new grid (*base);
 		_LAI = new grid (*base);
+		_grassLAI_g = new grid (*base);
+		_grassLAI_d = new grid (*base);
 		_AGE = new grid (*base);
 		_CanopyConductance = new grid (*base);
 		_GPP = new grid (*base);
