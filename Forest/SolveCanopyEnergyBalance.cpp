@@ -7,7 +7,7 @@
 
 #include "Forest.h"
 
-UINT4 Forest::SolveCanopyEnergyBalance(Atmosphere &atm, Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 fc, REAL8 soildepth, REAL8 ra, REAL8 gc, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, UINT4 s, UINT4 r, UINT4 c){
+UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 fc, REAL8 soildepth, REAL8 ra, REAL8 gc, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, UINT4 s, UINT4 r, UINT4 c){
 
 	//energy balance parameters
 	REAL8 fA, fB, fC, fD; //pooling factors
@@ -22,6 +22,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Atmosphere &atm, Control &ctrl, REAL8 the
 	REAL8 fTs;
 	REAL8 dfTs;
 	REAL8 LE, H;
+	REAL8 z; //terrain height
 	REAL8 gamma; //psychrometric constant
 	REAL8 Ts = 0;
 	REAL8 Ts1 = 0; //Canopy temperature at NR iteration +1
@@ -45,7 +46,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Atmosphere &atm, Control &ctrl, REAL8 the
 
 						ea = AirEmissivity(atm.getTemperature()->matrix[r][c]);
 						rho_a = AirDensity(atm.getTemperature()->matrix[r][c]); //kgm-3
-						gamma =PsychrometricConst(101325);
+						z = bas.getDEM()->matrix[r][c];
+						gamma =PsychrometricConst(101325, z);
 						airRH = atm.getRelativeHumidty()->matrix[r][c];
 
 						albedo = _species[s].albedo;
@@ -83,10 +85,10 @@ UINT4 Forest::SolveCanopyEnergyBalance(Atmosphere &atm, Control &ctrl, REAL8 the
 							//LE_lim = evap_a * rho_w * lambda;
 							//LE_unlim = LatHeatCanopy(atm, leavesurfRH, ra, Ts, r, c);
 
-							LE = LatHeatCanopy(atm, leavesurfRH, ra, Ts, r, c); /*LE = LE_unlim;   max<REAL8>(LE_lim, LE_unlim);
+							LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, Ts, r, c); /*LE = LE_unlim;   max<REAL8>(LE_lim, LE_unlim);
 								if(LE == LE_lim)
 									fB = 0;*/
-							LET = LatHeatCanopy(atm, soilRH, ra_t, Ts, r, c);
+							LET = LatHeatCanopy(bas, atm, soilRH, ra_t, Ts, r, c);
 							H = SensHeatCanopy(atm, ra, Ts, r, c);
 
 							fTs = NetRadCanopy(atm, Ts, emissivity, albedo, BeerK, LAI, r, c) + LE + H + LET;
@@ -107,8 +109,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Atmosphere &atm, Control &ctrl, REAL8 the
 
 						if(Ts1 < atm.getTemperature()->matrix[r][c]){ //if teh calcualted canopy temperature is lower than air temperature make it air temperature
 							Ts1 = atm.getTemperature()->matrix[r][c];
-							LET = LatHeatCanopy(atm, soilRH, ra_t, Ts, r, c);
-							LE = LatHeatCanopy(atm, leavesurfRH, ra, Ts, r, c);
+							LET = LatHeatCanopy(bas, atm, soilRH, ra_t, Ts, r, c);
+							LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, Ts, r, c);
 							_species[s]._Temp_c->matrix[r][c] = Ts1;
 						}
 
