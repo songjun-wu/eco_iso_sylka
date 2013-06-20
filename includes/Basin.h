@@ -224,6 +224,10 @@ public:
 			return &_dailyGwtrOutput;
 	}
 
+	grid *getDEM() const {
+			return _DEM;
+		}
+
 	grid *getNetRad() const {
 		return _Rn;
 	}
