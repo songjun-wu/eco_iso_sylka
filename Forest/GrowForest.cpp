@@ -27,7 +27,7 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
 
 	for (j = 0; j < _Nsp - 1; j++) //grow forest up to Nsp -1 because Nsp is bare soil
 
-			#pragma omp parallel for default(none) \
+#pragma omp parallel for default(none) \
 			private( k, r, c, alpha, beta, par, E, lai, forestAge, \
 					airTemp, optTemp, maxTemp, minTemp, Wc, Wp, gsmax,\
 					UsableTheta, Wr, fa, ft ,fw ) \
@@ -83,7 +83,7 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
 			if (_species[j].is_grass)
 				GrowGrass(j, r, c, dt);
 			else
-				GrowTrees(j, r, c, dt, fa, ft, fw);
+				GrowTrees(j, r, c, dt, fa, ft, fw, atm.getMinTemperature()->matrix[r][c], UsableTheta);
 
 		}
 	return EXIT_SUCCESS;
