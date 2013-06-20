@@ -43,7 +43,7 @@ extern double AirEmissivity(const double &AirTemperature);
 /*calculates the vapor pressure for a given temperature.
 T in C and returns vapor pressure in kPa*/
 extern double SatVaporPressure(const double &T);
-extern double PsychrometricConst(const double &P); //psychrometric constant air pressure P in Pa
+extern double PsychrometricConst(const double &P, const double &z); //psychrometric constant air pressure P in Pa
 
 //Calculates soil heat capacity as the sum of the heat capacity of the fractions of soil, water and air
 // returns current soil heat capacity in Joules m-3 C-1
@@ -99,5 +99,13 @@ extern double rlog(double u_za, double z_a, double z_d, double z_0, int option);
 /*Calculates parameter beta to evalute relative humidity of soil pore space used in the calcualtion of soil vapor pressure
 after Lee and Pielke, 1992 Journal of Applied Meteorology, 31(5): 480-484*/
 extern double Calculate_soil_RH(const double &theta, const double &fieldcap);
+
+/*Calculates the leaf turnover rate associated to cold stress
+ * Equations from Ivanov (2008) and Arora and Boer (2005) */
+extern double Calculate_leaf_turnover_TempStress(const double &maxstress, const double &shape, const double &Tcold, const double &T);
+
+/*Calculates the leaf turnover rate associated to hydrologic stress
+ * Equations from Ivanov (2008) and Arora and Boer (2005) */
+extern double Calculate_leaf_turnover_WaterStress(const double &maxstress, const double &shape, const double &UsableWater);
 
 #endif /* PHYSCONST_H_ */
