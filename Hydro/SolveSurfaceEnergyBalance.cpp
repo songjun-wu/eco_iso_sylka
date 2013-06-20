@@ -44,6 +44,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 	REAL8 desdTs;
 	REAL8 d; // temperature fluctuation damping depth
 	REAL8 d0; //bottom depth of bottom thermal layer
+	REAL8 z;
 	REAL8 gamma;
 	REAL8 LE, H, G, S, LM, R; // the last two variables are the latent heat of melt and the heat advected by rain
 	REAL8 MeltFac; //snowmelt factor
@@ -59,7 +60,8 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 	REAL8 lambda = Ts1 < 0 ?  lat_heat_vap + lat_heat_fus : lat_heat_vap;
 	REAL8 theta10cm = 0;
 
-	gamma =PsychrometricConst(101325);
+	z = _DEM->matrix[r][c];
+	gamma =PsychrometricConst(101325, z);
 	d0 = _dampdepth->matrix[r][c];
 
 	MeltFac = _meltCoeff->matrix[r][c];
@@ -125,8 +127,10 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 
 		LE = LatHeat(atm, SoilRH, ra, rs, rc, Ts, r, c);// * temp;
 		H = SensHeat(atm, ra, Ts, r, c);
-		if (h > 0.005)
+		if (h > 0.005){
+		 LE = fB = 0;
 		 G = 0;
+		}
 		else
 		 G = GrndHeat(atm, ctrl, theta10cm, Ts, Td, r, c);
 		S = SnowHeat(atm, ctrl, Ts, r, c);
