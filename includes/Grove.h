@@ -43,6 +43,11 @@ struct Grove {
 	REAL8 KBeers; //Extinction coefficient in Beers law of light extinction
 	REAL8 beta; //canopy water efficiency (gC m-1)
 	bool is_grass; //switch to indicate the species is of type grass
+	REAL8 MaxLeafTurnoverWaterStress; //maximum leaf turnover rate due to water stress (s-1)
+	REAL8 LeafTurnoverWaterStressShpParam; //Shape parameter leaf turnover rate due to water stress (-)
+	REAL8 MaxLeafTurnoverColdStress; //maximum leaf turnover rate due to cold stress (s-1)
+	REAL8 ColdStressTemp; //maximum leaf turnover rate due to cold stress (C)
+	REAL8 LeafTurnoverColdStressShpParam; //Shape  parameter leaf turnover rate due to cold stress (-)
 
 	/*state variables*/
 	grid *_fraction;
