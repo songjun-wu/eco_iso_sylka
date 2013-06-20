@@ -7,7 +7,7 @@
 
 #include "Forest.h"
 
-int Forest::GrowTrees(UINT4 j, UINT4 r, UINT4 c, REAL8 dt, REAL8 fa, REAL8 ft, REAL8 fw){
+int Forest::GrowTrees(UINT4 j, UINT4 r, UINT4 c, REAL8 dt, REAL8 fa, REAL8 ft, REAL8 fw, REAL8 T, REAL8 usablewater){
 
 	REAL8 Fprn, Fpra, Sprn, Spra;
 	REAL8 pfs;
@@ -39,7 +39,7 @@ int Forest::GrowTrees(UINT4 j, UINT4 r, UINT4 c, REAL8 dt, REAL8 fa, REAL8 ft, R
 
 
 		   	GrowStem(j, r, c); //Increase average height and basal area of species j in r,c cell
-		   	GrowLAI(j, r, c, dt); //Increase LAI of species j in r,c cell
+		   	GrowLAI(j, r, c, T,usablewater, dt); //Increase LAI of species j in r,c cell
 		   	GrowRoots(j, r, c, dt); //Increase root density of species j in r,c cell
 
 	return EXIT_SUCCESS;
