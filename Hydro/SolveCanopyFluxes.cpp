@@ -53,12 +53,12 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 	UINT4 s;
 	int  thre;
 //double init = omp_get_wtime();
-/*#pragma omp parallel for default(none) \
+#pragma omp parallel for default(none) \
 			private(j, s, r,c, p, gc, treeheight, wind, za, z0o, zdo, \
 					Tp, maxTp, minTp, snow, rain, evap, \
 					transp, evap_f, transp_f, D, DelCanStor, theta, ra, \
 					soildepth, thetar, fc) \
-			shared(nsp, atm, ctrl, dt, thre)*/
+			shared(nsp, atm, ctrl, dt, thre)
 	for (j = 0; j < _vSortedGrid.cells.size() ; j++)
 	{
 //		 thre = omp_get_num_threads();
@@ -115,7 +115,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 
 					fForest->CanopyInterception(atm, ctrl, DelCanStor, D, s, r, c); //calculates canopy interception and trascolation
 
-					fForest->SolveCanopyEnergyBalance(atm, ctrl, theta, thetar, fc, soildepth, ra, gc, DelCanStor, evap, transp, s, r, c);
+					fForest->SolveCanopyEnergyBalance(*this, atm, ctrl, theta, thetar, fc, soildepth, ra, gc, DelCanStor, evap, transp, s, r, c);
 
 					_CanopyStorage->matrix[r][c] += DelCanStor * p;
 
@@ -158,16 +158,16 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 					maxTp = atm.getMaxTemperature()->matrix[r][c];
 					minTp = atm.getMinTemperature()->matrix[r][c];
 
-					if(maxTp <= 0){
+					if(maxTp <= 1){
 						snow = D;
 						rain = 0;
 					}
-					else if(minTp > 0){
+					else if(minTp > 1){
 						rain = D;
 						snow = 0;
 					}
 					else{
-					snow = D * max<REAL8>(0.0, - minTp /(maxTp - minTp));
+					snow = D * max<REAL8>(0.0, 1 - minTp /(maxTp - minTp));
 					rain = D - snow;
 					}
 
