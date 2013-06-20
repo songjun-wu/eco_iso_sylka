@@ -25,7 +25,7 @@ int Forest::SetSpeciesParameters(Control &ctrl){
 				cout << "ERROR: number of species in config.ini larger than species provided in table " << ctrl.fn_paramtable << endl;
 				throw(EXIT_FAILURE);
 			}
-			if(_tableParams->c !=30){
+			if(_tableParams->c !=37){
 				cout << "ERROR: number of parameters in " << ctrl.fn_paramtable << " is different from the 30 parameters expected"  << endl;
 				throw(EXIT_FAILURE);
 			}
