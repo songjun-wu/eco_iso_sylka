@@ -118,7 +118,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 					za = treeheight + 2;
 					z0o = powl(treeheight,1.19)*0.057544;     //treeheight > 1 ? 0.1 : treeheight * 0.1;
 					zdo = powl(treeheight,0.98)*0.707946; //treeheight > 1 ? 0.1 : treeheight * 0.7;
-					zdu = min<double>(treeheight * 0.1, zdo * 0.1);
+					zdu = min<double>(_random_roughness->matrix[r][c], zdo * 0.1);//min<double>(treeheight * 0.1, zdo * 0.1);
 					z0u = 0.1*zdu/0.7;
 
 				}
