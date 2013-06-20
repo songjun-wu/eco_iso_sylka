@@ -7,7 +7,7 @@
 
 #include "Forest.h"
 
-int Forest::CalculateCanopyConduct(Basin &bas, const Atmosphere &atm, const Control &ctrl, UINT4 j, UINT4 r, UINT4 c){
+int Forest::CalculateCanopyConduct(const Basin &bas, const Atmosphere &atm, const Control &ctrl, UINT4 j, UINT4 r, UINT4 c){
 
 		REAL8 sw_rad;
 		REAL8 gsmax;
@@ -21,7 +21,7 @@ int Forest::CalculateCanopyConduct(Basin &bas, const Atmosphere &atm, const Cont
 		REAL8 gs;
 		REAL8 gsmin = 0.00000000000001; //arbitrary number to set as minimum canopy conductance so its inverse (resistance) doesn't explode when divided by zero conductance
 
-		shelter_factor = .8; //account to the shading effect of leaves
+		shelter_factor = 1;//.8; //account to the shading effect of leaves
 
 			    	sw_rad = atm.getIncomingShortWave()->matrix[r][c];
 			    	gsmax = _species[j].gsmax;
