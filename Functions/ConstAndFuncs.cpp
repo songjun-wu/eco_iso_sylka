@@ -26,8 +26,10 @@ double SatVaporPressure(const double &T){ // T in C and e in Pa
 	return 611 * expl((17.3 * T)/(T + 237.3));
  }
 
-double PsychrometricConst(const double &P){ //psychrometric constant air pressure P in Pa
-	return spec_heat_air * P / (lat_heat_vap * 0.622); // P in Pa and psychrometric constant in Pa C-1
+double PsychrometricConst(const double &P, const double &z){ //psychrometric constant air pressure P in Pa
+	//adjust P for elevation as per Allen FAO
+	double Pz = P * powl( ( 293-0.0065*z )/293, 5.26 );
+	return spec_heat_air * Pz / (lat_heat_vap * 0.622); // P in Pa and psychrometric constant in Pa C-1
 }
 
 extern double SoilHeatCapacity(const double &DrySoilHeatCap, const double &Porosity, const double &Theta, const double &SoilTemp){// Dry soil heat capacity in Joules m-3 C-1
@@ -137,4 +139,17 @@ extern double Calculate_soil_RH(const double &theta, const double &fieldcap){
 
 	//return ( Coeff*Beta - powl(Beta,2) );
 
+}
+
+extern double Calculate_leaf_turnover_TempStress(const double &maxstress, const double &shape, const double &Tcold, const double &T){
+
+	double beta = std::max<double>(0.0, std::min<double>(1, (T - (Tcold - 5))/5 ) );
+
+	return maxstress * powl((1 - beta), shape );
+
+}
+
+extern double Calculate_leaf_turnover_WaterStress(const double &maxstress, const double &shape, const double &UsableWater){
+
+	return maxstress * powl((1 - UsableWater), shape );
 }
