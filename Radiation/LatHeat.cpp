@@ -13,11 +13,13 @@ double Basin::LatHeat(Atmosphere &atm, double soilrelhumid, double ra, double rs
 	double es = 0; //saturated vapor pressure at temperature Ts
 	double ea = 0; //vapor pressure at air temperature
 	double gamma = 0;
+	double z = 0;
 
 					airdens = AirDensity(atm.getTemperature()->matrix[row][col]); //kgm-3
 					es = SatVaporPressure(Ts); //vapor pressure at temp Ts in Pa
 					ea = SatVaporPressure(atm.getTemperature()->matrix[row][col]) * atm.getRelativeHumidty()->matrix[row][col]; //vapor pressure at air temp in Pa
-					gamma = PsychrometricConst(101325); //todo: replace with Pressure when implemented
+					z = _DEM->matrix[row][col];
+					gamma = PsychrometricConst(101325, z); //todo: replace with Pressure when implemented
 
 					return
 							(1/gamma) * (1/(ra + rs) + rc) * airdens * spec_heat_air * soilrelhumid *(ea - es);
