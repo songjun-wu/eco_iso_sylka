@@ -28,9 +28,15 @@ int CreateWorld(char* argv[]){
 		oReport = new Report(*oControl);
 		cout << "Report created ok... " << "\n";
 
-
+try{
 		ofSummary.open("BasinSummary.txt");
+		if(!ofSummary)
+			throw std::ios::failure("Error opening Summary.txt buffer\n");
 
+}catch(const std::exception &e){
+	cout << e.what() << endl;
+	throw;
+}
 		ofSummary << "Precipitation\t";
 		ofSummary << "Canopy Storage\t";
 		ofSummary << "SWE\t";
