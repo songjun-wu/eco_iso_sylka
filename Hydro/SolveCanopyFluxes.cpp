@@ -53,12 +53,14 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 	UINT4 s;
 	int  thre;
 //double init = omp_get_wtime();
+
 #pragma omp parallel for default(none) \
 			private(j, s, r,c, p, gc, treeheight, wind, za, z0o, zdo, \
 					Tp, maxTp, minTp, snow, rain, evap, \
 					transp, evap_f, transp_f, D, DelCanStor, theta, ra, \
 					soildepth, thetar, fc) \
 			shared(nsp, atm, ctrl, dt, thre)
+
 	for (j = 0; j < _vSortedGrid.cells.size() ; j++)
 	{
 //		 thre = omp_get_num_threads();
@@ -167,7 +169,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 						snow = 0;
 					}
 					else{
-					snow = D * max<REAL8>(0.0, 1 - minTp /(maxTp - minTp));
+					snow = D * max<REAL8>(0.0, (1 - minTp) /(maxTp - minTp));
 					rain = D - snow;
 					}
 
@@ -175,6 +177,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 						_snow->matrix[r][c] +=  snow * dt * p;
 
 						_ponding->matrix[r][c] += rain * dt * p;
+
 
 
 		}//end for
