@@ -11,8 +11,8 @@ UINT4 Atmosphere::InitiateClimateMap(ifstream &ifHandle, grid &ClimMap){
 
 
 	char comment[256];
-	int nZns; //number of zones as read from the climatic data file
-	int nTs; //number of time steps
+	UINT4 nZns; //number of zones as read from the climatic data file
+	UINT4  nTs; //number of time steps
 	UINT4 *Zns = NULL; //array to hold the zone ids
 	float *TS = NULL;
 	float *data = NULL;
@@ -51,8 +51,8 @@ try{
 
 	int r, c;
 
-	for (int a = 0; a < nZns; a++ )
-		for (unsigned int i = 0; i < _vSortedGrid.size(); i++ )
+	for (UINT4 a = 0; a < nZns; a++ )
+		for (UINT4 i = 0; i < _vSortedGrid.size(); i++ )
 			if(_vSortedGrid[i].zone == Zns[a])
 			{
 				//store the index of the climate data array that corresponds to the clim zones map
