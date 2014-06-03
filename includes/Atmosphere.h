@@ -12,6 +12,8 @@
 #include "Grid.h"
 #include "InitConf.h"
 #include "SortGrid.h"
+//#include "exceptions_echo.h"
+
 using namespace std;
 
 class Atmosphere{
