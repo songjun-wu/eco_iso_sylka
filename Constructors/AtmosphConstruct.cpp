@@ -59,9 +59,9 @@ Atmosphere::Atmosphere(Control &ctrl){
 
 			try {
 				ifLdown.open((ctrl.path_ClimMapsFolder + ctrl.fn_Ldown).c_str(), ios::binary);
-					if(errno!=0) throw ctrl.fn_Ldown;
+					if(errno!=0) throw ctrl.fn_Ldown;  //echo_filenotfound_exception(ctrl.fn_Ldown.c_str(), "Dang! File not found: ");
 				ifSdown.open((ctrl.path_ClimMapsFolder + ctrl.fn_Sdown).c_str(), ios::binary);
-					if(errno!=0) throw ctrl.fn_Sdown;
+					if(errno!=0) throw ctrl.fn_Sdown;//echo_filenotfound_exception(ctrl.fn_Sdown.c_str(), "Dang! File not found: ");
 				ifTp.open((ctrl.path_ClimMapsFolder + ctrl.fn_temp).c_str(), ios::binary);
 					if(errno!=0) throw ctrl.fn_temp;
 				ifMaxTp.open((ctrl.path_ClimMapsFolder + ctrl.fn_maxTemp).c_str(), ios::binary);
