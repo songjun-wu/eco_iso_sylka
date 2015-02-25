@@ -54,17 +54,17 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 	int  thre;
 //double init = omp_get_wtime();
 
-#pragma omp parallel for default(none) \
-			private(j, s, r,c, p, gc, treeheight, wind, za, z0o, zdo, \
-					Tp, maxTp, minTp, snow, rain, evap, \
-					transp, evap_f, transp_f, D, DelCanStor, theta, ra, \
-					soildepth, thetar, fc) \
-			shared(nsp, atm, ctrl, dt, thre)
-
+#pragma omp parallel default(none)\
+		private(j, s, r,c, p, gc, treeheight, wind, za, z0o, zdo, \
+							Tp, maxTp, minTp, snow, rain, evap, \
+							transp, evap_f, transp_f, D, DelCanStor, theta, ra, \
+							soildepth, thetar, fc) \
+					shared(nsp, atm, ctrl, dt, thre)
+{
+    #pragma omp for
 	for (j = 0; j < _vSortedGrid.cells.size() ; j++)
 	{
-//		 thre = omp_get_num_threads();
-
+				   // thre = omp_get_num_threads();
 
 					r = _vSortedGrid.cells[j].row;
 					c = _vSortedGrid.cells[j].col;
@@ -76,8 +76,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 					treeheight = 0;
 					evap_f = 0;
 					transp_f = 0;
-
-
+        #pragma nowait
 		for(s = 0; s < nsp ; s++)
 		{
 				p = fForest->getPropSpecies(s, r, c);
@@ -184,6 +183,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 
 		_Evaporation->matrix[r][c] = evap_f + transp_f; //total evaporation for the entire cell
 	}//end for
+}//end omp parallel
 
 	return EXIT_SUCCESS;
 }

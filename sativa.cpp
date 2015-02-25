@@ -11,13 +11,15 @@
  *  Created on: May 21, 2009
  *      Author: Marco Maneta
  */
-
+#include <time.h>
 #include "Sativa.h"
 
+clock_t start;
 int main(int argc, char* argv[])
 {
 try{
-	Splash(argc, argv);
+	start = clock();
+	Splash(argc,  argv);
 	CreateWorld(argv);
 
 	while (oControl->current_t_step <= oControl->endtime)
@@ -53,6 +55,17 @@ catch(...){
 
 	  CrunchWorld();
 
+    int tot_sec = ((float)(clock() - start))/CLOCKS_PER_SEC;
+    printf("\nTotal run time elapsed (seconds): %i", tot_sec);
+
+    int dd = tot_sec/86400;
+    tot_sec = tot_sec%86400;
+    int hh = tot_sec/3600;
+    tot_sec = tot_sec%3600;
+    int mm = tot_sec/60;
+    tot_sec = tot_sec%60;
+    int ss = tot_sec;
+    printf("\nTotal run time elapsed: days: %i hh:mm:ss: %i:%i:%i  ", dd, hh, mm, ss);
 
 	return 0;
 
