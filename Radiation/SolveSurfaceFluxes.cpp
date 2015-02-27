@@ -52,7 +52,14 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 	UINT4 nsp;
 	REAL8 p;//fraction of species s
 
-
+#pragma omp parallel default(shared) private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can,\
+		evap, infcap, accinf, theta, theta10cm, ponding, gw, za, z0u, zdu, z0o, zdo, wind, treeheight,\
+		nr, le, sens, grndh, snowh, mltht, p) //shared(ctrl, atm, nsp, dt)
+{
+//thre = omp_get_num_threads();
+//#pragma omp single
+//printf("\nnum threads %d: ", thre);
+#pragma omp for nowait
 	for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
 	{
 					r = _vSortedGrid.cells[j].row;
@@ -137,7 +144,8 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 
 
 
-		}
+		}//for
+
 
 		_Rn->matrix[r][c] = nr;
 		_latheat->matrix[r][c] = le;
@@ -151,7 +159,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 
 		_ponding->matrix[r][c] += SnowOutput(atm, ctrl, mltht, r, c);
 
-	}
-
+	}//for
+}//end omp parallel block
 	return EXIT_SUCCESS;
 }

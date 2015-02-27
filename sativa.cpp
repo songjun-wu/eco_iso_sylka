@@ -17,6 +17,9 @@
 clock_t start;
 int main(int argc, char* argv[])
 {
+# ifdef _OPENMP
+ printf("Compiled by an OpenMP-compliant implementation.\n");
+# endif
 try{
 	start = clock();
 	Splash(argc,  argv);
