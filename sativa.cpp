@@ -14,14 +14,14 @@
 #include <time.h>
 #include "Sativa.h"
 
-clock_t start;
+time_t start, end;
 int main(int argc, char* argv[])
 {
 # ifdef _OPENMP
  printf("Compiled by an OpenMP-compliant implementation.\n");
 # endif
 try{
-	start = clock();
+	time(&start);
 	Splash(argc,  argv);
 	CreateWorld(argv);
 
@@ -57,9 +57,9 @@ catch(...){
 }
 
 	  CrunchWorld();
+    time(&end);
+    int tot_sec = difftime(end, start);
 
-    int tot_sec = ((float)(clock() - start))/CLOCKS_PER_SEC;
-    printf("\nTotal run time elapsed (seconds): %i", tot_sec);
 
     int dd = tot_sec/86400;
     tot_sec = tot_sec%86400;
@@ -68,7 +68,7 @@ catch(...){
     int mm = tot_sec/60;
     tot_sec = tot_sec%60;
     int ss = tot_sec;
-    printf("\nTotal run time elapsed: days: %i hh:mm:ss: %i:%i:%i  ", dd, hh, mm, ss);
+    printf("\nTotal run time elapsed:  %i (days) %02i:%02i:%02i (hh:mm:ss)", dd, hh, mm, ss);
 
 	return 0;
 
