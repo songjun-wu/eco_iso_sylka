@@ -11,30 +11,6 @@
 
 using namespace arma;
 
-inline double Kij(double Ksat,
-		double theta1,
-		double theta2,
-		double thetar,
-		double thetas,
-		double d1,
-		double d2,
-		double c){
-
-	return Ksat/(d1+d2) * (d1*powl((theta1-thetar )/(thetas - thetar),c) + d2*powl((theta2-thetar )/(thetas - thetar),c)  );
-}
-
-inline double psi_i(double Ksat,
-		double theta1,
-		double theta2,
-		double thetar,
-		double thetas,
-		double d1,
-		double d2,
-		double c){
-
-	return Ksat/(d1+d2) * (d1*powl((theta1-thetar )/(thetas - thetar),c) + d2*powl((theta2-thetar )/(thetas - thetar),c)  );
-}
-
 void Basin::Infilt_Richards(double &f, double &F, double &theta, double &pond, double &percolat, double dt, int r, int c) //time step
 {
 
@@ -46,7 +22,7 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &pond, d
 	double thetar = _theta_r->matrix[r][c];
 	double thetas = Basin::_porosity[r][c];
 
-	double p = 2 +3*lam;
+	double p = 2*lam + 3;
 
 	double depth = _soildepth->matrix[r][c];
 
@@ -67,8 +43,18 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &pond, d
 	//Soil suction head
 	double psi1=0, psi2=0, psi3=0;
 
+	//derivatives of suction with respect to soil moisture
+	double dpsi1dO1=0;
+	double dpsi1dO2=0;
+	double dpsi1dO3=0;
 
-	f = K * (1 + (psi_1 - psi_s)/D1);
+    //derivatives of K with respect to soil moisture
+	double dK12dO1=0;
+	double dK12dO2=0;
+	double dK23dO2=0;
+	double dK23dO3=0;
+
+	//f = K * (1 + (psi_1 - psi_s)/D1);
 
 	rowvec Fun(3);
 	mat J = zeros<mat>(3,3);
@@ -94,7 +80,18 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &pond, d
 
 		Fun[0] = d1*(theta1/dt) + d1*(x[0]/dt) + infilt - K12*(1 + (psi2 - psi1)/D2 ) ;
 		Fun[1] = d2*(theta2/dt) + d2*(x[1/dt]) + K12*(1 + (psi2 - psi1)/D2 ) - K23*(1 + (psi3 - psi2)/D3 );
-		Fun[0] = d3*(theta3/dt) + d3*(x[2]/dt) + K23*(1 + (psi3 - psi2)/D3 ) - d3*S3*L;
+		Fun[2] = d3*(theta3/dt) + d3*(x[2]/dt) + K23*(1 + (psi3 - psi2)/D3 ) - d3*S3*L;
+
+		dK12dO1 = Ks*d1*c*powl(S1,c)/( (d1+d2)*(x[0] - thetar) );
+		dK12dO2 = Ks*d2*c*powl(S2,c)/( (d1+d2)*(x[1] - thetar) );
+		dK23dO2 = Ks*d2*c*powl(S2,c)/( (d2+d3)*(x[1] - thetar) );
+		dK23dO3 = Ks*d3*c*powl(S3,c)/( (d2+d3)*(x[2] - thetar) );
+
+		dpsi1dO1 = lam*psiae*powl(S1,-lam)/ (thetar - x[0]);
+		dpsi1dO2 = lam*psiae*powl(S2,-lam)/ (thetar - x[1]);
+		dpsi1dO3 = lam*psiae*powl(S3,-lam)/ (thetar - x[2]);
+
+
 
 		deltaF = F1;
 			fF = deltaF - Fp - Ks*(DT - tp) - psidtheta * log((psidtheta + deltaF) /(psidtheta + Fp));
