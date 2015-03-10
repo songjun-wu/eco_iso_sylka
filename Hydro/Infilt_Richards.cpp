@@ -11,7 +11,7 @@
 
 using namespace arma;
 
-void Basin::Infilt_Richards(double &f, double &F, double &theta, double &pond, double &percolat, double dt, int r, int c) //time step
+void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c) //time step
 {
 
 
@@ -45,8 +45,8 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &pond, d
 
 	//derivatives of suction with respect to soil moisture
 	double dpsi1dO1=0;
-	double dpsi1dO2=0;
-	double dpsi1dO3=0;
+	double dpsi2dO2=0;
+	double dpsi3dO3=0;
 
     //derivatives of K with respect to soil moisture
 	double dK12dO1=0;
@@ -59,6 +59,7 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &pond, d
 	rowvec Fun(3);
 	mat J = zeros<mat>(3,3);
 	rowvec x(3);
+	rowvec deltax(3);
 
 	//Initial guess is initial soil moisture content
    x[0] = theta1;
@@ -88,16 +89,26 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &pond, d
 		dK23dO3 = Ks*d3*c*powl(S3,c)/( (d2+d3)*(x[2] - thetar) );
 
 		dpsi1dO1 = lam*psiae*powl(S1,-lam)/ (thetar - x[0]);
-		dpsi1dO2 = lam*psiae*powl(S2,-lam)/ (thetar - x[1]);
-		dpsi1dO3 = lam*psiae*powl(S3,-lam)/ (thetar - x[2]);
+		dpsi2dO2 = lam*psiae*powl(S2,-lam)/ (thetar - x[1]);
+		dpsi3dO3 = lam*psiae*powl(S3,-lam)/ (thetar - x[2]);
 
+		// Fill the Jacobian
+		J[0][0] =
+		J[0][1] = -dK12dO2*( 1 + (psi2 - psi1)/D2 ) - (K12/D2)*dpsi2dO2;
+		//J[0][2] = 0; // Just to remember that this is element of the Jacobian is zero
+		J[1][0] = dK12dO1*( 1 + (psi2 - psi1)/D2 ) - (K12/D2)*dpsi1dO1;
+		J[1][1] = d2/dt + dK12dO2*(1+(psi2-psi1)/D2) + (K12/D2)*dpsi2dO2 - dK23dO2*(1+(psi3-psi2)/D3)+(K23/D3)*dpsi2dO2;
+		J[1][2] = -dK23dO3*(1+(psi3-psi2)/D3)-(K23/D3)*dpsi3dO3;
+		//J[2][0] = 0; // Just to remember that this is element of the Jacobian is zero
+		J[2][1] = dK23dO2*(1+(psi3-psi2)/D3) - (K12/D3)*dpsi2dO2;
+		J[2][2] = d3/dt + dK23dO3*(1+ (psi3-psi2)/D3) + (K23/D3)*dpsi3dO3 - d3*L/(thetas-thetar)
 
+        deltax = solve(J, -Fun);
+       x[0] += deltax[0];
+       x[1] += deltax[1];
+       x[2] += deltax[2];
+		k++;
 
-		deltaF = F1;
-			fF = deltaF - Fp - Ks*(DT - tp) - psidtheta * log((psidtheta + deltaF) /(psidtheta + Fp));
-			dfF = deltaF / (psidtheta + deltaF);
-			F1 -= fF/dfF;
-			k++;
-	}while(fabs(deltaF - F1) > 0.00001 && k < MAX_ITER);
+	}while(norm(deltax, 2) > 0.00001 && k < MAX_ITER);
 
 }
