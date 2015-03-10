@@ -63,8 +63,6 @@ class Basin {
 	grid *_dampdepth; // soil depth at which there is no diurnal temperature variation
 	grid *_Temp_d; //temperature at damping depth
 
-	grid *_soilmoist10cm; //average volumetric soil moisture of the first 10 cm of the soil as calculated using a hydrstatic equilibrium moisture profile
-	grid *_EquivDepth2Sat; //Equivalent depth to saturation as calculated from average soil moisture and hydrstatic equilibrium (m)
 
 	/*State variables*/
 
@@ -75,8 +73,8 @@ class Basin {
 	grid *_snow; //snow water equivalent in m
 	grid *_ponding; // water ponding on the soil surface in m
 	grid *_infilt_cap; //infilt capacity m s-1
-	grid *_soilmoist; // volumetric soil moisture
-	grid *_SoilWaterDepth;//soil moisture depth (m)
+	grid *_soilmoist; // average volumetric soil moisture over entire soil profile
+	grid *_SoilWaterDepth;//soil moisture depth (m) for entire soil profile
 	grid *_SoilSatDeficit; //soil saturation deficit (1 full deficit - 0 saturation)
 	grid *_psi; //soil water potential in m
 	grid *_AccumInfilt; //Accumulated infiltration m
@@ -100,10 +98,22 @@ class Basin {
 	vectCells _dailyGwtrOutput; //vector containing water output for each cell with no drainage (ldd value of 5). The vectCell structure contains the row and col
 								//of the cell with no output and the area draining to that cell m3s-1 ???
 
+    /*This section are declaration of grids whose creation depend on the options
+     * given in teh control file
+     */
+	grid *_soilmoist10cm; //average volumetric soil moisture of the first 10 cm of the soil
+	grid *_EquivDepth2Sat; //Equivalent depth to saturation as calculated from average soil moisture and hydrstatic equilibrium (m)
+
+
+	grid *_soilmoist2; //average volumetric soil moisture of the second soil layer
+	grid *_soilmoist3; //average volumetric soil moisture of the bottom soil layer
+	grid *_bedrock_leak;
+
+
 
 		vectCells SortGridLDD();
 
-		void CheckMaps(); //check maps mainly to make sure no nodata values are in the domain. Also sets slope to MIN_SLOPE for pixels with 0 slope.
+		void CheckMaps(Control &ctrl); //check maps mainly to make sure no nodata values are in the domain. Also sets slope to MIN_SLOPE for pixels with 0 slope.
 
 		int CalcCatchArea();
 		int CalcFieldCapacity();
@@ -127,6 +137,7 @@ class Basin {
 		//Hydrologic processes
 
 		void Infilt_GreenAmpt(double &f, double &F, double &theta, double &pond, double &percolat, double dt, int r, int c);
+		void Infilt_Richards(double &f, double &F, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c);
 		int SolveSurfaceEnergyBalance(Atmosphere &atm,
 										Control &ctrl,
 										REAL8 ra,

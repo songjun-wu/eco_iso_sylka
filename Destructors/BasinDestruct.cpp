@@ -99,6 +99,10 @@ Basin::~Basin(){
 		delete _chGWparam;
 	if(_soilmoist10cm)
 		delete _soilmoist10cm;
+	if(_soilmoist2)
+		delete _soilmoist2;
+	if(_soilmoist3)
+		delete _soilmoist3;
 	if(_EquivDepth2Sat)
 		delete _EquivDepth2Sat;
 

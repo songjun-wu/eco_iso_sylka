@@ -33,6 +33,8 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 	REAL8 accinf = 0;
 	REAL8 theta = 0;
 	REAL8 theta10cm = 0;
+	REAL8 theta2 = 0;//for second and third soil moisture
+	REAL8 theta3 = 0;//layers in case Richard's equation is chosen
 	REAL8 ponding = 0;
 	REAL8 gw = 0; //gravitational water
 
@@ -75,18 +77,35 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 					Tsold = 0;
 					Tdold = 0;
 
-					Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
+
+					if(ctrl.toggle_soil_water_profile == 1){
+						Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
+						CalcSoilMoistureProfile(atm, ctrl, theta, r,c);
+						theta10cm = _soilmoist10cm->matrix[r][c];
+					}
+					if(ctrl.toggle_soil_water_profile == 2){
+						theta10cm = _soilmoist10cm->matrix[r][c];
+						theta2 = _soilmoist2->matrix[r][c];
+						theta3 = _soilmoist3->matrix[r][c];
+						Infilt_Richards(infcap, accinf, theta10cm,  theta2, theta3, ponding, gw, dt, r, c); //updates soil moisture
+					}
+					else{
+						Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
+						_soilmoist10cm->matrix[r][c] = _soilmoist->matrix[r][c];
+						theta10cm = _soilmoist10cm->matrix[r][c];
+					}
+
+
 					_ponding->matrix[r][c] = ponding;
 					_GravityWater->matrix[r][c] = gw;
 
-
-					//this calculates the soil moisture profile to evaluate soil moisture of the top 10 cms of the soil
-					if(ctrl.sw_soil_water_profile == 1)
+/*					//this calculates the soil moisture profile to evaluate soil moisture of the top 10 cms of the soil
+					if(ctrl.toggle_soil_water_profile == 1)
 						CalcSoilMoistureProfile(atm, ctrl, theta, r,c);
 					else
 						_soilmoist10cm->matrix[r][c] = _soilmoist->matrix[r][c]; //if no calculation of the soil moisture profile, soil moist at 10 equals average soil moisture
 
-					theta10cm = _soilmoist10cm->matrix[r][c];
+					theta10cm = _soilmoist10cm->matrix[r][c];*/
 
 
 					nsp = fForest->getNumSpecies();

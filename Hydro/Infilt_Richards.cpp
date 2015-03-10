@@ -15,21 +15,24 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
 {
 
 
+    double invdt = 1/dt;
 
 	double Ks = _Ksat->matrix[r][c];
 	double psiae = _psi_ae->matrix[r][c];
 	double lam = _BClambda->matrix[r][c];
 	double thetar = _theta_r->matrix[r][c];
-	double thetas = Basin::_porosity[r][c];
+	double thetas = _porosity->matrix[r][c];
 
 	double p = 2*lam + 3;
 
-	double depth = _soildepth->matrix[r][c];
+	//double depth = _soildepth->matrix[r][c];
+
+	double L = _bedrock_leak->matrix[r][c];
 
 	//depth of soil layers
 	double d1 = 0.1;
-	double d2 = Basin::;
-	double d3 = _soildepth->matrix[r][c] - (d1 + d2);
+	double d2 = (_soildepth->matrix[r][c] - 0.1)/2;
+	double d3 = d2;
 
 	//Distance between soil nodes
 	double D1 = d1 * 0.5;
@@ -39,7 +42,7 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
 	//Relative water contents
 	double S1=0, S2=0, S3=0;
 	//Unsaturated Hydr Cond
-	double K12=0, K23=0;
+	double K1=0, K12=0, K23=0;
 	//Soil suction head
 	double psi1=0, psi2=0, psi3=0;
 
@@ -49,12 +52,13 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
 	double dpsi3dO3=0;
 
     //derivatives of K with respect to soil moisture
+	double dK1dO1=0;
 	double dK12dO1=0;
 	double dK12dO2=0;
 	double dK23dO2=0;
 	double dK23dO3=0;
 
-	//f = K * (1 + (psi_1 - psi_s)/D1);
+	double infilt=0;
 
 	rowvec Fun(3);
 	mat J = zeros<mat>(3,3);
@@ -66,49 +70,61 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
    x[1] = theta2;
    x[2] = theta3;
 
-	do{
+	int k = 0;
+   do{
 
 		S1 = (x[0] - thetar)/(thetas - thetar);
 		S2 = (x[1] - thetar)/(thetas - thetar);
 		S3 = (x[2] - thetar)/(thetas - thetar);
 
-		K12 = Ks/(d1+d2) * (d1*powl(S1,c) + d2*powl(S2,c)  );
-		K23 = Ks/(d2+d3) * (d2*powl(S2,c) + d3*powl(S3,c)  );
+		K1 = Ks * powl(S1,p);
+		K12 = Ks/(d1+d2) * (d1*powl(S1,p) + d2*powl(S2,p)  );
+		K23 = Ks/(d2+d3) * (d2*powl(S2,p) + d3*powl(S3,p)  );
 
 		psi1 = psiae * powl(S1, -lam);
 		psi2 = psiae * powl(S1, -lam);
 		psi3 = psiae * powl(S1, -lam);
 
-		Fun[0] = d1*(theta1/dt) + d1*(x[0]/dt) + infilt - K12*(1 + (psi2 - psi1)/D2 ) ;
-		Fun[1] = d2*(theta2/dt) + d2*(x[1/dt]) + K12*(1 + (psi2 - psi1)/D2 ) - K23*(1 + (psi3 - psi2)/D3 );
-		Fun[2] = d3*(theta3/dt) + d3*(x[2]/dt) + K23*(1 + (psi3 - psi2)/D3 ) - d3*S3*L;
+		infilt = std::min<double> (K1*(1 + (psi1 - pond)/D1 ), pond*invdt );
 
-		dK12dO1 = Ks*d1*c*powl(S1,c)/( (d1+d2)*(x[0] - thetar) );
-		dK12dO2 = Ks*d2*c*powl(S2,c)/( (d1+d2)*(x[1] - thetar) );
-		dK23dO2 = Ks*d2*c*powl(S2,c)/( (d2+d3)*(x[1] - thetar) );
-		dK23dO3 = Ks*d3*c*powl(S3,c)/( (d2+d3)*(x[2] - thetar) );
+		Fun[0] = d1*(theta1*invdt) + d1*(x[0]*invdt) + infilt - K12*(1 + (psi2 - psi1)/D2 ) ;
+		Fun[1] = d2*(theta2*invdt) + d2*(x[1]*invdt) + K12*(1 + (psi2 - psi1)/D2 ) - K23*(1 + (psi3 - psi2)/D3 );
+		Fun[2] = d3*(theta3*invdt) + d3*(x[2]*invdt) + K23*(1 + (psi3 - psi2)/D3 ) - d3*S3*L;
+
+		dK1dO1  = Ks*p*powl(S1,p) / (x[0] - thetar);
+		dK12dO1 = Ks*d1*p*powl(S1,p)/( (d1+d2)*(x[0] - thetar) );
+		dK12dO2 = Ks*d2*p*powl(S2,p)/( (d1+d2)*(x[1] - thetar) );
+		dK23dO2 = Ks*d2*p*powl(S2,p)/( (d2+d3)*(x[1] - thetar) );
+		dK23dO3 = Ks*d3*p*powl(S3,p)/( (d2+d3)*(x[2] - thetar) );
 
 		dpsi1dO1 = lam*psiae*powl(S1,-lam)/ (thetar - x[0]);
 		dpsi2dO2 = lam*psiae*powl(S2,-lam)/ (thetar - x[1]);
 		dpsi3dO3 = lam*psiae*powl(S3,-lam)/ (thetar - x[2]);
 
 		// Fill the Jacobian
-		J[0][0] =
-		J[0][1] = -dK12dO2*( 1 + (psi2 - psi1)/D2 ) - (K12/D2)*dpsi2dO2;
-		//J[0][2] = 0; // Just to remember that this is element of the Jacobian is zero
-		J[1][0] = dK12dO1*( 1 + (psi2 - psi1)/D2 ) - (K12/D2)*dpsi1dO1;
-		J[1][1] = d2/dt + dK12dO2*(1+(psi2-psi1)/D2) + (K12/D2)*dpsi2dO2 - dK23dO2*(1+(psi3-psi2)/D3)+(K23/D3)*dpsi2dO2;
-		J[1][2] = -dK23dO3*(1+(psi3-psi2)/D3)-(K23/D3)*dpsi3dO3;
-		//J[2][0] = 0; // Just to remember that this is element of the Jacobian is zero
-		J[2][1] = dK23dO2*(1+(psi3-psi2)/D3) - (K12/D3)*dpsi2dO2;
-		J[2][2] = d3/dt + dK23dO3*(1+ (psi3-psi2)/D3) + (K23/D3)*dpsi3dO3 - d3*L/(thetas-thetar)
+		J(0,0) = d1*invdt + dK1dO1*(1 + (psi1 - pond)/D1) + (K1/D1)*dpsi1dO1 - dK12dO1*(1 + (psi2 - psi1)/D2 ) + K12*dpsi1dO1;
+		J(0,1) = -dK12dO2*( 1 + (psi2 - psi1)/D2 ) - (K12/D2)*dpsi2dO2;
+		//J(0,2) = 0; // Just to remember that this is element of the Jacobian is zero
+		J(1,0) = dK12dO1*( 1 + (psi2 - psi1)/D2 ) - (K12/D2)*dpsi1dO1;
+		J(1,1) = d2*invdt + dK12dO2*(1+(psi2-psi1)/D2) + (K12/D2)*dpsi2dO2 - dK23dO2*(1+(psi3-psi2)/D3)+(K23/D3)*dpsi2dO2;
+		J(1,2) = -dK23dO3*(1+(psi3-psi2)/D3)-(K23/D3)*dpsi3dO3;
+		//J(2,0) = 0; // Just to remember that this is element of the Jacobian is zero
+		J(2,1) = dK23dO2*(1+(psi3-psi2)/D3) - (K12/D3)*dpsi2dO2;
+		J(2,2) = d3*invdt + dK23dO3*(1+ (psi3-psi2)/D3) + (K23/D3)*dpsi3dO3 - d3*L/(thetas-thetar);
+
+
 
         deltax = solve(J, -Fun);
-       x[0] += deltax[0];
-       x[1] += deltax[1];
-       x[2] += deltax[2];
-		k++;
+        x += deltax;
+       	k++;
 
 	}while(norm(deltax, 2) > 0.00001 && k < MAX_ITER);
+
+    F += infilt;
+    f = K1*(1 + (psi1 - pond)/D1 );
+   	theta1 = x[0];
+   	theta2 = x[1];
+   	theta2 = x[2];
+   	pond -= infilt;
 
 }

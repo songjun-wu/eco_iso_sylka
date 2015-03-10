@@ -53,8 +53,35 @@ Basin::Basin(Control &ctrl)
 		_soilmoist = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist, ctrl.MapType);  //soil moisture volumetric
 		_Temp_s_old = new grid(ctrl.path_BasinFolder + ctrl.fn_soiltemp, ctrl.MapType);  //initial soil temperature C
 
+		/*
+		 * This sections is for maps that are dependent on the runtime options
+		 */
+
+		//set to NULL all pointers that may never be allocated to avoid deletion attempt in the destructor
+		_soilmoist10cm = NULL;
+		_EquivDepth2Sat = NULL;
+		_soilmoist2 = NULL;
+		_soilmoist3 = NULL;
+		_bedrock_leak = NULL;
+		//Allocate memory for calculation of hydrostatic soil moisture profile
+		if(ctrl.toggle_soil_water_profile==1){
+			_soilmoist10cm = new grid(*_DEM); //average volumetric soil moisture of the first 10 cm of the soil as calculated using a hydrstatic equilibrium moisture profile
+			_EquivDepth2Sat = new grid(*_DEM); //Equivalent depth to saturation as calculated from average soil moisture and hydrstatic equilibrium (m)
+		}
+
+		if(ctrl.toggle_soil_water_profile==2)
+		{
+			_soilmoist10cm = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist, ctrl.MapType);  //soil moisture 1st layer volumetric
+			_soilmoist2 = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist2, ctrl.MapType);  //soil moisture 2nd layer volumetric
+			_soilmoist3 = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist3, ctrl.MapType);  //soil moisture 3rd layer volumetric
+			_bedrock_leak = new grid(ctrl.path_BasinFolder + ctrl.fn_bedrock_leak, ctrl.MapType);  //soil moisture 3rd layer volumetric
+		}
+		else{
+			_soilmoist10cm = new grid(*_DEM);
+		}
+
 		//Partial check of maps mainly to make sure no nodata is written within the valid domain
-		CheckMaps();
+		CheckMaps(ctrl);
 
 		/*state variables initialized with the base map*/
 		_catcharea = new grid(*_DEM);
@@ -80,10 +107,9 @@ Basin::Basin(Control &ctrl)
 		_GrndWaterOld = new grid(*_DEM); //groundwater storage at teh beginning of the time step
 		_GrndWater = new grid(*_DEM); //groundwater storage at the end of the time step
 
-		_soilmoist10cm = new grid(*_DEM); //average volumetric soil moisture of the first 10 cm of the soil as calculated using a hydrstatic equilibrium moisture profile
-		_EquivDepth2Sat = new grid(*_DEM); //Equivalent depth to saturation as calculated from average soil moisture and hydrstatic equilibrium (m)
 
-	}catch (std::bad_alloc)
+
+	}catch (std::bad_alloc &)
 	  { cerr << "Couldn't allocate memory..." << "\n";
 		cin.get(); throw;
 	  }

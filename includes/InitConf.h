@@ -35,8 +35,9 @@ struct Control{
 		/*Option switches*/
 		bool sw_reinfilt; //switch to turn on and off the reinfiltration option
 		bool sw_channel; //switch to turn on and off the channel option
-		bool sw_soil_water_profile;
+
 		/*multiple option switches*/
+		int toggle_soil_water_profile; //toggle between different soil moisture profile calculation
 		int toggle_ra; //toggle between aerodynamic resistance options
 		int toggle_rs; //toggle between different soil resistance option
 
@@ -57,6 +58,7 @@ struct Control{
 		string fn_BClambda; //brooks and corey lambda param
 		string fn_theta_r; //residual soil moisture
 		string fn_soildepth; //soil depth in m
+		string fn_bedrock_leak; //bedrock leakance in s-1
 		string fn_paramWc; //empirical parameter in water efficiency function for GPP calculation (see Landsber and Waring, 1997 or TRIPLEX paper
 		string fn_paramWp;//empirical parameter in water efficiency function for GPP calculation (see Landsber and Waring, 1997 or TRIPLEX paper
 		string fn_snowCf; //empirical parameter that controls the snowmelt rates m s-1 C-1
@@ -70,6 +72,8 @@ struct Control{
 		string fn_dampdepth;
 		string fn_tempdamp;
 		string fn_soilmoist;
+		string fn_soilmoist2;
+		string fn_soilmoist3;
 		string fn_soiltemp;
 
 		/*Climate zones and climate input files*/
