@@ -11,7 +11,7 @@
 
 using namespace arma;
 
-void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c) //time step
+void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c) //time step
 {
 
 
@@ -30,8 +30,9 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
 	double L = _bedrock_leak->matrix[r][c];
 
 	//depth of soil layers
+	double depth = _soildepth->matrix[r][c];
 	double d1 = 0.1;
-	double d2 = (_soildepth->matrix[r][c] - 0.1)/2;
+	double d2 = (depth - 0.1)/2;
 	double d3 = d2;
 
 	//Distance between soil nodes
@@ -59,6 +60,7 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
 	double dK23dO3=0;
 
 	double infilt=0;
+	double dinfiltdO1=0;
 
 	colvec Fun(3);
 	mat J = zeros<mat>(3,3);
@@ -101,8 +103,11 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
 		dpsi2dO2 = lam*psiae*powl(S2,-lam)/ (thetar - x[1]);
 		dpsi3dO3 = lam*psiae*powl(S3,-lam)/ (thetar - x[2]);
 
+		dinfiltdO1 = pond == 0 ? 0 : dK1dO1*(1 + (psi1 - pond)/D1) + (K1/D1)*dpsi1dO1;
+
+
 		// Fill the Jacobian
-		J(0,0) = -d1*invdt + dK1dO1*(1 + (psi1 - pond)/D1) + (K1/D1)*dpsi1dO1 - dK12dO1*(1 + (psi2 - psi1)/D2 ) +(K12/D2)*dpsi1dO1;
+		J(0,0) = -d1*invdt + dinfiltdO1 - dK12dO1*(1 + (psi2 - psi1)/D2 ) +(K12/D2)*dpsi1dO1;
 		J(0,1) = -dK12dO2*( 1 + (psi2 - psi1)/D2 ) - (K12/D2)*dpsi2dO2;
 		//J(0,2) = 0; // Just to remember that this is element of the Jacobian is zero
 		J(1,0) = dK12dO1*( 1 + (psi2 - psi1)/D2 ) - (K12/D2)*dpsi1dO1;
@@ -115,7 +120,7 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
         if(!solve(deltax, J, -Fun))
         	cout << "no solution";
         cout <<"x: " <<  x << endl;
-        x += 0.5*deltax;
+        x += deltax;
         if(x[1]<=thetar)
         	x[1] = thetar*1.01;
         cout << deltax << endl;
@@ -126,6 +131,9 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
        	k++;
 
 	}while(norm(deltax, 2) > 0.00001 && k < MAX_ITER);
+
+   //calculate average moisture for entire soil profile
+   theta = (d1*x[0] + d2*x[1] + d3*x[2])/depth;
 
     F += infilt;
     f = K1*(1 + (psi1 - pond)/D1 );

@@ -137,7 +137,7 @@ class Basin {
 		//Hydrologic processes
 
 		void Infilt_GreenAmpt(double &f, double &F, double &theta, double &pond, double &percolat, double dt, int r, int c);
-		void Infilt_Richards(double &f, double &F, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c);
+		void Infilt_Richards(double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c);
 		int SolveSurfaceEnergyBalance(Atmosphere &atm,
 										Control &ctrl,
 										REAL8 ra,

@@ -63,7 +63,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 
 					wind = atm.getWindSpeed()->matrix[r][c];
 
-					theta = _soilmoist->matrix[r][c]; //soil moisture at time t
+					theta = _soilmoist->matrix[r][c]; //average soil moisture at time t
 					ponding = _ponding->matrix[r][c]; //surface ponding at time t
 					gw = _GravityWater->matrix[r][c]; //gravity water at time t
 
@@ -87,7 +87,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 						theta10cm = _soilmoist10cm->matrix[r][c];
 						theta2 = _soilmoist2->matrix[r][c];
 						theta3 = _soilmoist3->matrix[r][c];
-						Infilt_Richards(infcap, accinf, theta10cm,  theta2, theta3, ponding, gw, dt, r, c); //updates soil moisture
+						Infilt_Richards(infcap, accinf, theta, theta10cm,  theta2, theta3, ponding, gw, dt, r, c); //updates soil moisture
 					}
 					else{
 						Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
