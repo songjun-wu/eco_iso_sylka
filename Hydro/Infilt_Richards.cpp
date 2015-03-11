@@ -60,10 +60,10 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
 
 	double infilt=0;
 
-	rowvec Fun(3);
+	colvec Fun(3);
 	mat J = zeros<mat>(3,3);
-	rowvec x(3);
-	rowvec deltax(3);
+	colvec x(3);
+	colvec deltax(3);
 
 	//Initial guess is initial soil moisture content
    x[0] = theta1;
@@ -82,14 +82,14 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
 		K23 = Ks/(d2+d3) * (d2*powl(S2,p) + d3*powl(S3,p)  );
 
 		psi1 = psiae * powl(S1, -lam);
-		psi2 = psiae * powl(S1, -lam);
-		psi3 = psiae * powl(S1, -lam);
+		psi2 = psiae * powl(S2, -lam);
+		psi3 = psiae * powl(S3, -lam);
 
-		infilt = std::min<double> (K1*(1 + (psi1 - pond)/D1 ), pond*invdt );
+		infilt = std::min<double> (K1*(1 + (psi1 + pond)/D1 ), pond*invdt );
 
-		Fun[0] = d1*(theta1*invdt) + d1*(x[0]*invdt) + infilt - K12*(1 + (psi2 - psi1)/D2 ) ;
-		Fun[1] = d2*(theta2*invdt) + d2*(x[1]*invdt) + K12*(1 + (psi2 - psi1)/D2 ) - K23*(1 + (psi3 - psi2)/D3 );
-		Fun[2] = d3*(theta3*invdt) + d3*(x[2]*invdt) + K23*(1 + (psi3 - psi2)/D3 ) - d3*S3*L;
+		Fun[0] = d1*(theta1*invdt) - d1*(x[0]*invdt) + infilt - K12*(1 + (psi2 - psi1)/D2 ) ;
+		Fun[1] = d2*(theta2*invdt) - d2*(x[1]*invdt) + K12*(1 + (psi2 - psi1)/D2 ) - K23*(1 + (psi3 - psi2)/D3 );
+		Fun[2] = d3*(theta3*invdt) - d3*(x[2]*invdt) + K23*(1 + (psi3 - psi2)/D3 ) - d3*S3*L;
 
 		dK1dO1  = Ks*p*powl(S1,p) / (x[0] - thetar);
 		dK12dO1 = Ks*d1*p*powl(S1,p)/( (d1+d2)*(x[0] - thetar) );
@@ -102,20 +102,27 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta1, double &theta2
 		dpsi3dO3 = lam*psiae*powl(S3,-lam)/ (thetar - x[2]);
 
 		// Fill the Jacobian
-		J(0,0) = d1*invdt + dK1dO1*(1 + (psi1 - pond)/D1) + (K1/D1)*dpsi1dO1 - dK12dO1*(1 + (psi2 - psi1)/D2 ) + K12*dpsi1dO1;
+		J(0,0) = -d1*invdt + dK1dO1*(1 + (psi1 - pond)/D1) + (K1/D1)*dpsi1dO1 - dK12dO1*(1 + (psi2 - psi1)/D2 ) +(K12/D2)*dpsi1dO1;
 		J(0,1) = -dK12dO2*( 1 + (psi2 - psi1)/D2 ) - (K12/D2)*dpsi2dO2;
 		//J(0,2) = 0; // Just to remember that this is element of the Jacobian is zero
 		J(1,0) = dK12dO1*( 1 + (psi2 - psi1)/D2 ) - (K12/D2)*dpsi1dO1;
-		J(1,1) = d2*invdt + dK12dO2*(1+(psi2-psi1)/D2) + (K12/D2)*dpsi2dO2 - dK23dO2*(1+(psi3-psi2)/D3)+(K23/D3)*dpsi2dO2;
+		J(1,1) = -d2*invdt + dK12dO2*(1+(psi2-psi1)/D2) + (K12/D2)*dpsi2dO2 - dK23dO2*(1+(psi3-psi2)/D3)+(K23/D3)*dpsi2dO2;
 		J(1,2) = -dK23dO3*(1+(psi3-psi2)/D3)-(K23/D3)*dpsi3dO3;
 		//J(2,0) = 0; // Just to remember that this is element of the Jacobian is zero
 		J(2,1) = dK23dO2*(1+(psi3-psi2)/D3) - (K12/D3)*dpsi2dO2;
-		J(2,2) = d3*invdt + dK23dO3*(1+ (psi3-psi2)/D3) + (K23/D3)*dpsi3dO3 - d3*L/(thetas-thetar);
+		J(2,2) = -d3*invdt + dK23dO3*(1+ (psi3-psi2)/D3) + (K23/D3)*dpsi3dO3 - d3*L/(thetas-thetar);
+
+        if(!solve(deltax, J, -Fun))
+        	cout << "no solution";
+        cout <<"x: " <<  x << endl;
+        x += 0.5*deltax;
+        if(x[1]<=thetar)
+        	x[1] = thetar*1.01;
+        cout << deltax << endl;
+        cout << -Fun << endl;
+        cout << J << endl;
 
 
-
-        deltax = solve(J, -Fun);
-        x += deltax;
        	k++;
 
 	}while(norm(deltax, 2) > 0.00001 && k < MAX_ITER);
