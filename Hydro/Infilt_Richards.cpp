@@ -132,8 +132,22 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
 
 	}while(norm(deltax, 2) > 0.00001 && k < MAX_ITER);
 
+   if(x[2] > thetas){
+	   x[2]-= (thetas - x[2])*d3;
+	   x[1]+= (thetas - x[2])*d3/d2;
+   }
+   if(x[1] > thetas){
+   	   x[1]-= (thetas - x[1])*d2;
+   	   x[0]+= (thetas - x[1])*d2/d3;
+   }
+   if(x[0] > thetas){
+   	   x[0]-= (thetas - x[0])*d1;
+   	   pond+= (thetas - x[0])*d1;
+   }
    //calculate average moisture for entire soil profile
    theta = (d1*x[0] + d2*x[1] + d3*x[2])/depth;
+
+
 
     F += infilt;
     f = K1*(1 + (psi1 - pond)/D1 );
