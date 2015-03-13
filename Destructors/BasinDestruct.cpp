@@ -107,6 +107,8 @@ Basin::~Basin(){
 		delete _soilmoist3;
 	if(_EquivDepth2Sat)
 		delete _EquivDepth2Sat;
+	if(_bedrock_leak)
+		delete _bedrock_leak;
 
 
 	if(fForest)
