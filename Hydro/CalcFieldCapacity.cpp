@@ -20,7 +20,7 @@ int Basin::CalcFieldCapacity(){
 					c = _vSortedGrid.cells[j].col;
 
 					_fieldcap->matrix[r][c] =
-							powl(_psi_ae->matrix[r][c] / 3.36 , _BClambda->matrix[r][c])
+							powl(_psi_ae->matrix[r][c] / 3.36 ,1/_BClambda->matrix[r][c])
 							* (_porosity->matrix[r][c] - _theta_r->matrix[r][c])
 							+ _theta_r->matrix[r][c];
 
