@@ -14,7 +14,6 @@ using namespace arma;
 void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c, int flowdir) //time step
 {
 
-
     double invdt = 1/dt;
 
 	double Ks = _Ksat->matrix[r][c];
@@ -78,6 +77,8 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
    x[1] = theta2;
    x[2] = theta3;
 
+
+
 	int k = 0;
    do{
 
@@ -97,6 +98,9 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
 		infilt = std::min<double> (K1*(1 + (psi1 + pond)/D1 ), pond*invdt );
 		Qout = K3*d3dxslope;
 
+		if (infilt>0)
+			cout << "tetet";
+
 		Fun[0] = d1*(theta1*invdt) - d1*(x[0]*invdt) + infilt - K12*(1 + (psi2 - psi1)/D2 ) ;
 		Fun[1] = d2*(theta2*invdt) - d2*(x[1]*invdt) + K12*(1 + (psi2 - psi1)/D2 ) - K23*(1 + (psi3 - psi2)/D3 );
 		Fun[2] = d3*(theta3*invdt) - d3*(x[2]*invdt) + K23*(1 + (psi3 - psi2)/D3 )+ Qin - Qout - d3*S3*L;
@@ -112,7 +116,10 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
 		dpsi2dO2 = lam*psiae*powl(S2,-lam)/ (thetar - x[1]);
 		dpsi3dO3 = lam*psiae*powl(S3,-lam)/ (thetar - x[2]);
 
-		dinfiltdO1 = pond == 0 ? 0 : dK1dO1*(1 + (psi1 - pond)/D1) + (K1/D1)*dpsi1dO1;
+		if(infilt < K1*(1 + (psi1 + pond)/D1 ))
+			dinfiltdO1 = 0;
+		else
+			dinfiltdO1 = dK1dO1*(1 + (psi1 + pond)/D1) + (K1/D1)*dpsi1dO1;
 
 
 		// Fill the Jacobian
@@ -130,27 +137,28 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
         	cout << "no solution";
         cout <<"x: " <<  x << endl;
         x += deltax;
-        if(S1<=thetar || S1>thetas)
-        	x[1] = thetar*1.01;
-//        cout << deltax << endl;
-//        cout << -Fun << endl;
-//        cout << J << endl;
-
+        if(x[2]<=thetar || S1>1)
+        	cout << "bad";
+        cout << deltax << endl;
+        cout << -Fun << endl;
+        cout << J << endl;
 
        	k++;
 
 	}while(norm(deltax, 2) > 0.00001 && k < MAX_ITER);
+   if (k >= MAX_ITER)
+   					cout << "WARNING: Max no iterations reached for Richards solution " << endl;
 
    if(x[2] > thetas){
-	   x[2]-= (thetas - x[2])*d3;
+	   x[2]-= (thetas - x[2]);
 	   x[1]+= (thetas - x[2])*d3/d2;
    }
    if(x[1] > thetas){
-   	   x[1]-= (thetas - x[1])*d2;
+   	   x[1]-= (thetas - x[1]);
    	   x[0]+= (thetas - x[1])*d2/d3;
    }
    if(x[0] > thetas){
-   	   x[0]-= (thetas - x[0])*d1;
+   	   x[0]-= (thetas - x[0]);
    	   pond+= (thetas - x[0])*d1;
    }
 
