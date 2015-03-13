@@ -83,6 +83,7 @@ class Basin {
 	grid *_GravityWater; //current water stored in the soil beyond field capacity (m) (percolation or water traveling in the vadose zone)
 	grid *_GrndWaterOld; //water stored in the gw system at the beginning of the time step (m)
 	grid *_GrndWater; //water stored in the gw system at the end of the time step (m)
+	grid *_GWupstreamBC; //gw flux upstream boundary conditin (ms-1)
 
 	grid *_Rn; //Net radiation for the soil surface Wm-2
 	grid *_latheat; //latent heat flux into the atmosphere Wm-2
@@ -137,7 +138,7 @@ class Basin {
 		//Hydrologic processes
 
 		void Infilt_GreenAmpt(double &f, double &F, double &theta, double &pond, double &percolat, double dt, int r, int c);
-		void Infilt_Richards(double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c);
+		void Infilt_Richards(double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c, int flowdir);
 		int SolveSurfaceEnergyBalance(Atmosphere &atm,
 										Control &ctrl,
 										REAL8 ra,

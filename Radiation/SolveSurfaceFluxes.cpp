@@ -9,7 +9,7 @@
 
 int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 
-	int r, c;
+	int r, c, d;
 	float dt = ctrl.dt; //time step
 
 	//energy balance parameters
@@ -54,11 +54,17 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 	UINT4 nsp;
 	REAL8 p;//fraction of species s
 
+	//needed in the water routing routines
+	_dailyOvlndOutput.cells.clear();
+	_dailyGwtrOutput.cells.clear();
+	_GWupstreamBC->reset();
+
 
 	for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
 	{
 					r = _vSortedGrid.cells[j].row;
 					c = _vSortedGrid.cells[j].col;
+					d = _vSortedGrid.cells[j].dir;
 
 
 					wind = atm.getWindSpeed()->matrix[r][c];
@@ -87,7 +93,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 						theta10cm = _soilmoist10cm->matrix[r][c];
 						theta2 = _soilmoist2->matrix[r][c];
 						theta3 = _soilmoist3->matrix[r][c];
-						Infilt_Richards(infcap, accinf, theta, theta10cm,  theta2, theta3, ponding, gw, dt, r, c); //updates soil moisture
+						Infilt_Richards(infcap, accinf, theta, theta10cm,  theta2, theta3, ponding, gw, dt, r, c, d); //updates soil moisture
 					}
 					else{
 						Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
@@ -150,6 +156,9 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 					SolveSurfaceEnergyBalance(atm, ctrl, ra, rs, 0.0, BeersK, LAI, emis_can, Temp_can, nr, le, sens, grndh, snowh, mltht, Tsold, evap, ponding, theta, Ts, Tdold, p, r, c);
 
 					_soilmoist->matrix[r][c] = theta; //soil moisture at t=t+1
+					_soilmoist10cm->matrix[r][c] = theta10cm;
+					_soilmoist2->matrix[r][c] = theta2;
+					_soilmoist3->matrix[r][c] = theta3;
 
 					_Evaporation->matrix[r][c] += evap; //evaporation at t=t+1
 
@@ -170,7 +179,8 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 
 		_ponding->matrix[r][c] += SnowOutput(atm, ctrl, mltht, r, c);
 
-	}
+	}//end for
+
 
 	return EXIT_SUCCESS;
 }

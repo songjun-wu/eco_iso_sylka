@@ -37,8 +37,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 
 	 dtdx = dt / _dx;
 
-	_dailyOvlndOutput.cells.clear();
-	_dailyGwtrOutput.cells.clear();
+
 
 	for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
 	{
@@ -90,7 +89,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 
 
 
-			qj1i = upstreamBC->matrix[r][c];// discharge (j is timestep) so j1i is total discharge per unit width from upstream at t+1
+			qj1i = _GWupstreamBC->matrix[r][c];// discharge (j is timestep) so j1i is total discharge per unit width from upstream at t+1
 			hji1 = _GrndWaterOld->matrix[r][c]; //head at the cell itself (end of it so j+1) at t
 			R =_GravityWater->matrix[r][c]; //recharge to the groundwater system at the end of the time step in meters
 			_GravityWater->matrix[r][c] = 0; //gravity water becomes groundwater
@@ -116,31 +115,31 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 
 			switch (d) //add the previously calculated *discharge* (not elevation) to the downstream cell
 								{
-									case 1:   upstreamBC->matrix[r+1][c-1]+= hj1i1 * alpha;
+									case 1:   _GWupstreamBC->matrix[r+1][c-1]+= hj1i1 * alpha;
 														_ponding->matrix[r+1][c-1] += ponding;
 														break;
-									case 2:   upstreamBC->matrix[r+1][c]+= hj1i1 * alpha;
+									case 2:   _GWupstreamBC->matrix[r+1][c]+= hj1i1 * alpha;
 									 	 	 	 	 	 _ponding->matrix[r+1][c]+= ponding;
 									 	 	 	 	 	 break;
-									case 3:   upstreamBC->matrix[r+1][c+1]+= hj1i1* alpha;
+									case 3:   _GWupstreamBC->matrix[r+1][c+1]+= hj1i1* alpha;
 														_ponding->matrix[r+1][c+1]+= ponding;
 														break;
-									case 4:   upstreamBC->matrix[r][c-1]+= hj1i1* alpha;
+									case 4:   _GWupstreamBC->matrix[r][c-1]+= hj1i1* alpha;
 														_ponding->matrix[r][c-1]+= ponding;
 														break;
 									case 5: _dailyGwtrOutput.cells.push_back(cell(r, c, (alpha * hj1i1 * _dx) ));
 													_dailyOvlndOutput.cells.push_back(cell(r, c, ponding * _dx *_dx / dt));
 														break; //if it is an outlet store the outflow m3s-1
-									case 6:   upstreamBC->matrix[r][c+1]+= hj1i1* alpha;
+									case 6:   _GWupstreamBC->matrix[r][c+1]+= hj1i1* alpha;
 														_ponding->matrix[r][c+1]+= ponding;
 														break;
-									case 7:   upstreamBC->matrix[r-1][c-1]+= hj1i1* alpha;
+									case 7:   _GWupstreamBC->matrix[r-1][c-1]+= hj1i1* alpha;
 														_ponding->matrix[r-1][c-1]+= ponding;
 														break;
-									case 8:   upstreamBC->matrix[r-1][c]+= hj1i1* alpha;
+									case 8:   _GWupstreamBC->matrix[r-1][c]+= hj1i1* alpha;
 														_ponding->matrix[r-1][c]+= ponding;
 														break;
-									case 9:   upstreamBC->matrix[r-1][c+1]+= hj1i1* alpha;
+									case 9:   _GWupstreamBC->matrix[r-1][c+1]+= hj1i1* alpha;
 									 	 	 	 	 	_ponding->matrix[r-1][c+1]+= ponding;
 									 	 	 	 	 	break;
 									default: return -1;
@@ -153,8 +152,8 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 
 //	*_GrndWaterOld = *_GrndWater;
 
-	if(upstreamBC)
-		delete upstreamBC;
+//	if(upstreamBC)
+//		delete upstreamBC;
 
 	return EXIT_SUCCESS;
 }

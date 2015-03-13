@@ -11,7 +11,7 @@
 
 using namespace arma;
 
-void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c) //time step
+void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c, int flowdir) //time step
 {
 
 
@@ -43,7 +43,7 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
 	//Relative water contents
 	double S1=0, S2=0, S3=0;
 	//Unsaturated Hydr Cond
-	double K1=0, K12=0, K23=0;
+	double K1=0, K12=0, K23=0, K3=0;
 	//Soil suction head
 	double psi1=0, psi2=0, psi3=0;
 
@@ -58,9 +58,15 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
 	double dK12dO2=0;
 	double dK23dO2=0;
 	double dK23dO3=0;
+	double dK3dO3=0;
 
 	double infilt=0;
 	double dinfiltdO1=0;
+
+	double d3dxslope = d3*sin(atan(_slope->matrix[r][c]))/_dx;
+	double Qout=0; // gw flow leaving the cell
+	double Qin=_GWupstreamBC->matrix[r][c]; //gw upstream flux BC
+
 
 	colvec Fun(3);
 	mat J = zeros<mat>(3,3);
@@ -82,22 +88,25 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
 		K1 = Ks * powl(S1,p);
 		K12 = Ks/(d1+d2) * (d1*powl(S1,p) + d2*powl(S2,p)  );
 		K23 = Ks/(d2+d3) * (d2*powl(S2,p) + d3*powl(S3,p)  );
+		K3 = Ks * powl(S3,p);
 
 		psi1 = psiae * powl(S1, -lam);
 		psi2 = psiae * powl(S2, -lam);
 		psi3 = psiae * powl(S3, -lam);
 
 		infilt = std::min<double> (K1*(1 + (psi1 + pond)/D1 ), pond*invdt );
+		Qout = K3*d3dxslope;
 
 		Fun[0] = d1*(theta1*invdt) - d1*(x[0]*invdt) + infilt - K12*(1 + (psi2 - psi1)/D2 ) ;
 		Fun[1] = d2*(theta2*invdt) - d2*(x[1]*invdt) + K12*(1 + (psi2 - psi1)/D2 ) - K23*(1 + (psi3 - psi2)/D3 );
-		Fun[2] = d3*(theta3*invdt) - d3*(x[2]*invdt) + K23*(1 + (psi3 - psi2)/D3 ) - d3*S3*L;
+		Fun[2] = d3*(theta3*invdt) - d3*(x[2]*invdt) + K23*(1 + (psi3 - psi2)/D3 )+ Qin - Qout - d3*S3*L;
 
 		dK1dO1  = Ks*p*powl(S1,p) / (x[0] - thetar);
 		dK12dO1 = Ks*d1*p*powl(S1,p)/( (d1+d2)*(x[0] - thetar) );
 		dK12dO2 = Ks*d2*p*powl(S2,p)/( (d1+d2)*(x[1] - thetar) );
 		dK23dO2 = Ks*d2*p*powl(S2,p)/( (d2+d3)*(x[1] - thetar) );
 		dK23dO3 = Ks*d3*p*powl(S3,p)/( (d2+d3)*(x[2] - thetar) );
+		dK3dO3  = Ks*p*powl(S3,p) / (x[2] - thetar);
 
 		dpsi1dO1 = lam*psiae*powl(S1,-lam)/ (thetar - x[0]);
 		dpsi2dO2 = lam*psiae*powl(S2,-lam)/ (thetar - x[1]);
@@ -115,17 +124,17 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
 		J(1,2) = -dK23dO3*(1+(psi3-psi2)/D3)-(K23/D3)*dpsi3dO3;
 		//J(2,0) = 0; // Just to remember that this is element of the Jacobian is zero
 		J(2,1) = dK23dO2*(1+(psi3-psi2)/D3) - (K12/D3)*dpsi2dO2;
-		J(2,2) = -d3*invdt + dK23dO3*(1+ (psi3-psi2)/D3) + (K23/D3)*dpsi3dO3 - d3*L/(thetas-thetar);
+		J(2,2) = -d3*invdt + dK23dO3*(1+ (psi3-psi2)/D3) + (K23/D3)*dpsi3dO3 - d3dxslope*dK3dO3 - d3*L/(thetas-thetar);
 
         if(!solve(deltax, J, -Fun))
         	cout << "no solution";
         cout <<"x: " <<  x << endl;
         x += deltax;
-        if(x[1]<=thetar)
+        if(S1<=thetar || S1>thetas)
         	x[1] = thetar*1.01;
-        cout << deltax << endl;
-        cout << -Fun << endl;
-        cout << J << endl;
+//        cout << deltax << endl;
+//        cout << -Fun << endl;
+//        cout << J << endl;
 
 
        	k++;
@@ -144,10 +153,9 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
    	   x[0]-= (thetas - x[0])*d1;
    	   pond+= (thetas - x[0])*d1;
    }
+
    //calculate average moisture for entire soil profile
    theta = (d1*x[0] + d2*x[1] + d3*x[2])/depth;
-
-
 
     F += infilt;
     f = K1*(1 + (psi1 - pond)/D1 );
@@ -155,5 +163,50 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
    	theta2 = x[1];
    	theta2 = x[2];
    	pond -= infilt;
+
+   switch (flowdir) //add the previously calculated *discharge* (not elevation) to the downstream cell
+	{
+	case 1:
+		_GWupstreamBC->matrix[r + 1][c - 1] += K3*d3dxslope;;
+		_ponding->matrix[r + 1][c - 1] += pond;
+		break;
+	case 2:
+		_GWupstreamBC->matrix[r + 1][c] += K3*d3dxslope;;
+		_ponding->matrix[r + 1][c] += pond;
+		break;
+	case 3:
+		_GWupstreamBC->matrix[r + 1][c + 1] += K3*d3dxslope;;
+		_ponding->matrix[r + 1][c + 1] += pond;
+		break;
+	case 4:
+		_GWupstreamBC->matrix[r][c - 1] += K3*d3dxslope;;
+		_ponding->matrix[r][c - 1] += pond;
+		break;
+	case 5:
+		_dailyGwtrOutput.cells.push_back(cell(r, c, (K3*d3dxslope * _dx)));
+		_dailyOvlndOutput.cells.push_back(cell(r, c, pond * _dx * _dx / dt));
+		break; //if it is an outlet store the outflow m3s-1
+	case 6:
+		_GWupstreamBC->matrix[r][c + 1] += K3*d3dxslope;;
+		_ponding->matrix[r][c + 1] += pond;
+		break;
+	case 7:
+		_GWupstreamBC->matrix[r - 1][c - 1] += K3*d3dxslope;;
+		_ponding->matrix[r - 1][c - 1] += pond;
+		break;
+	case 8:
+		_GWupstreamBC->matrix[r - 1][c] += K3*d3dxslope;;
+		_ponding->matrix[r - 1][c] += pond;
+		break;
+	case 9:
+		_GWupstreamBC->matrix[r - 1][c + 1] += K3*d3dxslope;;
+		_ponding->matrix[r - 1][c + 1] += pond;
+		break;
+	default:
+		throw -1;
+	}
+
+   pond=0;
+
 
 }

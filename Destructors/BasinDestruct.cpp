@@ -93,6 +93,8 @@ Basin::~Basin(){
 		delete _GrndWaterOld;
 	if(_GrndWater)
 		delete _GrndWater;
+	if(_GWupstreamBC)
+		delete _GWupstreamBC;
 	if(_channelmask)
 		delete _channelmask;
 	if(_chGWparam)
