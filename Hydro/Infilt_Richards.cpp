@@ -62,7 +62,10 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
 
    double initstor = theta1*d1 + theta2*d2 + theta3*d3;
 
-   Ric_Newton(x, Qout, K1, K12, K23, K3, theta11, theta21, theta31, infilt, pond,
+//   Ric_Newton(x, Qout, K1, K12, K23, K3, theta11, theta21, theta31, infilt, pond,
+//			dt, Ks, d1, d2, d3, psiae, lam, thetas, thetar, theta1,	theta2, theta3,
+//			d3dxslope, L, Qin);
+   Ric_ModifiedPicard(x, Qout, K1, K12, K23, K3, theta11, theta21, theta31, infilt, pond,
 			dt, Ks, d1, d2, d3, psiae, lam, thetas, thetar, theta1,	theta2, theta3,
 			d3dxslope, L, Qin);
 
