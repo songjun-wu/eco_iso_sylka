@@ -11,17 +11,34 @@
 
 using namespace arma;
 
-void Ric_ModifiedPicard(colvec &x, const double &pond, const double dt, double &Ks, double &d1, double &d2,
-		double &d3, double &psiae, double &lam, double &theta1, double &theta2, double &theta3) //time step
+void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
+		double &theta11, double &theta21,double &theta31, double &infilt, double &pond,
+		const double &dt, const double &Ks, const double &d1, const double &d2,
+		const double &d3, const double &psiae, const double &lam, const double &thetas,
+		const double &thetar, const double &theta1,	const double &theta2, const double &theta3,
+		const double &d3dxslope, const double &L, const double &Qin) //time step
 		{
 	double invdt = 1/dt;
-	//Unsaturated Hydr Cond
-	double K1=0, K12=0, K23=0, K3=0;
 
 	double p = 2*lam + 3;
 
+	//Distance between soil nodes
+	double D1 = d1 * 0.5;
+	double D2 = D1 + d2 * 0.5;
+	double D3 = D2 + d3 * 0.5;
+
+	//derivatives of relative saturation with respect to soil tension
+	double dS1dpsi1=0;
+	double dS2dpsi2=0;
+	double dS3dpsi3=0;
+
 	colvec Fun(3);
+	mat J = zeros<mat>(3,3);
 	colvec deltax(3);
+
+	double S1 = (theta1 - thetar)/(thetas - thetar);
+	double S2 = (theta2 - thetar)/(thetas - thetar);
+	double S3 = (theta3 - thetar)/(thetas - thetar);
 
 	int k = 0;
 	do {
@@ -44,6 +61,11 @@ void Ric_ModifiedPicard(colvec &x, const double &pond, const double dt, double &
 		Fun[2] = d3 * (theta3 * invdt) - d3 * (theta31 * invdt)
 				+ K23 * (1 + (x[2] - x[1]) / D3) + Qin - Qout - d3 * S3 * L;
 
+		dS1dpsi1 = x[0]<psiae ? 0 : -powl(psiae/x[0],1/lam)/(lam*x[0]);
+		dS2dpsi2 = x[1]<psiae ? 0 : -powl(psiae/x[1],1/lam)/(lam*x[1]);
+		dS3dpsi3 = x[2]<psiae ? 0 : -powl(psiae/x[2],1/lam)/(lam*x[2]);
+
+		J(0,0) = d1*invdt*(thetas-thetar)*dS1dpsi1 - Infilt
 
 
 

@@ -11,6 +11,20 @@
 
 using namespace arma;
 
+void Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
+		double &theta11, double &theta21,double &theta31, double &infilt, double &pond,
+		const double &dt, const double &Ks, const double &d1, const double &d2,
+		const double &d3, const double &psiae, const double &lam, const double &thetas,
+		const double &thetar, const double &theta1,	const double &theta2, const double &theta3,
+		const double &d3dxslope, const double &L, const double &Qin);
+
+void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
+		double &theta11, double &theta21,double &theta31, double &infilt, double &pond,
+		const double &dt, const double &Ks, const double &d1, const double &d2,
+		const double &d3, const double &psiae, const double &lam, const double &thetas,
+		const double &thetar, const double &theta1,	const double &theta2, const double &theta3,
+		const double &d3dxslope, const double &L, const double &Qin);
+
 void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c, int flowdir) //time step
 {
 
@@ -30,41 +44,31 @@ void Basin::Infilt_Richards(double &f, double &F, double &theta, double &theta1,
 	double d2 = (depth - 0.1)/2;
 	double d3 = d2;
 
-	//Distance between soil nodes
-	double D1 = d1 * 0.5;
-	double D2 = D1 + d2 * 0.5;
-	double D3 = D2 + d3 * 0.5;
 
 	double d3dxslope = d3*sin(atan(_slope->matrix[r][c]))/_dx;
 	double Qin=_GWupstreamBC->matrix[r][c]; //gw upstream flux BC
 
+	//This variables are state variables that will be returned by the solution of Richards equation
+	//Unsaturated Hydr Cond
+	double K1=0, K12=0, K23=0, K3=0;
+	double infilt=0;
 	double Qout=0; // gw flow leaving the cell populated upon solution of Richard's equation
+	//Initial guess for soil moisture at t+1 is current initial soil moisture content
+	double theta11=theta1;
+	double theta21=theta2;
+	double theta31=theta3;
+	//soil hydraulic head for the three soil layers
 	colvec x(3);
-
 
    double initstor = theta1*d1 + theta2*d2 + theta3*d3;
 
-   Ric_Newton(x, Qout, dt, Ks, d1, d2, d3, D1, D2, D3, psiae, lam, thetas, thetar, theta1,
-			theta2, theta3, d3dxslope, L, Qin);
-
-
-/*   if(x[2] > thetas){
-	   x[2]-= (thetas - x[2]);
-	   x[1]+= (thetas - x[2])*d3/d2;
-   }
-   if(x[1] > thetas){
-   	   x[1]-= (thetas - x[1]);
-   	   x[0]+= (thetas - x[1])*d2/d3;
-   }
-   if(x[0] > thetas){
-   	   x[0]-= (thetas - x[0]);
-   	   pond+= (thetas - x[0])*d1;
-   }*/
-
+   Ric_Newton(x, Qout, K1, K12, K23, K3, theta11, theta21, theta31, infilt, pond,
+			dt, Ks, d1, d2, d3, psiae, lam, thetas, thetar, theta1,	theta2, theta3,
+			d3dxslope, L, Qin);
 
 
     F += infilt;
-    f = K1*(1 + (x[0] - pond)/D1 );
+  //  f = K1*(1 + (x[0] - pond)/D1 );
    	theta1 =theta11;
    	theta2 = theta21;
    	theta3 = theta31;
