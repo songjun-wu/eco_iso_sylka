@@ -65,15 +65,15 @@ void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double
 		dS2dpsi2 = x[1]<psiae ? 0 : -powl(psiae/x[1],1/lam)/(lam*x[1]);
 		dS3dpsi3 = x[2]<psiae ? 0 : -powl(psiae/x[2],1/lam)/(lam*x[2]);
 
-		J(0,0) = d1*(thetas-thetar)*dS1dpsi1 - dt*(K1/D1 -K12/D2);
-		J(0,1) = dt*(K12/D2);
+		J(0,0) = d1*invdt*(thetas-thetar)*dS1dpsi1 - K1/D1 -K12/D2;
+		J(0,1) = K12/D2;
 		J(0,2) = 0;
-		J(1,0) = dt*(K12/D2);
-		J(1,1) = d2*(thetas-thetar)*dS2dpsi2 - dt*(K12/D2 - K23/D3);
-		J(1,2) = dt*(K23/D3);
+		J(1,0) = K12/D2;
+		J(1,1) = d2*(thetas-thetar)*dS2dpsi2 - K12/D2 - K23/D3;
+		J(1,2) = K23/D3;
 		J(2,0) = 0;
-		J(2,1) = dt*(K23/D3);
-		J(2,2) = d3*(thetas-thetar)*dS3dpsi3 - dt*(K23/D3);
+		J(2,1) = K23/D3;
+		J(2,2) = d3*(thetas-thetar)*dS3dpsi3 - K23/D3;
 
 
 		if (!solve(deltax, J, -Fun))
