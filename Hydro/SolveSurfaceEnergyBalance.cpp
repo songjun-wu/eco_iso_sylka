@@ -25,7 +25,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 									REAL8 &Tsold,
 									REAL8 &etp,
 									REAL8 &pond,
-									REAL8 &theta,
+									REAL8 &theta10cm,
 									REAL8 &Ts1,
 									REAL8 &Tdold,
 									REAL8 p,
@@ -58,7 +58,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 	REAL8 RainIntensity; //ms-1
 	//REAL8 exfilt;
 	REAL8 lambda = Ts1 < 0 ?  lat_heat_vap + lat_heat_fus : lat_heat_vap;
-	REAL8 theta10cm = 0;
+
 
 	z = _DEM->matrix[r][c];
 	gamma =PsychrometricConst(101325, z);
@@ -72,8 +72,6 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 	n = _porosity->matrix[r][c];
 	ea = AirEmissivity(atm.getTemperature()->matrix[r][c]);
 	rho_a = AirDensity(atm.getTemperature()->matrix[r][c]); //kgm-3
-
-	theta10cm = _soilmoist10cm->matrix[r][c];
 
 	C = SoilHeatCapacity(_soil_dry_heatcap->matrix[r][c],  n, theta10cm, Ts1);
 	K = SoilHeatConductivity(_soil_dry_thermcond->matrix[r][c], n, 	theta10cm);
@@ -165,7 +163,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 
 
 
-	SoilEvapotranspiration(-LE*p, Ts1, lambda, rs, etp, theta, dt, r, c);
+	SoilEvapotranspiration(-LE*p, Ts1, lambda, rs, etp, theta10cm, dt, r, c);
 
 	return EXIT_SUCCESS;
 }

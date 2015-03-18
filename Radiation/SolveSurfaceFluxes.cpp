@@ -11,6 +11,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 
 	int r, c, d;
 	float dt = ctrl.dt; //time step
+	int soil_hydr_opt = ctrl.toggle_soil_water_profile; //soil hydrology solution
 
 	//energy balance parameters
 
@@ -78,15 +79,15 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 		Tsold = 0;
 		Tdold = 0;
 
-		if (ctrl.toggle_soil_water_profile == 0) {
+		if (soil_hydr_opt == 0) {
 			Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
-			_soilmoist10cm->matrix[r][c] = _soilmoist->matrix[r][c];
+			_soilmoist10cm->matrix[r][c] = theta;
 			theta10cm = _soilmoist10cm->matrix[r][c];
-		} else if (ctrl.toggle_soil_water_profile == 1) {
+		} else if (soil_hydr_opt == 1) {
 			Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
 			CalcSoilMoistureProfile(atm, ctrl, theta, r, c);
 			theta10cm = _soilmoist10cm->matrix[r][c];
-		} else if ((ctrl.toggle_soil_water_profile == 2) || (ctrl.toggle_soil_water_profile == 3)) {
+		} else if ((soil_hydr_opt == 2) || (soil_hydr_opt == 3)) {
 			theta10cm = _soilmoist10cm->matrix[r][c];
 			theta2 = _soilmoist2->matrix[r][c];
 			theta3 = _soilmoist3->matrix[r][c];
@@ -145,12 +146,15 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 
 			SolveSurfaceEnergyBalance(atm, ctrl, ra, rs, 0.0, BeersK, LAI,
 					emis_can, Temp_can, nr, le, sens, grndh, snowh, mltht,
-					Tsold, evap, ponding, theta, Ts, Tdold, p, r, c);
+					Tsold, evap, ponding, theta10cm, Ts, Tdold, p, r, c);
 
-			_soilmoist->matrix[r][c] = theta; //soil moisture at t=t+1
+			//For soil hydrology option 0 theta1 is the total soil layer
+			_soilmoist->matrix[r][c] = theta10cm; //soil moisture at t=t+1
 			_soilmoist10cm->matrix[r][c] = theta10cm;
-			_soilmoist2->matrix[r][c] = theta2;
-			_soilmoist3->matrix[r][c] = theta3;
+			if (soil_hydr_opt > 1) { //if Using richards equation update the additional soil layers
+				_soilmoist2->matrix[r][c] = theta2;
+				_soilmoist3->matrix[r][c] = theta3;
+			}
 
 			_Evaporation->matrix[r][c] += evap; //evaporation at t=t+1
 

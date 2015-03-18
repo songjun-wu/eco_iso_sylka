@@ -54,8 +54,7 @@ void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double
 		K3 = Ks * powl(S3, p);
 
 		infilt = std::min<double>(K1 * (1 + (x[0] + pond) / D1), pond * invdt);
-		if (S1 == 1)
-			infilt = 0;
+
 
 		Qout = K3 * d3dxslope;
 

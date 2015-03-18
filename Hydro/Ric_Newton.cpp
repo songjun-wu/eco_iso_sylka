@@ -77,8 +77,7 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
 			K3 = Ks * powl(S3,p);
 
 			infilt = std::min<double> (K1*(1 + (x[0] + pond)/D1 ), pond*invdt );
-			if(S1==1)
-				infilt=0;
+
 			Qout = K3*d3dxslope;
 
 			Fun[0] = d1*(theta1*invdt) - d1*(theta11*invdt) + infilt - K12*(1 + (x[1] - x[0])/D2 ) ;
@@ -117,11 +116,11 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
 	        	cout << "Singular Jacobian found in Newton solver. Switching to Picard...\n";
 	        	return 1;
 	        }
-	        cout <<"x: " <<  x << endl;
+//	        cout <<"x: " <<  x << endl;
 	        x += deltax;
-	        cout << deltax << endl;
-	        cout << -Fun << endl;
-	        cout << J << endl;
+//	        cout << deltax << endl;
+//	        cout << -Fun << endl;
+//	        cout << J << endl;
 
 		    S1 = x[0]<psiae ? 1 : powl(psiae/x[0], 1/lam);
 		    S2 = x[1]<psiae ? 1 : powl(psiae/x[1], 1/lam);

@@ -20,7 +20,7 @@ void Basin::CalcSoilMoistureProfile(Atmosphere &atm, Control &ctrl, REAL8 theta,
 	REAL8 poros = _porosity->matrix[row][col];
 	REAL8 theta_r = _theta_r->matrix[row][col];
 	REAL8 psi = _psi_ae->matrix[row][col];
-	REAL8 lambda = _BClambda->matrix[row][col];
+	REAL8 lambda = 1/_BClambda->matrix[row][col];
 	REAL8 psilam = powl(psi,lambda);
 	REAL8 H = _EquivDepth2Sat->matrix[row][col]+0.1; //equivalent depth to saturation (m). Initial estimate is the old value for H + 0.1 to avoid initial value of 0
 	REAL8 H1 = H; //updated equivalent depth to saturation (m)

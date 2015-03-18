@@ -62,7 +62,7 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, 
 
    double initstor = theta1*d1 + theta2*d2 + theta3*d3;
 
-	if (ctrl.toggle_soil_water_profile == 2)
+	if (ctrl.toggle_soil_water_profile == 2){
 		if (Ric_Newton(x, Qout, K1, K12, K23, K3, theta11, theta21, theta31,
 				infilt, pond, dt, Ks, d1, d2, d3, psiae, lam, thetas, thetar,
 				theta1, theta2, theta3, d3dxslope, L, Qin)) {
@@ -73,6 +73,7 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, 
 			Ric_ModifiedPicard(x, Qout, K1, K12, K23, K3, theta11, theta21,
 					theta31, infilt, pond, dt, Ks, d1, d2, d3, psiae, lam,
 					thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin);
+		}
 		} else {
 			Ric_ModifiedPicard(x, Qout, K1, K12, K23, K3, theta11, theta21,
 					theta31, infilt, pond, dt, Ks, d1, d2, d3, psiae, lam,
@@ -80,12 +81,12 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, 
 		}
 
 
-    F += infilt;
+    F += infilt * dt;
   //  f = K1*(1 + (x[0] - pond)/D1 );
    	theta1 =theta11;
    	theta2 = theta21;
    	theta3 = theta31;
-   	pond -= infilt;
+   	pond -= infilt*dt;
 
     //calculate average moisture for entire soil profile
     theta = (d1*theta1 + d2*theta2 + d3*theta3)/depth;
@@ -97,39 +98,39 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, 
 	{
 	case 1:
 		_GWupstreamBC->matrix[r + 1][c - 1] += K3*d3dxslope;;
-//		_ponding->matrix[r + 1][c - 1] += pond;
+		_ponding->matrix[r + 1][c - 1] += pond;
 		break;
 	case 2:
 		_GWupstreamBC->matrix[r + 1][c] += K3*d3dxslope;;
-//		_ponding->matrix[r + 1][c] += pond;
+		_ponding->matrix[r + 1][c] += pond;
 		break;
 	case 3:
 		_GWupstreamBC->matrix[r + 1][c + 1] += K3*d3dxslope;;
-//		_ponding->matrix[r + 1][c + 1] += pond;
+		_ponding->matrix[r + 1][c + 1] += pond;
 		break;
 	case 4:
 		_GWupstreamBC->matrix[r][c - 1] += K3*d3dxslope;;
-//		_ponding->matrix[r][c - 1] += pond;
+		_ponding->matrix[r][c - 1] += pond;
 		break;
 	case 5:
 		_dailyGwtrOutput.cells.push_back(cell(r, c, (K3*d3dxslope * _dx)));
-//		_dailyOvlndOutput.cells.push_back(cell(r, c, pond * _dx * _dx / dt));
+		_dailyOvlndOutput.cells.push_back(cell(r, c, pond * _dx * _dx / dt));
 		break; //if it is an outlet store the outflow m3s-1
 	case 6:
 		_GWupstreamBC->matrix[r][c + 1] += K3*d3dxslope;;
-//		_ponding->matrix[r][c + 1] += pond;
+		_ponding->matrix[r][c + 1] += pond;
 		break;
 	case 7:
 		_GWupstreamBC->matrix[r - 1][c - 1] += K3*d3dxslope;;
-//		_ponding->matrix[r - 1][c - 1] += pond;
+		_ponding->matrix[r - 1][c - 1] += pond;
 		break;
 	case 8:
 		_GWupstreamBC->matrix[r - 1][c] += K3*d3dxslope;;
-//		_ponding->matrix[r - 1][c] += pond;
+		_ponding->matrix[r - 1][c] += pond;
 		break;
 	case 9:
 		_GWupstreamBC->matrix[r - 1][c + 1] += K3*d3dxslope;;
-//		_ponding->matrix[r - 1][c + 1] += pond;
+		_ponding->matrix[r - 1][c + 1] += pond;
 		break;
 	default:
 		throw -1;
