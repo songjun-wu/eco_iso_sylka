@@ -19,7 +19,7 @@
 
 using namespace arma;
 
-void Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
+int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
 		double &theta11, double &theta21,double &theta31, double &infilt, double &pond,
 		const double &dt, const double &Ks, const double &d1, const double &d2,
 		const double &d3, const double &psiae, const double &lam, const double &thetas,
@@ -113,8 +113,10 @@ void Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, d
 			J(2,1) = dK23dpsi2*(1+(x[2]-x[1])/D3) - (K12/D3);
 			J(2,2) = -d3*invdt*(thetas-thetar)*dS3dpsi3 + dK23dpsi3*(1+ (x[2]-x[1])/D3) + (K23/D3) - d3dxslope*dK3dpsi3 - d3*L*dS3dpsi3;
 
-	        if(!solve(deltax, J, -Fun))
-	        	cout << "no solution";
+	        if(!solve(deltax, J, -Fun)){
+	        	cout << "Singular Jacobian found in Newton solver. Switching to Picard...\n";
+	        	return 1;
+	        }
 	        cout <<"x: " <<  x << endl;
 	        x += deltax;
 	        cout << deltax << endl;
@@ -132,10 +134,12 @@ void Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, d
 	       	k++;
 
 		}while(norm(deltax, 2) > 0.00001 && k < MAX_ITER);
-	if (k >= MAX_ITER)
-		cout << "WARNING: Max no iterations reached for Richards solution "
-				<< endl;
+	if (k >= MAX_ITER){
+		cout << "Newton Solver failed to converge. Switching to Picard...\n ";
+		return 1;
 
+	}
+ return 0;
 }
 
 

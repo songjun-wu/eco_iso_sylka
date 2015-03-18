@@ -7,13 +7,12 @@
 
 #include"Basin.h"
 
-int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
+int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 
 	int r, c, d;
 	float dt = ctrl.dt; //time step
 
 	//energy balance parameters
-
 
 	REAL8 ra; //soil aerodynamic resistance
 	REAL8 rs; //bare soil resistance (a function of soil moisture)
@@ -33,11 +32,10 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 	REAL8 accinf = 0;
 	REAL8 theta = 0;
 	REAL8 theta10cm = 0;
-	REAL8 theta2 = 0;//for second and third soil moisture
-	REAL8 theta3 = 0;//layers in case Richard's equation is chosen
+	REAL8 theta2 = 0; //for second and third soil moisture
+	REAL8 theta3 = 0; //layers in case Richard's equation is chosen
 	REAL8 ponding = 0;
 	REAL8 gw = 0; //gravitational water
-
 
 	//aerodynamic resistance parameters
 	REAL8 za; //height of wind speed measurements
@@ -52,118 +50,109 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 	REAL8 nr, le, sens, grndh, snowh, mltht;
 
 	UINT4 nsp;
-	REAL8 p;//fraction of species s
+	REAL8 p; //fraction of species s
 
 	//needed in the water routing routines
 	_dailyOvlndOutput.cells.clear();
 	_dailyGwtrOutput.cells.clear();
 	_GWupstreamBC->reset();
 
+	for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+		r = _vSortedGrid.cells[j].row;
+		c = _vSortedGrid.cells[j].col;
+		d = _vSortedGrid.cells[j].dir;
 
-	for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
-	{
-					r = _vSortedGrid.cells[j].row;
-					c = _vSortedGrid.cells[j].col;
-					d = _vSortedGrid.cells[j].dir;
+		wind = atm.getWindSpeed()->matrix[r][c];
 
+		theta = _soilmoist->matrix[r][c]; //average soil moisture at time t
+		ponding = _ponding->matrix[r][c]; //surface ponding at time t
+		gw = _GravityWater->matrix[r][c]; //gravity water at time t
 
-					wind = atm.getWindSpeed()->matrix[r][c];
+		nr = 0;
+		le = 0;
+		sens = 0;
+		grndh = 0;
+		snowh = 0;
+		mltht = 0;
+		Ts = _Temp_s->matrix[r][c];
+		Tsold = 0;
+		Tdold = 0;
 
-					theta = _soilmoist->matrix[r][c]; //average soil moisture at time t
-					ponding = _ponding->matrix[r][c]; //surface ponding at time t
-					gw = _GravityWater->matrix[r][c]; //gravity water at time t
+		if (ctrl.toggle_soil_water_profile == 0) {
+			Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
+			_soilmoist10cm->matrix[r][c] = _soilmoist->matrix[r][c];
+			theta10cm = _soilmoist10cm->matrix[r][c];
+		} else if (ctrl.toggle_soil_water_profile == 1) {
+			Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
+			CalcSoilMoistureProfile(atm, ctrl, theta, r, c);
+			theta10cm = _soilmoist10cm->matrix[r][c];
+		} else if ((ctrl.toggle_soil_water_profile == 2) || (ctrl.toggle_soil_water_profile == 3)) {
+			theta10cm = _soilmoist10cm->matrix[r][c];
+			theta2 = _soilmoist2->matrix[r][c];
+			theta3 = _soilmoist3->matrix[r][c];
+			Infilt_Richards(ctrl, infcap, accinf, theta, theta10cm, theta2,
+					theta3, ponding, gw, dt, r, c, d); //updates soil moisture
+		}
 
-					nr = 0;
-					le = 0;
-					sens = 0;
-					grndh = 0;
-					snowh = 0;
-					mltht = 0;
-					Ts = _Temp_s->matrix[r][c];
-					Tsold = 0;
-					Tdold = 0;
+		_ponding->matrix[r][c] = ponding;
+		_GravityWater->matrix[r][c] = gw;
 
+		/*					//this calculates the soil moisture profile to evaluate soil moisture of the top 10 cms of the soil
+		 if(ctrl.toggle_soil_water_profile == 1)
+		 CalcSoilMoistureProfile(atm, ctrl, theta, r,c);
+		 else
+		 _soilmoist10cm->matrix[r][c] = _soilmoist->matrix[r][c]; //if no calculation of the soil moisture profile, soil moist at 10 equals average soil moisture
 
-					if(ctrl.toggle_soil_water_profile == 1){
-						Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
-						CalcSoilMoistureProfile(atm, ctrl, theta, r,c);
-						theta10cm = _soilmoist10cm->matrix[r][c];
-					}
-					if(ctrl.toggle_soil_water_profile == 2){
-						theta10cm = _soilmoist10cm->matrix[r][c];
-						theta2 = _soilmoist2->matrix[r][c];
-						theta3 = _soilmoist3->matrix[r][c];
-						Infilt_Richards(infcap, accinf, theta, theta10cm,  theta2, theta3, ponding, gw, dt, r, c, d); //updates soil moisture
-					}
-					else{
-						Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
-						_soilmoist10cm->matrix[r][c] = _soilmoist->matrix[r][c];
-						theta10cm = _soilmoist10cm->matrix[r][c];
-					}
+		 theta10cm = _soilmoist10cm->matrix[r][c];*/
 
+		nsp = fForest->getNumSpecies();
+		treeheight = 0;
 
-					_ponding->matrix[r][c] = ponding;
-					_GravityWater->matrix[r][c] = gw;
+		for (UINT4 s = 0; s < nsp; s++) {
+			p = fForest->getPropSpecies(s, r, c);
+			if (p == 0)
+				continue; //if no species j present, continue
 
-/*					//this calculates the soil moisture profile to evaluate soil moisture of the top 10 cms of the soil
-					if(ctrl.toggle_soil_water_profile == 1)
-						CalcSoilMoistureProfile(atm, ctrl, theta, r,c);
-					else
-						_soilmoist10cm->matrix[r][c] = _soilmoist->matrix[r][c]; //if no calculation of the soil moisture profile, soil moist at 10 equals average soil moisture
+			if (s == nsp - 1) { //for bare soil, water reaching the ground is pp times its proportion of the cell
+				LAI = 0;
+				emis_can = 0;
+				Temp_can = 0;
+				za = _random_roughness->matrix[r][c] + 2;
+				z0u = max<REAL8>(0.000005,
+						_random_roughness->matrix[r][c] * 0.1);
+				zdu = _random_roughness->matrix[r][c] * 0.7;
+				z0o = 0; //no overstory
+				zdo = 0;
+			} else {
+				treeheight = max<REAL8>(0.01, fForest->getTreeHeight(s, r, c)); //equations only apply to 40% of the tree as per Campbell and Norman 1998
+				LAI = fForest->getLAISpecies(s, r, c);
+				BeersK = fForest->getBeersCoeff(s, r, c);
+				Temp_can = fForest->getCanopyTemp(s, r, c);
+				emis_can = fForest->getCanopyEmissivity(s, r, c);
+				za = treeheight + 2;
+				z0o = powl(treeheight, 1.19) * 0.057544; //treeheight > 1 ? 0.1 : treeheight * 0.1;
+				zdo = powl(treeheight, 0.98) * 0.707946; //treeheight > 1 ? 0.1 : treeheight * 0.7;
+				zdu = min<double>(_random_roughness->matrix[r][c], zdo * 0.1); //min<double>(treeheight * 0.1, zdo * 0.1);
+				z0u = 0.1 * zdu / 0.7;
 
-					theta10cm = _soilmoist10cm->matrix[r][c];*/
+			}
 
+			ra = CalcAerodynResist(wind, za, z0u, zdu, z0o, zdo, treeheight,
+					LAI, Ts, atm.getTemperature()->matrix[r][c], ctrl.toggle_ra,
+					true);
+			rs = CalcSoilResist(theta10cm, r, c, ctrl.toggle_rs);
+			//rs =  1/max<double>( 0.0000000000001, ExfiltrationCapacity(theta, dt, r, c) );
 
-					nsp = fForest->getNumSpecies();
-					treeheight = 0;
+			SolveSurfaceEnergyBalance(atm, ctrl, ra, rs, 0.0, BeersK, LAI,
+					emis_can, Temp_can, nr, le, sens, grndh, snowh, mltht,
+					Tsold, evap, ponding, theta, Ts, Tdold, p, r, c);
 
-		for(UINT4 s = 0; s < nsp ; s++)
-		{
-				p = fForest->getPropSpecies(s, r, c);
-				if(p == 0)
-					continue;//if no species j present, continue
+			_soilmoist->matrix[r][c] = theta; //soil moisture at t=t+1
+			_soilmoist10cm->matrix[r][c] = theta10cm;
+			_soilmoist2->matrix[r][c] = theta2;
+			_soilmoist3->matrix[r][c] = theta3;
 
-				if(s == nsp -1){ //for bare soil, water reaching the ground is pp times its proportion of the cell
-					LAI = 0;
-					emis_can = 0;
-					Temp_can = 0;
-					za = _random_roughness->matrix[r][c] + 2;
-					z0u = max<REAL8>(0.000005,_random_roughness->matrix[r][c] * 0.1);
-					zdu = _random_roughness->matrix[r][c] * 0.7;
-					z0o = 0; //no overstory
-					zdo = 0;
-				}
-				else
-				{
-					treeheight = max<REAL8>(0.01,fForest->getTreeHeight(s, r, c)); //equations only apply to 40% of the tree as per Campbell and Norman 1998
-					LAI = fForest->getLAISpecies(s, r, c);
-					BeersK = fForest->getBeersCoeff(s, r, c);
-					Temp_can = fForest->getCanopyTemp(s, r, c);
-					emis_can = fForest->getCanopyEmissivity(s, r, c);
-					za = treeheight + 2;
-					z0o = powl(treeheight,1.19)*0.057544;     //treeheight > 1 ? 0.1 : treeheight * 0.1;
-					zdo = powl(treeheight,0.98)*0.707946; //treeheight > 1 ? 0.1 : treeheight * 0.7;
-					zdu = min<double>(_random_roughness->matrix[r][c], zdo * 0.1);//min<double>(treeheight * 0.1, zdo * 0.1);
-					z0u = 0.1*zdu/0.7;
-
-				}
-
-
-					ra = CalcAerodynResist(wind, za, z0u, zdu, z0o, zdo, treeheight, LAI, Ts, atm.getTemperature()->matrix[r][c], ctrl.toggle_ra, true);
-					rs = CalcSoilResist(theta10cm, r, c, ctrl.toggle_rs);
-					//rs =  1/max<double>( 0.0000000000001, ExfiltrationCapacity(theta, dt, r, c) );
-
-					SolveSurfaceEnergyBalance(atm, ctrl, ra, rs, 0.0, BeersK, LAI, emis_can, Temp_can, nr, le, sens, grndh, snowh, mltht, Tsold, evap, ponding, theta, Ts, Tdold, p, r, c);
-
-					_soilmoist->matrix[r][c] = theta; //soil moisture at t=t+1
-					_soilmoist10cm->matrix[r][c] = theta10cm;
-					_soilmoist2->matrix[r][c] = theta2;
-					_soilmoist3->matrix[r][c] = theta3;
-
-					_Evaporation->matrix[r][c] += evap; //evaporation at t=t+1
-
-
-
+			_Evaporation->matrix[r][c] += evap; //evaporation at t=t+1
 
 		}
 
@@ -179,8 +168,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl){
 
 		_ponding->matrix[r][c] += SnowOutput(atm, ctrl, mltht, r, c);
 
-	}//end for
-
+	} //end for
 
 	return EXIT_SUCCESS;
 }
