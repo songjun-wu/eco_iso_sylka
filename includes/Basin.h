@@ -45,6 +45,8 @@ class Basin {
 	grid *_psi_ae; // soil air entry pressure in m
 	grid *_BClambda; //Brooks and Corey lambda parameter
 	grid *_soildepth; //soil depth m
+	grid *_depth_layer1; //depth of layer 1. 0.1 m by default
+	grid *_depth_layer2; //depth of layer 2. Depth of layer 3 is calculated form depth
 	grid *_fieldcap; //field capacity volumetric
 	grid *_paramWc; //empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
 	grid *_paramWp; ////empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
@@ -73,7 +75,10 @@ class Basin {
 	grid *_snow; //snow water equivalent in m
 	grid *_ponding; // water ponding on the soil surface in m
 	grid *_infilt_cap; //infilt capacity m s-1
-	grid *_soilmoist; // average volumetric soil moisture over entire soil profile
+	grid *_soilmoist1; // average volumetric soil moisture over layer 1 or over entire soil profile
+	grid *_soilmoist2; //average volumetric soil moisture of the second soil layer
+	grid *_soilmoist3; //average volumetric soil moisture of the bottom soil layer
+	grid *_soilmoist_av; //average volumetric soil moisture of the entire soil profile
 	grid *_SoilWaterDepth;//soil moisture depth (m) for entire soil profile
 	grid *_SoilSatDeficit; //soil saturation deficit (1 full deficit - 0 saturation)
 	grid *_psi; //soil water potential in m
@@ -102,12 +107,7 @@ class Basin {
     /*This section are declaration of grids whose creation depend on the options
      * given in teh control file
      */
-	grid *_soilmoist10cm; //average volumetric soil moisture of the first 10 cm of the soil
-	grid *_EquivDepth2Sat; //Equivalent depth to saturation as calculated from average soil moisture and hydrstatic equilibrium (m)
 
-
-	grid *_soilmoist2; //average volumetric soil moisture of the second soil layer
-	grid *_soilmoist3; //average volumetric soil moisture of the bottom soil layer
 	grid *_bedrock_leak;
 
 
@@ -138,7 +138,7 @@ class Basin {
 		//Hydrologic processes
 
 		void Infilt_GreenAmpt(double &f, double &F, double &theta, double &pond, double &percolat, double dt, int r, int c);
-		void Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c, int flowdir);
+		void Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c, int flowdir);
 		int SolveSurfaceEnergyBalance(Atmosphere &atm,
 										Control &ctrl,
 										REAL8 ra,
@@ -191,7 +191,7 @@ class Basin {
 			{
 				r = _vSortedGrid.cells[j].row;
 				c = _vSortedGrid.cells[j].col;
-				S = (_soilmoist->matrix[r][c] - _theta_r->matrix[r][c])/(_porosity->matrix[r][c] - _theta_r->matrix[r][c]);
+				S = (_soilmoist1->matrix[r][c] - _theta_r->matrix[r][c])/(_porosity->matrix[r][c] - _theta_r->matrix[r][c]);
 
 				_psi->matrix[r][c] =
 				fabs(_psi_ae->matrix[r][c]) / pow(S, _BClambda->matrix[r][c]);
@@ -280,28 +280,65 @@ public:
 		return _ponding;
 	}
 
-	grid *getSoilMoist() const {
-			return _soilmoist;
+	grid *getSoilMoist1() const {
+			return _soilmoist1;
+	}
+	grid *getSoilMoist2() const {
+			return _soilmoist2;
+	}
+	grid *getSoilMoist3() const {
+			return _soilmoist3;
 	}
 
-	grid *getSoilMoist10cm() const {
-			return _soilmoist10cm;
+	grid *getSoilMoist_av() const {
+
+		if (!_depth_layer1) //if this layer is not created we are using the lumped soil option
+			return _soilmoist1;
+
+		double depth;
+		double d1, d2, d3;
+		int r, c;
+		for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+			r = _vSortedGrid.cells[j].row;
+			c = _vSortedGrid.cells[j].col;
+			depth = _soildepth->matrix[r][c];
+			d1 = _depth_layer1->matrix[r][c];
+			d2 = _depth_layer1->matrix[r][c];
+			d3 = depth - d1 - d2;
+			_soilmoist_av->matrix[r][c] = (_soilmoist1->matrix[r][c] * d1
+					+ _soilmoist2->matrix[r][c] * d2
+					+ _soilmoist3->matrix[r][c] * d3) / depth;
+		}
+
+		return _soilmoist_av;
 	}
 
-	grid *getEquivDepth2Saturation() const {
-				return _EquivDepth2Sat;
-	}
+
 
 	grid *getSoilWaterDepth() const {
-
 		int r, c;
-			for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
-			{
-							r = _vSortedGrid.cells[j].row;
-							c = _vSortedGrid.cells[j].col;
-				_SoilWaterDepth->matrix[r][c] =
-					_soilmoist->matrix[r][c] * _soildepth->matrix[r][c];
+		if (!_depth_layer1) {
+			for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+				r = _vSortedGrid.cells[j].row;
+				c = _vSortedGrid.cells[j].col;
+				_SoilWaterDepth->matrix[r][c] = _soilmoist1->matrix[r][c]
+						* _soildepth->matrix[r][c];
 			}
+		} else {
+			double depth;
+			double d1, d2, d3;
+			for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+				r = _vSortedGrid.cells[j].row;
+				c = _vSortedGrid.cells[j].col;
+				depth = _soildepth->matrix[r][c];
+				d1 = _depth_layer1->matrix[r][c];
+				d2 = _depth_layer1->matrix[r][c];
+				d3 = depth - d1 - d2;
+				_SoilWaterDepth->matrix[r][c] = (_soilmoist1->matrix[r][c] * d1
+						+ _soilmoist2->matrix[r][c] * d2
+						+ _soilmoist3->matrix[r][c] * d3);
+			}
+		}
 
 		return _SoilWaterDepth;
 	}
@@ -312,7 +349,7 @@ public:
 		for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
 			r = _vSortedGrid.cells[j].row;
 			c = _vSortedGrid.cells[j].col;
-			_SoilSatDeficit->matrix[r][c] = 1 - ( (_soilmoist->matrix[r][c] - _theta_r->matrix[r][c]) /
+			_SoilSatDeficit->matrix[r][c] = 1 - ( (_soilmoist1->matrix[r][c] - _theta_r->matrix[r][c]) /
 					(_porosity->matrix[r][c] - _theta_r->matrix[r][c]) );
 		}
 
@@ -320,7 +357,9 @@ public:
 
 	}
 
-	grid *getSoilWaterPotential() const {
+	grid *getSoilWaterPotential()  {
+		if(!_depth_layer1) //if we are using the lumped soil hydrology, update the soil water potential
+			UpdateSoilWaterPotential();
 
 		return _psi;
 		}

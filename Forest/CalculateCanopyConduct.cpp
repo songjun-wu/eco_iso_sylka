@@ -39,7 +39,7 @@ int Forest::CalculateCanopyConduct(const Basin &bas, const Atmosphere &atm, cons
 			    	vpd = es - ea;
 
 			    	f_theta_coeff = _species[j].gs_theta_coeff;
-			    	theta = bas.getSoilMoist()->matrix[r][c]; //TODO: include here total soil moisture
+			    	theta = bas.getSoilMoist2()->matrix[r][c]; //TODO: include here total soil moisture
 			    	fc = bas.getFieldCapacity()->matrix[r][c];
 			    	wp = _species[j].WiltingPoint;
 

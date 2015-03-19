@@ -107,7 +107,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 					z0o = powl(treeheight,1.19)*0.057544;//powl( 10, -1.24+1.19*log10l(treeheight) );     //treeheight > 1 ? 0.1 : treeheight * 0.1;
 					zdo = powl(treeheight,0.98)*0.707946;//powl( 10, 0.98*log10l(treeheight)-0.15); //treeheight > 1 ? 0.1 : treeheight * 0.7;
 
-					theta = _soilmoist->matrix[r][c]; //soil moisture at time t
+					theta = _soilmoist1->matrix[r][c]; //soil moisture at time t
 
 					ra = CalcAerodynResist(wind, za, 0, 0, z0o, zdo, treeheight, fForest->getLAISpecies(s, r, c), getCanopyTemp(s)->matrix[r][c], atm.getTemperature()->matrix[r][c], ctrl.toggle_ra, false);
 					gc = fForest->getCanopyConductance(s, r, c);
@@ -151,7 +151,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 					theta -= transp * p * dt / soildepth;
 					evap_f += evap * p; //evaporation at t=t+1
 
-					_soilmoist->matrix[r][c] = theta; //soil moisture at t=t+1
+					_soilmoist1->matrix[r][c] = theta; //soil moisture at t=t+1
 
 				}
 

@@ -25,7 +25,7 @@ inline void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12,
 		const double &thetar, const double &theta1,	const double &theta2, const double &theta3,
 		const double &d3dxslope, const double &L, const double &Qin);
 
-void Basin::Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c, int flowdir) //time step
+void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c, int flowdir) //time step
 {
 
 
@@ -40,9 +40,9 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, 
 
 	//depth of soil layers
 	double depth = _soildepth->matrix[r][c];
-	double d1 = 0.1;
-	double d2 = (depth - 0.1)/2;
-	double d3 = d2;
+	double d1 = _depth_layer1->matrix[r][c];
+	double d2 = _depth_layer1->matrix[r][c];
+	double d3 = depth - d1 - d2;
 
 
 	double d3dxslope = d3*sin(atan(_slope->matrix[r][c]))/_dx;
@@ -80,7 +80,7 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, 
 					thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin);
 		}
 
-
+   _psi->matrix[r][c] = x[0]; //Hydraulic potential of the topmost layer
     F += infilt * dt;
   //  f = K1*(1 + (x[0] - pond)/D1 );
    	theta1 =theta11;
@@ -88,8 +88,7 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, 
    	theta3 = theta31;
    	pond -= infilt*dt;
 
-    //calculate average moisture for entire soil profile
-    theta = (d1*theta1 + d2*theta2 + d3*theta3)/depth;
+
     double endstor = theta1*d1 + theta2*d2 + theta3*d3;
 
     double mberr =  (endstor-initstor - infilt*dt + - Qin*dt +  K3*d3dxslope*dt)*100/(endstor + infilt*dt + Qin*dt);

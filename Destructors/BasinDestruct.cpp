@@ -59,12 +59,16 @@ Basin::~Basin(){
 		delete _theta_r;
 	if(_infilt_cap)
 		delete _infilt_cap;
-	if(_soilmoist)
-		delete _soilmoist;
+	if(_soilmoist1)
+		delete _soilmoist1;
 	if(_AccumInfilt)
 		delete _AccumInfilt;
 	if(_soildepth)
 		delete _soildepth;
+	if(_depth_layer1)
+		delete _depth_layer1;
+	if(_depth_layer2)
+		delete _depth_layer2;
 	if(_fieldcap)
 		delete _fieldcap;
 	if(_paramWc)
@@ -99,14 +103,12 @@ Basin::~Basin(){
 		delete _channelmask;
 	if(_chGWparam)
 		delete _chGWparam;
-	if(_soilmoist10cm)
-		delete _soilmoist10cm;
+	if(_soilmoist_av)
+		delete _soilmoist_av;
 	if(_soilmoist2)
 		delete _soilmoist2;
 	if(_soilmoist3)
 		delete _soilmoist3;
-	if(_EquivDepth2Sat)
-		delete _EquivDepth2Sat;
 	if(_bedrock_leak)
 		delete _bedrock_leak;
 
