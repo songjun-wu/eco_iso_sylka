@@ -86,11 +86,11 @@ void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double
 
 		if (!solve(deltax, J, Fun))
 			cout << "no solution";
-		cout << "x: " << x << endl;
+//		cout << "x: " << x << endl;
 		x += deltax;
-		cout << deltax << endl;
-		cout << -Fun << endl;
-		cout << J << endl;
+//		cout << deltax << endl;
+//		cout << -Fun << endl;
+//		cout << J << endl;
 
 		S1 = x[0] < psiae ? 1 : powl(psiae / x[0], 1 / lam);
 		S2 = x[1] < psiae ? 1 : powl(psiae / x[1], 1 / lam);
@@ -106,6 +106,13 @@ void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double
 	if (k >= MAX_ITER)
 		cout << "WARNING: Max no iterations reached for Richards solution "
 				<< endl;
+	//update qout with last estimte of tension
+	K1 = Ks * powl(S1,p);
+	K3 = Ks * powl(S3,p);
+
+	infilt = std::min<double> (K1*(1 + (x[0] + pond)/D1 ), pond*invdt );
+
+	Qout = K3*d3dxslope;
 
 }
 

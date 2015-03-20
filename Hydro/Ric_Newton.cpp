@@ -1,12 +1,4 @@
 /*
- * Ric_Newton.cpp
- *
- *  Created on: Mar 16, 2015
- *      Author: marco
- */
-
-
-/*
  * Ric_ModifiedPicard.cpp
  *
  *  Created on: Mar 16, 2015
@@ -132,12 +124,18 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
 
 	       	k++;
 
-		}while(norm(deltax, 2) > 0.00001 && k < MAX_ITER);
+		}while(norm(deltax, 2) > 0.000001 && k < MAX_ITER);
 	if (k >= MAX_ITER){
 		cout << "Newton Solver failed to converge. Switching to Picard...\n ";
 		return 1;
-
 	}
+	//update qout with last estimte of tension
+	K1 = Ks * powl(S1,p);
+	K3 = Ks * powl(S3,p);
+
+	infilt = std::min<double> (K1*(1 + (x[0] + pond)/D1 ), pond*invdt );
+
+	Qout = K3*d3dxslope;
  return 0;
 }
 

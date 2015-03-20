@@ -41,7 +41,7 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1
 	//depth of soil layers
 	double depth = _soildepth->matrix[r][c];
 	double d1 = _depth_layer1->matrix[r][c];
-	double d2 = _depth_layer1->matrix[r][c];
+	double d2 = _depth_layer2->matrix[r][c];
 	double d3 = depth - d1 - d2;
 
 
@@ -91,8 +91,8 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1
 
     double endstor = theta1*d1 + theta2*d2 + theta3*d3;
 
-    double mberr =  (endstor-initstor - infilt*dt + - Qin*dt +  K3*d3dxslope*dt)*100/(endstor + infilt*dt + Qin*dt);
-    cout << mberr;
+    double mberr =  (endstor-initstor - infilt*dt - Qin*dt +  K3*d3dxslope*dt)*100/(endstor + infilt*dt + Qin*dt);
+    cout << mberr << " ";
    switch (flowdir) //add the previously calculated *discharge* (not elevation) to the downstream cell
 	{
 	case 1:
@@ -112,7 +112,7 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1
 		_ponding->matrix[r][c - 1] += pond;
 		break;
 	case 5:
-		_dailyGwtrOutput.cells.push_back(cell(r, c, (K3*d3dxslope * _dx)));
+		_dailyGwtrOutput.cells.push_back(cell(r, c, (K3*d3dxslope * _dx * _dx)));
 		_dailyOvlndOutput.cells.push_back(cell(r, c, pond * _dx * _dx / dt));
 		break; //if it is an outlet store the outflow m3s-1
 	case 6:

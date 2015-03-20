@@ -7,7 +7,7 @@
 
 #include "Forest.h"
 
-int Forest::SetStateVarsMaps(Control &ctrl){
+void Forest::SetStateVarsMaps(Control &ctrl){
 
 	UINT4 r,c;
 	stringstream fn;

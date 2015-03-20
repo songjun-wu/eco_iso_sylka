@@ -80,8 +80,8 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 
 		if (soil_hydr_opt == 0) {
 			Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
-		} else if ((soil_hydr_opt == 2) || (soil_hydr_opt == 3)) {
-			theta = _soilmoist1->matrix[r][c];
+		} else if (soil_hydr_opt >1) {
+			//theta = _soilmoist1->matrix[r][c];
 			theta2 = _soilmoist2->matrix[r][c];
 			theta3 = _soilmoist3->matrix[r][c];
 			Infilt_Richards(ctrl, infcap, accinf, theta, theta2,

@@ -241,7 +241,7 @@ void Basin::CheckMaps(Control &ctrl) {
 				throw e;
 			}
 
-			if (ctrl.toggle_soil_water_profile == 2) {
+			if (ctrl.toggle_soil_water_profile > 1) {
 				if (_soilmoist2->matrix[r][c] == _soilmoist2->nodata) {
 					string e(
 							"Initial soil moisture map in layer 2 contains no data values inside the valid domain...\n");

@@ -60,16 +60,20 @@ Basin::Basin(Control &ctrl)
 		//set to NULL all pointers that may never be allocated to avoid deletion attempt in the destructor
 		_depth_layer1 = NULL;
 		_depth_layer2 = NULL;
+		_rootfrac1 = NULL;
+		_rootfrac2 = NULL;
 		_soilmoist_av = NULL;
 		_soilmoist2 = NULL;
 		_soilmoist3 = NULL;
 		_bedrock_leak = NULL;
 
 
-		if(ctrl.toggle_soil_water_profile==2)
+		if(ctrl.toggle_soil_water_profile>1)
 		{
 			_depth_layer1 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer1, ctrl.MapType);
 			_depth_layer2 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer2, ctrl.MapType);
+			_rootfrac1 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay1, ctrl.MapType);
+			_rootfrac2 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay2, ctrl.MapType);
 			_soilmoist2 = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist2, ctrl.MapType);  //soil moisture 2nd layer volumetric
 			_soilmoist3 = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist3, ctrl.MapType);  //soil moisture 3rd layer volumetric
 			_bedrock_leak = new grid(ctrl.path_BasinFolder + ctrl.fn_bedrock_leak, ctrl.MapType);  //soil moisture 3rd layer volumetric

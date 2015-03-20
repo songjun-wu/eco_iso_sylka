@@ -69,6 +69,10 @@ Basin::~Basin(){
 		delete _depth_layer1;
 	if(_depth_layer2)
 		delete _depth_layer2;
+	if(_rootfrac1)
+		delete _rootfrac1;
+	if(_rootfrac2)
+		delete _rootfrac2;
 	if(_fieldcap)
 		delete _fieldcap;
 	if(_paramWc)

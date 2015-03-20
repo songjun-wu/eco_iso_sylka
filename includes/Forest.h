@@ -36,7 +36,7 @@ class Forest {
 			void checkForestDatabase();
 
 			int SetStateVarsTabs(Control &ctrl);
-			int SetStateVarsMaps(Control &ctrl);
+			void SetStateVarsMaps(Control &ctrl);
 			int SetSpeciesParameters(Control &ctrl);
 
 			/*State variables*/
@@ -59,7 +59,7 @@ public:
 	Forest(Control & ctrl);
     ~Forest();
 
-   int CalculateCanopyConduct(const Basin &bas, const Atmosphere &atm, const Control &ctrl, UINT4 j, UINT4 r, UINT4 c);
+   int CalculateCanopyConduct(const Basin &bas, const Atmosphere &atm, const Control &ctrl, const double &theta,const double &fc, UINT4 j, UINT4 r, UINT4 c);
    UINT4 SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 fc, REAL8 soildepth, REAL8 ra, REAL8 gc, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, UINT4 s, UINT4 r, UINT4 c);
    int CanopyInterception(Atmosphere &atm, Control &ctrl, REAL8 &DelCanStor, REAL8 &D, UINT4 s, UINT4 r, UINT4 c);
    int GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl);
