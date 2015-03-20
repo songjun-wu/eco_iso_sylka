@@ -124,7 +124,7 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
 
 	       	k++;
 
-		}while(norm(deltax, 2) > 0.000001 && k < MAX_ITER);
+		}while(norm(deltax, 2) > 0.00000001 && k < MAX_ITER);
 	if (k >= MAX_ITER){
 		cout << "Newton Solver failed to converge. Switching to Picard...\n ";
 		return 1;

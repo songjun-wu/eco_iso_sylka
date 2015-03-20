@@ -80,7 +80,7 @@ void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double
 		J(1,1) = d2*(thetas-thetar)*dS2dpsi2 + K12/D2 - K23/D3;
 		J(1,2) = K23/D3;
 		J(2,0) = 0;
-		J(2,1) = K23/D3;
+		J(2,1) = -K23/D3;
 		J(2,2) = d3*(thetas-thetar)*dS3dpsi3 + K23/D3;
 
 

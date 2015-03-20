@@ -119,6 +119,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 
 				rootdepth = _soildepth->matrix[r][c];
 				theta = _soilmoist1->matrix[r][c]; //soil moisture at time t
+				theta_available = theta;
 				fForest->CalculateCanopyConduct(*this, atm, ctrl, theta, fc, s,
 						r, c);
 				if (ctrl.toggle_soil_water_profile > 1) {
