@@ -73,24 +73,24 @@ void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double
 		if(infilt < K1*(1 + (x[0] + pond)/D1 ) || infilt ==0)
 			K1 = 0;
 
-		J(0,0) = d1*invdt*(thetas-thetar)*dS1dpsi1 + K1/D1 - K12/D2;
+		J(0,0) = d1*invdt*(thetas-thetar)*dS1dpsi1 - K1/D1 - K12/D2;
 		J(0,1) = K12/D2;
 		J(0,2) = 0;
-		J(1,0) = -K12/D2;
-		J(1,1) = d2*(thetas-thetar)*dS2dpsi2 + K12/D2 - K23/D3;
+		J(1,0) = K12/D2;
+		J(1,1) = d2*(thetas-thetar)*dS2dpsi2 - K12/D2 - K23/D3;
 		J(1,2) = K23/D3;
 		J(2,0) = 0;
-		J(2,1) = -K23/D3;
-		J(2,2) = d3*(thetas-thetar)*dS3dpsi3 + K23/D3;
+		J(2,1) = K23/D3;
+		J(2,2) = d3*(thetas-thetar)*dS3dpsi3 - K23/D3;
 
 
 		if (!solve(deltax, J, Fun))
 			cout << "no solution";
-//		cout << "x: " << x << endl;
+		cout << "x: " << x << endl;
 		x += deltax;
-//		cout << deltax << endl;
-//		cout << -Fun << endl;
-//		cout << J << endl;
+		cout << deltax << endl;
+		cout << -Fun << endl;
+		cout << J << endl;
 
 		S1 = x[0] < psiae ? 1 : powl(psiae / x[0], 1 / lam);
 		S2 = x[1] < psiae ? 1 : powl(psiae / x[1], 1 / lam);
@@ -102,10 +102,14 @@ void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double
 
 		k++;
 
-	} while (norm(deltax, 2) > 0.00001 && k < MAX_ITER);
+	} while (norm(deltax, 2) > 0.0000001 && k < MAX_ITER);
 	if (k >= MAX_ITER)
 		cout << "WARNING: Max no iterations reached for Richards solution "
 				<< endl;
+	cout << "x: " << x << endl;
+	cout << deltax << endl;
+	cout << -Fun << endl;
+	cout << J << endl;
 	//update qout with last estimte of tension
 	K1 = Ks * powl(S1,p);
 	K3 = Ks * powl(S3,p);
