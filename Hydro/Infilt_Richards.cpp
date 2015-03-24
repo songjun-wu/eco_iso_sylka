@@ -12,20 +12,20 @@
 using namespace arma;
 
 inline int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
-		double &theta11, double &theta21,double &theta31, double &infilt, double &pond,
+		double &theta11, double &theta21,double &theta31, double &infilt, double &pond, double &leak,
 		const double &dt, const double &Ks, const double &d1, const double &d2,
 		const double &d3, const double &psiae, const double &lam, const double &thetas,
 		const double &thetar, const double &theta1,	const double &theta2, const double &theta3,
 		const double &d3dxslope, const double &L, const double &Qin);
 
 inline void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
-		double &theta11, double &theta21,double &theta31, double &infilt, double &pond,
+		double &theta11, double &theta21,double &theta31, double &infilt, double &pond, double &leak,
 		const double &dt, const double &Ks, const double &d1, const double &d2,
 		const double &d3, const double &psiae, const double &lam, const double &thetas,
 		const double &thetar, const double &theta1,	const double &theta2, const double &theta3,
 		const double &d3dxslope, const double &L, const double &Qin);
 
-void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c, int flowdir) //time step
+void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1, double &theta2, double &theta3, double &leak, double &pond, double &percolat, double dt, int r, int c, int flowdir) //time step
 {
 
 
@@ -64,29 +64,31 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1
 
 	if (ctrl.toggle_soil_water_profile == 2){
 		if (Ric_Newton(x, Qout, K1, K12, K23, K3, theta11, theta21, theta31,
-				infilt, pond, dt, Ks, d1, d2, d3, psiae, lam, thetas, thetar,
+				infilt, pond, leak, dt, Ks, d1, d2, d3, psiae, lam, thetas, thetar,
 				theta1, theta2, theta3, d3dxslope, L, Qin)) {
 			//If newton iteration fails, restore original initial guess for moisture and try Picard
 			double theta11 = theta1;
 			double theta21 = theta2;
 			double theta31 = theta3;
 			Ric_ModifiedPicard(x, Qout, K1, K12, K23, K3, theta11, theta21,
-					theta31, infilt, pond, dt, Ks, d1, d2, d3, psiae, lam,
+					theta31, infilt, pond, leak, dt, Ks, d1, d2, d3, psiae, lam,
 					thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin);
 		}
 		} else {
 			Ric_ModifiedPicard(x, Qout, K1, K12, K23, K3, theta11, theta21,
-					theta31, infilt, pond, dt, Ks, d1, d2, d3, psiae, lam,
+					theta31, infilt, pond, leak, dt, Ks, d1, d2, d3, psiae, lam,
 					thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin);
 		}
 
    _psi->matrix[r][c] = x[0]; //Hydraulic potential of the topmost layer
+
     F += infilt * dt;
   //  f = K1*(1 + (x[0] - pond)/D1 );
    	theta1 =theta11;
    	theta2 = theta21;
    	theta3 = theta31;
    	pond -= infilt*dt;
+
 
 
     double endstor = theta1*d1 + theta2*d2 + theta3*d3;

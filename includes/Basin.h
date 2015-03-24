@@ -82,6 +82,7 @@ class Basin {
 	grid *_psi; //soil water potential in m
 	grid *_AccumInfilt; //Accumulated infiltration m
 	grid *_Evaporation; //actual evaporation and transpiration in m s-1
+	grid *_BedrockLeakageFlux; //water flux down the bottom of the soil in m s-1
 	grid *_CanopyStorage; //current water stored in the canopy (m)
 	grid *_GravityWater; //current water stored in the soil beyond field capacity (m) (percolation or water traveling in the vadose zone)
 	grid *_GrndWaterOld; //water stored in the gw system at the beginning of the time step (m)
@@ -141,7 +142,7 @@ class Basin {
 	void Infilt_GreenAmpt(double &f, double &F, double &theta, double &pond,
 			double &percolat, double dt, int r, int c);
 	void Infilt_Richards(Control &ctrl, double &f, double &F, double &theta1,
-			double &theta2, double &theta3, double &pond, double &percolat,
+			double &theta2, double &theta3, double &leak, double &pond, double &percolat,
 			double dt, int r, int c, int flowdir);
 	int SolveSurfaceEnergyBalance(Atmosphere &atm, Control &ctrl, REAL8 ra,
 			REAL8 rs, REAL8 rc, REAL8 Kbeers, REAL8 lai, REAL8 emis_can,
@@ -359,6 +360,9 @@ public:
 	}
 	grid *getEvaporation() const {
 		return _Evaporation;
+	}
+	grid *getBedrockLeakage() const{
+		return _BedrockLeakageFlux;
 	}
 
 	grid *getParamWc() const {

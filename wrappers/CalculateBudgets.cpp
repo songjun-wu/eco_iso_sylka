@@ -11,6 +11,7 @@ int CalculateBudgets(){
 
 			oBudget->TotalPrecipitation(oAtmosphere->getPrecipitation(), oAtmosphere);
 			oBudget->TotalEvaporation(oBasin->getEvaporation(), oBasin);
+			oBudget->TotalBedrockLeakage(oBasin->getBedrockLeakage(), oBasin);
 			oBudget->TotalOvlndFlow(oBasin->getDailyOvlndOutput(), oBasin);
 			oBudget->TotalGrndFlow(oBasin->getDailyGwtrOutput(), oBasin);
 			oBudget->TotalStorage(	oBasin->getCanopyStorage(),

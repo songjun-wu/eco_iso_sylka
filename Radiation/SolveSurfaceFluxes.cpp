@@ -36,6 +36,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 	REAL8 theta3 = 0; //layers in case Richard's equation is chosen
 	REAL8 ponding = 0;
 	REAL8 gw = 0; //gravitational water
+	REAL8 leak = 0; //bedrock leakage flux;
 
 	//aerodynamic resistance parameters
 	REAL8 za; //height of wind speed measurements
@@ -67,6 +68,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 		theta = _soilmoist1->matrix[r][c]; //average soil moisture at time t
 		ponding = _ponding->matrix[r][c]; //surface ponding at time t
 		gw = _GravityWater->matrix[r][c]; //gravity water at time t
+		leak = 0;
 
 		nr = 0;
 		le = 0;
@@ -85,11 +87,12 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 			theta2 = _soilmoist2->matrix[r][c];
 			theta3 = _soilmoist3->matrix[r][c];
 			Infilt_Richards(ctrl, infcap, accinf, theta, theta2,
-					theta3, ponding, gw, dt, r, c, d); //updates soil moisture
+					theta3, leak, ponding, gw, dt, r, c, d); //updates soil moisture
 		}
 
 		_ponding->matrix[r][c] = ponding;
 		_GravityWater->matrix[r][c] = gw;
+		_BedrockLeakageFlux->matrix[r][c] = leak;
 
 		/*					//this calculates the soil moisture profile to evaluate soil moisture of the top 10 cms of the soil
 		 if(ctrl.toggle_soil_water_profile == 1)

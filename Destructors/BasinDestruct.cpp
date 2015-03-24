@@ -83,6 +83,8 @@ Basin::~Basin(){
 		delete _meltCoeff;
 	if(_Evaporation)
 		delete _Evaporation;
+	if(_BedrockLeakageFlux)
+		delete _BedrockLeakageFlux;
 	if(_SoilWaterDepth)
 		delete _SoilWaterDepth;
 	if(_SoilSatDeficit)

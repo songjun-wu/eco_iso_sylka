@@ -99,7 +99,8 @@ Basin::Basin(Control &ctrl)
 		_ponding = new grid(*_DEM);
 		_infilt_cap = new grid(*_DEM); //infilt cap m h-1
 		_AccumInfilt = new grid(*_DEM); //accumulated infiltration in meters
-		_Evaporation = new grid(*_DEM); //actual evaporation in m h-1
+		_Evaporation = new grid(*_DEM); //actual evaporation in m s-1
+		_BedrockLeakageFlux = new grid(*_DEM); //bedrock leakage flux in m s-1
 		_SoilWaterDepth = new grid(*_DEM); //soil moisture depth m
 		_SoilSatDeficit = new grid(*_DEM); //soil moisture including water below and above field capacity
 		_psi = new grid(*_DEM); //soil tension (m) calculated with B&C formula
