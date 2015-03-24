@@ -12,7 +12,7 @@
 using namespace arma;
 
 void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
-		double &theta11, double &theta21,double &theta31, double &infilt, double &pond,
+		double &theta11, double &theta21,double &theta31, double &infilt, double &pond,  double &leak,
 		const double &dt, const double &Ks, const double &d1, const double &d2,
 		const double &d3, const double &psiae, const double &lam, const double &thetas,
 		const double &thetar, const double &theta1,	const double &theta2, const double &theta3,
