@@ -18,7 +18,7 @@ inline int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &
 		const double &thetar, const double &theta1,	const double &theta2, const double &theta3,
 		const double &d3dxslope, const double &L, const double &Qin);
 
-inline void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
+inline int Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
 		double &theta11, double &theta21,double &theta31, double &infilt, double &pond, double &leak,
 		const double &dt, const double &Ks, const double &d1, const double &d2,
 		const double &d3, const double &psiae, const double &lam, const double &thetas,
@@ -75,9 +75,15 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1
 					thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin);
 		}
 		} else {
-			Ric_ModifiedPicard(x, Qout, K1, K12, K23, K3, theta11, theta21,
+			if(Ric_ModifiedPicard(x, Qout, K1, K12, K23, K3, theta11, theta21,
 					theta31, infilt, pond, leak, dt, Ks, d1, d2, d3, psiae, lam,
-					thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin);
+					thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin)){
+				Ric_Newton(x, Qout, K1, K12, K23, K3, theta11, theta21,
+									theta31, infilt, pond, leak, dt, Ks, d1, d2, d3, psiae, lam,
+									thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin);
+
+			}
+
 		}
 
    _psi->matrix[r][c] = x[0]; //Hydraulic potential of the topmost layer
@@ -93,7 +99,7 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1
 
     double endstor = theta1*d1 + theta2*d2 + theta3*d3;
 
-    double mberr =  (endstor-initstor - infilt*dt - Qin*dt +  K3*d3dxslope*dt)*100/(endstor + infilt*dt + Qin*dt);
+    double mberr =  (endstor-initstor - infilt*dt - Qin*dt + K3*d3dxslope*dt + leak*dt)*100/(endstor + infilt*dt + Qin*dt);
     cout << mberr << " ";
    switch (flowdir) //add the previously calculated *discharge* (not elevation) to the downstream cell
 	{
