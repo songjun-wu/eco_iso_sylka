@@ -94,6 +94,8 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1
    	theta2 = theta21;
    	theta3 = theta31;
    	pond -= infilt*dt;
+   	if(pond<0)
+   		cout << "pond negative\n";
 
 
 

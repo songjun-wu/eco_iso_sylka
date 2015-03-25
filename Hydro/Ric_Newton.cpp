@@ -60,6 +60,14 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
     x[1] = psiae*powl(S2,-lam);
     x[2] = psiae*powl(S3,-lam);
 
+    double f_p = Ks * powl(S1, p) * (x[0] + 0) / D1; //potential infiltration
+    double i_p = pond * invdt; //available infiltration rate
+    bool BC = 0; //type of BC 0=Dirichtlet; 1=Neumann
+    if (i_p < f_p)
+    	BC = 1;
+    else
+        BC=0;
+
 	int k = 0;
 	   do{
 
@@ -68,7 +76,12 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
 			K23 = Ks/(d2+d3) * (d2*powl(S2,p) + d3*powl(S3,p)  );
 			K3 = Ks * powl(S3,p);
 
-			infilt = std::min<double> (K1*(1 + (x[0] + pond)/D1 ), pond*invdt );
+			if(BC){
+				infilt = i_p;
+				K1=0;
+			}
+			else
+				infilt = K1 * (x[0] + pond) / D1;
 
 			Qout = K3*d3dxslope;
 
@@ -87,10 +100,8 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
 			dK23dpsi3 = x[2]<psiae ? 0 : Ks*d3/(d2+d3)*p*powl(S3,p-1)*dS3dpsi3;
 			dK3dpsi3  = x[2]<psiae ? 0 : Ks*p*powl(S3,p-1)*dS3dpsi3;
 
-			if(infilt < K1*(1 + (x[0] + pond)/D1 ) || infilt ==0)
-				dinfiltdpsi1 = 0;
-			else
-				dinfiltdpsi1 = dK1dpsi1*(1 + (x[0] + pond)/D1) + (K1/D1);
+
+			dinfiltdpsi1 = !BC * dK1dpsi1* (x[0] + pond)/D1 + (K1/D1);
 
 
 			// Fill the Jacobian
@@ -133,7 +144,7 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
 	K1 = Ks * powl(S1,p);
 	K3 = Ks * powl(S3,p);
 
-	infilt = std::min<double> (K1*(1 + (x[0] + pond)/D1 ), pond*invdt );
+	infilt = BC ? i_p : K1 * (x[0] + pond) / D1;
 
 	Qout = K3*d3dxslope;
 	leak = L*K3;
