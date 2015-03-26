@@ -96,7 +96,11 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_dampdepth, "Damping_depth");
 	Config.readInto(fn_tempdamp, "Temp_at_damp_depth");
 	Config.readInto(fn_soilmoist, "Soil_moisture_1");
-	if(toggle_soil_water_profile == 2){
+	if(toggle_soil_water_profile > 1){
+		Config.readInto(fn_depth_layer1, "Depth_soil_layer_1");
+		Config.readInto(fn_depth_layer2, "Depth_soil_layer_2");
+		Config.readInto(fn_root_fraction_lay1, "Fraction_roots_soil_layer_1");
+		Config.readInto(fn_root_fraction_lay2, "Fraction_roots_soil_layer_2");
 		Config.readInto(fn_soilmoist2, "Soil_moisture_2");
 		Config.readInto(fn_soilmoist3, "Soil_moisture_3");
 		Config.readInto(fn_bedrock_leak, "Soil_bedrock_leakance");

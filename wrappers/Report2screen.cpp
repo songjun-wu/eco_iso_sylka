@@ -23,8 +23,10 @@ int Report2Screen(){
 			//ofSummary << oBudget->grndwater << "\t";
 			//cout << "Gravity Water: " << oBudget->gravwater << "\t";
 			//ofSummary << oBudget->gravwater << "\t";
-			cout << "Total Evapotranspiration (m3): " << oBudget->evaporation << "\n";
+			cout << "Total Evapotranspiration (m3): " << oBudget->evaporation << "\t";
 			ofSummary << oBudget->evaporation << "\t";
+			cout << "Bedrock Leak (m3): " << oBudget->leakage << "\n";
+						ofSummary << oBudget->leakage << "\t";
 			cout << "Total OvlndFlow output (m3): " << oBudget->ovlndflow << "\n";
 			ofSummary << oBudget->ovlndflow << "\t";
 			cout << "Total GWFlow output (m3): " << oBudget->gwtrflow << "\n";

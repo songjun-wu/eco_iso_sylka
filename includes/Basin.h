@@ -19,7 +19,6 @@
 #include <omp.h>
 #include <errno.h>
 
-
 using namespace std;
 class Forest;
 class Basin {
@@ -45,14 +44,16 @@ class Basin {
 	grid *_psi_ae; // soil air entry pressure in m
 	grid *_BClambda; //Brooks and Corey lambda parameter
 	grid *_soildepth; //soil depth m
+	grid *_depth_layer1; //depth of layer 1. 0.1 m by default
+	grid *_depth_layer2; //depth of layer 2. Depth of layer 3 is calculated form depth
+	grid *_rootfrac1; //fraction of roots in soil layer 1
+	grid *_rootfrac2; //fraction of roots in soil layer 2. For layer three it is calculated from layer 1 and 2
 	grid *_fieldcap; //field capacity volumetric
 	grid *_paramWc; //empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
 	grid *_paramWp; ////empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
 	grid *_meltCoeff; //snowmelt coefficient m s-1 C-1
 	grid *_channelmask; //mask indicating the cells with a channel. boolean
 	grid *_chGWparam; //subsurface to channel water transfer parameter [dimensionless]
-
-
 
 	grid *_ldd; //local drain direction (steepest 8 neighbor algorithm)
 	grid *_catcharea; //catchment area (m2)
@@ -63,7 +64,6 @@ class Basin {
 	grid *_dampdepth; // soil depth at which there is no diurnal temperature variation
 	grid *_Temp_d; //temperature at damping depth
 
-
 	/*State variables*/
 
 	grid *_albedo; //surface albedo, no units
@@ -73,13 +73,17 @@ class Basin {
 	grid *_snow; //snow water equivalent in m
 	grid *_ponding; // water ponding on the soil surface in m
 	grid *_infilt_cap; //infilt capacity m s-1
-	grid *_soilmoist; // average volumetric soil moisture over entire soil profile
-	grid *_SoilWaterDepth;//soil moisture depth (m) for entire soil profile
+	grid *_soilmoist1; // average volumetric soil moisture over layer 1 or over entire soil profile
+	grid *_soilmoist2; //average volumetric soil moisture of the second soil layer
+	grid *_soilmoist3; //average volumetric soil moisture of the bottom soil layer
+	grid *_soilmoist_av; //average volumetric soil moisture of the entire soil profile
+	grid *_SoilWaterDepth; //soil moisture depth (m) for entire soil profile
 	grid *_SoilSatDeficit; //soil saturation deficit (1 full deficit - 0 saturation)
 	grid *_psi; //soil water potential in m
 	grid *_AccumInfilt; //Accumulated infiltration m
 	grid *_Evaporation; //actual evaporation and transpiration in m s-1
-	grid *_CanopyStorage;//current water stored in the canopy (m)
+	grid *_BedrockLeakageFlux; //water flux down the bottom of the soil in m s-1
+	grid *_CanopyStorage; //current water stored in the canopy (m)
 	grid *_GravityWater; //current water stored in the soil beyond field capacity (m) (percolation or water traveling in the vadose zone)
 	grid *_GrndWaterOld; //water stored in the gw system at the beginning of the time step (m)
 	grid *_GrndWater; //water stored in the gw system at the end of the time step (m)
@@ -95,110 +99,88 @@ class Basin {
 
 	grid *_Disch; //discharge out of each cell in the basin (m s-1)
 	vectCells _dailyOvlndOutput; //vector containing water output for each cell with no drainage (ldd value of 5). The vectCell structure contains the row and col
-								//of the cell with no output and the area draining to that cell m3s-1
+								 //of the cell with no output and the area draining to that cell m3s-1
 	vectCells _dailyGwtrOutput; //vector containing water output for each cell with no drainage (ldd value of 5). The vectCell structure contains the row and col
 								//of the cell with no output and the area draining to that cell m3s-1 ???
 
-    /*This section are declaration of grids whose creation depend on the options
-     * given in teh control file
-     */
-	grid *_soilmoist10cm; //average volumetric soil moisture of the first 10 cm of the soil
-	grid *_EquivDepth2Sat; //Equivalent depth to saturation as calculated from average soil moisture and hydrstatic equilibrium (m)
+	/*This section are declaration of grids whose creation depend on the options
+	 * given in teh control file
+	 */
 
-
-	grid *_soilmoist2; //average volumetric soil moisture of the second soil layer
-	grid *_soilmoist3; //average volumetric soil moisture of the bottom soil layer
 	grid *_bedrock_leak;
 
+	vectCells SortGridLDD();
 
+	void CheckMaps(Control &ctrl); //check maps mainly to make sure no nodata values are in the domain. Also sets slope to MIN_SLOPE for pixels with 0 slope.
 
-		vectCells SortGridLDD();
+	int CalcCatchArea();
+	int CalcFieldCapacity();
 
-		void CheckMaps(Control &ctrl); //check maps mainly to make sure no nodata values are in the domain. Also sets slope to MIN_SLOPE for pixels with 0 slope.
+	double NetRad(Atmosphere &atm, const double &Ts, REAL8 Kbeers, REAL8 lai,
+			REAL8 ec, REAL8 Tc, int row, int col);
+	double LatHeat(Atmosphere &atm, double soilrelhumid, double ra, double rs,
+			double rc, const double &Ts, int row, int col);
+	double SensHeat(Atmosphere &atm, double ra, const double &Ts, int row,
+			int col);
+	double GrndHeat(Atmosphere &atm, Control &ctrl, const double &theta,
+			const double &Ts, const double &Td, int row, int col);
+	double SnowHeat(Atmosphere &atm, Control &ctrl, const double &Ts, int row,
+			int col);
+	double MeltHeat(Atmosphere &atm, Control &ctrl, const double &Ts,
+			const double &swe, const double &M, int row, int col);
+	double RainHeat(Atmosphere &atm, double R, int row, int col);
+	double SnowOutput(Atmosphere &atm, Control &ctrl, const double &meltheat,
+			int row, int col);
 
-		int CalcCatchArea();
-		int CalcFieldCapacity();
+	REAL8 CalcAerodynResist(REAL8 u_za, REAL8 z_a, REAL8 z_0u, REAL8 z_du,
+			REAL8 z_0o, REAL8 z_do, REAL8 Ht, REAL8 LAI, REAL8 Ts, REAL8 Ta,
+			INT4 option, bool surface);
+	REAL8 CalcSoilResist(double &theta, int row, int col, UINT4 option);
 
+	//Hydrologic processes
 
-		double NetRad(Atmosphere &atm, const double &Ts, REAL8 Kbeers, REAL8 lai, REAL8 ec, REAL8 Tc, int row, int col);
-		double LatHeat(Atmosphere &atm, double soilrelhumid, double ra, double rs, double rc, const double &Ts, int row, int col);
-		double SensHeat(Atmosphere &atm,  double ra, const double &Ts, int row, int col);
-		double GrndHeat(Atmosphere &atm, Control &ctrl, const double &theta, const double &Ts, const double &Td, int row,
-				int col);
-		double SnowHeat(Atmosphere &atm, Control &ctrl, const double &Ts, int row,
-				int col);
-		double MeltHeat(Atmosphere &atm, Control &ctrl, const double &Ts,const double &swe, const double &M, int row, int col);
-		double RainHeat(Atmosphere &atm, double R, int row, int col);
-		double SnowOutput(Atmosphere &atm, Control &ctrl, const double &meltheat, int row, int col);
+	void Infilt_GreenAmpt(double &f, double &F, double &theta, double &pond,
+			double &percolat, double dt, int r, int c);
+	void Infilt_Richards(Control &ctrl, double &f, double &F, double &theta1,
+			double &theta2, double &theta3, double &leak, double &pond, double &percolat,
+			double dt, int r, int c, int flowdir);
+	int SolveSurfaceEnergyBalance(Atmosphere &atm, Control &ctrl, REAL8 ra,
+			REAL8 rs, REAL8 rc, REAL8 Kbeers, REAL8 lai, REAL8 emis_can,
+			REAL8 Temp_can, REAL8 &nrad, REAL8 &latheat, REAL8 &sensheat,
+			REAL8 &grndheat, REAL8 &snowheat, REAL8 &meltheat, REAL8 &Tsold,
+			REAL8 &etp, REAL8 &pond, REAL8 &theta, REAL8 &Ts1, REAL8 &Tdold,
+			REAL8 p, UINT4 r, UINT4 c);
 
-		REAL8 CalcAerodynResist(REAL8 u_za, REAL8 z_a, REAL8 z_0u, REAL8 z_du, REAL8 z_0o, REAL8 z_do, REAL8 Ht, REAL8 LAI,
-				REAL8 Ts, REAL8 Ta, INT4 option, bool surface);
-		REAL8 CalcSoilResist(double &theta, int row, int col, UINT4 option);
+	//This functions updates soil moisture by solving the local soil water balance
+	void SoilEvapotranspiration(REAL8 LE, //input latent heat
+			REAL8 Ts, //input surface temperature
+			REAL8 lambda, //input the latent heat (either latent heat of vaporization or of sublimation)
+			REAL8 rs, // input the potential exfiltration capacity
+			REAL8 &etp, //output updated evapotranspiration
+			REAL8 &theta, //output updated soil moisture
+			REAL8 dt, //time step
+			UINT4 r, UINT4 c);
 
-		//Hydrologic processes
+	REAL8 ExfiltrationCapacity(REAL8 theta, //soil moisture
+			REAL8 dt, UINT4 r, UINT4 c);
 
-		void Infilt_GreenAmpt(double &f, double &F, double &theta, double &pond, double &percolat, double dt, int r, int c);
-		void Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c, int flowdir);
-		int SolveSurfaceEnergyBalance(Atmosphere &atm,
-										Control &ctrl,
-										REAL8 ra,
-										REAL8 rs,
-										REAL8 rc,
-										REAL8 Kbeers,
-										REAL8 lai,
-										REAL8 emis_can,
-										REAL8 Temp_can,
-										REAL8 &nrad,
-										REAL8 &latheat,
-										REAL8 &sensheat,
-										REAL8 &grndheat,
-										REAL8 &snowheat,
-										REAL8 &meltheat,
-										REAL8 &Tsold,
-										REAL8 &etp,
-										REAL8 &pond,
-										REAL8 &theta,
-										REAL8 &Ts1,
-										REAL8 &Tdold,
-										REAL8 p,
-										UINT4 r,
-										UINT4 c);
+	void CalcSoilMoistureProfile(Atmosphere &atm, Control &ctrl, REAL8 theta,
+			UINT4 row, UINT4 col);
 
-		//This functions updates soil moisture by solving the local soil water balance
-		void SoilEvapotranspiration(REAL8 LE, //input latent heat
-									REAL8 Ts, //input surface temperature
-									REAL8 lambda, //input the latent heat (either latent heat of vaporization or of sublimation)
-									REAL8 rs,// input the potential exfiltration capacity
-									REAL8 &etp, //output updated evapotranspiration
-									REAL8 &theta,//output updated soil moisture
-									REAL8 dt, //time step
-									UINT4 r,
-									UINT4 c);
+	//This function updates _psi with the soil tension corresponding to the current soil moisture status
+	void UpdateSoilWaterPotential() {
+		int r, c;
+		double S;
+		for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+			r = _vSortedGrid.cells[j].row;
+			c = _vSortedGrid.cells[j].col;
+			S = (_soilmoist1->matrix[r][c] - _theta_r->matrix[r][c])
+					/ (_porosity->matrix[r][c] - _theta_r->matrix[r][c]);
 
-		REAL8 ExfiltrationCapacity(	REAL8 theta,//soil moisture
-									REAL8 dt,
-									UINT4 r,
-									UINT4 c);
-
-		void CalcSoilMoistureProfile(Atmosphere &atm, Control &ctrl, REAL8 theta, UINT4 row, UINT4 col);
-
-
-		//This function updates _psi with the soil tension corresponding to the current soil moisture status
-		void UpdateSoilWaterPotential(){
-			int r, c;
-			double S;
-			for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
-			{
-				r = _vSortedGrid.cells[j].row;
-				c = _vSortedGrid.cells[j].col;
-				S = (_soilmoist->matrix[r][c] - _theta_r->matrix[r][c])/(_porosity->matrix[r][c] - _theta_r->matrix[r][c]);
-
-				_psi->matrix[r][c] =
-				fabs(_psi_ae->matrix[r][c]) / pow(S, _BClambda->matrix[r][c]);
-			}
+			_psi->matrix[r][c] = fabs(_psi_ae->matrix[r][c])
+					/ pow(S, _BClambda->matrix[r][c]);
 		}
-
-
+	}
 
 public:
 
@@ -221,7 +203,7 @@ public:
 	//Getters
 
 	REAL8 getCellSize() const {
-			return _dx;
+		return _dx;
 	}
 
 	const vectCells &getSortedGrid() const {
@@ -233,12 +215,12 @@ public:
 	}
 
 	const vectCells *getDailyGwtrOutput() const {
-			return &_dailyGwtrOutput;
+		return &_dailyGwtrOutput;
 	}
 
 	grid *getDEM() const {
-			return _DEM;
-		}
+		return _DEM;
+	}
 
 	grid *getNetRad() const {
 		return _Rn;
@@ -280,28 +262,63 @@ public:
 		return _ponding;
 	}
 
-	grid *getSoilMoist() const {
-			return _soilmoist;
+	grid *getSoilMoist1() const {
+		return _soilmoist1;
+	}
+	grid *getSoilMoist2() const {
+		return _soilmoist2;
+	}
+	grid *getSoilMoist3() const {
+		return _soilmoist3;
 	}
 
-	grid *getSoilMoist10cm() const {
-			return _soilmoist10cm;
-	}
+	grid *getSoilMoist_av() const {
 
-	grid *getEquivDepth2Saturation() const {
-				return _EquivDepth2Sat;
+		if (!_depth_layer1) //if this layer is not created we are using the lumped soil option
+			return _soilmoist1;
+
+		double depth;
+		double d1, d2, d3;
+		int r, c;
+		for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+			r = _vSortedGrid.cells[j].row;
+			c = _vSortedGrid.cells[j].col;
+			depth = _soildepth->matrix[r][c];
+			d1 = _depth_layer1->matrix[r][c];
+			d2 = _depth_layer2->matrix[r][c];
+			d3 = depth - d1 - d2;
+			_soilmoist_av->matrix[r][c] = (_soilmoist1->matrix[r][c] * d1
+					+ _soilmoist2->matrix[r][c] * d2
+					+ _soilmoist3->matrix[r][c] * d3) / depth;
+		}
+
+		return _soilmoist_av;
 	}
 
 	grid *getSoilWaterDepth() const {
-
 		int r, c;
-			for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
-			{
-							r = _vSortedGrid.cells[j].row;
-							c = _vSortedGrid.cells[j].col;
-				_SoilWaterDepth->matrix[r][c] =
-					_soilmoist->matrix[r][c] * _soildepth->matrix[r][c];
+		if (!_depth_layer1) {
+			for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+				r = _vSortedGrid.cells[j].row;
+				c = _vSortedGrid.cells[j].col;
+				_SoilWaterDepth->matrix[r][c] = _soilmoist1->matrix[r][c]
+						* _soildepth->matrix[r][c];
 			}
+		} else {
+			double depth;
+			double d1, d2, d3;
+			for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+				r = _vSortedGrid.cells[j].row;
+				c = _vSortedGrid.cells[j].col;
+				depth = _soildepth->matrix[r][c];
+				d1 = _depth_layer1->matrix[r][c];
+				d2 = _depth_layer2->matrix[r][c];
+				d3 = depth - d1 - d2;
+				_SoilWaterDepth->matrix[r][c] = (_soilmoist1->matrix[r][c] * d1
+						+ _soilmoist2->matrix[r][c] * d2
+						+ _soilmoist3->matrix[r][c] * d3);
+			}
+		}
 
 		return _SoilWaterDepth;
 	}
@@ -312,25 +329,41 @@ public:
 		for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
 			r = _vSortedGrid.cells[j].row;
 			c = _vSortedGrid.cells[j].col;
-			_SoilSatDeficit->matrix[r][c] = 1 - ( (_soilmoist->matrix[r][c] - _theta_r->matrix[r][c]) /
-					(_porosity->matrix[r][c] - _theta_r->matrix[r][c]) );
+			_SoilSatDeficit->matrix[r][c] =
+					1
+							- ((_soilmoist1->matrix[r][c]
+									- _theta_r->matrix[r][c])
+									/ (_porosity->matrix[r][c]
+											- _theta_r->matrix[r][c]));
 		}
 
 		return _SoilSatDeficit;
 
 	}
 
-	grid *getSoilWaterPotential() const {
+	grid *getSoilWaterPotential() {
+		if (!_depth_layer1) //if we are using the lumped soil hydrology, update the soil water potential
+			UpdateSoilWaterPotential();
 
 		return _psi;
-		}
+	}
 	grid *getInfiltCap() const {
-			return _infilt_cap;
+		return _infilt_cap;
 	}
 
+	grid *getRootFrac1() const {
+		return _rootfrac1;
+	}
+
+	grid *getRootFrac2() const {
+		return _rootfrac2;
+	}
 	grid *getEvaporation() const {
 		return _Evaporation;
-		}
+	}
+	grid *getBedrockLeakage() const{
+		return _BedrockLeakageFlux;
+	}
 
 	grid *getParamWc() const {
 		return _paramWc;
@@ -353,46 +386,44 @@ public:
 	}
 
 	grid *getGravityWater() const {
-			return _GravityWater;
-		}
-
-	grid *getGrndWater() const {
-			return _GrndWater;
+		return _GravityWater;
 	}
 
-	grid *getVegetFrac(UINT4 n) const ;
+	grid *getGrndWater() const {
+		return _GrndWater;
+	}
 
-	grid *getLAI(UINT4 n) const ;
+	grid *getVegetFrac(UINT4 n) const;
 
-	grid *getStemDensity(UINT4 n) const ;
+	grid *getLAI(UINT4 n) const;
 
-	grid *getStandAge(UINT4 n) const ;
+	grid *getStemDensity(UINT4 n) const;
 
-	grid *getCanopyCond(UINT4 n) const ;
+	grid *getStandAge(UINT4 n) const;
 
-	grid *getGPP(UINT4 n) const ;
+	grid *getCanopyCond(UINT4 n) const;
 
-	grid *getNPP(UINT4 n) const ;
+	grid *getGPP(UINT4 n) const;
 
-	grid *getBasalArea(UINT4 n) const ;
+	grid *getNPP(UINT4 n) const;
 
-	grid *getTreeHeight(UINT4 n) const ;
+	grid *getBasalArea(UINT4 n) const;
 
-	grid *getRootMass(UINT4 n) const ;
+	grid *getTreeHeight(UINT4 n) const;
 
-	grid *getCanopyTemp(UINT4 n) const ;
+	grid *getRootMass(UINT4 n) const;
 
-	grid *getCanopyNetRad(UINT4 n) const ;
+	grid *getCanopyTemp(UINT4 n) const;
 
-	grid *getCanopyLatHeat(UINT4 n) const ;
+	grid *getCanopyNetRad(UINT4 n) const;
 
-	grid *getCanopySensHeat(UINT4 n) const ;
+	grid *getCanopyLatHeat(UINT4 n) const;
 
-	grid *getCanopyWaterStor(UINT4 n) const ;
+	grid *getCanopySensHeat(UINT4 n) const;
 
-	grid *getTranspiration(UINT4 n) const ;
+	grid *getCanopyWaterStor(UINT4 n) const;
 
-
+	grid *getTranspiration(UINT4 n) const;
 
 	//setters
 

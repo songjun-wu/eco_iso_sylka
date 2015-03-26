@@ -33,7 +33,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 		//REAL8 maxR = 0; //maximum gravitational water possible
 		REAL8 qc = 0; // water transfered from the subsurface system to the channel
 
-	grid *upstreamBC = new grid(*_GrndWater); //holds the upstream boundary conditions
+//	grid *upstreamBC = new grid(*_GrndWater); //holds the upstream boundary conditions
 
 	 dtdx = dt / _dx;
 
@@ -48,7 +48,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 		//surface routing stuff
 		returnflow = 0;
 		ponding = _ponding->matrix[r][c];
-		theta = _soilmoist->matrix[r][c];
+		theta = _soilmoist1->matrix[r][c];
 		ca = _catcharea->matrix[r][c];
 		gw = _GravityWater->matrix[r][c];
 
@@ -74,7 +74,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 		}
 
 
-		_soilmoist->matrix[r][c] = theta;
+		_soilmoist1->matrix[r][c] = theta;
 		_GravityWater->matrix[r][c] = gw;
 
 		///enter groundwater
@@ -110,7 +110,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 				hj1i1 = (poros - theta) * soildepth;
 			}
 
-			_soilmoist->matrix[r][c] = theta + hj1i1 / soildepth;
+			_soilmoist1->matrix[r][c] = theta + hj1i1 / soildepth;
 			_GrndWater->matrix[r][c]= hj1i1;
 
 			switch (d) //add the previously calculated *discharge* (not elevation) to the downstream cell

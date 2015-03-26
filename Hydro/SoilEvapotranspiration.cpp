@@ -19,6 +19,8 @@ void Basin::SoilEvapotranspiration(REAL8 LE, //input latent heat
 	REAL8 ETP;
 	REAL8 thetar = _theta_r->matrix[r][c];
 	REAL8 sd = _soildepth->matrix[r][c];
+	if(_soilmoist2)
+		sd = this->_depth_layer1->matrix[r][c];
 	REAL8 le = lambda; //Ts < 0 ?  lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
 	if(LE<0){

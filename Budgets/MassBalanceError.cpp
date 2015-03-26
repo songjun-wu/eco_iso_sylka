@@ -14,7 +14,7 @@ void Budget::MassBalanceError()
 	double ds = 0.0;
 
 	inputs = precipitation + initsnowpack + initponding + initvadose + initgravwater + initgrndwater;
-	outputs = evaporation + ovlndflow + gwtrflow;
+	outputs = evaporation + ovlndflow + gwtrflow + leakage;
 	ds = canopy + snowpack + ponding + vadose + gravwater + grndwater;
 
 	if(inputs>0) MBErr = 100/inputs*(inputs-outputs - ds);

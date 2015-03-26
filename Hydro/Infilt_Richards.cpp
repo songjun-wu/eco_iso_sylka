@@ -12,20 +12,20 @@
 using namespace arma;
 
 inline int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
-		double &theta11, double &theta21,double &theta31, double &infilt, double &pond,
+		double &theta11, double &theta21,double &theta31, double &infilt, double &pond, double &leak,
 		const double &dt, const double &Ks, const double &d1, const double &d2,
 		const double &d3, const double &psiae, const double &lam, const double &thetas,
 		const double &thetar, const double &theta1,	const double &theta2, const double &theta3,
 		const double &d3dxslope, const double &L, const double &Qin);
 
-inline void Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
-		double &theta11, double &theta21,double &theta31, double &infilt, double &pond,
+inline int Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double &K23, double &K3,
+		double &theta11, double &theta21,double &theta31, double &infilt, double &pond, double &leak,
 		const double &dt, const double &Ks, const double &d1, const double &d2,
 		const double &d3, const double &psiae, const double &lam, const double &thetas,
 		const double &thetar, const double &theta1,	const double &theta2, const double &theta3,
 		const double &d3dxslope, const double &L, const double &Qin);
 
-void Basin::Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, double &theta1, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c, int flowdir) //time step
+void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1, double &theta2, double &theta3, double &leak, double &pond, double &percolat, double dt, int r, int c, int flowdir) //time step
 {
 
 
@@ -40,9 +40,9 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, 
 
 	//depth of soil layers
 	double depth = _soildepth->matrix[r][c];
-	double d1 = 0.1;
-	double d2 = (depth - 0.1)/2;
-	double d3 = d2;
+	double d1 = _depth_layer1->matrix[r][c];
+	double d2 = _depth_layer2->matrix[r][c];
+	double d3 = depth - d1 - d2;
 
 
 	double d3dxslope = d3*sin(atan(_slope->matrix[r][c]))/_dx;
@@ -62,74 +62,82 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F, double &theta, 
 
    double initstor = theta1*d1 + theta2*d2 + theta3*d3;
 
-	if (ctrl.toggle_soil_water_profile == 2)
+	if (ctrl.toggle_soil_water_profile == 2){
 		if (Ric_Newton(x, Qout, K1, K12, K23, K3, theta11, theta21, theta31,
-				infilt, pond, dt, Ks, d1, d2, d3, psiae, lam, thetas, thetar,
+				infilt, pond, leak, dt, Ks, d1, d2, d3, psiae, lam, thetas, thetar,
 				theta1, theta2, theta3, d3dxslope, L, Qin)) {
 			//If newton iteration fails, restore original initial guess for moisture and try Picard
 			double theta11 = theta1;
 			double theta21 = theta2;
 			double theta31 = theta3;
 			Ric_ModifiedPicard(x, Qout, K1, K12, K23, K3, theta11, theta21,
-					theta31, infilt, pond, dt, Ks, d1, d2, d3, psiae, lam,
-					thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin);
-		} else {
-			Ric_ModifiedPicard(x, Qout, K1, K12, K23, K3, theta11, theta21,
-					theta31, infilt, pond, dt, Ks, d1, d2, d3, psiae, lam,
+					theta31, infilt, pond, leak, dt, Ks, d1, d2, d3, psiae, lam,
 					thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin);
 		}
+		} else {
+			if(Ric_ModifiedPicard(x, Qout, K1, K12, K23, K3, theta11, theta21,
+					theta31, infilt, pond, leak, dt, Ks, d1, d2, d3, psiae, lam,
+					thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin)){
+				Ric_Newton(x, Qout, K1, K12, K23, K3, theta11, theta21,
+									theta31, infilt, pond, leak, dt, Ks, d1, d2, d3, psiae, lam,
+									thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin);
+			}
+		}
 
+   _psi->matrix[r][c] = x[0]; //Hydraulic potential of the topmost layer
 
-    F += infilt;
+    F += infilt * dt;
   //  f = K1*(1 + (x[0] - pond)/D1 );
    	theta1 =theta11;
    	theta2 = theta21;
    	theta3 = theta31;
-   	pond -= infilt;
+   	pond -= infilt*dt;
+   	if(pond<0)
+   		cout << "pond negative\n";
 
-    //calculate average moisture for entire soil profile
-    theta = (d1*theta1 + d2*theta2 + d3*theta3)/depth;
+
+
     double endstor = theta1*d1 + theta2*d2 + theta3*d3;
 
-    double mberr =  (endstor-initstor - infilt*dt + - Qin*dt +  K3*d3dxslope*dt)*100/(endstor + infilt*dt + Qin*dt);
-    cout << mberr;
+    double mberr =  (endstor-initstor - infilt*dt - Qin*dt + K3*d3dxslope*dt + leak*dt)*100/(endstor + infilt*dt + Qin*dt);
+    cout << mberr << " ";
    switch (flowdir) //add the previously calculated *discharge* (not elevation) to the downstream cell
 	{
 	case 1:
 		_GWupstreamBC->matrix[r + 1][c - 1] += K3*d3dxslope;;
-//		_ponding->matrix[r + 1][c - 1] += pond;
+		_ponding->matrix[r + 1][c - 1] += pond;
 		break;
 	case 2:
 		_GWupstreamBC->matrix[r + 1][c] += K3*d3dxslope;;
-//		_ponding->matrix[r + 1][c] += pond;
+		_ponding->matrix[r + 1][c] += pond;
 		break;
 	case 3:
 		_GWupstreamBC->matrix[r + 1][c + 1] += K3*d3dxslope;;
-//		_ponding->matrix[r + 1][c + 1] += pond;
+		_ponding->matrix[r + 1][c + 1] += pond;
 		break;
 	case 4:
 		_GWupstreamBC->matrix[r][c - 1] += K3*d3dxslope;;
-//		_ponding->matrix[r][c - 1] += pond;
+		_ponding->matrix[r][c - 1] += pond;
 		break;
 	case 5:
-		_dailyGwtrOutput.cells.push_back(cell(r, c, (K3*d3dxslope * _dx)));
-//		_dailyOvlndOutput.cells.push_back(cell(r, c, pond * _dx * _dx / dt));
+		_dailyGwtrOutput.cells.push_back(cell(r, c, (K3*d3dxslope * _dx * _dx)));
+		_dailyOvlndOutput.cells.push_back(cell(r, c, pond * _dx * _dx / dt));
 		break; //if it is an outlet store the outflow m3s-1
 	case 6:
 		_GWupstreamBC->matrix[r][c + 1] += K3*d3dxslope;;
-//		_ponding->matrix[r][c + 1] += pond;
+		_ponding->matrix[r][c + 1] += pond;
 		break;
 	case 7:
 		_GWupstreamBC->matrix[r - 1][c - 1] += K3*d3dxslope;;
-//		_ponding->matrix[r - 1][c - 1] += pond;
+		_ponding->matrix[r - 1][c - 1] += pond;
 		break;
 	case 8:
 		_GWupstreamBC->matrix[r - 1][c] += K3*d3dxslope;;
-//		_ponding->matrix[r - 1][c] += pond;
+		_ponding->matrix[r - 1][c] += pond;
 		break;
 	case 9:
 		_GWupstreamBC->matrix[r - 1][c + 1] += K3*d3dxslope;;
-//		_ponding->matrix[r - 1][c + 1] += pond;
+		_ponding->matrix[r - 1][c + 1] += pond;
 		break;
 	default:
 		throw -1;

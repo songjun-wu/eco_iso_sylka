@@ -214,22 +214,22 @@ void Basin::CheckMaps(Control &ctrl) {
 				throw e;
 			}
 
-			if (_soilmoist->matrix[r][c] == _soilmoist->nodata) {
+			if (_soilmoist1->matrix[r][c] == _soilmoist1->nodata) {
 				string e(
 						"Initial soil moisture map contains no data values inside the valid domain...\n");
 				throw e;
 			}
-			if (_soilmoist->matrix[r][c] <= 0) {
+			if (_soilmoist1->matrix[r][c] <= 0) {
 				string e(
 						"Topsoil Initial soil moisture map contains negative or zero values inside the valid domain...\n");
 				throw e;
 			}
-			if (_soilmoist->matrix[r][c] < _theta_r->matrix[r][c]) {
+			if (_soilmoist1->matrix[r][c] < _theta_r->matrix[r][c]) {
 				string e(
 						"Topsoil Initial soil moisture map is lower than residual moisture inside the valid domain...\n");
 				throw e;
 			}
-			if (_soilmoist->matrix[r][c] > _porosity->matrix[r][c]) {
+			if (_soilmoist1->matrix[r][c] > _porosity->matrix[r][c]) {
 				string e(
 						"Topsoil Initial soil moisture map is larger than porosity inside the valid domain...\n");
 				throw e;
@@ -241,7 +241,7 @@ void Basin::CheckMaps(Control &ctrl) {
 				throw e;
 			}
 
-			if (ctrl.toggle_soil_water_profile == 2) {
+			if (ctrl.toggle_soil_water_profile > 1) {
 				if (_soilmoist2->matrix[r][c] == _soilmoist2->nodata) {
 					string e(
 							"Initial soil moisture map in layer 2 contains no data values inside the valid domain...\n");

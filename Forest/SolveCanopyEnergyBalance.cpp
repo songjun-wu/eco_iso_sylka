@@ -7,7 +7,7 @@
 
 #include "Forest.h"
 
-UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 fc, REAL8 soildepth, REAL8 ra, REAL8 gc, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, UINT4 s, UINT4 r, UINT4 c){
+UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 fc, REAL8 rootdepth, REAL8 ra, REAL8 gc, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, UINT4 s, UINT4 r, UINT4 c){
 
 	//energy balance parameters
 	REAL8 fA, fB, fC, fD; //pooling factors
@@ -131,8 +131,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 						REAL8 Tp;
 						Tp = transp_a * ctrl.dt;
 
-						if ((theta - thetar) * soildepth < Tp) { ///TODO: change to wilting point (not residual water content)
-							Tp = (theta - thetar) * soildepth;
+						if ((theta - thetar) * rootdepth < Tp) { ///TODO: change to wilting point (not residual water content)
+							Tp = (theta - thetar) * rootdepth;
 							transp_a = Tp / ctrl.dt;
 						}
 
