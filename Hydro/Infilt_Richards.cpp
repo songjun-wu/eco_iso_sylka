@@ -81,9 +81,7 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1
 				Ric_Newton(x, Qout, K1, K12, K23, K3, theta11, theta21,
 									theta31, infilt, pond, leak, dt, Ks, d1, d2, d3, psiae, lam,
 									thetas, thetar, theta1, theta2, theta3, d3dxslope, L, Qin);
-
 			}
-
 		}
 
    _psi->matrix[r][c] = x[0]; //Hydraulic potential of the topmost layer

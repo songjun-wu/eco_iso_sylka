@@ -52,7 +52,7 @@ int Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double 
      * 4th if available water rate > potential Dirichlet BC with pressure = pond
      * */
 
-    double f_p = Ks * powl(S1, p) *  (x[0] + 0) / D1; //potential infiltration
+    double f_p = Ks * powl(S1, p) *  (x[0] + pond) / D1; //potential infiltration
     double i_p = pond * invdt; //available infiltration rate
     bool BC = 0; //type of BC 0=Dirichtlet; 1=Neumann
     if (i_p < f_p)
@@ -131,11 +131,10 @@ int Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double 
 
 		k++;
 
-	} while (norm(deltax, 2) > 0.0000001 && k < MAX_ITER);
+	} while (norm(deltax, 2) > 0.000001 && k < MAX_ITER);
 	if (k >= MAX_ITER){
 		cout << "WARNING: Max no iterations reached for Richards solution "
-				<< endl;
-		return 1;}
+				<< endl;}
 /*	cout << "x: " << x << endl;
 	cout << deltax << endl;
 	cout << Fun << endl;
@@ -144,7 +143,9 @@ int Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double 
 	K1 = Ks * powl(S1,p);
 	K3 = Ks * powl(S3,p);
 
-	infilt = BC ? i_p : K1 * (x[0] + pond) / D1;
+	infilt =std::min<double>(infilt, f_p);
+	if(x[0]<0)
+		pond+= -x[0];
 	if(infilt*dt>pond)
 		cout << "infilt larger than pond\n";
 
@@ -153,6 +154,6 @@ int Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double 
 	leak = L*K3;
 
 	Qout = K3*d3dxslope;
-
+return 0;
 }
 
