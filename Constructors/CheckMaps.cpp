@@ -12,6 +12,9 @@ void Basin::CheckMaps()
 
 	UINT4 r, c;
 
+	#pragma omp parallel for\
+		  default(shared) private(r,c) \
+
 	for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
 		{
 			r = _vSortedGrid.cells[j].row;
