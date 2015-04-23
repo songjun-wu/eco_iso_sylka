@@ -11,13 +11,18 @@
  *  Created on: May 21, 2009
  *      Author: Marco Maneta
  */
-
+#include <time.h>
 #include "Sativa.h"
 
+time_t start, end;
 int main(int argc, char* argv[])
 {
+# ifdef _OPENMP
+ printf("Compiled by an OpenMP-compliant implementation.\n");
+# endif
 try{
-	Splash(argc, argv);
+	time(&start);
+	Splash(argc,  argv);
 	CreateWorld(argv);
 
 	while (oControl->current_t_step <= oControl->endtime)
@@ -52,7 +57,18 @@ catch(...){
 }
 
 	  CrunchWorld();
+    time(&end);
+    int tot_sec = difftime(end, start);
 
+
+    int dd = tot_sec/86400;
+    tot_sec = tot_sec%86400;
+    int hh = tot_sec/3600;
+    tot_sec = tot_sec%3600;
+    int mm = tot_sec/60;
+    tot_sec = tot_sec%60;
+    int ss = tot_sec;
+    printf("\nTotal run time elapsed:  %i (days) %02i:%02i:%02i (hh:mm:ss)", dd, hh, mm, ss);
 
 	return 0;
 

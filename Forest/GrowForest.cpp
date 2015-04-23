@@ -20,20 +20,19 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
 	REAL8 Wc, Wp, UsableTheta, Wr, gsmax;
 	REAL8 fa, ft, fw;
 	REAL8 E;
-	unsigned int k;
 	unsigned int j;
 
 	dt = ctrl.dt;
 
 	for (j = 0; j < _Nsp - 1; j++) //grow forest up to Nsp -1 because Nsp is bare soil
 
-#pragma omp parallel for default(none) \
-			private( k, r, c, alpha, beta, par, E, lai, forestAge, \
+#pragma omp parallel for default(shared) \
+			private( r, c, alpha, beta, par, E, lai, forestAge, \
 					airTemp, optTemp, maxTemp, minTemp, Wc, Wp, gsmax,\
 					UsableTheta, Wr, fa, ft ,fw ) \
-					shared(j,bas, atm, ctrl,dt)
+					//shared(j,bas, atm, ctrl,dt)
 
-		for (k = 0; k < _vSortedGrid.cells.size(); k++) {
+		for (unsigned int k = 0; k < _vSortedGrid.cells.size(); k++) {
 			r = _vSortedGrid.cells[k].row;
 			c = _vSortedGrid.cells[k].col;
 

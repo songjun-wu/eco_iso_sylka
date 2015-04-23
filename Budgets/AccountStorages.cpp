@@ -14,6 +14,9 @@ double Budget::AccountStorages(const grid *map, const Basin *b)
 	        REAL8 result = 0;
 	        REAL8 dx = b->getCellSize();
 
+			#pragma omp parallel for\
+			  default(shared) private(r,c) \
+			  reduction (+:result)
 	        for (UINT4 i = 0; i< length; i++){
 
 	         r = b->getSortedGrid().cells[i].row;

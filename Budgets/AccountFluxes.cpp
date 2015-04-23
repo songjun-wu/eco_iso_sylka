@@ -6,56 +6,64 @@
  */
 #include "Budget.h"
 
-double Budget::AccountFluxes(const grid *map, const Basin *b)
-{
+double Budget::AccountFluxes(const grid *map, const Basin *b) {
 
-			UINT4 length = b->getSortedGrid().cells.size();
-	        UINT4 r, c;
-	        REAL8 result = 0;
-	        REAL8 dx = b->getCellSize();
+	UINT4 length = b->getSortedGrid().cells.size();
+	UINT4 r, c;
+	REAL8 result = 0;
+	REAL8 dx = b->getCellSize();
 
-	        for (UINT4 i = 0; i< length; i++){
+	#pragma omp parallel for\
+		default(shared) private(r,c) \
+		reduction (+:result)
 
-	         r = b->getSortedGrid().cells[i].row;
-	         c = b->getSortedGrid().cells[i].col;
+	for (UINT4 i = 0; i < length; i++) {
 
-	          result += (map->matrix[r][c]*dx*dx*dt);
-	        }
+		r = b->getSortedGrid().cells[i].row;
+		c = b->getSortedGrid().cells[i].col;
 
-	        return result;
+		result += (map->matrix[r][c] * dx * dx * dt);
+	}
+
+	return result;
 }
 
-double Budget::AccountFluxes(const grid *map, const Atmosphere *b)
-{
+double Budget::AccountFluxes(const grid *map, const Atmosphere *b) {
 
-			UINT4 zones = b->getSortedGrid().size();
-	        UINT4 r, c;
-	        REAL8 result = 0;
-	        REAL8 dx = b->getCellSize();
+	UINT4 zones = b->getSortedGrid().size();
+	UINT4 r, c;
+	REAL8 result = 0;
+	REAL8 dx = b->getCellSize();
 
-	        for(UINT4 i = 0; i< zones; i++)
-	        for (UINT4 j = 0; j< b->getSortedGrid()[i].cells.size(); j++){
+	#pragma omp parallel for\
+		default(shared) private(r,c) \
+		reduction (+:result)
 
-	         r = b->getSortedGrid()[i].cells[j].row;
-	         c = b->getSortedGrid()[i].cells[j].col;
+	for (UINT4 i = 0; i < zones; i++)
+		for (UINT4 j = 0; j < b->getSortedGrid()[i].cells.size(); j++) {
 
-	          result += (map->matrix[r][c]*dx*dx*dt);
-	        }
+			r = b->getSortedGrid()[i].cells[j].row;
+			c = b->getSortedGrid()[i].cells[j].col;
 
-	        return result;
+			result += (map->matrix[r][c] * dx * dx * dt);
+		}
+
+	return result;
 }
 
-double Budget::AccountFluxes(const vectCells *timeseries, const Basin *b)
-{
+double Budget::AccountFluxes(const vectCells *timeseries, const Basin *b) {
 
-			UINT4 length = timeseries->cells.size(); //b->getSortedGrid().cells.size();
+	UINT4 length = timeseries->cells.size(); //b->getSortedGrid().cells.size();
 
-	        REAL8 result = 0;
+	REAL8 result = 0;
 
-	        for (UINT4 i = 0; i< length; i++){
+	#pragma omp parallel for \
+		reduction (+:result)
 
-	          result += timeseries->cells[i].val * dt;
-	        }
+	for (UINT4 i = 0; i < length; i++) {
 
-	        return result;
+		result += timeseries->cells[i].val * dt;
+	}
+
+	return result;
 }

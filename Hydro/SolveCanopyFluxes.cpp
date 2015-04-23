@@ -49,23 +49,25 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 	UINT4 nsp;
 	REAL8 p;//fraction of species s
 
-	unsigned int j;
+	//unsigned int j;
 	UINT4 s;
-	int  thre;
-//double init = omp_get_wtime();
-
-#pragma omp parallel for default(none) \
-			private(j, s, r,c, p, gc, treeheight, wind, za, z0o, zdo, \
-					Tp, maxTp, minTp, snow, rain, evap, \
-					transp, evap_f, transp_f, D, DelCanStor, theta, ra, \
-					soildepth, thetar, fc) \
-			shared(nsp, atm, ctrl, dt, thre)
-
-	for (j = 0; j < _vSortedGrid.cells.size() ; j++)
+	int  thre=0;
+	//omp_set_num_threads(1);
+	//omp_set_nested(1);
+#pragma omp parallel default(none)\
+		private( s, r,c, p, gc, treeheight, wind, za, z0o, zdo, \
+							Tp, maxTp, minTp, snow, rain, evap, \
+							transp, evap_f, transp_f, D, DelCanStor, theta, ra, \
+							soildepth, thetar, fc) \
+					shared(nsp, atm, ctrl, dt, thre)
+{
+	thre = omp_get_num_threads();
+    #pragma omp single
+	printf("\nnum threads %d: ", thre);
+    #pragma omp for nowait
+	for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
 	{
-//		 thre = omp_get_num_threads();
-
-
+		//printf("\nthread , %i", omp_get_thread_num());
 					r = _vSortedGrid.cells[j].row;
 					c = _vSortedGrid.cells[j].col;
 
@@ -184,6 +186,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 
 		_Evaporation->matrix[r][c] = evap_f + transp_f; //total evaporation for the entire cell
 	}//end for
+}//end omp parallel
 
 	return EXIT_SUCCESS;
 }

@@ -8,11 +8,11 @@
 #include "ConstAndFuncs.h"
 
 //Calculates density of air
-double AirDensity(const double &T /*, const double &P*/){ //TODO: include readings of air pressure to improve calculation of air density
-
-	double P = 101325; // air pressure in Pa
-	return P/(Ra * (T + 273.2)); // air density in Kgm-3
-}
+//double AirDensity(const double &T /*, const double &P*/){ //TODO: include readings of air pressure to improve calculation of air density
+//
+//	double P = 101325; // air pressure in Pa
+//	return P/(Ra * (T + 273.2)); // air density in Kgm-3
+//}
 
 /*Calculates air emissivity using Swinbank(1963) empirical formula with Air Temperature in Celsius*/
 double AirEmissivity(const double &AirTemperature){
@@ -26,11 +26,11 @@ double SatVaporPressure(const double &T){ // T in C and e in Pa
 	return 611 * expl((17.3 * T)/(T + 237.3));
  }
 
-double PsychrometricConst(const double &P, const double &z){ //psychrometric constant air pressure P in Pa
-	//adjust P for elevation as per Allen FAO
-	double Pz = P * powl( ( 293-0.0065*z )/293, 5.26 );
-	return spec_heat_air * Pz / (lat_heat_vap * 0.622); // P in Pa and psychrometric constant in Pa C-1
-}
+//double PsychrometricConst(const double &P, const double &z){ //psychrometric constant air pressure P in Pa
+//	//adjust P for elevation as per Allen FAO
+//	double Pz = P * powl( ( 293-0.0065*z )/293, 5.26 );
+//	return spec_heat_air * Pz / (lat_heat_vap * 0.622); // P in Pa and psychrometric constant in Pa C-1
+//}
 
 extern double SoilHeatCapacity(const double &DrySoilHeatCap, const double &Porosity, const double &Theta, const double &SoilTemp){// Dry soil heat capacity in Joules m-3 C-1
 	return (1 - Porosity) * DrySoilHeatCap
