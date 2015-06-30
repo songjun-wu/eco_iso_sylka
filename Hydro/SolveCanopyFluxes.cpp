@@ -17,6 +17,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 	REAL8 minTp = 0;
 	REAL8 snow = 0; //amount of snow reaching the ground ms-1
 	REAL8 rain = 0;//amount of rain reaching the ground ms-1
+	REAL8 sno_rain_thres = 0; //temperature threshold for snow rain transition, degC
 
 	REAL8 ra; //soil aerodynamic resistance
 	REAL8 gc; //canopy resistance
@@ -56,7 +57,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 	//omp_set_nested(1);
 #pragma omp parallel default(none)\
 		private( s, r,c, p, gc, treeheight, wind, za, z0o, zdo, \
-							Tp, maxTp, minTp, snow, rain, evap, \
+							Tp, maxTp, minTp, snow, rain, sno_rain_thres, evap, \
 							transp, evap_f, transp_f, D, DelCanStor, theta, ra, \
 							soildepth, thetar, fc) \
 					shared(nsp, atm, ctrl, dt, thre)
@@ -161,17 +162,18 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl){
 					Tp = atm.getTemperature()->matrix[r][c];
 					maxTp = atm.getMaxTemperature()->matrix[r][c];
 					minTp = atm.getMinTemperature()->matrix[r][c];
+					sno_rain_thres = atm.getRainSnowTempThreshold()->matrix[r][c];
 
-					if(maxTp <= 1){
+					if(maxTp <= sno_rain_thres){
 						snow = D;
 						rain = 0;
 					}
-					else if(minTp > 1){
+					else if(minTp > sno_rain_thres){
 						rain = D;
 						snow = 0;
 					}
 					else{
-					snow = D * max<REAL8>(0.0, (1 - minTp) /(maxTp - minTp));
+					snow = D * max<REAL8>(0.0, (sno_rain_thres - minTp) /(maxTp - minTp));
 					rain = D - snow;
 					}
 

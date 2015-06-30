@@ -11,6 +11,8 @@ Atmosphere::~Atmosphere(){
 
 	if(_zones)
 		delete _zones;
+	if(_rain_snow_temp)
+		delete _rain_snow_temp;
 	if(_Ldown)
 		delete _Ldown;
 	if(_Sdown)

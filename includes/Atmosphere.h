@@ -29,6 +29,8 @@ class Atmosphere{
 		grid *_isohyet; //map with rainfall multipliers to spatially distribute precipitation
 		UINT4 _vSsortedGridTotalCellNumber;
 
+		grid *_rain_snow_temp; //scalar with air temperature threshold for rain-snow partition
+
 		grid *_Ldown; //longwave downward radiation Wm-2
 		grid *_Sdown; //shortwave downward radiation Wm-2
 		grid *_Tp; //Average air temperature C
@@ -78,7 +80,10 @@ public:
 		return _vSortedGrid;
 	}
 
-    grid *getIncomingLongWave() const
+    grid *getRainSnowTempThreshold() const{
+    	return _rain_snow_temp;
+    }
+	grid *getIncomingLongWave() const
     {
         return _Ldown;
     }
