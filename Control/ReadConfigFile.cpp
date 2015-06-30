@@ -73,6 +73,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_snowCf, "Snow_Melt_Coeff");
 
 	Config.readInto(fn_isohyet, "Isohyet_map");
+	Config.readInto(fn_snow_rain_temp, "Snow_rain_temp_threshold");
 	Config.readInto(fn_Ldown, "IncomingLongWave");
 	Config.readInto(fn_Sdown, "IncomingShortWave");
 	Config.readInto(fn_temp, "AirTemperature");
@@ -96,6 +97,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_tempdamp, "Temp_at_damp_depth");
 	Config.readInto(fn_soilmoist, "Soil_moisture");
 	Config.readInto(fn_soiltemp, "Soil_temperature");
+
 
 	Config.readInto(fn_paramtable, "Species_Parameters");
 

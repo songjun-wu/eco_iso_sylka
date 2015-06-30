@@ -82,6 +82,7 @@ struct Control{
 		string fn_precip; //
 		string fn_rel_humid; //relative humidity
 		string fn_wind_speed; //wind speed ms-1
+		string fn_snow_rain_temp; //threshold temp for snow rain transition, degC
 
 		/*Forest patches and forest input files*/
 		int NumSpecs; //number of tree species in the simulation

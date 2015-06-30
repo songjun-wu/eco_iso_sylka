@@ -20,7 +20,6 @@ Atmosphere::Atmosphere(Control &ctrl){
 			CountNumZones(); //Reads the _zones grid and fills variable _nzones with the number of zones. This is the number of zones in the zone map
 			_NZns = 0; //set to zero the initial zones in the climate time series files. This is the number of zones in the climate time series
 
-
 			_vSsortedGridTotalCellNumber = 0;
 			for(unsigned int i = 0; i < _nzones; i++){
 				_vSortedGrid[i].cells = SortGrid(_vSortedGrid[i].zone).cells; // fills the vectCells with actual domain cells (no nodata)
@@ -53,6 +52,7 @@ Atmosphere::Atmosphere(Control &ctrl){
 			*_Wind_speed = *_zones;
 
 			_isohyet = new grid(ctrl.path_ClimMapsFolder + ctrl.fn_isohyet, ctrl.MapType);
+			_rain_snow_temp = new grid(ctrl.path_ClimMapsFolder + ctrl.fn_snow_rain_temp, ctrl.MapType);
 
 			/*open climate data files*/
 
