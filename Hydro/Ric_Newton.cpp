@@ -46,9 +46,9 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
 	double dinfiltdpsi1=0;
 
 
-	colvec Fun(3);
-	mat J = zeros<mat>(3,3);
-	colvec deltax(3);
+	colvec Fun(5);
+	mat J = zeros<mat>(5,5);
+	colvec deltax(5);
 
 
 	double S1 = (theta1 - thetar)/(thetas - thetar);
@@ -60,6 +60,7 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
     x[1] = psiae*powl(S2,-lam);
     x[2] = psiae*powl(S3,-lam);
 
+   double lagmult = 0; //lagrange multiplier
     double f_p = Ks * powl(S1, p) * (x[0] + 0) / D1; //potential infiltration
     double i_p = pond * invdt; //available infiltration rate
     bool BC = 0; //type of BC 0=Dirichtlet; 1=Neumann
@@ -88,6 +89,8 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
 			Fun[0] = d1*(theta1*invdt) - d1*(theta11*invdt) + infilt - K12*(1 + (x[1] - x[0])/D2 ) ;
 			Fun[1] = d2*(theta2*invdt) - d2*(theta21*invdt) + K12*(1 + (x[1] - x[0])/D2 ) - K23*(1 + (x[2] - x[1])/D3 );
 			Fun[2] = d3*(theta3*invdt) - d3*(theta31*invdt) + K23*(1 + (x[2] - x[1])/D3 )+ Qin - Qout - L*K3;
+			Fun[3] = 	infilt -  K1 * (x[0] + pond) / D1 -  lagmult;
+			Fun[4] = 	lagmult*(infilt - i_p);
 
 			dS1dpsi1 = x[0]<psiae ? 0 : -powl(psiae/x[0],1/lam)/(lam*x[0]);
 			dS2dpsi2 = x[1]<psiae ? 0 : -powl(psiae/x[1],1/lam)/(lam*x[1]);
@@ -114,6 +117,8 @@ int Ric_Newton(colvec &x, double &Qout, double &K1, double &K12, double &K23, do
 			//J(2,0) = 0; // Just to remember that this is element of the Jacobian is zero
 			J(2,1) = dK23dpsi2*(1+(x[2]-x[1])/D3) - (K12/D3);
 			J(2,2) = -d3*invdt*(thetas-thetar)*dS3dpsi3 + dK23dpsi3*(1+ (x[2]-x[1])/D3) + (K23/D3) - d3dxslope*dK3dpsi3 - L*dK3dpsi3;
+			J(3,3) = -  K1 * (x[0] + pond) / D1 - x[4];
+
 
 	        if(!solve(deltax, J, -Fun)){
 	        	cout << "Singular Jacobian found in Newton solver. Switching to Picard...\n";

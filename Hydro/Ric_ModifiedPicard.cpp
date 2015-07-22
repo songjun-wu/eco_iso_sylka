@@ -32,18 +32,19 @@ int Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double 
 	double dS2dpsi2=0;
 	double dS3dpsi3=0;
 
-	colvec Fun(3);
-	mat J = zeros<mat>(3,3);
-	colvec deltax(3);
+	colvec Fun(4);
+	mat J = zeros<mat>(4,4);
+	colvec deltax(4);
 
 	double S1 = (theta1 - thetar)/(thetas - thetar);
 	double S2 = (theta2 - thetar)/(thetas - thetar);
 	double S3 = (theta3 - thetar)/(thetas - thetar);
 
 	//Initial guess of psi is current initial soil moisture content
-    x[0] = psiae*powl(S1,-lam);
-    x[1] = psiae*powl(S2,-lam);
-    x[2] = psiae*powl(S3,-lam);
+    x[0] = pond;
+	x[1] = psiae*powl(S1,-lam);
+    x[2] = psiae*powl(S2,-lam);
+    x[3] = psiae*powl(S3,-lam);
 
     //Surface Boundary condition
     /* 1st calculate potential infiltration rate
@@ -52,10 +53,10 @@ int Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double 
      * 4th if available water rate > potential Dirichlet BC with pressure = pond
      * */
 
-    double f_p = Ks * powl(S1, p) *  (x[0] + pond) / D1; //potential infiltration
+    double f_p = Ks * powl(S1, p) *  (x[1] + pond) / D1; //potential infiltration
     double i_p = pond * invdt; //available infiltration rate
     bool BC = 0; //type of BC 0=Dirichtlet; 1=Neumann
-    if (i_p < f_p)
+    if (false)
     	BC = 1;
     else
         BC=0;
@@ -73,52 +74,55 @@ int Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double 
 			K1=0;
 		}
 		else
-			infilt = K1 * (x[0] + pond) / D1;
+			infilt = K1 * (x[1] - x[0]) / D1;
 
 
 
 
 		Qout = K3 * d3dxslope;
 
-		Fun[0] = d1 * (theta1 * invdt) - d1 * (theta11 * invdt) + infilt
-				- K12 * (1 + (x[1] - x[0]) / D2);
-		Fun[1] = d2 * (theta2 * invdt) - d2 * (theta21 * invdt)
-				+ K12 * (1 + (x[1] - x[0]) / D2)
-				- K23 * (1 + (x[2] - x[1]) / D3);
-		Fun[2] = d3 * (theta3 * invdt) - d3 * (theta31 * invdt)
-				+ K23 * (1 + (x[2] - x[1]) / D3) + Qin - Qout - L*K3;
+		Fun[0] =  (std::min<double>(-pond -  x[0],0))*invdt - infilt;
+		Fun[1] = d1 * (theta1 * invdt) - d1 * (theta11 * invdt) + infilt
+				- K12 * (1 + (x[2] - x[1]) / D2);
+		Fun[2] = d2 * (theta2 * invdt) - d2 * (theta21 * invdt)
+				+ K12 * (1 + (x[2] - x[1]) / D2)
+				- K23 * (1 + (x[3] - x[2]) / D3);
+		Fun[3] = d3 * (theta3 * invdt) - d3 * (theta31 * invdt)
+				+ K23 * (1 + (x[3] - x[2]) / D3) + Qin - Qout - L*K3;
 
-		dS1dpsi1 = x[0]<psiae ? 0 : -powl(psiae/x[0],1/lam)/(lam*x[0]);
-		dS2dpsi2 = x[1]<psiae ? 0 : -powl(psiae/x[1],1/lam)/(lam*x[1]);
-		dS3dpsi3 = x[2]<psiae ? 0 : -powl(psiae/x[2],1/lam)/(lam*x[2]);
+		dS1dpsi1 = x[1]<psiae ? 0 : -powl(psiae/x[1],1/lam)/(lam*x[1]);
+		dS2dpsi2 = x[2]<psiae ? 0 : -powl(psiae/x[2],1/lam)/(lam*x[2]);
+		dS3dpsi3 = x[3]<psiae ? 0 : -powl(psiae/x[3],1/lam)/(lam*x[3]);
 
 /*
 		if(infilt < K1*(1 + (x[0] + pond)/D1 ) || infilt ==0)
 			K1 = 0;
 */
-
-		J(0,0) = d1*invdt*(thetas-thetar)*dS1dpsi1 -K1/D1 - K12/D2;
-		J(0,1) = K12/D2;
-		J(0,2) = 0;
-		J(1,0) = K12/D2;
-		J(1,1) = d2*invdt*(thetas-thetar)*dS2dpsi2 - K12/D2 - K23/D3;
-		J(1,2) = K23/D3;
-		J(2,0) = 0;
-		J(2,1) = K23/D3;
-		J(2,2) = d3*invdt*(thetas-thetar)*dS3dpsi3 - K23/D3;
+        J(0,0) = invdt - K1/D1;
+        J(0,1) =  K1/D1;
+		J(1,0) =  K1/D1;
+		J(1,1) = d1*invdt*(thetas-thetar)*dS1dpsi1 -  K1/D1- K12/D2;
+		J(1,2) = K12/D2;
+		J(1,3) = 0;
+		J(2,1) = K12/D2;
+		J(2,2) = d2*invdt*(thetas-thetar)*dS2dpsi2 - K12/D2 - K23/D3;
+		J(2,3) = K23/D3;
+		J(3,1) = 0;
+		J(3,2) = K23/D3;
+		J(3,3) = d3*invdt*(thetas-thetar)*dS3dpsi3 - K23/D3;
 
 
 		if (!solve(deltax, J, Fun))
 			cout << "no solution";
 		cout << "x: " << x << endl;
 		x += deltax;
-/*		cout << deltax << endl;
+		cout << deltax << endl;
 		cout << Fun << endl;
-		cout << J << endl;*/
+		cout << J << endl;
 
-		S1 = x[0] < psiae ? 1 : powl(psiae / x[0], 1 / lam);
-		S2 = x[1] < psiae ? 1 : powl(psiae / x[1], 1 / lam);
-		S3 = x[2] < psiae ? 1 : powl(psiae / x[2], 1 / lam);
+		S1 = x[1] < psiae ? 1 : powl(psiae / x[1], 1 / lam);
+		S2 = x[2] < psiae ? 1 : powl(psiae / x[2], 1 / lam);
+		S3 = x[3] < psiae ? 1 : powl(psiae / x[3], 1 / lam);
 
 		theta11 = S1 * (thetas - thetar) + thetar;
 		theta21 = S2 * (thetas - thetar) + thetar;
@@ -143,9 +147,10 @@ int Ric_ModifiedPicard(colvec &x, double &Qout, double &K1, double &K12, double 
 	K1 = Ks * powl(S1,p);
 	K3 = Ks * powl(S3,p);
 
-	infilt =std::min<double>(infilt, f_p);
-	if(x[0]<0)
-		pond+= -x[0];
+	//infilt =std::min<double>(infilt, f_p);
+	infilt = K1 * ( x[0]) / D1;
+	//if(x[0]<0)
+	//pond = x[0];
 	if(infilt*dt>pond)
 		cout << "infilt larger than pond\n";
 

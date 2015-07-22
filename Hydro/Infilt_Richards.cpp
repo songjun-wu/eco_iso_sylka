@@ -58,7 +58,7 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1
 	double theta21=theta2;
 	double theta31=theta3;
 	//soil hydraulic head for the three soil layers
-	colvec x(3);
+	colvec x(4);
 
    double initstor = theta1*d1 + theta2*d2 + theta3*d3;
 
@@ -91,7 +91,8 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1
    	theta1 =theta11;
    	theta2 = theta21;
    	theta3 = theta31;
-   	pond -= infilt*dt;
+    pond -= infilt*dt;
+    pond = x[0];
    	if(pond<0)
    		cout << "pond negative\n";
 
@@ -99,7 +100,7 @@ void Basin::Infilt_Richards(Control &ctrl, double &f, double &F,  double &theta1
 
     double endstor = theta1*d1 + theta2*d2 + theta3*d3;
 
-    double mberr =  (endstor-initstor - infilt*dt - Qin*dt + K3*d3dxslope*dt + leak*dt)*100/(endstor + infilt*dt + Qin*dt);
+    double mberr =  (endstor-initstor - infilt*dt - Qin*dt + K3*d3dxslope*dt + leak*dt + pond)*100/(endstor + infilt*dt + Qin*dt);
     cout << mberr << " ";
    switch (flowdir) //add the previously calculated *discharge* (not elevation) to the downstream cell
 	{
