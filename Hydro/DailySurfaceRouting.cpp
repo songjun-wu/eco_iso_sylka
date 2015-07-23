@@ -29,13 +29,13 @@ int Basin::DailySurfaceRouting(Atmosphere &atm, Control &ctrl){
 					d = _vSortedGrid.cells[j].dir;
 
 					ponding = _ponding->matrix[r][c];
-					theta = _soilmoist->matrix[r][c];
+					theta = _soilmoist1->matrix[r][c];
 					ca = _catcharea->matrix[r][c];
 					gw = _GravityWater->matrix[r][c];
 
 					Infilt_GreenAmpt(f, F, theta, ponding, gw, dt, r, c);
 
-					_soilmoist->matrix[r][c] = theta;
+					_soilmoist1->matrix[r][c] = theta;
 					_GravityWater->matrix[r][c] = gw;
 
 					          switch (d) //add the previously calculated discharge to the downstream cell

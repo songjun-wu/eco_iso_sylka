@@ -36,6 +36,9 @@ struct grid{
     //copy ctor
     grid(const grid &m);
 
+    //reset array to zero
+    void reset();
+
     int writeASCIIMap(std::string fname);
 
     //PCRaster input and output options

@@ -34,10 +34,11 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 
 	sw_reinfilt = Config.read<bool>("Reinfiltration");
 	sw_channel = Config.read<bool>("Channel");
-	sw_soil_water_profile = Config.read<bool>("Hydrostatic_soil_water_profile");
 
+	toggle_soil_water_profile = Config.read<int>("Soil_water_profile_opt");
 	toggle_ra = Config.read<int>("Aerodyn_resist_opt");
 	toggle_rs = Config.read<int>("Soil_resistance_opt");
+
 
 
 	starttime = Config.read<float>("Simul_start");
@@ -95,7 +96,16 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_soilthermcond, "Dry_Soil_Therm_Cond");
 	Config.readInto(fn_dampdepth, "Damping_depth");
 	Config.readInto(fn_tempdamp, "Temp_at_damp_depth");
-	Config.readInto(fn_soilmoist, "Soil_moisture");
+	Config.readInto(fn_soilmoist, "Soil_moisture_1");
+
+	Config.readInto(fn_depth_layer1, "Depth_soil_layer_1");
+	Config.readInto(fn_depth_layer2, "Depth_soil_layer_2");
+	Config.readInto(fn_root_fraction_lay1, "Fraction_roots_soil_layer_1");
+	Config.readInto(fn_root_fraction_lay2, "Fraction_roots_soil_layer_2");
+	Config.readInto(fn_soilmoist2, "Soil_moisture_2");
+	Config.readInto(fn_soilmoist3, "Soil_moisture_3");
+	Config.readInto(fn_bedrock_leak, "Soil_bedrock_leakance");
+
 	Config.readInto(fn_soiltemp, "Soil_temperature");
 
 
@@ -193,11 +203,11 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 
 
 	}
-	catch(ConfigFile::file_not_found fn){
+	catch(ConfigFile::file_not_found &fn){
 		cout << "File " << fn.filename << " not found\n";
 		throw;
 	}
-	catch(ConfigFile::key_not_found fn){
+	catch(ConfigFile::key_not_found &fn){
 			cout << "Key " << fn.key << " not found\n";
 			throw;;
 	}

@@ -53,15 +53,15 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
 			Wp = bas.getParamWp()->matrix[r][c];
 			gsmax = _species[j].gsmax;
 
-			if (bas.getSoilMoist()->matrix[r][c] < _species[j].WiltingPoint)
+			if (bas.getSoilMoist1()->matrix[r][c] < _species[j].WiltingPoint)
 				UsableTheta = 0;
 			else {
 				UsableTheta =
-						bas.getSoilMoist()->matrix[r][c]
+						bas.getSoilMoist1()->matrix[r][c]
 								> bas.getFieldCapacity()->matrix[r][c] ?
 								1 :
 								(bas.getFieldCapacity()->matrix[r][c]
-										- bas.getSoilMoist()->matrix[r][c])
+										- bas.getSoilMoist1()->matrix[r][c])
 										/ (bas.getFieldCapacity()->matrix[r][c]
 												- _species[j].WiltingPoint);
 			}

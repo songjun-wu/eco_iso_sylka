@@ -27,10 +27,13 @@ int Report2Screen(){
 			//ofSummary << oBudget->grndwater << "\t";
 			//cout << "Gravity Water: " << oBudget->gravwater << "\t";
 			//ofSummary << oBudget->gravwater << "\t";
-			printf("Total Evapotranspiration (m3): %.2f \n", oBudget->evaporation);
+			printf("Total Evapotranspiration (m3): %.2f \t", oBudget->evaporation);
 			//cout << "Total Evapotranspiration (m3): " << oBudget->evaporation << "\n";
 			ofSummary << oBudget->evaporation << "\t";
-			printf("Total OvlndFlow output (m3): %.2f \n", oBudget->ovlndflow);
+            printf("Bedrock Leak (m3): %.2f \n", oBudget->leakage);
+			//cout << "Bedrock Leak (m3): " << oBudget->leakage << "\n";
+			ofSummary << oBudget->leakage << "\t";
+            printf("Total OvlndFlow output (m3): %.2f \n", oBudget->ovlndflow);
 			//cout << "Total OvlndFlow output (m3): " << oBudget->ovlndflow << "\n";
 			ofSummary << oBudget->ovlndflow << "\t";
 			printf("Total GWFlow output (m3): %.2f \n", oBudget->gwtrflow);

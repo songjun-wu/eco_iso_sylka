@@ -76,6 +76,13 @@ grid::grid(const grid &m)
 
 }
 
+void grid::reset(){
+
+	for (UINT4 i=0; i<r; i++)
+	   for (UINT4 j=0; j<c; j++)
+		   this->matrix[i][j]=0;
+}
+
 grid& grid::operator=(const grid &m)
     {
         if(this == &m) return *this;
