@@ -137,6 +137,9 @@ class Basin {
 
 	void Infilt_GreenAmpt(double &f, double &F, double &theta, double &pond,
 			double &percolat, double dt, int r, int c);
+	int SoilWaterRedistribution(const double &F, double &theta1,
+			double &theta2, double &theta3, double &pond, double dt,
+			int r, int c);
 	void Infilt_Richards(Control &ctrl, double &f, double &F, double &theta1,
 			double &theta2, double &theta3, double &leak, double &pond, double &percolat,
 			double dt, int r, int c, int flowdir);

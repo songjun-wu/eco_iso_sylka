@@ -15,9 +15,9 @@ int SolveTimeStep(){
 	oBasin->SolveCanopyFluxes(*oAtmosphere, *oControl);
 	oBasin->SolveSurfaceFluxes(*oAtmosphere, *oControl);
 	oBasin->CalculateGrowForest(*oAtmosphere, *oControl);
-	oBasin->DailySurfaceRouting(*oAtmosphere, *oControl);
+	//oBasin->DailySurfaceRouting(*oAtmosphere, *oControl);
 	//if(oControl->toggle_soil_water_profile < 2)
-	oBasin->DailyGWRouting(*oAtmosphere, *oControl);
+	//oBasin->DailyGWRouting(*oAtmosphere, *oControl);
 
 		return EXIT_SUCCESS;
 }

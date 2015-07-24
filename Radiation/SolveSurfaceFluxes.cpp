@@ -12,6 +12,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 	int r, c;
 	float dt = ctrl.dt; //time step
 
+
 	//energy balance parameters
 
 	REAL8 ra; //soil aerodynamic resistance
@@ -58,7 +59,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 	_GWupstreamBC->reset();
 
 #pragma omp parallel default(shared) private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can,\
-		evap, infcap, accinf, theta, theta10cm, ponding, gw, za, z0u, zdu, z0o, zdo, wind, treeheight,\
+		evap, infcap, accinf, theta, theta2, theta3, ponding, gw, za, z0u, zdu, z0o, zdo, wind, treeheight,\
 		nr, le, sens, grndh, snowh, mltht, p) //shared(ctrl, atm, nsp, dt)
 {
 //thre = omp_get_num_threads();
@@ -74,6 +75,8 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 					wind = atm.getWindSpeed()->matrix[r][c];
 
 					theta = _soilmoist1->matrix[r][c]; //soil moisture at time t
+					theta2 = _soilmoist2->matrix[r][c];
+					theta3 = _soilmoist3->matrix[r][c];
 					ponding = _ponding->matrix[r][c]; //surface ponding at time t
 					gw = _GravityWater->matrix[r][c]; //gravity water at time t
 					leak = 0;
@@ -91,7 +94,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 					Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
 					_ponding->matrix[r][c] = ponding;
 					_GravityWater->matrix[r][c] = gw;
-
+			SoilWaterRedistribution(accinf, theta, theta2, theta3, ponding, dt, r, c);
 
 					_BedrockLeakageFlux->matrix[r][c] = leak;
 
