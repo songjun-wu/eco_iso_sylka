@@ -12,7 +12,7 @@
 using namespace arma;
 
 int Basin::SoilWaterRedistribution(const double &F, double &theta1,
-		double &theta2, double &theta3, double &pond, double dt,
+		double &theta2, double &theta3, double &pond, double &leak,  double dt,
 		int r, int c) {
 
 
@@ -73,6 +73,8 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	Fun[1] = x[1] - theta2 - (K12 - K23) * dt / d2;
 	Fun[2] = x[2] - theta3 - (K23 - L * K3) * dt / d3;
 
+	cout << "Fun: " << Fun << endl;
+
 	J(0, 0) = 1 + dt / d1 * dK12dx1;
 	J(0, 1) = dt / d1 * dK12dx2;
 	J(0, 2) = 0;
@@ -82,13 +84,24 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	J(2, 0) = 0;
 	J(2, 1) = -dt / d3 * dK23dx2;
 	J(2, 2) = 1 - dt / d3 * (dK23dx3 - L * dK3dx3);
-
+    cout << "J" << J << endl;
 	if (!solve(deltax, J, -Fun)) {
 		cout << "Singular Jacobian found in Newton solver - soil water redistribution routine\n";
-		return 1;
+		return EXIT_FAILURE;
 	}
 	//	        cout <<"x: " <<  x << endl;
 	x += deltax;
+	k++;
+	cout << x << endl << deltax << endl;
 	} while (norm(deltax, 2) > 0.00000001 && k < MAX_ITER);
+
+
+		theta1 = x[0];
+		theta2 = x[1];
+		theta3 = x[2];
+
+	    S3 = (x[2] - thetar) / (thetas - thetar);
+		K3 = Ks * powl(S3, p);
+        leak =   L * K3;
 }
 

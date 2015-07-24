@@ -94,7 +94,8 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 					Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
 					_ponding->matrix[r][c] = ponding;
 					_GravityWater->matrix[r][c] = gw;
-			SoilWaterRedistribution(accinf, theta, theta2, theta3, ponding, dt, r, c);
+
+			        SoilWaterRedistribution(accinf, theta, theta2, theta3, ponding, leak, dt, r, c);
 
 					_BedrockLeakageFlux->matrix[r][c] = leak;
 

@@ -24,7 +24,7 @@ void Basin::Infilt_GreenAmpt(double &f, double &F, double &theta, double &pond, 
 		inp = pond/dt; //inp is potential water input in ms-1
 			if(inp < RNDOFFERR)
 				return;
-		depth = _soildepth->matrix[r][c];
+		depth = _depth_layer1->matrix[r][c];//_soildepth->matrix[r][c];
 		fc = _fieldcap->matrix[r][c];
 
 		S = (theta - thetar)/(ef_poros - thetar);
