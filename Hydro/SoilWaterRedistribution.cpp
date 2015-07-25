@@ -17,6 +17,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 
 
 	double K1, K12, K2, K23, K3;
+	double Ss = 0.0;//0005;
 	double thetar = _theta_r->matrix[r][c];
 	double thetas = _porosity->matrix[r][c];
 	double Ks = _Ksat->matrix[r][c];
@@ -52,17 +53,13 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	double theta21 = S2*(thetas - thetar) + thetar;
 	double theta31 = S3*(thetas - thetar) + thetar;
 
-	double Stg1 = 0;
-	double Stg2 = 0;
-	double Stg3 = 0;
-
-	double dStg1 = 0;
-	double dStg2 = 0;
-	double dStg3 = 0;
-
     x[0] = psiae*powl(S1,-lam);
     x[1] = psiae*powl(S2,-lam);
     x[2] = psiae*powl(S3,-lam);
+
+    double xi0 = x[0];
+    double xi1 = x[1];
+    double xi2 = x[2];
 
 	colvec Fun(3);
 	mat J = zeros < mat > (3, 3);
@@ -91,22 +88,23 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	dK3dpsi3  =  Ks*p*powl(S3,p-1)*dS3dpsi3;
 
 
-	Fun[0] = theta11 + Stg1 - theta1 - (F  - K12 * dt) / d1;
-	Fun[1] = theta21 + Stg2 - theta2 - (K12 - K23) * dt / d2;
-	Fun[2] = theta31 + Stg3 - theta3 - (K23 - L * K3) * dt / d3;
+	Fun[0] = theta11 - theta1 - S1*Ss*(x[0] -  xi0) - (F  - K12 * dt) / d1;
+	Fun[1] = theta21 - theta2 - S2*Ss*(x[1] -  xi1) - (K12 - K23) * dt / d2;
+	Fun[2] = theta31 - theta3 - S3*Ss*(x[2] -  xi2)  - (K23 - L * K3) * dt / d3;
 
 	cout << "Fun: " << Fun << endl;
 
-	J(0, 0) = dS1dpsi1*(thetas - thetar) + dStg1 + dt / d1 * dK12dpsi1;
+	J(0, 0) = dS1dpsi1*(thetas - thetar)  - dS1dpsi1*Ss*x[0] - S1*Ss + dt / d1 * dK12dpsi1;
 	J(0, 1) = dt / d1 * dK12dpsi2;
 	J(0, 2) = 0;
 	J(1, 0) = -dt / d2 * dK12dpsi1;
-	J(1, 1) = dS2dpsi2*(thetas - thetar) + dStg2 - dt / d2 * (dK12dpsi2 - dK23dpsi2);
+	J(1, 1) = dS2dpsi2*(thetas - thetar)  -dS2dpsi2* Ss*x[1] - S2*Ss - dt / d2 * (dK12dpsi2 - dK23dpsi2);
 	J(1, 2) = dt / d2 * dK23dpsi3;
 	J(2, 0) = 0;
 	J(2, 1) = -dt / d3 * dK23dpsi2;
-	J(2, 2) = dS3dpsi3*(thetas - thetar) + dStg3 - dt / d3 * (dK23dpsi3 - L * dK3dpsi3);
+	J(2, 2) = dS3dpsi3*(thetas - thetar) - dS3dpsi3*Ss*x[2] - S2*Ss - dt / d3 * (dK23dpsi3 - L * dK3dpsi3);
     cout << "J" << J << endl;
+
 	if (!solve(deltax, J, -Fun)) {
 		cout << "Singular Jacobian found in Newton solver - soil water redistribution routine\n";
 		return EXIT_FAILURE;
@@ -117,24 +115,6 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	S1 = x[0]<psiae ? 1 : powl(psiae/x[0], 1/lam);
 	S2 = x[1]<psiae ? 1 : powl(psiae/x[1], 1/lam);
 	S3 = x[2]<psiae ? 1 : powl(psiae/x[2], 1/lam);
-
-	if(x[0]<psiae){
-		Stg1 = 0.005*(psiae - x[0]);
-	    dStg1 = 0.005;}
-	else {Stg1=0;
-	      dStg1=0;}
-	if(x[1]<psiae){
-			Stg1 = 0.005*(psiae - x[1]);
-		    dStg1 = 0.005;}
-	else {Stg2=0;
-		      dStg2=0;}
-	if(x[2]<psiae){
-			Stg1 = 0.005*(psiae - x[2]);
-		    dStg1 = 0.005;}
-	else {Stg3=0;
-		      dStg3=0;}
-
-
 
 
 	theta11 = S1*(thetas - thetar) + thetar;// + std::max<double>(0, 0.005*(psiae - x[0]) );
