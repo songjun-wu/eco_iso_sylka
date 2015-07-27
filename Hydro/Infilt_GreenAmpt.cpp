@@ -48,7 +48,7 @@ void Basin::Infilt_GreenAmpt(double &f, double &F, double &theta, double &pond, 
         if (inp <= Ks){
         	F += inp * DT;
         	//theta = F / depth;//* ef_poros / depth; //cf. line 27 of this file
-        	pond = 0;
+        	//pond = 0;
 
       //  	if(theta > fc){
       //  		percolat += (theta - fc) * depth;
@@ -93,8 +93,8 @@ void Basin::Infilt_GreenAmpt(double &f, double &F, double &theta, double &pond, 
         }
         	F += deltaF;
         	f = Ks * ( ( psidtheta / F) + 1 );
-		//	theta = F / depth;//* ef_poros / depth; //cf. line 27 of this file
-			pond -= deltaF ;
+			//theta = F / depth;//* ef_poros / depth; //cf. line 27 of this file
+			//pond -= deltaF ;
 
 		//	if(theta > fc){
 		//		percolat += (theta - fc) * depth;

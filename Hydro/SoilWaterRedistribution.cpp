@@ -100,7 +100,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	Fun[1] = x[1] - L2  - (K12 - K23) * dt;
 	Fun[2] = x[2] - L3  - (K23 - L * K3) * dt;
 
-	cout << "Fun: " << Fun << endl;
+	//cout << "Fun: " << Fun << endl;
 
 	J(0, 0) = 1 + dt * dK12dL1;
 	J(0, 1) = dt * dK12dL2;
@@ -111,7 +111,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	J(2, 0) = 0;
 	J(2, 1) = -dt * dK23dL2;
 	J(2, 2) = 1 - dt * (dK23dL3 - L * dK3dL3);
-    cout << "J" << J << endl;
+//    cout << "J" << J << endl;
 
 	if (!solve(deltax, J, -Fun)) {
 		cout << "Singular Jacobian found in Newton solver - soil water redistribution routine\n";
@@ -125,19 +125,30 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	S3 = std::max<double>(0,(x[2]/d3 - thetafc)/(thetas - thetafc));
 
 	k++;
-	cout << x << endl << deltax << endl;
+//	cout << x << endl << deltax << endl;
 	} while (norm(deltax, 2) > 0.00000001 && k < MAX_ITER);
+	if (k >= MAX_ITER)
+							cout << "WARNING: Max no iterations reached for G&A solution " << endl;
 
 
 		theta1 = x[0]/d1;
 		theta2 = x[1]/d2;
 		theta3 = x[2]/d3;
 
+		pond -=F;
+		if(theta3>thetas){
+					theta2 += (theta3 - thetas) * d1/d2;
+					theta3 = thetas;}
+		if(theta2>thetas){
+							theta1 += (theta2 - thetas) * d2/d1;
+							theta2 = thetas;}
 		if(theta1>thetas){
 			pond += -(thetas - theta1) * d1;
 			theta1 = thetas;}
 
 		K3 = Ks * powl(std::max<double>(0,S3), p);
         leak =   L * K3;
+
+
 }
 
