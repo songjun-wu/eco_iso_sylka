@@ -16,6 +16,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 		int r, int c) {
 
 
+	double temp_pnd = pond;
 	double K1, K12, K2, K23, K3;
 	double Ss = 0.0;//0005;
 	double thetafc = _fieldcap->matrix[r][c];
@@ -96,7 +97,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 		dK3dL3 = 1/dt;}
 
 
-	Fun[0] = x[0] - L1  - (F  - K12 * dt);
+	Fun[0] = x[0] - L1  - (0  - K12 * dt);
 	Fun[1] = x[1] - L2  - (K12 - K23) * dt;
 	Fun[2] = x[2] - L3  - (K23 - L * K3) * dt;
 
@@ -111,7 +112,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	J(2, 0) = 0;
 	J(2, 1) = -dt * dK23dL2;
 	J(2, 2) = 1 - dt * (dK23dL3 - L * dK3dL3);
-//    cout << "J" << J << endl;
+    cout << "J" << J << endl;
 
 	if (!solve(deltax, J, -Fun)) {
 		cout << "Singular Jacobian found in Newton solver - soil water redistribution routine\n";
@@ -135,7 +136,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 		theta2 = x[1]/d2;
 		theta3 = x[2]/d3;
 
-		pond -=F;
+		//pond -=F;
 		if(theta3>thetas){
 					theta2 += (theta3 - thetas) * d1/d2;
 					theta3 = thetas;}
