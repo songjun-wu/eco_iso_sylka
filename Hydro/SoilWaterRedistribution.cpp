@@ -39,7 +39,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
     x[1] = L2;
     x[2] = L3;
 
-	double a = dt*Ks/(thetas+thetar);
+	double a = dt*Ks/(thetas-thetar);
 
 	colvec Fun(3);
 	mat J = zeros < mat > (3, 3);
