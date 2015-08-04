@@ -19,9 +19,10 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 
 	double K1, K12, K2, K23, K3;
 	double thetar = _theta_r->matrix[r][c];
+	double thetafc = _fieldcap->matrix[r][c];
 	double thetas = _porosity->matrix[r][c];
 	double Ks = _Ksat->matrix[r][c];
-	double L = _bedrock_leak->matrix[r][c];
+	double L = 0;//_bedrock_leak->matrix[r][c];
 
 //depth of soil layers
 	double depth = _soildepth->matrix[r][c];
@@ -29,7 +30,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	double d2 = _depth_layer2->matrix[r][c];
 	double d3 = depth - d1 - d2;
 
-	colvec x(3);
+	double  x[3] = {};
 
 	double L1 = theta1*d1;
 	double L2 = theta2*d2;
@@ -41,39 +42,29 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 
 	double a = dt*Ks/(thetas-thetar);
 
-	colvec Fun(3);
-	mat J = zeros < mat > (3, 3);
-	colvec deltax(3);
+	if(x[0]/d1>thetafc){
+		x[0] =( L1 + a* thetar) / (1 + a/d1);
+	//check if too much drainage
+	if(x[0]/d1 < thetafc)
+		x[0] = thetafc * d1;
 
+	L2 += L1 - x[0];
+	x[1]=L2;}
 
-	Fun[0] = L1 + a*thetar;
-	Fun[1] = L2;
-	Fun[2] = L3 + (L - 1)*a*thetar;
+	if(L2/d2>thetafc){
+		x[1] =(L2 + a* thetar) / (1 + a/d2);
+	//check if too much drainage
+	if(x[1]/d2 < thetafc)
+		x[1] = thetafc * d2;
 
-	//cout << "Fun: " << Fun << endl;
+	L3 += L2 - x[1];
+	x[2]=L3;}
 
-	J(0, 0) = 1 + a/(d1+d2);
-	J(0, 1) =  a/(d1+d2);
-	J(0, 2) = 0;
-	J(1, 0) = -a/(d1+d2);
-	J(1, 1) = 1 - a/(d1+d2) + a/(d2+d3);
-	J(1, 2) = a/(d2+d3);
-	J(2, 0) = 0;
-	J(2, 1) = -a/(d2+d3);
-	J(2, 2) = 1 - a/(d2+d3) + L * a/d3;
-    cout << "J" << J << endl;
-
-	if (!solve(x, J, Fun)) {
-		cout << "Singular matrix in  soil water redistribution routine\n";
-		return EXIT_FAILURE;
-	}
-
-	cout <<"x: " <<  x << endl;
-
-	K1 = Ks * (x[0]/d1 - thetar)/(thetas - thetar);
-	K2 = Ks * (x[1]/d2 - thetar)/(thetas - thetar);
-	K3 = Ks * (x[2]/d3 - thetar)/(thetas - thetar);
-
+	if(L3/d3>thetafc){
+		x[2] =(L3 + L*a* thetar) / (1 +L* a/d3);
+	//check if too much drainage
+	if(x[2]/d3 < thetafc)
+		x[2] = thetafc * d3;}
 
 
 		theta1 = x[0]/d1;
@@ -91,7 +82,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 			pond += -(thetas - theta1) * d1;
 			theta1 = thetas;}
 
-		K3 = Ks * (x[2]/d3 - thetar)/(thetas - thetar);
+		K3 = std::max<double>(0,(L2 - x[1])/dt);
         leak =   L * K3;
 
 
