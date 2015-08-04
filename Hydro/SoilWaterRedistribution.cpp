@@ -22,7 +22,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	double thetafc = _fieldcap->matrix[r][c];
 	double thetas = _porosity->matrix[r][c];
 	double Ks = _Ksat->matrix[r][c];
-	double L = 0;//_bedrock_leak->matrix[r][c];
+	double L = _bedrock_leak->matrix[r][c];
 
 //depth of soil layers
 	double depth = _soildepth->matrix[r][c];
@@ -82,8 +82,8 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 			pond += -(thetas - theta1) * d1;
 			theta1 = thetas;}
 
-		K3 = std::max<double>(0,(L2 - x[1])/dt);
-        leak =   L * K3;
+		leak = std::max<double>(0,(L3 - x[2])/dt);
+
 
 
 }
