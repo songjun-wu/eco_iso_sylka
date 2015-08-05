@@ -73,7 +73,7 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 
 		//pond -=F;
 		if(theta3>thetas){
-					theta2 += (theta3 - thetas) * d1/d2;
+					theta2 += (theta3 - thetas) * d3/d2;
 					theta3 = thetas;}
 		if(theta2>thetas){
 							theta1 += (theta2 - thetas) * d2/d1;
