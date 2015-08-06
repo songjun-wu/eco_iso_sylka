@@ -52,14 +52,14 @@ class Basin {
 	grid *_paramWc; //empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
 	grid *_paramWp; ////empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
 	grid *_meltCoeff; //snowmelt coefficient m s-1 C-1
-	grid *_channelmask; //mask indicating the cells with a channel. boolean
+	grid *_channelwidth; //width of channel in m. 0 if no channel
 	grid *_chGWparam; //subsurface to channel water transfer parameter [dimensionless]
+	grid *_Manningn; //manning's n
 
 	grid *_ldd; //local drain direction (steepest 8 neighbor algorithm)
 	grid *_catcharea; //catchment area (m2)
 	grid *_slope; //slope in mm-1
-	//grid *_rr; //random roughness
-	//grid *_n; //manning's n
+
 
 	grid *_dampdepth; // soil depth at which there is no diurnal temperature variation
 	grid *_Temp_d; //temperature at damping depth

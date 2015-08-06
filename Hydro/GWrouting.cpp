@@ -34,6 +34,9 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 		REAL8 returnflow = 0; //flow from gw in excess of the available soil storage
 		//REAL8 maxR = 0; //maximum gravitational water possible
 		REAL8 qc = 0; // water transfered from the subsurface system to the channel
+		REAL8 C = 0; //rhs of kinematic wave equation
+		REAL8 a,b,n, w, y, P, S; //kinematic wave factors
+
 
 //	grid *upstreamBC = new grid(*_GrndWater); //holds the upstream boundary conditions
 
@@ -58,12 +61,12 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 
 		fc = _fieldcap->matrix[r][c];
 		soildepth = _soildepth->matrix[r][c];
-		double d1 = _depth_layer1->matrix[r][c];
-		double d2 = _depth_layer2->matrix[r][c];
-		double d3 = soildepth - d1 - d2;
+		d1 = _depth_layer1->matrix[r][c];
+		d2 = _depth_layer2->matrix[r][c];
+		d3 = soildepth - d1 - d2;
 
-	//	if(ctrl.sw_reinfilt && !(ctrl.sw_channel && _channelmask->matrix[r][c] == 1) ) //if reinfiltration switch is on is not a channel cell or the channel switch is off
-	//			Infilt_GreenAmpt(f, F, theta1, ponding, gw, dt, r, c);
+		if(ctrl.sw_reinfilt && !(ctrl.sw_channel && _channelwidth->matrix[r][c] > 0) ) //if reinfiltration switch is on is not a channel cell or the channel switch is off
+				Infilt_GreenAmpt(f, F, theta1, ponding, gw, dt, r, c);
 
 
 
@@ -73,10 +76,20 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 		}
 
 
-		if (ctrl.sw_channel && _channelmask->matrix[r][c] == 1){ //if this is a channel cell and channels are activated
+		if (ctrl.sw_channel && _channelwidth->matrix[r][c] > 0){ //if this is a channel cell and channels are activated
 			//maxR = ( _porosity->matrix[r][c] - fc ) * soildepth; //calculates the maximum gravitational water that can go
 			qc = _Ksat->matrix[r][c] * gw * ( 1 - expl(- _chGWparam->matrix[r][c] * gw) );
 			gw -= qc * dtdx;
+
+            S = _slope->matrix[r][c];
+			w = _channelwidth->matrix[r][c];
+            n = _Manningn->matrix[r][c];
+			P = w + 2*y;
+			a = powl(powl(P,0.67)*n/powl(S,0.5), 0.6);
+			C = dtdx * + a * powl(Q,0.6) + dt*
+
+
+
 			ponding += qc * dtdx;
 		}
 

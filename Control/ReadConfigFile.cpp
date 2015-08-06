@@ -85,8 +85,9 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_wind_speed, "WindSpeed");
 
 	Config.readInto(fn_ldd, "local_drain_direc");
-	Config.readInto(fn_chmask, "channel_mask");
+	Config.readInto(fn_chwidth, "channel_width");
 	Config.readInto(fn_chgwparam, "channel_gw_transfer_param");
+	Config.readInto(fn_chmanningn, "mannings_n");
 
 	/*Basin state variables section*/
 	Config.readInto(fn_swe, "snow_water_equivalent");
@@ -133,7 +134,10 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_MaxAir_Temperature = Config.read<bool>("Report_MaxAir_Temperature");
 	Rep_SWE = Config.read<bool>("Report_SWE");
 	Rep_Infilt_Cap = Config.read<bool>("Report_Infilt_Cap");
-	Rep_Soil_Water_Content = Config.read<bool>("Report_Soil_Water_Content");
+	Rep_Soil_Water_Content_Average = Config.read<bool>("Report_Soil_Water_Content_Average");
+	Rep_Soil_Water_Content_L1 = Config.read<bool>("Report_Soil_Water_Content_L1");
+	Rep_Soil_Water_Content_L2 = Config.read<bool>("Report_Soil_Water_Content_L2");
+	Rep_Soil_Water_Content_L3 = Config.read<bool>("Report_Soil_Water_Content_L3");
 	Rep_Soil_Sat_Deficit = Config.read<bool>("Report_Soil_Sat_Deficit");
 	Rep_GWater = Config.read<bool>("Report_Ground_Water");
 	Rep_Soil_ETP = Config.read<bool>("Report_Soil_ETP");
@@ -174,7 +178,10 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_MaxAir_Temperature = Config.read<bool>("Ts_MaxAir_Temperature");
 	RepTs_SWE = Config.read<bool>("Ts_SWE");
 	RepTs_Infilt_Cap = Config.read<bool>("Ts_Infilt_Cap");
-	RepTs_Soil_Water_Content = Config.read<bool>("Ts_Soil_Water_Content");
+	RepTs_Soil_Water_Content_Average = Config.read<bool>("Ts_Soil_Water_Content_Average");
+	RepTs_Soil_Water_Content_L1 = Config.read<bool>("Ts_Soil_Water_Content_L1");
+	RepTs_Soil_Water_Content_L2 = Config.read<bool>("Ts_Soil_Water_Content_L2");
+	RepTs_Soil_Water_Content_L3 = Config.read<bool>("Ts_Soil_Water_Content_L3");
 	RepTs_Soil_Sat_Deficit = Config.read<bool>("Ts_Soil_Sat_Deficit");
 	RepTs_GroundWater = Config.read<bool>("Ts_Ground_Water");
 	RepTs_Soil_ETP = Config.read<bool>("Ts_Soil_ETP");

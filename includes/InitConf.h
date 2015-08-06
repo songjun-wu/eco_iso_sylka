@@ -45,8 +45,9 @@ struct Control{
 		/*Base maps filenames*/
 		string fn_dem; //local base dem filename that forces grid geometry
 		string fn_ldd; //local drain direction map filename
-		string fn_chmask; //channel mask
+		string fn_chwidth; //channel width (m)
 		string fn_chgwparam; //channel water transfer parameter
+		string fn_chmanningn; //channel roughness parameter
 
 		/*Soil properties and parameters*/
 		string fn_isohyet; //map with rainfall multipliers
@@ -115,7 +116,10 @@ struct Control{
 		bool Rep_MaxAir_Temperature;
 		bool Rep_SWE;
 		bool Rep_Infilt_Cap;
-		bool Rep_Soil_Water_Content;
+		bool Rep_Soil_Water_Content_Average;
+		bool Rep_Soil_Water_Content_L1;
+		bool Rep_Soil_Water_Content_L2;
+		bool Rep_Soil_Water_Content_L3;
 		bool Rep_Soil_Sat_Deficit;
 		bool Rep_GWater;
 		bool Rep_Soil_ETP;
@@ -157,7 +161,10 @@ struct Control{
 		bool RepTs_MaxAir_Temperature;
 		bool RepTs_SWE;
 		bool RepTs_Infilt_Cap;
-		bool RepTs_Soil_Water_Content;
+		bool RepTs_Soil_Water_Content_Average;
+		bool RepTs_Soil_Water_Content_L1;
+		bool RepTs_Soil_Water_Content_L2;
+		bool RepTs_Soil_Water_Content_L3;
 		bool RepTs_Soil_Sat_Deficit;
 		bool RepTs_GroundWater;
 		bool RepTs_Soil_ETP;

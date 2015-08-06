@@ -240,10 +240,9 @@ void Basin::CheckMaps(Control &ctrl) {
 						"Topsoil Initial soil moisture map is larger than porosity inside the valid domain...\n");
 				throw e;
 			}
-			if (_channelmask->matrix[r][c] != 1
-					&& _channelmask->matrix[r][c] != 0) {
+			if (_channelwidth->matrix[r][c] < 0) {
 				string e(
-						"The channel mask contains funny values that are now allowed\n");
+						"The channel width map contains negative values\n");
 				throw e;
 			}
 

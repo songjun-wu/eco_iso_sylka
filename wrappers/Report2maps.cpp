@@ -30,8 +30,14 @@ int Report2Maps(){
 		WriteMapSeries(oBasin->getSnowWaterEquiv(), "SWE", oControl->current_ts_count);
 	if (oControl->Rep_Infilt_Cap)
 		WriteMapSeries(oBasin->getInfiltCap(), "If", oControl->current_ts_count);
-	if (oControl->Rep_Soil_Water_Content)
-		WriteMapSeries(oBasin->getSoilMoist_av(), "Theta", oControl->current_ts_count);
+	if (oControl->Rep_Soil_Water_Content_Average)
+		WriteMapSeries(oBasin->getSoilMoist_av(), "SWCav", oControl->current_ts_count);
+	if (oControl->Rep_Soil_Water_Content_L1)
+			WriteMapSeries(oBasin->getSoilMoist1(), "SWC_1", oControl->current_ts_count);
+	if (oControl->Rep_Soil_Water_Content_L2)
+				WriteMapSeries(oBasin->getSoilMoist2(), "SWC_2", oControl->current_ts_count);
+	if (oControl->Rep_Soil_Water_Content_L3)
+				WriteMapSeries(oBasin->getSoilMoist3(), "SWC_3", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Sat_Deficit)
 		WriteMapSeries(oBasin->getSaturationDeficit(), "SatDef", oControl->current_ts_count);
 	if (oControl->Rep_GWater)
@@ -238,12 +244,33 @@ int Report2Maps(){
 						oControl->path_ResultsFolder + "InfiltCap.tab",
 						oControl->current_ts_count);
 	}
-	if (oControl->RepTs_Soil_Water_Content){
+	if (oControl->RepTs_Soil_Water_Content_Average){
 		if(oControl->current_ts_count == 1)
-			oReport->RenameFile(oControl->path_ResultsFolder + "SoilMoisture.tab");
+			oReport->RenameFile(oControl->path_ResultsFolder + "SoilMoistureAv.tab");
 		oReport->ReportTimeSeries(oBasin->getSoilMoist_av(),
-						oControl->path_ResultsFolder + "SoilMoisture.tab",
+						oControl->path_ResultsFolder + "SoilMoistureAv.tab",
 						oControl->current_ts_count);
+	}
+	if (oControl->RepTs_Soil_Water_Content_L1){
+			if(oControl->current_ts_count == 1)
+				oReport->RenameFile(oControl->path_ResultsFolder + "SoilMoistureL1.tab");
+			oReport->ReportTimeSeries(oBasin->getSoilMoist1(),
+							oControl->path_ResultsFolder + "SoilMoistureL1.tab",
+							oControl->current_ts_count);
+	}
+	if (oControl->RepTs_Soil_Water_Content_L2){
+				if(oControl->current_ts_count == 1)
+					oReport->RenameFile(oControl->path_ResultsFolder + "SoilMoistureL2.tab");
+				oReport->ReportTimeSeries(oBasin->getSoilMoist2(),
+								oControl->path_ResultsFolder + "SoilMoistureL2.tab",
+								oControl->current_ts_count);
+	}
+	if (oControl->RepTs_Soil_Water_Content_L3){
+				if(oControl->current_ts_count == 1)
+					oReport->RenameFile(oControl->path_ResultsFolder + "SoilMoistureL3.tab");
+				oReport->ReportTimeSeries(oBasin->getSoilMoist3(),
+								oControl->path_ResultsFolder + "SoilMoistureL3.tab",
+								oControl->current_ts_count);
 	}
 	if (oControl->RepTs_Soil_Sat_Deficit){
 			if(oControl->current_ts_count == 1)
@@ -251,7 +278,7 @@ int Report2Maps(){
 			oReport->ReportTimeSeries(oBasin->getSaturationDeficit(),
 							oControl->path_ResultsFolder + "SoilSatDef.tab",
 							oControl->current_ts_count);
-		}
+	}
 	if (oControl->RepTs_GroundWater) {
 		if (oControl->current_ts_count == 1)
 			oReport->RenameFile(oControl->path_ResultsFolder + "GroundWater.tab");

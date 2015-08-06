@@ -105,10 +105,12 @@ Basin::~Basin(){
 		delete _GrndWater;
 	if(_GWupstreamBC)
 		delete _GWupstreamBC;
-	if(_channelmask)
-		delete _channelmask;
+	if(_channelwidth)
+		delete _channelwidth;
 	if(_chGWparam)
 		delete _chGWparam;
+	if(_Manningn)
+		delete _Manningn;
 	if(_soilmoist_av)
 		delete _soilmoist_av;
 	if(_soilmoist2)
