@@ -97,6 +97,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_soilthermcond, "Dry_Soil_Therm_Cond");
 	Config.readInto(fn_dampdepth, "Damping_depth");
 	Config.readInto(fn_tempdamp, "Temp_at_damp_depth");
+	Config.readInto(fn_streamflow, "Streamflow");
 	Config.readInto(fn_soilmoist, "Soil_moisture_1");
 
 	Config.readInto(fn_depth_layer1, "Depth_soil_layer_1");

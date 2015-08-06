@@ -35,7 +35,8 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 		//REAL8 maxR = 0; //maximum gravitational water possible
 		REAL8 qc = 0; // water transfered from the subsurface system to the channel
 		REAL8 C = 0; //rhs of kinematic wave equation
-		REAL8 a,b,n, w, y, P, S; //kinematic wave factors
+		REAL8 Qi1j = 0; //old discharge at the beginning of time step
+		REAL8 a, n, w,  sqrtS, abQ, Qk, Qk1,  fQj1i1, dfQj1i1; //kinematic wave factors
 
 
 //	grid *upstreamBC = new grid(*_GrndWater); //holds the upstream boundary conditions
@@ -81,16 +82,35 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 			qc = _Ksat->matrix[r][c] * gw * ( 1 - expl(- _chGWparam->matrix[r][c] * gw) );
 			gw -= qc * dtdx;
 
-            S = _slope->matrix[r][c];
+			ponding += qc * dtdx;
+
+            //kinematic wave
+		    Qi1j = _Disch_old->matrix[r][c]; //Q at the beginning of time step
+			if(Qi1j+ponding > 0){ //if there is water to route
+			sqrtS = powl(_slope->matrix[r][c], 0.5);
+
 			w = _channelwidth->matrix[r][c];
             n = _Manningn->matrix[r][c];
-			P = w + 2*y;
-			a = powl(powl(P,0.67)*n/powl(S,0.5), 0.6);
-			C = dtdx * + a * powl(Q,0.6) + dt*
+			a = powl(powl(w,0.67)*n/sqrtS, 0.6); //wetted perimeter is approximated with channel width
+			//initial guess through solution of linear kw
+			abQ = a*0.6*powl(0.5*(Qi1j+ponding*w/dt), 0.6-1);
+			Qk = ((ponding*w)+(abQ*Qi1j))/(dtdx+abQ);
 
+			C =  a * powl(Qi1j,0.6) + ponding*w;
 
+			uint count = 0;
+			do{
+				   Qk=Qk1;
+				      fQj1i1 = dtdx*Qk+a*powl(Qk, 0.6)-C;
+				      dfQj1i1 = dtdx+a*0.6*powl(Qk, 0.6-1);
+				      Qk1 = Qk - (fQj1i1/dfQj1i1);
+				      Qk1 = max<double>(Qk1, 1e-8); //avoids powl illegal operation
+				      fQj1i1 = dtdx*Qk+a*powl(Qk, 0.6)-C;
+				      count++;
+			}while(fabs(fQj1i1)>0.00001 && count < MAX_ITER);
 
-			ponding += qc * dtdx;
+            _Disch_old->matrix[r][c] = Qk1;
+			}
 		}
 
 

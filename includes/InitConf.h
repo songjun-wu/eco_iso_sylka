@@ -76,6 +76,7 @@ struct Control{
 		string fn_soilthermcond;
 		string fn_dampdepth;
 		string fn_tempdamp;
+		string fn_streamflow;
 		string fn_soilmoist;
 		string fn_soilmoist2;
 		string fn_soilmoist3;

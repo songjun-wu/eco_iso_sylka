@@ -97,7 +97,8 @@ class Basin {
 	grid *_Temp_s; //temperature of the surface in dg C
 	grid *_Temp_s_old; //temperature of the surface in dg C in the previous time step
 
-	grid *_Disch; //discharge out of each cell in the basin (m s-1)
+	grid *_Disch; //discharge out of each channel cell in the basin (m3 s-1)
+	grid *_Disch_old;// streamflow out of each channel cell at the beginning of hte time step (m3 s-1)
 	vectCells _dailyOvlndOutput; //vector containing water output for each cell with no drainage (ldd value of 5). The vectCell structure contains the row and col
 								 //of the cell with no output and the area draining to that cell m3s-1
 	vectCells _dailyGwtrOutput; //vector containing water output for each cell with no drainage (ldd value of 5). The vectCell structure contains the row and col
