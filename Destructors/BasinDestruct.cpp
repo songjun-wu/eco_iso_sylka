@@ -97,6 +97,8 @@ Basin::~Basin(){
 		delete _Disch;
 	if(_Disch_old)
 		delete _Disch_old;
+	if(_Disch_upstreamBC)
+		delete _Disch_upstreamBC;
 	if(_catcharea)
 		delete _catcharea;
 	if(_GravityWater)

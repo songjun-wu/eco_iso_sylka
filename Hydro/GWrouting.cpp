@@ -34,9 +34,12 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 		REAL8 returnflow = 0; //flow from gw in excess of the available soil storage
 		//REAL8 maxR = 0; //maximum gravitational water possible
 		REAL8 qc = 0; // water transfered from the subsurface system to the channel
+		REAL8 qall = 0; //lateral inflows to channel
 		REAL8 C = 0; //rhs of kinematic wave equation
 		REAL8 Qi1j = 0; //old discharge at the beginning of time step
-		REAL8 a, n, w,  sqrtS, abQ, Qk, Qk1,  fQj1i1, dfQj1i1; //kinematic wave factors
+		REAL8 Qij1 = 0; //new discharge from the upstream boundary
+		REAL8 Qk1 = 0; //new discharge out of the cell
+		REAL8 a, n, w,  sqrtS, abQ, Qk,  fQj1i1, dfQj1i1; //kinematic wave factors
 
 
 //	grid *upstreamBC = new grid(*_GrndWater); //holds the upstream boundary conditions
@@ -84,19 +87,28 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 
 			ponding += qc * dtdx;
 
-            //kinematic wave
+            /*//kinematic wave
 		    Qi1j = _Disch_old->matrix[r][c]; //Q at the beginning of time step
-			if(Qi1j+ponding > 0){ //if there is water to route
+		    Qij1 = _Disch_upstreamBC->matrix[r][c]; //Q at the upstream end of the channel at t+1
+
+			qall = ponding*_dx/dt;
+		    if(Qi1j+qall+Qij1 > 0){ //if there is water to route
 			sqrtS = powl(_slope->matrix[r][c], 0.5);
 
 			w = _channelwidth->matrix[r][c];
             n = _Manningn->matrix[r][c];
 			a = powl(powl(w,0.67)*n/sqrtS, 0.6); //wetted perimeter is approximated with channel width
 			//initial guess through solution of linear kw
-			abQ = a*0.6*powl(0.5*(Qi1j+ponding*w/dt), 0.6-1);
-			Qk = ((ponding*w)+(abQ*Qi1j))/(dtdx+abQ);
+			REAL8 avQ = 0.5*(Qi1j+Qij1);
+			if (avQ==0) abQ=0;
+			else abQ = a*0.6*powl(avQ, 0.6-1);
+			Qk = ((dtdx*Qij1)+(abQ*Qi1j) + dt*qall)/(dtdx+abQ);
 
-			C =  a * powl(Qi1j,0.6) + ponding*w;
+			if(Qk<1e6)
+				Qk1 = Qk;
+			else{
+
+			C =  dtdx * Qij1 + a * powl(Qi1j,0.6) + dt*qall;
 
 			uint count = 0;
 			do{
@@ -104,13 +116,18 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 				      fQj1i1 = dtdx*Qk+a*powl(Qk, 0.6)-C;
 				      dfQj1i1 = dtdx+a*0.6*powl(Qk, 0.6-1);
 				      Qk1 = Qk - (fQj1i1/dfQj1i1);
-				      Qk1 = max<double>(Qk1, 1e-8); //avoids powl illegal operation
+				      Qk1 = max<double>(Qk1, 1e-6); //avoids powl illegal operation
 				      fQj1i1 = dtdx*Qk+a*powl(Qk, 0.6)-C;
 				      count++;
-			}while(fabs(fQj1i1)>0.00001 && count < MAX_ITER);
+			}while(fabs(fQj1i1)>0.00001 && count < MAX_ITER);}
 
-            _Disch_old->matrix[r][c] = Qk1;
-			}
+
+			_Disch_old->matrix[r][c] = Qk1;
+			ponding = 0;
+			}*/
+
+
+			//end kinematic wave
 		}
 
 
@@ -168,37 +185,50 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 			switch (d) //add the previously calculated *discharge* (not elevation) to the downstream cell
 								{
 									case 1:   _GWupstreamBC->matrix[r+1][c-1]+= hj1i1 * alpha;
+											  _Disch_upstreamBC->matrix[r+1][c-1] += Qk1;
 														_ponding->matrix[r+1][c-1] += ponding;
 														break;
 									case 2:   _GWupstreamBC->matrix[r+1][c]+= hj1i1 * alpha;
+									          _Disch_upstreamBC->matrix[r+1][c] += Qk1;
 									 	 	 	 	 	 _ponding->matrix[r+1][c]+= ponding;
 									 	 	 	 	 	 break;
 									case 3:   _GWupstreamBC->matrix[r+1][c+1]+= hj1i1* alpha;
+									          _Disch_upstreamBC->matrix[r+1][c+1] += Qk1;
 														_ponding->matrix[r+1][c+1]+= ponding;
 														break;
 									case 4:   _GWupstreamBC->matrix[r][c-1]+= hj1i1* alpha;
+									          _Disch_upstreamBC->matrix[r][c-1] += Qk1;
 														_ponding->matrix[r][c-1]+= ponding;
 														break;
 									case 5: _dailyGwtrOutput.cells.push_back(cell(r, c, (alpha * hj1i1 * _dx) ));
-													_dailyOvlndOutput.cells.push_back(cell(r, c, ponding * _dx *_dx / dt));
+									        _dailyOvlndOutput.cells.push_back(cell(r, c, Qk1));
+									        //_dailyOvlndOutput.cells.push_back(cell(r, c, ponding * _dx *_dx / dt));
 														break; //if it is an outlet store the outflow m3s-1
 									case 6:   _GWupstreamBC->matrix[r][c+1]+= hj1i1* alpha;
+									          _Disch_upstreamBC->matrix[r][c+1] += Qk1;
 														_ponding->matrix[r][c+1]+= ponding;
 														break;
 									case 7:   _GWupstreamBC->matrix[r-1][c-1]+= hj1i1* alpha;
+									          _Disch_upstreamBC->matrix[r-1][c-1] += Qk1;
 														_ponding->matrix[r-1][c-1]+= ponding;
 														break;
 									case 8:   _GWupstreamBC->matrix[r-1][c]+= hj1i1* alpha;
+									          _Disch_upstreamBC->matrix[r-1][c] += Qk1;
 														_ponding->matrix[r-1][c]+= ponding;
 														break;
 									case 9:   _GWupstreamBC->matrix[r-1][c+1]+= hj1i1* alpha;
+									          _Disch_upstreamBC->matrix[r-1][c+1] += Qk1;
 									 	 	 	 	 	_ponding->matrix[r-1][c+1]+= ponding;
 									 	 	 	 	 	break;
 									default: return -1;
 								}
 
-			 _ponding->matrix[r][c] = 0.0;
-			 _GrndWater->matrix[r][c] = 0.0;
+			//if(ctrl.sw_channel && _channelwidth->matrix[r][c] > 0)
+			//	_ponding->matrix[r][c] =  (Qij1 + qall*_dx - Qk1)*dtdx/_dx;
+			//else
+				_ponding->matrix[r][c] = 0.0;
+
+			_GrndWater->matrix[r][c] = 0.0;
 
 	}
 

@@ -57,6 +57,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 	_dailyOvlndOutput.cells.clear();
 	_dailyGwtrOutput.cells.clear();
 	_GWupstreamBC->reset();
+	_Disch_upstreamBC->reset();
 
 #pragma omp parallel default(shared) private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can,\
 		evap, infcap, accinf, theta, theta2, theta3, ponding, gw, za, z0u, zdu, z0o, zdo, wind, treeheight,\

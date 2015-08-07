@@ -93,6 +93,7 @@ Basin::Basin(Control &ctrl)
 		_GrndWaterOld = new grid(*_DEM); //groundwater storage at teh beginning of the time step
 		_GrndWater = new grid(*_DEM); //groundwater storage at the end of the time step
 		_GWupstreamBC = new grid(*_DEM); //gw flux upstream boundary conditin (ms-1)
+		_Disch_upstreamBC = new grid(*_DEM);
 
 
 
