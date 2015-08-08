@@ -37,6 +37,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 		REAL8 qall = 0; //lateral inflows to channel
 		REAL8 Qij1 = 0; //new discharge from the upstream boundary
 		REAL8 Qk1 = 0; //new discharge out of the cell
+		REAL8 Si1j1 = 0; //storage in channel at the end of time step
 
 
 //	grid *upstreamBC = new grid(*_GrndWater); //holds the upstream boundary conditions
@@ -84,22 +85,12 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 			//maxR = ( _porosity->matrix[r][c] - fc ) * soildepth; //calculates the maximum gravitational water that can go
 			qc = _Ksat->matrix[r][c] * gw * ( 1 - expl(- _chGWparam->matrix[r][c] * gw) );
 			gw -= qc * dtdx;
-
-			ponding += qc * dtdx;
-
-			//qall = ponding*_dx/dt;
-
-			//KinematicWave(Qk1, Qij1,  qall,  dt, r, c);
-
-			Qk1 = ponding * _dx*_dx/dt  + Qij1 ;
-			ponding = 0;
-
 		}
 
 
-		_soilmoist1->matrix[r][c] = theta1;
-		_soilmoist2->matrix[r][c] = theta2;
-		_soilmoist3->matrix[r][c] = theta3;
+	//	_soilmoist1->matrix[r][c] = theta1;
+	//	_soilmoist2->matrix[r][c] = theta2;
+	//	_soilmoist3->matrix[r][c] = theta3;
 		_GravityWater->matrix[r][c] = gw;
 
 
@@ -146,17 +137,27 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 				hj1i1 = (poros - theta3) * d3;
 			}
 
+
+
+           //channe routing
+			if (ctrl.sw_channel && _channelwidth->matrix[r][c] > 0) {
+
+				ponding += qc * dtdx;
+
+				qall = ponding*_dx/dt;
+
+				KinematicWave(Qk1, Si1j1, Qij1,  qall,  dt, r, c);
+
+				//Qk1 = ponding * _dx*_dx/dt  + Qij1 ;
+				ponding = 0;
+
+			}
+
 			_soilmoist1->matrix[r][c] = theta1;
 			_soilmoist2->matrix[r][c] = theta2;
 			_soilmoist3->matrix[r][c] = theta3 + hj1i1 / d3;
 			_GrndWater->matrix[r][c]= hj1i1;
 
-
-
-			if (ctrl.sw_channel && _channelwidth->matrix[r][c] > 0) {
-			   Qk1 += ponding*_dx*_dx/dt; //includes additional discharge from return flow
-				ponding = 0;
-			}
 			switch (d) //add the previously calculated *discharge* (not elevation) to the downstream cell
 								{
 									case 1:   _GWupstreamBC->matrix[r+1][c-1]+= hj1i1 * alpha;
@@ -199,7 +200,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 								}
 
 			if(ctrl.sw_channel && _channelwidth->matrix[r][c] > 0)
-				_ponding->matrix[r][c] = 0;// (Qij1 + qall*_dx - Qk1)*dtdx/_dx;
+				_ponding->matrix[r][c] = Si1j1/(_dx*_dx);
 			else
 				_ponding->matrix[r][c] = 0.0;
 

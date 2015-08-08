@@ -167,7 +167,7 @@ class Basin {
 	void CalcSoilMoistureProfile(Atmosphere &atm, Control &ctrl, REAL8 theta,
 			UINT4 row, UINT4 col);
 
-	void KinematicWave(REAL8 &Qk1,  REAL8 &Qij1,  REAL8 &qall,  REAL8 dt, UINT4 r, UINT4 c);
+	void KinematicWave(REAL8 &Qk1,  REAL8 &S,   REAL8 &Qij1,  REAL8 &qall,  REAL8 dt, UINT4 r, UINT4 c);
 
 /*	//This function updates _psi with the soil tension corresponding to the current soil moisture status
 	void UpdateSoilWaterPotential() {
