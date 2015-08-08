@@ -161,8 +161,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 				theta  -= transp * p * dt * ((theta-thetar)*froot1) / (d1*theta_available); //soil moisture at t=t+1
 				theta2 -= transp * p * dt * ((theta2-thetar)*froot2) / (d2*theta_available); //soil moisture at t=t+1
 				theta3 -= transp * p * dt * ((theta3-thetar)*froot3) / (d3*theta_available); //soil moisture at t=t+1
-				if(theta2<thetar)
-					cout <<"dd";
+
 				_soilmoist1->matrix[r][c] = theta;
 				_soilmoist2->matrix[r][c] = theta2;
 				_soilmoist3->matrix[r][c] = theta3;
