@@ -33,11 +33,11 @@ int Report2Maps(){
 	if (oControl->Rep_Soil_Water_Content_Average)
 		WriteMapSeries(oBasin->getSoilMoist_av(), "SWCav", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_L1)
-			WriteMapSeries(oBasin->getSoilMoist1(), "SWC_1", oControl->current_ts_count);
+			WriteMapSeries(oBasin->getSoilMoist1(), "SWC1_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_L2)
-				WriteMapSeries(oBasin->getSoilMoist2(), "SWC_2", oControl->current_ts_count);
+				WriteMapSeries(oBasin->getSoilMoist2(), "SWC2_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_L3)
-				WriteMapSeries(oBasin->getSoilMoist3(), "SWC_3", oControl->current_ts_count);
+				WriteMapSeries(oBasin->getSoilMoist3(), "SWC3_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Sat_Deficit)
 		WriteMapSeries(oBasin->getSaturationDeficit(), "SatDef", oControl->current_ts_count);
 	if (oControl->Rep_GWater)

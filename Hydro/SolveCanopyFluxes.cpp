@@ -127,7 +127,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 				froot1 = _rootfrac1->matrix[r][c];
 				froot2 = _rootfrac2->matrix[r][c];
 				froot3 = 1 - froot1 - froot2;
-				theta_available = theta * froot1 + theta2 * froot2 + theta3 * froot3;
+				theta_available = (theta-thetar) * froot1 + (theta2-thetar) * froot2 + (theta3-thetar) * froot3;
 				//root depth is the depth of layers that contain 95% of roots
 				if (froot1 > 0.95)
 					rootdepth = froot1 > d1;
@@ -158,9 +158,11 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 				transp_f += transp * p;
 				evap_f += evap * p; //evaporation at t=t+1
 
-				theta  -= transp * p * dt * froot1 / d1; //soil moisture at t=t+1
-				theta2 -= transp * p * dt * froot2 / d2; //soil moisture at t=t+1
-				theta3 -= transp * p * dt * froot3 / d3; //soil moisture at t=t+1
+				theta  -= transp * p * dt * ((theta-thetar)*froot1) / (d1*theta_available); //soil moisture at t=t+1
+				theta2 -= transp * p * dt * ((theta2-thetar)*froot2) / (d2*theta_available); //soil moisture at t=t+1
+				theta3 -= transp * p * dt * ((theta3-thetar)*froot3) / (d3*theta_available); //soil moisture at t=t+1
+				if(theta2<thetar)
+					cout <<"dd";
 				_soilmoist1->matrix[r][c] = theta;
 				_soilmoist2->matrix[r][c] = theta2;
 				_soilmoist3->matrix[r][c] = theta3;

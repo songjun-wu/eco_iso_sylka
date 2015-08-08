@@ -68,8 +68,9 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 		d2 = _depth_layer2->matrix[r][c];
 		d3 = soildepth - d1 - d2;
 
+
 		if(ctrl.sw_reinfilt && !(ctrl.sw_channel && _channelwidth->matrix[r][c] > 0) ) //if reinfiltration switch is on is not a channel cell or the channel switch is off
-				Infilt_GreenAmpt(f, F, theta1, ponding, gw, dt, r, c);
+				Infilt_GreenAmpt(f, F, theta1,theta2, theta3, ponding, gw, dt, r, c);
 
 
 
@@ -97,8 +98,11 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 
 
 		_soilmoist1->matrix[r][c] = theta1;
+		_soilmoist2->matrix[r][c] = theta2;
 		_soilmoist3->matrix[r][c] = theta3;
 		_GravityWater->matrix[r][c] = gw;
+
+
 
 		///enter groundwater
 			poros = _porosity->matrix[r][c];
@@ -146,6 +150,8 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 			_soilmoist2->matrix[r][c] = theta2;
 			_soilmoist3->matrix[r][c] = theta3 + hj1i1 / d3;
 			_GrndWater->matrix[r][c]= hj1i1;
+
+
 
 			if (ctrl.sw_channel && _channelwidth->matrix[r][c] > 0) {
 			   Qk1 += ponding*_dx*_dx/dt; //includes additional discharge from return flow
@@ -200,6 +206,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 			_GrndWater->matrix[r][c] = 0.0;
 			_Disch_old->matrix[r][c] = Qk1;
 			Qk1=0;
+
 
 	}
 

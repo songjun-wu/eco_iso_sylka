@@ -92,7 +92,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 					Tsold = 0;
 					Tdold = 0;
 
-					Infilt_GreenAmpt(infcap, accinf, theta, ponding, gw, dt, r, c); //updates soil moisture
+					Infilt_GreenAmpt(infcap, accinf, theta, theta2, theta3, ponding, gw, dt, r, c); //updates soil moisture
 
 
 			        SoilWaterRedistribution(accinf, theta, theta2, theta3, ponding, leak, dt, r, c);
