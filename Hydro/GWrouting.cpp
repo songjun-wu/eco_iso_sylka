@@ -53,7 +53,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 
 		//surface routing stuff
 		returnflow = 0;
-		Qk1 = 0;
+		Qij1 = _Disch_upstreamBC->matrix[r][c];
 		qall=0;
 		ponding = _ponding->matrix[r][c];
 		theta1 = _soilmoist1->matrix[r][c];
@@ -86,11 +86,11 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 
 			ponding += qc * dtdx;
 
-			qall = ponding*_dx/dt;
+			//qall = ponding*_dx/dt;
 
 			//KinematicWave(Qk1, Qij1,  qall,  dt, r, c);
 
-			Qk1 = ponding;
+			Qk1 = ponding * _dx*_dx/dt  + Qij1 ;
 			ponding = 0;
 
 		}
@@ -147,8 +147,10 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 			_soilmoist3->matrix[r][c] = theta3 + hj1i1 / d3;
 			_GrndWater->matrix[r][c]= hj1i1;
 
-			Qk1 += ponding*_dx*_dx/dt; //includes additional discharge from return flow
-
+			if (ctrl.sw_channel && _channelwidth->matrix[r][c] > 0) {
+			   Qk1 += ponding*_dx*_dx/dt; //includes additional discharge from return flow
+				ponding = 0;
+			}
 			switch (d) //add the previously calculated *discharge* (not elevation) to the downstream cell
 								{
 									case 1:   _GWupstreamBC->matrix[r+1][c-1]+= hj1i1 * alpha;
@@ -197,6 +199,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl){
 
 			_GrndWater->matrix[r][c] = 0.0;
 			_Disch_old->matrix[r][c] = Qk1;
+			Qk1=0;
 
 	}
 
