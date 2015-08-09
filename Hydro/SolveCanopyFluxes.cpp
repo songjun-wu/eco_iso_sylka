@@ -70,7 +70,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 							rootdepth, froot1, froot2, froot3, d1, d2, d3, thetar, fc) \
 					shared(nsp, atm, ctrl, dt, thre)
 {
-	//thre = omp_get_num_threads();
+	thre = omp_get_num_threads();
     #pragma omp single
 	printf("\nnum threads %d: ", thre);
     #pragma omp for nowait
