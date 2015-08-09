@@ -60,7 +60,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 	_Disch_upstreamBC->reset();
 
 #pragma omp parallel default(shared) private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can,\
-		evap, infcap, accinf, theta, theta2, theta3, ponding, gw, za, z0u, zdu, z0o, zdo, wind, treeheight,\
+		evap, infcap, accinf, theta, theta2, theta3, ponding,leak,  gw, za, z0u, zdu, z0o, zdo, wind, treeheight,\
 		nr, le, sens, grndh, snowh, mltht, p) //shared(ctrl, atm, nsp, dt)
 {
 //thre = omp_get_num_threads();
