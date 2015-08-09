@@ -93,8 +93,6 @@ Basin::~Basin(){
 		delete _psi;
 	if(_CanopyStorage)
 		delete _CanopyStorage;
-	if(_Disch)
-		delete _Disch;
 	if(_Disch_old)
 		delete _Disch_old;
 	if(_Disch_upstreamBC)

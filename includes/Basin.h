@@ -97,7 +97,6 @@ class Basin {
 	grid *_Temp_s; //temperature of the surface in dg C
 	grid *_Temp_s_old; //temperature of the surface in dg C in the previous time step
 
-	grid *_Disch; //discharge out of each channel cell in the basin (m3 s-1)
 	grid *_Disch_old;// streamflow out of each channel cell at the beginning of hte time step (m3 s-1)
 	grid *_Disch_upstreamBC; //upstream boundary condition (m3s-1)
 	vectCells _dailyOvlndOutput; //vector containing water output for each cell with no drainage (ldd value of 5). The vectCell structure contains the row and col
@@ -113,6 +112,7 @@ class Basin {
 
 	int CalcCatchArea();
 	int CalcFieldCapacity();
+	int CalcInitialStreamStorage();
 
 	double NetRad(Atmosphere &atm, const double &Ts, REAL8 Kbeers, REAL8 lai,
 			REAL8 ec, REAL8 Tc, int row, int col);
@@ -264,6 +264,9 @@ public:
 
 	grid *getPondingWater() const {
 		return _ponding;
+	}
+	grid *getStreamflow() const {
+		return _Disch_old;
 	}
 
 	grid *getSoilMoist1() const {

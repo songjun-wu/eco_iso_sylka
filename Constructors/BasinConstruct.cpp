@@ -78,7 +78,7 @@ Basin::Basin(Control &ctrl)
 		_Temp_s = new grid(*_DEM);
 		//_Temp_s_old = new grid(*_DEM);
 		_CanopyStorage = new grid(*_DEM);
-		_Disch = new grid(*_DEM);
+
 
 		_soilmoist_av = new grid(*_DEM); //average volumetric soil moisture of the first 10 cm of the soil as calculated using a hydrstatic equilibrium moisture profile
 		_ponding = new grid(*_DEM);
@@ -104,6 +104,7 @@ Basin::Basin(Control &ctrl)
 
 	CalcCatchArea(); //Fills-in the _catcharea map with the upstream catchment area of each cell
 	CalcFieldCapacity(); //calcualte the value of field capacity using the Brooks and Corey Formula
+	CalcInitialStreamStorage(); //Reads initial streamflow map and populate _ponding variable with initial storage in stream
 
 /*	for(unsigned int r = 0; r <  _NRows; r++)//remove!!!!!
 	      for(unsigned int c = 0; c <  _NCols; c++)

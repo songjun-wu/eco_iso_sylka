@@ -30,6 +30,8 @@ int Report2Maps(){
 		WriteMapSeries(oBasin->getSnowWaterEquiv(), "SWE", oControl->current_ts_count);
 	if (oControl->Rep_Infilt_Cap)
 		WriteMapSeries(oBasin->getInfiltCap(), "If", oControl->current_ts_count);
+    if (oControl->Rep_Streamflow)
+    	WriteMapSeries(oBasin->getStreamflow(), "Q", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_Average)
 		WriteMapSeries(oBasin->getSoilMoist_av(), "SWCav", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_L1)
@@ -166,9 +168,9 @@ int Report2Maps(){
 
 	if(oControl->RepTs_OutletDischarge){
 		if(oControl->current_ts_count == 1)
-					oReport->RenameFile(oControl->path_ResultsFolder + "Discharge.tab");
+					oReport->RenameFile(oControl->path_ResultsFolder + "OutletDisch.tab");
 				oReport->ReportVectCells(oBasin->getDailyOvlndOutput(),
-						oControl->path_ResultsFolder + "Discharge.tab",
+						oControl->path_ResultsFolder + "OutletDisch.tab",
 						oControl->current_ts_count);
 	}
 
@@ -242,6 +244,13 @@ int Report2Maps(){
 			oReport->RenameFile(oControl->path_ResultsFolder + "InfiltCap.tab");
 		oReport->ReportTimeSeries(oBasin->getInfiltCap(),
 						oControl->path_ResultsFolder + "InfiltCap.tab",
+						oControl->current_ts_count);
+	}
+	if (oControl->RepTs_Streamflow){
+		if(oControl->current_ts_count == 1)
+			oReport->RenameFile(oControl->path_ResultsFolder + "Streamflow.tab");
+		oReport->ReportTimeSeries(oBasin->getStreamflow(),
+						oControl->path_ResultsFolder + "Streamflow.tab",
 						oControl->current_ts_count);
 	}
 	if (oControl->RepTs_Soil_Water_Content_Average){
