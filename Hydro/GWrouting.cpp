@@ -173,7 +173,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl) {
 			break;
 		case 5:
 			_dailyGwtrOutput.cells.push_back(cell(r, c, (alpha * hj1i1 * _dx)));
-			_dailyOvlndOutput.cells.push_back(cell(r, c, Qk1));
+			_dailyOvlndOutput.cells.push_back(cell(r, c, Qk1+ponding * _dx *_dx / dt)); //second term needed to account for outer at outlets with no channel
 			//_dailyOvlndOutput.cells.push_back(cell(r, c, ponding * _dx *_dx / dt));
 			break; //if it is an outlet store the outflow m3s-1
 		case 6:
