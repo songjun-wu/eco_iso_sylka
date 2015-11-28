@@ -37,7 +37,7 @@ struct Control{
 		bool sw_channel; //switch to turn on and off the channel option
 
 		/*multiple option switches*/
-		int toggle_soil_water_profile; //toggle between different soil moisture profile calculation
+		//int toggle_soil_water_profile; //toggle between different soil moisture profile calculation
 		int toggle_ra; //toggle between aerodynamic resistance options
 		int toggle_rs; //toggle between different soil resistance option
 

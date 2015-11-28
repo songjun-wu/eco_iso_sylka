@@ -18,7 +18,7 @@ void Basin::KinematicWave(REAL8 &Qk1, REAL8 &S,  REAL8 &Qij1,  REAL8 &qall,  REA
 
 	REAL8 a, n, w,  sqrtS, abQ, Qk,  fQj1i1, dfQj1i1; //kinematic wave factors
 	REAL8 dtdx = dt/_dx;
-	uint count = 0;
+	UINT4 count = 0;
 
 	 //kinematic wave
 
