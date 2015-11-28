@@ -44,8 +44,13 @@ Forest::Forest(Control &ctrl)
 
 
 	}catch (std::bad_alloc &)
-	  { cerr << "Couldn't allocate memory..." << "\n";
-		cin.get(); throw;
+	  { cerr << "Cleaning up the forest..." << "\n";
+		if(_patches)
+			delete _patches;
+		if(_species)
+			delete[] _species;
+
+	  throw;
 	  }
 
 }

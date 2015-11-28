@@ -129,6 +129,8 @@ Atmosphere::Atmosphere(Control &ctrl){
 
 		  if (_isohyet)
 			  delete _isohyet;
+		  if(_rain_snow_temp)
+			  delete _rain_snow_temp;
 
 		  throw;
 		  }
