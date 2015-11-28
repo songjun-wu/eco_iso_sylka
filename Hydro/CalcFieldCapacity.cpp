@@ -10,12 +10,12 @@
 
 int Basin::CalcFieldCapacity(){
 
-	UINT4 r, c, length;
+	UINT4 r, c;
 
-	length = _vSortedGrid.cells.size();
+	UINT4 length = _vSortedGrid.cells.size();
 
 #pragma omp parallel default(none)\
-		private(  r,c,length)
+		private(  r,c), shared(length)
 	for (UINT4 j = 0; j < length ; j++)
 	{
 					r = _vSortedGrid.cells[j].row;

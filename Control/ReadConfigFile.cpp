@@ -35,7 +35,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	sw_reinfilt = Config.read<bool>("Reinfiltration");
 	sw_channel = Config.read<bool>("Channel");
 
-	toggle_soil_water_profile = Config.read<int>("Soil_water_profile_opt");
+	//toggle_soil_water_profile = Config.read<int>("Soil_water_profile_opt");
 	toggle_ra = Config.read<int>("Aerodyn_resist_opt");
 	toggle_rs = Config.read<int>("Soil_resistance_opt");
 

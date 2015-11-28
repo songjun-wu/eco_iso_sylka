@@ -6,10 +6,10 @@
  */
 
 #define ARMA_NO_DEBUG //disables armadillo bound checks for speed optimization
-#include <armadillo>
+//#include <armadillo>
 #include"Basin.h"
 
-using namespace arma;
+//using namespace arma;
 
 int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 		double &theta2, double &theta3, double &pond, double &leak,  double dt,

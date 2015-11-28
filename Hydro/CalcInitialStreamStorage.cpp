@@ -10,13 +10,13 @@
 
 int Basin::CalcInitialStreamStorage(){
 
-	UINT4 r, c, length;
+	UINT4 r, c;
 	REAL8 w, n, a, sqrtS, Q;
 
-	length = _vSortedGrid.cells.size();
+	UINT4 length = _vSortedGrid.cells.size();
 
 #pragma omp parallel default(none)\
-		private(  r,c,length, w, n, a, sqrtS,Q)
+		private(  r,c, w, n, a, sqrtS,Q), shared(length)
 	for (UINT4 j = 0; j < length ; j++)
 	{
 					r = _vSortedGrid.cells[j].row;

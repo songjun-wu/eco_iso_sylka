@@ -10,12 +10,12 @@
 void Basin::CheckMaps(Control &ctrl) {
 
 	UINT4 r, c;
-
-
+	UINT4 j =0;
+    bool excep_thrown = false; //  poor man way  to rethrow exception outside omp pragma
+    UINT4 length = _vSortedGrid.cells.size();
 	#pragma omp parallel for\
-		  default(shared) private(r,c) \
-
-	for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
+		  default(shared) private(r,c,j)
+	for (j = 0; j < length ; j++)
 		{
 			r = _vSortedGrid.cells[j].row;
 			c = _vSortedGrid.cells[j].col;
@@ -283,8 +283,10 @@ void Basin::CheckMaps(Control &ctrl) {
 		} catch (string &e) {
 			cout << e;
 			cout << "In row " << r << " col " << c << endl;
-			throw;
 		}
 
 	}
+
+	if(excep_thrown)
+		throw;
 }
