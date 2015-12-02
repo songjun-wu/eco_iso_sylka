@@ -68,7 +68,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
 						// Soil to root conductance. Adapted from Rodriguez-Iturbe and Porporato (eq 6.4, page 181) for
 						// units of hydraulic head
-						gsr = keff * sqrt(RAI)/Zr;
+						//gsr = keff * sqrt(RAI)/Zr;
+
 
 
 						fA = -4 * emissivity * stefboltz;	//pools together net radiation factors
