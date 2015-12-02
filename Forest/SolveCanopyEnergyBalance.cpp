@@ -36,6 +36,9 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 	REAL8 soilRH; //soil relative humidty use in teh calculation of soil vapor pressure for latent heat exchanges
 	REAL8 leavesurfRH; //relative humidity of the leave surface. 1 when leave is saturated with intercepted water, airRH when no water
 
+	// variables for Sperry's model
+	REAL8 S =0;  // Soil Saturation
+
 
 		UINT4 nsp = getNumSpecies();
 
@@ -68,7 +71,20 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
 						// Soil to root conductance. Adapted from Rodriguez-Iturbe and Porporato (eq 6.4, page 181) for
 						// units of hydraulic head
-						//gsr = keff * sqrt(RAI)/Zr;
+						S = (theta - thetar) / (bas.getPorosity()->matrix[r][c] - thetar);
+
+						psi_s = fabs(psi_ae)	/ pow(S, bclambda);
+						RAI = RAI_max;
+						gsr = keff * sqrt(RAI)/rootdepth;
+
+						sperry_c = 5;
+						sperry_d = 3;
+						sperry_ks = 2;
+
+						dfPSI_KL =  sperry_ks * LAI;
+						dfPsi_BKL = gsr * dfPSI_KL;
+						dfPsi_sum1 = gsr * sperry_c + gsr;
+						dfPsi_sum2 = psi_s * gsr * sperry_c;
 
 
 
@@ -83,6 +99,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 						int k = 0;
 
 						do{
+
+
 
 							lambda = Ts1 < 0 ?  lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
@@ -105,7 +123,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 							Ts1 = Ts - (fTs/dfTs);
 							_species[s]._Temp_c->matrix[r][c] = Ts1;
 
-
+							// Sperry stuff
+							gp = sperry_ks * powl(psi_l/sperry_d, sperry_c);
+							gsrp = LAI*gsr*gp / (gsr + LAI gp);
+							fPsi_l = gsrp*(psi_l - psi_s) +LET/(rho_w*lambda)
+						    psidc = powl(psi_l/sperry_d, sperry_c);
+							dfPsi_l = dfPsi_BKL * psidc * (psi_l*(dfPsi_sum1 + dfPsi_KL*psidc) - dfPsi_sum2) / (psi_l * (gsr + dfPsi_KL*psidc)*(gsr + dfPsi_KL*psidc))
+							psi_l1 = psi_l - (fPsi_l/dfPsi_l);
 
 							k++;
 						}while(fabs(Ts1 - Ts) > 0.0001 && k < MAX_ITER);
