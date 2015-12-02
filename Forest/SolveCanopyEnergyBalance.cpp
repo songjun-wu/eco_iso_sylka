@@ -63,6 +63,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
 						ra_t = ra + (1/gc);
 
+						// Calculation of conductances necessary for the implementation of Sperry's model
+						// to calculate leaf water potential.
+
+						// Soil to root conductance. Adapted from Rodriguez-Iturbe and Porporato (eq 6.4, page 181) for
+						// units of hydraulic head
+						gsr = keff * sqrt(RAI)/Zr;
+
 
 						fA = -4 * emissivity * stefboltz;	//pools together net radiation factors
 						fB = (-1/ (ra * gamma)) * rho_a * spec_heat_air; // pools together the latent heat factors
