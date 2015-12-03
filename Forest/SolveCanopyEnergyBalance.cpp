@@ -10,6 +10,7 @@
 UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 fc, REAL8 rootdepth, REAL8 ra, REAL8 gc, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, UINT4 s, UINT4 r, UINT4 c){
 
 	//energy balance parameters
+	REAL8 dt = ctrl.dt;
 	REAL8 fA, fB, fC, fD; //pooling factors
 	REAL8 ea; //emissivity of air
 	REAL8 rho_a; //density of air
@@ -37,7 +38,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 	REAL8 leavesurfRH; //relative humidity of the leave surface. 1 when leave is saturated with intercepted water, airRH when no water
 
 	// variables for Sperry's model
-	REAL8 S =0;  // Soil Saturation
+	REAL8 Sold =0;  // Soil Saturation at beginning of t
+	REAL8 gp = 0; //plant conductance
+	REAL8 gsr = 0; //soil conductance
+	REAL8 gsrp = 0; //grs + gp
+	REAL8 E = 0; // Temporary calculatio of transpiration
+	REAL8 RAI = 0; // Potential Root Area Index, which is maximum active RAI under current root density
+
 
 
 		UINT4 nsp = getNumSpecies();
@@ -71,21 +78,17 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
 						// Soil to root conductance. Adapted from Rodriguez-Iturbe and Porporato (eq 6.4, page 181) for
 						// units of hydraulic head
-						S = (theta - thetar) / (bas.getPorosity()->matrix[r][c] - thetar);
-
-						psi_s = fabs(psi_ae)	/ pow(S, bclambda);
-						RAI = RAI_max;
-						gsr = keff * sqrt(RAI)/rootdepth;
+						Sold = (theta - thetar) / (bas.getPorosity()->matrix[r][c] - thetar);
 
 						sperry_c = 5;
 						sperry_d = 3;
 						sperry_ks = 2;
 
-						dfPSI_KL =  sperry_ks * LAI;
-						dfPsi_BKL = gsr * dfPSI_KL;
-						dfPsi_sum1 = gsr * sperry_c + gsr;
-						dfPsi_sum2 = psi_s * gsr * sperry_c;
 
+						// derivative of F[2] calculated in Wolfram using:
+						// derivative k*sqrt(R*x^-a)/(pi*Z) * L*g*exp(-(p/d)^c) / (k*sqrt(R*x^-a)/(pi*Z) +  L*g*exp(-(p/d)^c))
+						df2dS_numfac = 0.5 * PI * sperry_a * sperry_ks * sperry_ks * Keff * LAI * LAI * RAI * rootdepth;
+						df2dS_denterm = PI * sperry_ks * LAI * rootdepth;
 
 
 						fA = -4 * emissivity * stefboltz;	//pools together net radiation factors
@@ -93,39 +96,66 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 						fC = (-1/(ra)) * rho_a * spec_heat_air; // pools together the sensible heat factors
 						fD = (-1/ (ra_t * gamma)) * rho_a * spec_heat_air; // pools together the latent heat factors
 
-
 						evap_a = CanStor < MaxCanStor ? -CanStor/ctrl.dt * powl( (CanStor/MaxCanStor), 0.6 ) : -CanStor/ctrl.dt;
 
 						int k = 0;
 
+						REAL8 J[4][4]; // Jacobian matrix
+						REAL8 F[4]; // system of non-linear equations
+						 //state variables:
+						// x[0]: S - (degree of saturation at time t+1)
+						// x[1]: psi_s - soil water potential
+						// x[2]: psi_l  leaf water potential
+						// x[3]: Ts - Leaf temperature
+						REAL8 x[4];
+
 						do{
-
-
 
 							lambda = Ts1 < 0 ?  lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
 							Ts = _species[s]._Temp_c->matrix[r][c];
 
-							desdTs = 611 * ( (17.3/( Ts + 237.7)) - ((17.3 * Ts)/(powl(Ts + 237.2 , 2))) )
-														* expl(17.3 * Ts /( Ts + 237.7));
+							desdTs = 611 * ( (17.3/( x[3] + 237.7)) - ((17.3 * x[3])/(powl(x[3] + 237.2 , 2))) )
+														* expl(17.3 * x[3] /( x[3] + 237.7));
 							//LE_lim = evap_a * rho_w * lambda;
 							//LE_unlim = LatHeatCanopy(atm, leavesurfRH, ra, Ts, r, c);
 
-							LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, Ts, r, c); /*LE = LE_unlim;   max<REAL8>(LE_lim, LE_unlim);
+							LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[3], r, c); /*LE = LE_unlim;   max<REAL8>(LE_lim, LE_unlim);
 								if(LE == LE_lim)
 									fB = 0;*/
-							LET = LatHeatCanopy(bas, atm, soilRH, ra_t, Ts, r, c);
-							H = SensHeatCanopy(atm, ra, Ts, r, c);
+							LET = LatHeatCanopy(bas, atm, soilRH, ra_t, x[3], r, c);
+							H = SensHeatCanopy(atm, ra, x[3], r, c);
 
-							fTs = NetRadCanopy(atm, Ts, emissivity, albedo, BeerK, LAI, r, c) + LE + H + LET;
-							dfTs = fA*powl(Ts + 273.2, 3) + fB * desdTs * leavesurfRH + fC + fD * desdTs * soilRH;
+							// Sperry stuff
+							gsr = keff * sqrt(RAI*powl(x[0],sperry_a)) / ( PI * rootdepth);
+							gp = sperry_ks * expl(-powl(x[2]/sperry_d, sperry_c));
+							gsrp = LAI*gsr*gp / (gsr + LAI * gp);
+
+							E = -LET/(rho_w*lambda)
+		                    psidc = expl(powl(psi_l/sperry_d, sperry_c));
+							sqrtRS = sqrt(RAI * powl(x[0],-sperry_a))
+
+							F[0] = ((S - Sold) *  (poros - thetar) + thetar) * rootdepth / dt + E;
+							F[1] = psi_ae  / powl(x[0], bclambda) - x[1];
+							F[2] = gsrp*(x[2] - x[1]) - E;
+							F[3] = NetRadCanopy(atm, x[3], emissivity, albedo, BeerK, LAI, r, c) + LE + H + LET;
+
+							J[0][0] = rootdepth * (poros - thetar) / dt;
+							J[0][1] = 0;
+							J[0][2] = 0;
+							J[0][3] = 0;
+							J[1][0] = - bclambda * psiae * powl(x[0], -(b+1));
+							J[1][1] = -1;
+							J[1][2] = 0;
+							J[1][3] = 0;
+							J[2][0] = - df2dS_numfac / (sqrtRS * (Keff * sqrtRS * psidc + df2dS_denterm) * (Keff * sqrtRS * psidc + df2dS_denterm))
+
+							J[3][3] = fA*powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH + fC + fD * desdTs * soilRH;
 
 							Ts1 = Ts - (fTs/dfTs);
 							_species[s]._Temp_c->matrix[r][c] = Ts1;
 
-							// Sperry stuff
-							gp = sperry_ks * powl(psi_l/sperry_d, sperry_c);
-							gsrp = LAI*gsr*gp / (gsr + LAI gp);
+
 							fPsi_l = gsrp*(psi_l - psi_s) +LET/(rho_w*lambda)
 						    psidc = powl(psi_l/sperry_d, sperry_c);
 							dfPsi_l = dfPsi_BKL * psidc * (psi_l*(dfPsi_sum1 + dfPsi_KL*psidc) - dfPsi_sum2) / (psi_l * (gsr + dfPsi_KL*psidc)*(gsr + dfPsi_KL*psidc))
@@ -182,3 +212,4 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
 						return EXIT_SUCCESS;
 }
+
