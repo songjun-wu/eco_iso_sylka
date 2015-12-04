@@ -16,19 +16,22 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		REAL8 ra, REAL8 gc, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a,
 		UINT4 s, UINT4 r, UINT4 c) {
 
+	//some constants
+	const REAL8 grav = 9.8;
+	const REAL8 Vw = 18e-6; // partial molal volume of water m3 mol-1
+	const REAL8 Rbar = 8.31446; // Universal gas constant in J K-1 mol-1
 	//energy balance parameters
 	REAL8 dt = ctrl.dt;
 	REAL8 fA, fB, fC, fD; //pooling factors
 	REAL8 ea; //emissivity of air
 	REAL8 rho_a; //density of air
 	REAL8 airRH; //air humidity
+	REAL8 es; // saturated vapor pressure
 	REAL8 desdTs; // derivative of saturation vapor pressure function with respect to Ts
 	REAL8 emissivity; //canopy emissivity
 	REAL8 albedo; //canopy albedo
 	REAL8 LAI;
 	REAL8 BeerK; //Beers-Lambert coefficient
-	REAL8 fTs;
-	REAL8 dfTs;
 	REAL8 LE, H;
 	REAL8 z; //terrain height
 	REAL8 gamma; //psychrometric constant
@@ -41,8 +44,10 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	REAL8 CanStor = 0;
 	REAL8 MaxCanStor = 0;
 
-	REAL8 soilRH; //soil relative humidty use in teh calculation of soil vapor pressure for latent heat exchanges
+	REAL8 leafRH; //soil relative humidty use in teh calculation of soil vapor pressure for latent heat exchanges
 	REAL8 leavesurfRH; //relative humidity of the leave surface. 1 when leave is saturated with intercepted water, airRH when no water
+	REAL8 dleafRHdT = 0;
+	REAL8 dleafRHdpsi_l = 0;
 
 	// variables for Sperry's model
 	REAL8 Sold = 0;  // Soil Saturation at beginning of t
@@ -81,7 +86,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		CanStor = getIntercWater(s, r, c);
 		MaxCanStor = getMaxCanopyStorage(s, r, c);
 
-		soilRH = 1; //min<REAL8>(1.0,Calculate_gs_theta(theta, fc, _species[s].WiltingPoint, 2.0)); //calculates soil pore relative humidity
+		leafRH = 1; //min<REAL8>(1.0,Calculate_gs_theta(theta, fc, _species[s].WiltingPoint, 2.0)); //calculates soil pore relative humidity
 		leavesurfRH = airRH + ((1 - airRH) / MaxCanStor) * CanStor;
 
 		ra_t = ra + (1 / gc);
@@ -102,9 +107,9 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		// Soil to root conductance. Adapted from Rodriguez-Iturbe and Porporato (eq 6.4, page 181) for
 		// units of hydraulic head
 
-		Sold = (theta - thetar) / (poros - thetar);
+		Sold = (theta/2 - thetar) / (poros - thetar);
 
-		RAI = 100;
+		RAI = 5.7;
 		REAL8 sperry_c = 1.9;
 		REAL8 sperry_d = 204;
 		REAL8 sperry_ks = 11.7;
@@ -129,6 +134,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		colvec F(4);
 		mat J = zeros<mat>(4,4);
 
+		//provide initial conditions for loop
 		x[0] = Sold;
 		x[1] = psiae / powl(x[0], bclambda);
 		x[2] = x[1];
@@ -140,6 +146,11 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			//x[3] = _species[s]._Temp_c->matrix[r][c];
 
+			leafRH = exp(-x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15)) );
+			dleafRHdT = leafRH *  x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15)*(x[3]+273.15));
+		    dleafRHdpsi_l = - rho_w * grav * Vw * leafRH  / (Rbar*(x[3]+273.15));
+
+			es = SatVaporPressure(x[3]);
 			desdTs = 611
 					* ((17.3 / (x[3] + 237.7))
 							- ((17.3 * x[3]) / (powl(x[3] + 237.2, 2))))
@@ -150,7 +161,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[3], r, c); /*LE = LE_unlim;   max<REAL8>(LE_lim, LE_unlim);
 			 if(LE == LE_lim)
 			 fB = 0;*/
-			LET = LatHeatCanopy(bas, atm, soilRH, ra_t, x[3], r, c);
+			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[3], r, c);
 			H = SensHeatCanopy(atm, ra, x[3], r, c);
 
 			// Sperry stuff
@@ -184,15 +195,16 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 					+ gsrp * gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c) * (x[2] - x[1]) / (x[2] * gsr);
 		//	J(2,3) = -fB * desdTs / (rho_w * lambda);
 
-			J(3,2) = 0;
+			J(3,2) = fD * es *  dleafRHdpsi_l;
 			J(3,3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
-					+ fC + fD * desdTs * soilRH;
+					+ fC + fD * desdTs * leafRH +  es * dleafRHdT;
 
 			// solve system
 			if (!solve(deltax, J, -F)) {
-				cout
-						<< "Singular Jacobian found in Newton solver for canopy balance.\n";
-				return 1;
+				cout << "Singular Jacobian found in Newton solver for canopy balance.\n";
+				J(2,2) = 1;
+				solve(deltax, J, -F);
+				//return 1;
 			}
 			//	        cout <<"x: " <<  x << endl;
 			x += deltax;
@@ -220,7 +232,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		if (Ts1 < atm.getTemperature()->matrix[r][c]) { //if teh calcualted canopy temperature is lower than air temperature make it air temperature
 			Ts1 = atm.getTemperature()->matrix[r][c];
-			LET = LatHeatCanopy(bas, atm, soilRH, ra_t, Ts, r, c);
+			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, Ts, r, c);
 			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, Ts, r, c);
 			_species[s]._Temp_c->matrix[r][c] = Ts1;
 		}
