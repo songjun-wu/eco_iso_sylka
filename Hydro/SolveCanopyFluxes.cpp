@@ -36,6 +36,10 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 	REAL8 rootdepth;
 	REAL8 thetar;
 	REAL8 fc;
+	REAL8 poros;
+	REAL8 Keff;
+	REAL8 psi_ae;
+	REAL8 bclambda;
 
 	REAL8 froot1;
 	REAL8 froot2;
@@ -89,6 +93,10 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 
 		thetar = _theta_r->matrix[r][c];
 		fc = _fieldcap->matrix[r][c];
+		poros = _porosity->matrix[r][c];
+		Keff = _Ksat->matrix[r][c];
+		psi_ae = _psi_ae->matrix[r][c];
+		bclambda = _BClambda->matrix[r][c];
 
 
 		d1 = _depth_layer1->matrix[r][c];
@@ -147,7 +155,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 				fForest->CanopyInterception(atm, ctrl, DelCanStor, D, s, r, c); //calculates canopy interception and trascolation
 
 				fForest->SolveCanopyEnergyBalance(*this, atm, ctrl, theta_available,
-						thetar, fc, rootdepth, ra, gc, DelCanStor, evap, transp,
+						thetar, poros, rootdepth, Keff, psi_ae, bclambda, ra, gc, DelCanStor, evap, transp,
 						s, r, c);
 
 				_CanopyStorage->matrix[r][c] += DelCanStor * p;
