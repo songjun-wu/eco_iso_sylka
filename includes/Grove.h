@@ -30,6 +30,7 @@ struct Grove {
 	REAL8 gs_theta_coeff; //curvature coefficient for soil tension function in stomatal conductance calculations
 	REAL8 WiltingPoint; //volumetric soil moisture at wilting point for the species
 	REAL8 SLA; //specific leaf area (m2 g-1)
+	REAL8 SRA; //specific root area (m2 g-1)
 	REAL8 Crown2Stem; //crown to stem diameter ratio (m m-1)
 	REAL8 TreeShapePar; //tree shape parameter from TREEDYN3
 	REAL8 WoodDensity; //wood density (gC m-3)
@@ -42,6 +43,11 @@ struct Grove {
 	REAL8 emissivity; //emissivity of dry canopy
 	REAL8 KBeers; //Extinction coefficient in Beers law of light extinction
 	REAL8 beta; //canopy water efficiency (gC m-1)
+	// Sperry parameters
+	REAL8 sperry_d; // Sperry model scaling parameter (m)
+	REAL8 sperry_c; // Sperry model shape exponent (m)
+	REAL8 sperry_Kp; // Sperry model hydraulic conductivity tissue (ms-1) used to calculate conductaance using DBH and plant height
+	REAL8 RAI_a; // parameter to scale effective RAI as per Daly et al. (2004). Coupled Dynamics of Photosynthesis,.... J Hydromet.
 	bool is_grass; //switch to indicate the species is of type grass
 	REAL8 MaxLeafTurnoverWaterStress; //maximum leaf turnover rate due to water stress (s-1)
 	REAL8 LeafTurnoverWaterStressShpParam; //Shape parameter leaf turnover rate due to water stress (-)
@@ -72,6 +78,7 @@ struct Grove {
 	grid *_WaterStorage; //current water stored in canopy m
 	grid *_ET; //Actual evapotranspiration ms-1
 	grid *_Transpiration; //transpiration component ms-1
+	grid *_LeafWatPot; // leaf water potential (positive m of head)
 
 
 

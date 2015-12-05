@@ -53,6 +53,8 @@ Grove::~Grove(){
 		delete _ET;
 	if(_Transpiration)
 		delete _Transpiration;
+	if(_LeafWatPot)
+		delete _LeafWatPot;
 
 
 }

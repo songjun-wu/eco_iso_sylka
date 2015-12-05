@@ -124,6 +124,19 @@ public:
 			return _species[n].KBeers;
     }
 
+    REAL8 getSperry_d(UINT4 n, UINT4 row, UINT4 col) const {
+    	return _species[n].sperry_d;
+    }
+    REAL8 getSperry_c(UINT4 n, UINT4 row, UINT4 col) const {
+    	return _species[n].sperry_c;
+    }
+    REAL8 getSperry_Kp(UINT4 n, UINT4 row, UINT4 col) const {
+    	return _species[n].sperry_Kp;
+    }
+    REAL8 getRAI_a(UINT4 n, UINT4 row, UINT4 col) const {
+    	return _species[n].RAI_a;
+    }
+
     REAL8 getCanopyEmissivity(UINT4 n, UINT4 row, UINT4 col) const {
         	return _species[n].emissivity;
     }
@@ -134,6 +147,9 @@ public:
 
     REAL8 getTranspiration(UINT4 n, UINT4 row, UINT4 col) const {
        	return _species[n]._Transpiration->matrix[row][col];
+    }
+    REAL8 getLeafWaterPotential(UINT4 n, UINT4 row, UINT4 col) const {
+    	return _species[n]._LeafWatPot->matrix[row][col];
     }
 
 
@@ -199,6 +215,9 @@ public:
 
     grid *getTranspirationSpeciesMap(UINT4 n) const {
        	return _species[n]._Transpiration;
+    }
+    grid *getLeafWaterPotSpeciesMap(UINT4 n) const {
+    	return _species[n]._LeafWatPot;
     }
 
   /*  //setters

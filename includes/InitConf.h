@@ -148,6 +148,7 @@ struct Control{
 		bool Rep_Canopy_Sens_Heat;
 		bool Rep_Canopy_Water_Stor;
 		bool Rep_Transpiration;
+		bool Rep_LeafWaterPotential;
 
 		/*time series reporting input files*/
 		string fn_rep_mask;
@@ -193,6 +194,7 @@ struct Control{
 		bool RepTs_Canopy_Sens_Heat;
 		bool RepTs_Canopy_Water_Stor;
 		bool RepTs_Transpiration;
+		bool RepTs_LeafWaterPotential;
 
 
 

@@ -423,6 +423,8 @@ public:
 
 	grid *getTranspiration(UINT4 n) const;
 
+	grid *getLeafWaterPotential(UINT4 n) const;
+
 	//setters
 
 };

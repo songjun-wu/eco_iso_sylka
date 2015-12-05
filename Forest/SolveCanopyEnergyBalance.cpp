@@ -23,7 +23,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	//energy balance parameters
 	REAL8 dt = ctrl.dt;
 	REAL8 fA, fB, fC, fD; //pooling factors
-	REAL8 ea; //emissivity of air
+
 	REAL8 rho_a; //density of air
 	REAL8 airRH; //air humidity
 	REAL8 es; // saturated vapor pressure
@@ -35,8 +35,11 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	REAL8 LE, H;
 	REAL8 z; //terrain height
 	REAL8 gamma; //psychrometric constant
-	REAL8 Ts = 0;
-	REAL8 Ts1 = 0; //Canopy temperature at NR iteration +1
+
+	REAL8 sperry_c;
+	REAL8 sperry_d;
+	REAL8 sperry_ks;
+	REAL8 root_a;
 
 	REAL8 lambda = lat_heat_vap;
 	REAL8 ra_t; //resistance to transpiration ra_t = ra + 1/gc
@@ -65,14 +68,11 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 	UINT4 nsp = getNumSpecies();
 
-	psiae= 0.4;
-	bclambda = 4.3;
-
 	if (s == nsp - 1) //for bare soil, water reaching the ground is pp times its proportion of the cell
 		evap_a = transp_a = 0;
 	else {
 
-		ea = AirEmissivity(atm.getTemperature()->matrix[r][c]);
+
 		rho_a = AirDensity(atm.getTemperature()->matrix[r][c]); //kgm-3
 		z = bas.getDEM()->matrix[r][c];
 		gamma = PsychrometricConst(101325, z);
@@ -82,6 +82,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		emissivity = _species[s].emissivity;
 		BeerK = _species[s].KBeers;
 		LAI = _species[s]._LAI->matrix[r][c];
+
+		RAI = _species[s]._RootMass->matrix[r][c] * _species[s].SRA;
+		root_a = _species[s].RAI_a;
+		sperry_c = _species[s].sperry_c;
+		sperry_d = _species[s].sperry_d;
+		sperry_ks = _species[s].sperry_Kp / _species[s]._Height->matrix[r][c];
+
 
 		CanStor = getIntercWater(s, r, c);
 		MaxCanStor = getMaxCanopyStorage(s, r, c);
@@ -109,11 +116,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		Sold = (theta/2 - thetar) / (poros - thetar);
 
-		RAI = 5.7;
-		REAL8 sperry_c = 1.9;
-		REAL8 sperry_d = 204;
-		REAL8 sperry_ks = 11.7;
-		REAL8 root_a = 8;
+
 
 		// derivative of F[2] calculated in Wolfram using:
 		// derivative k*sqrt(R*x^-a)/(pi*Z) * L*g*exp(-(p/d)^c) / (k*sqrt(R*x^-a)/(pi*Z) +  L*g*exp(-(p/d)^c))
@@ -171,12 +174,12 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			gsrp = LAI * gsr * gp / denfac;
 
 			E = -LET / (rho_w * lambda);
-			E= max(0.0,E);
+			E= std::max<REAL8>(0.0,E);
 
 			dF2dS_num = df2dS_numfac * gp * powl(x[0], -root_a - 1)* (x[2] - x[1]);
 			dF2dS_term = (dF2dS_num / (PIZ * PIZ * denfac * denfac));
 
-			F[0] = ((x[0] - Sold) * (poros - thetar) + thetar) * rootdepth / dt + E;
+			F[0] = (x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
 			F[1] = psiae / powl(x[0], bclambda) - x[1];
 			F[2] = gsrp * (x[2] - x[1]) - E;
 			F[3] = NetRadCanopy(atm, x[3], emissivity, albedo, BeerK, LAI, r, c)
@@ -193,6 +196,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			J(2,1) = -gsrp;
 			J(2,2) = -gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c)* (x[2] - x[1]) / x[2] + gsrp
 					+ gsrp * gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c) * (x[2] - x[1]) / (x[2] * gsr);
+			if(J(2,2)==0) // If the hydraulic column is broken remove
+				J(2,2)=1;
 		//	J(2,3) = -fB * desdTs / (rho_w * lambda);
 
 			J(3,2) = fD * es *  dleafRHdpsi_l;
@@ -202,24 +207,17 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			// solve system
 			if (!solve(deltax, J, -F)) {
 				cout << "Singular Jacobian found in Newton solver for canopy balance.\n";
-				J(2,2) = 1;
-				solve(deltax, J, -F);
-				//return 1;
+				return 1;
 			}
 			//	        cout <<"x: " <<  x << endl;
 			x += deltax;
 
 			cout << " x: " << std::endl << x;
-			cout << " x2-x1: " << std::endl << x[2] - x[1];
+			cout << " x2-x1: " << std::endl << x[2] - x[1] << std::endl;
 			cout << " deltax: " << std::endl << deltax;
 			cout << " F: " << std::endl << F;
 			cout << " norm x: " << std::endl << norm(deltax,2);
 			cout << " J: " << std::endl << J;
-
-
-			//_species[s]._Temp_c->matrix[r][c] = x[3];
-
-
 
 			k++;
 		} while (norm(deltax, 2) > 0.0001 && k < MAX_ITER);
@@ -227,14 +225,14 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		if (k >= MAX_ITER)
 			std::cout
 					<< "WARNING: non-convergence in canopy energy balance at cell row: "
-					<< r << " col: " << c << " closure err: " << (Ts1 - Ts)
+					<< r << " col: " << c << " closure err: " << norm(deltax, 2)
 					<< endl;
 
-		if (Ts1 < atm.getTemperature()->matrix[r][c]) { //if teh calcualted canopy temperature is lower than air temperature make it air temperature
-			Ts1 = atm.getTemperature()->matrix[r][c];
-			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, Ts, r, c);
-			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, Ts, r, c);
-			_species[s]._Temp_c->matrix[r][c] = Ts1;
+		if (x[0] < atm.getTemperature()->matrix[r][c]) { //if the calculated canopy temperature is lower than air temperature make it air temperature
+			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[0], r, c);
+			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[0], r, c);
+			x[0] = atm.getTemperature()->matrix[r][c];
+			_species[s]._Temp_c->matrix[r][c] = x[0];
 		}
 
 		evap_a = std::min<REAL8>(-evap_a, fabs(-LE / (rho_w * lambda))); //swap sign since outgoing evaporation is negative and we accumulate it as positive. Also checks for negative evap
@@ -242,14 +240,16 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		DelCanStor -= evap_a * ctrl.dt;
 
-		_species[s]._NetR_Can->matrix[r][c] = NetRadCanopy(atm, Ts1, emissivity,
+		_species[s]._NetR_Can->matrix[r][c] = NetRadCanopy(atm, x[3], emissivity,
 				albedo, BeerK, LAI, r, c);
 		_species[s]._LatHeat_Can->matrix[r][c] = LE + LET; //LatHeatCanopy(atm, ra, Ts1, r, c);
-		_species[s]._SensHeat_Can->matrix[r][c] = SensHeatCanopy(atm, ra, Ts1,
+		_species[s]._SensHeat_Can->matrix[r][c] = SensHeatCanopy(atm, ra, x[0],
 				r, c);
+		_species[s]._LeafWatPot->matrix[r][c] = -x[2];
 
 		///////////this chunk of code is to make sure we are not transpiring below residual moisture content
-
+        /////////// Probably not needed anymore since mass balance is enforced in the system of eqs.
+		/////////// solved in this function
 		REAL8 Tp;
 		Tp = transp_a * ctrl.dt;
 

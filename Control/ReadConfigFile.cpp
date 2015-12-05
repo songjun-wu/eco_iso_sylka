@@ -166,6 +166,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_Canopy_Sens_Heat = Config.read<bool>("Report_Canopy_Sens_Heat");
 	Rep_Canopy_Water_Stor = Config.read<bool>("Report_Canopy_Water_Stor");
 	Rep_Transpiration = Config.read<bool>("Report_Transpiration");
+	Rep_LeafWaterPotential = Config.read<bool>("Report_LeafWaterPotential");
 
 	Config.readInto(fn_rep_mask, "TS_mask");
 
@@ -210,6 +211,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_Canopy_Sens_Heat = Config.read<bool>("Ts_Canopy_Sens_Heat");
 	RepTs_Canopy_Water_Stor = Config.read<bool>("Ts_Canopy_Water_Stor");
 	RepTs_Transpiration = Config.read<bool>("Ts_Transpiration");
+	RepTs_LeafWaterPotential = Config.read<bool>("Ts_LeafWaterPotential");
 
 
 	}
