@@ -89,7 +89,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		RAI = _species[s]._RootMass->matrix[r][c] * _species[s].SRA;
 		root_a = _species[s].RAI_a;
-		sperry_c = _species[s].sperry_c;
+		sperry_c = 1.5; //_species[s].sperry_c;
 		sperry_d = _species[s].sperry_d;
 		sperry_ks = _species[s].sperry_Kp / _species[s]._Height->matrix[r][c];
 
@@ -102,7 +102,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		ra_t = ra + (1 / gc);
 
-		fA = -4 * emissivity * stefboltz;//pools together net radiation factors
+		fA =  -4 * emissivity * stefboltz;//pools together net radiation factors
 		fB = (-1 / (ra * gamma)) * rho_a * spec_heat_air; // pools together the latent heat factors
 		fC = (-1 / (ra)) * rho_a * spec_heat_air; // pools together the sensible heat factors
 		fD = (-1 / (ra_t * gamma)) * rho_a * spec_heat_air; // pools together the latent heat factors
@@ -153,24 +153,28 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 				x[0] = 0.01;
 			temp = -x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15));
 			if (temp >-708.4)
-				leafRH = expl(temp);
+				leafRH = std::min<REAL8>(1,expl(temp));
 			else
 				leafRH = 0;
 
 			dleafRHdT = leafRH *  x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15)*(x[3]+273.15));
-		    dleafRHdpsi_l = - rho_w * grav * Vw * leafRH  / (Rbar*(x[3]+273.15));
+			if(leafRH == 1)
+				dleafRHdpsi_l = 0;
+			else
+				dleafRHdpsi_l = - rho_w * grav * Vw * leafRH  / (Rbar*(x[3]+273.15));
+
+			leafRH = 1;
+			dleafRHdT = 0;
+			dleafRHdpsi_l = 0;
 
 			es = SatVaporPressure(x[3]);
 			desdTs = 611
 					* ((17.3 / (x[3] + 237.7))
 							- ((17.3 * x[3]) / (powl(x[3] + 237.2, 2))))
 					* expl(17.3 * x[3] / (x[3] + 237.7));
-			//LE_lim = evap_a * rho_w * lambda;
-			//LE_unlim = LatHeatCanopy(atm, leavesurfRH, ra, Ts, r, c);
 
-			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[3], r, c); /*LE = LE_unlim;   max<REAL8>(LE_lim, LE_unlim);
-			 if(LE == LE_lim)
-			 fB = 0;*/
+
+			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[3], r, c);
 			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[3], r, c);
 			H = SensHeatCanopy(atm, ra, x[3], r, c);
 
@@ -178,11 +182,18 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			gsr = Keff * sqrt(RAI * powl(x[0], -root_a)) / ( PI * rootdepth);
 			if(errno==EDOM)
 											 perror("Some error");
-			temp = -powl(x[2] / sperry_d, sperry_c);
+
+			if(x[2]<0)
+				temp = 0;
+			else
+				temp = -powl(x[2] / sperry_d, sperry_c);
 			if (temp <-708.4)
 				gp = 0;
 			else
 				gp = sperry_ks * expl(temp);
+
+
+
 
 			denfac = gsr + gp * LAI;
 			gsrp = LAI * gsr * gp / denfac;
@@ -205,11 +216,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			if(errno==EDOM)
 						 perror("Some error");
+			if(errno!=0)
+									 perror("Some error");
 
 			// Fill out the jacobian
 			J(0,0) = rootdepth * (poros - thetar) / dt;
-			J(0,2) = - fD * es *  dleafRHdpsi_l/  (rho_w * lambda);
-			J(0,3) = -fD    / (rho_w * lambda) * (desdTs * leafRH + es * dleafRHdT);
+			J(0,2) = E==0 ?  0 : - fD * es *  dleafRHdpsi_l/  (rho_w * lambda);
+			J(0,3) = E==0 ? 0 : -fD    / (rho_w * lambda) * (desdTs * leafRH + es * dleafRHdT);
 
 			if(x[0] <  0)
 				J(1,0) = 0;
@@ -219,16 +232,18 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			J(2,0) = dF2dS_term - (dF2dS_term / gsr);
 			J(2,1) = -gsrp;
-			J(2,2) = -gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c)* (x[2] - x[1]) / x[2] + gsrp
-					+ gsrp * gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c) * (x[2] - x[1]) / (x[2] * gsr) - fD * es *  dleafRHdpsi_l/  (rho_w * lambda);
-			if(accu(abs(J.row(2)))<RNDOFFERR) // If the hydraulic column is broken remove third equation from system
+			J(2,2) = -gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c)* (x[2] - x[1]) / x[2] + gsrp + gsrp * gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c) * (x[2] - x[1]) / (x[2] * gsr);// - E==0 ?  0 : fD * es *  dleafRHdpsi_l/  (rho_w * lambda);
+			if(accu( abs(J.row(2) ) )|| accu( abs(J.col(2)) )<RNDOFFERR) // If the hydraulic column is broken remove third equation from system
 				J(2,2)=1;
-			J(2,3) = fD  / (rho_w * lambda) * (desdTs * leafRH + es * dleafRHdT);
+			J(2,3) = E==0 ? 0 : fD  / (rho_w * lambda) * (desdTs * leafRH + es * dleafRHdT);
+
 
 			J(3,2) = fD * es *  dleafRHdpsi_l;
 			J(3,3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
 					+ fC + fD * desdTs * leafRH + fD* es * dleafRHdT;
 
+/*			cout << k << std::endl;
+						cout << " xold: " << std::endl << x << std::endl;*/
 			// solve system
 			if (!solve(deltax, J, -F)) {
 				cout << "Singular Jacobian found in Newton solver for canopy balance.\n";
@@ -237,17 +252,20 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			//	        cout <<"x: " <<  x << endl;
 			x += deltax;
 
-			/*cout << " x2-x1: " << std::endl << x[2] - x[1] << std::endl;
-			cout << " deltax: " << std::endl << deltax;
+
+			/*cout << " deltax: " << std::endl << deltax;
 			cout << " F: " << std::endl << F;
 			cout << " norm x: " << std::endl << norm(deltax,2);
 			cout << " J: " << std::endl << J;
-			cout << " x: " << std::endl << x;
-			cout << k << std::endl;
+			cout << " x: " << std::endl << x << std::endl << std::endl;
+
 			cout << "descent condition " << dot(-F,F) << std::endl;*/
 
 
 			k++;
+
+			if(k>5)
+				cout << "stop";
 		} while (norm(deltax, 2) > 0.0001 && k < MAX_ITER);
 
 		if (k >= MAX_ITER)
