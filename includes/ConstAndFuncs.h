@@ -94,13 +94,21 @@ extern double Calculate_gs_light(const double &SolarRadiation, const double &Coe
  *  function coefficient (dimensionless) is the exponential decay value with increasing vapor pressure deficit*/
 extern double Calculate_gs_vpd(const double &vpd, const double &Coeff);
 
-/*Calculates the effect of soil tension in Jarvis' model of stomatal conductance.theta is is volumetric soil moisture, fieldcap is
+/* DEPRECATED: Calculates the effect of soil tension in Jarvis' model of stomatal conductance.theta is is volumetric soil moisture, fieldcap is
  * field capacity (volumetric) and wiltpnt is the wilting point (volumetric).
  * After
  * Representation of the Canopy Conductance in Modeling the Surface Energy Budget for Low Vegetation
  * R. J. Ronda, H. A. R. de Bruin, A. A. M. Holtslag
  * Journal of Applied Meteorology 2001 40:8, 1431-1444 */
 extern double Calculate_gs_theta(const double &theta, const double &fieldcap, const double &wiltpnt, const double &Coeff);
+
+/*
+ * calculates the effect of leaf water potential in Jarvi's model of stomatal conductance. lwp is leaf water ptential (in meters of head, positive).
+ * lwp_min is the maximum lwp that the leave will have before it fully shuts down stomatal function. lwp_max is the lwp beyond which
+ * lwp does not control stomatal function. After Rodrigez-Iturbe and Porporato. Ecohydrology of water controlled ecosystems. p187
+ */
+
+extern double Calculate_gs_lwp(const double &lwp, const double &lwp_max, const double &lwp_min);
 
 extern double rlog(double u_za, double z_a, double z_d, double z_0, int option);
 

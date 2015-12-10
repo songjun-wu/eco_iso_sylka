@@ -20,7 +20,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 	REAL8 sno_rain_thres = 0; //temperature threshold for snow rain transition, degC
 
 	REAL8 ra; //soil aerodynamic resistance
-	REAL8 gc; //canopy resistance
+
 
 	REAL8 evap = 0; //evaporation for the tree groves
 	REAL8 transp = 0; //transpiratin for the tree groves
@@ -86,7 +86,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 
 		/*--------*/
 		nsp = fForest->getNumSpecies();
-		gc = 0;
+
 		treeheight = 0;
 		evap_f = 0;
 		transp_f = 0;
@@ -142,20 +142,18 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 				else if ((froot1 + froot2) > 0.95)
 					rootdepth = d1 + d2;
 
-				fForest->CalculateCanopyConduct(*this, atm, ctrl, theta_available, fc, s,
-										r, c);
+
 
 				ra = CalcAerodynResist(wind, za, 0, 0, z0o, zdo, treeheight,
 						fForest->getLAISpecies(s, r, c),
 						getCanopyTemp(s)->matrix[r][c],
 						atm.getTemperature()->matrix[r][c], ctrl.toggle_ra,
 						false);
-				gc = fForest->getCanopyConductance(s, r, c);
 
 				fForest->CanopyInterception(atm, ctrl, DelCanStor, D, s, r, c); //calculates canopy interception and trascolation
 
 				fForest->SolveCanopyEnergyBalance(*this, atm, ctrl, theta_available,
-						thetar, poros, rootdepth, Keff, psi_ae, bclambda, ra, gc, DelCanStor, evap, transp,
+						thetar, poros, rootdepth, Keff, psi_ae, bclambda, ra, DelCanStor, evap, transp,
 						s, r, c);
 
 				_CanopyStorage->matrix[r][c] += DelCanStor * p;

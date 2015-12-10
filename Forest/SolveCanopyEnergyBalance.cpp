@@ -13,7 +13,7 @@ using namespace arma;
 UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 poros, REAL8 rootdepth,
 		REAL8 Keff, REAL8 psiae, REAL8 bclambda,
-		REAL8 ra, REAL8 gc, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a,
+		REAL8 ra, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a,
 		UINT4 s, UINT4 r, UINT4 c) {
 
 	//some constants
@@ -67,12 +67,18 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	REAL8 dF2dS_num = 0;
 	REAL8 dF2dS_term = 0;
 
+	REAL8 gc = 0;
+	REAL8 lwp_min, lwp_max;
+	REAL8 dgcdfgspsi = 0;
+	REAL8 fgspsi = 0;
+
 
 	UINT4 nsp = getNumSpecies();
 
 	if (s == nsp - 1) //for bare soil, water reaching the ground is pp times its proportion of the cell
 		evap_a = transp_a = 0;
 	else {
+
 
 
 		airTp = atm.getTemperature()->matrix[r][c];
@@ -93,6 +99,9 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		sperry_d = _species[s].sperry_d;
 		sperry_ks = _species[s].sperry_Kp / _species[s]._Height->matrix[r][c];
 
+		lwp_min = - _species[s].lwp_low;
+		lwp_max = - _species[s].lwp_high;
+
 
 		CanStor = getIntercWater(s, r, c);
 		MaxCanStor = getMaxCanopyStorage(s, r, c);
@@ -100,12 +109,14 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		leafRH = 1; //min<REAL8>(1.0,Calculate_gs_theta(theta, fc, _species[s].WiltingPoint, 2.0)); //calculates soil pore relative humidity
 		leavesurfRH = airRH + ((1 - airRH) / MaxCanStor) * CanStor;
 
-		ra_t = ra + (1 / gc);
+
+
+
 
 		fA =  -4 * emissivity * stefboltz;//pools together net radiation factors
 		fB = (-1 / (ra * gamma)) * rho_a * spec_heat_air; // pools together the latent heat factors
 		fC = (-1 / (ra)) * rho_a * spec_heat_air; // pools together the sensible heat factors
-		fD = (-1 / (ra_t * gamma)) * rho_a * spec_heat_air; // pools together the latent heat factors
+
 
 		evap_a =
 				CanStor < MaxCanStor ?
@@ -144,7 +155,15 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		x[2] = x[1];
 		x[3] = airTp;
 
+		CalculateCanopyConduct(bas, atm, ctrl, x[2], dgcdfgspsi, s, r, c); //used to calculate the gc factors other than f_lwp
+
 		do {
+
+			gc = dgcdfgspsi * std::max<REAL8>(0, std::min<REAL8>(1, (lwp_min - x[2])/(lwp_min - lwp_max)));
+			if (gc < 1e-13)
+				gc = 1e-13;
+
+			ra_t = ra + (1 / gc);
 
 			lambda = x[3] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
@@ -203,6 +222,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			E = -LET / (rho_w * lambda);
 			E= std::max<REAL8>(0.0,E);
+			if(E==0)
+				cout << "d";
 
 			dF2dS_num = df2dS_numfac * gp * powl(x[0], -root_a - 1)* (x[2] - x[1]);
 			dF2dS_term = (dF2dS_num / (PIZ * PIZ * denfac * denfac));
@@ -214,10 +235,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 					+ LE + H + LET;
 
 
-			if(errno==EDOM)
-						 perror("Some error");
-			if(errno!=0)
-									 perror("Some error");
+			fD = (-1 / (ra_t * gamma)) * rho_a * spec_heat_air; // pools together the latent heat factors
 
 			// Fill out the jacobian
 			J(0,0) = rootdepth * (poros - thetar) / dt;
@@ -232,13 +250,16 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			J(2,0) = dF2dS_term - (dF2dS_term / gsr);
 			J(2,1) = -gsrp;
-			J(2,2) = -gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c)* (x[2] - x[1]) / x[2] + gsrp + gsrp * gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c) * (x[2] - x[1]) / (x[2] * gsr);// - E==0 ?  0 : fD * es *  dleafRHdpsi_l/  (rho_w * lambda);
-			if(accu( abs(J.row(2) ) )|| accu( abs(J.col(2)) )<RNDOFFERR) // If the hydraulic column is broken remove third equation from system
-				J(2,2)=1;
+			if(x[2]>0)
+			   J(2,2) = 1;
+			else
+				J(2,2) = -gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c)* (x[2] - x[1]) / x[2] + gsrp + gsrp * gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c) * (x[2] - x[1]) / (x[2] * gsr);// - E==0 ?  0 : fD * es *  dleafRHdpsi_l/  (rho_w * lambda);
+			//if(accu( abs(J.row(2) ) )|| accu( abs(J.col(2)) )<RNDOFFERR) // If the hydraulic column is broken remove third equation from system
+				//J(2,2)=1;
 			J(2,3) = E==0 ? 0 : fD  / (rho_w * lambda) * (desdTs * leafRH + es * dleafRHdT);
 
 
-			J(3,2) = fD * es *  dleafRHdpsi_l;
+			J(3,2) = fD/(ra_t * gc * gc * (lwp_min - lwp_max) ) * es * dgcdfgspsi; // dleafRHdpsi_l;
 			J(3,3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
 					+ fC + fD * desdTs * leafRH + fD* es * dleafRHdT;
 
@@ -253,7 +274,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			x += deltax;
 
 
-			/*cout << " deltax: " << std::endl << deltax;
+	/*		cout << " deltax: " << std::endl << deltax;
 			cout << " F: " << std::endl << F;
 			cout << " norm x: " << std::endl << norm(deltax,2);
 			cout << " J: " << std::endl << J;
@@ -292,6 +313,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		_species[s]._SensHeat_Can->matrix[r][c] = SensHeatCanopy(atm, ra, x[3],
 				r, c);
 		_species[s]._LeafWatPot->matrix[r][c] = -x[2];
+
+		CalculateCanopyConduct(bas, atm, ctrl, x[2], dgcdfgspsi, s, r, c); //Updates canopy conductance with final values of lwp
 
 		///////////this chunk of code is to make sure we are not transpiring below residual moisture content
         /////////// Probably not needed anymore since mass balance is enforced in the system of eqs.

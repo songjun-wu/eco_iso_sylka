@@ -95,7 +95,14 @@ extern double Calculate_gs_vpd(const double &vpd, const double &Coeff){
 		return (expl(-Coeff*vpd));
 }
 
-extern double Calculate_gs_theta(const double &theta, const double &fieldcap, const double &wiltpnt, const double &Coeff){
+extern double Calculate_gs_lwp(const double &lwp, const double &lwp_max, const double &lwp_min){
+
+
+	return std::max<double>(0, std::min<double>(1, (lwp_min - lwp)/(lwp_min - lwp_max)));
+
+}
+
+/*extern double Calculate_gs_theta(const double &theta, const double &fieldcap, const double &wiltpnt, const double &Coeff){
 
 	double Beta;
 
@@ -104,8 +111,8 @@ extern double Calculate_gs_theta(const double &theta, const double &fieldcap, co
 	return ( 1-expl(-Coeff*Beta) ) / ( 1-expl(-Coeff) ); //from Cox et al 1998 J hydrol "A canopy conductance and photosynt model for use in GCM land surf scheme"
 
 	//return ( Coeff*Beta - powl(Beta,2) );
-
-}
+agui
+}*/
 
 extern double rlog(double u_za, double z_a, double z_d, double z_0, int option) {
 	double k2 = vonkarman * vonkarman;
