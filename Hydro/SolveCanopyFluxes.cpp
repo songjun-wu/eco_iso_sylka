@@ -68,7 +68,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 	UINT4 s;
 	int  thre=0;
 #pragma omp parallel default(none)\
-		private( s, r,c, p, gc, treeheight, wind, za, z0o, zdo, \
+		private( s, r,c, p,  treeheight, wind, za, z0o, zdo, \
 							Tp, maxTp, minTp, snow, rain, sno_rain_thres, evap, \
 							transp, evap_f, transp_f, D, DelCanStor, theta, theta2, theta3, theta_available, ra, \
 							poros, psi_ae, Keff, bclambda, rootdepth, froot1, froot2, froot3, d1, d2, d3, thetar, fc) \

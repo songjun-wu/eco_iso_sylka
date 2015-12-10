@@ -95,7 +95,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		RAI = _species[s]._RootMass->matrix[r][c] * _species[s].SRA;
 		root_a = _species[s].RAI_a;
-		sperry_c = 1.5; //_species[s].sperry_c;
+		sperry_c = _species[s].sperry_c;
 		sperry_d = _species[s].sperry_d;
 		sperry_ks = _species[s].sperry_Kp / _species[s]._Height->matrix[r][c];
 
@@ -199,8 +199,6 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			// Sperry stuff
 			gsr = Keff * sqrt(RAI * powl(x[0], -root_a)) / ( PI * rootdepth);
-			if(errno==EDOM)
-											 perror("Some error");
 
 			if(x[2]<0)
 				temp = 0;
@@ -211,19 +209,12 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			else
 				gp = sperry_ks * expl(temp);
 
-
-
-
 			denfac = gsr + gp * LAI;
 			gsrp = LAI * gsr * gp / denfac;
 
-			if(errno==EDOM)
-						 perror("Some error");
 
 			E = -LET / (rho_w * lambda);
 			E= std::max<REAL8>(0.0,E);
-			if(E==0)
-				cout << "d";
 
 			dF2dS_num = df2dS_numfac * gp * powl(x[0], -root_a - 1)* (x[2] - x[1]);
 			dF2dS_term = (dF2dS_num / (PIZ * PIZ * denfac * denfac));
@@ -263,30 +254,16 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			J(3,3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
 					+ fC + fD * desdTs * leafRH + fD* es * dleafRHdT;
 
-/*			cout << k << std::endl;
-						cout << " xold: " << std::endl << x << std::endl;*/
 			// solve system
 			if (!solve(deltax, J, -F)) {
 				cout << "Singular Jacobian found in Newton solver for canopy balance.\n";
 				//return 1;
 			}
-			//	        cout <<"x: " <<  x << endl;
+
 			x += deltax;
-
-
-	/*		cout << " deltax: " << std::endl << deltax;
-			cout << " F: " << std::endl << F;
-			cout << " norm x: " << std::endl << norm(deltax,2);
-			cout << " J: " << std::endl << J;
-			cout << " x: " << std::endl << x << std::endl << std::endl;
-
-			cout << "descent condition " << dot(-F,F) << std::endl;*/
-
 
 			k++;
 
-			if(k>5)
-				cout << "stop";
 		} while (norm(deltax, 2) > 0.0001 && k < MAX_ITER);
 
 		if (k >= MAX_ITER)
