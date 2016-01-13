@@ -88,7 +88,6 @@ Basin::Basin(Control &ctrl)
 		_BedrockLeakageFlux = new grid(*_DEM); //bedrock leakage flux in m s-1
 		_SoilWaterDepth = new grid(*_DEM); //soil moisture depth m
 		_SoilSatDeficit = new grid(*_DEM); //soil moisture including water below and above field capacity
-		_psi = new grid(*_DEM); //soil tension (m) calculated with B&C formula
 		_GravityWater = new grid(*_DEM); //soil water storage beyond
 		_GrndWaterOld = new grid(*_DEM); //groundwater storage at teh beginning of the time step
 		_GrndWater = new grid(*_DEM); //groundwater storage at the end of the time step
@@ -179,8 +178,6 @@ Basin::Basin(Control &ctrl)
 			delete _SoilWaterDepth;
 		if(_SoilSatDeficit)
 			delete _SoilSatDeficit;
-		if(_psi)
-			delete _psi;
 		if(_CanopyStorage)
 			delete _CanopyStorage;
 		if(_Disch_old)

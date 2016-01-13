@@ -79,7 +79,6 @@ class Basin {
 	grid *_soilmoist_av; //average volumetric soil moisture of the entire soil profile
 	grid *_SoilWaterDepth; //soil moisture depth (m) for entire soil profile
 	grid *_SoilSatDeficit; //soil saturation deficit (1 full deficit - 0 saturation)
-	grid *_psi; //soil water potential in m
 	grid *_AccumInfilt; //Accumulated infiltration m
 	grid *_Evaporation; //actual evaporation and transpiration in m s-1
 	grid *_BedrockLeakageFlux; //water flux down the bottom of the soil in m s-1
@@ -423,6 +422,8 @@ public:
 	grid *getCanopyWaterStor(UINT4 n) const;
 
 	grid *getTranspiration(UINT4 n) const;
+
+	grid *getLeafWaterPotential(UINT4 n) const;
 
 	//setters
 

@@ -70,3 +70,7 @@ grid *Basin::getCanopyWaterStor(UINT4 n) const {
 grid *Basin::getTranspiration(UINT4 n) const {
 	return fForest->getTranspirationSpeciesMap(n);
 }
+
+grid *Basin::getLeafWaterPotential(UINT4 n) const {
+	return fForest->getLeafWaterPotSpeciesMap(n);
+}

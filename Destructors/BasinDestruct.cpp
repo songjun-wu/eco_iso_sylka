@@ -89,8 +89,6 @@ Basin::~Basin(){
 		delete _SoilWaterDepth;
 	if(_SoilSatDeficit)
 		delete _SoilSatDeficit;
-	if(_psi)
-		delete _psi;
 	if(_CanopyStorage)
 		delete _CanopyStorage;
 	if(_Disch_old)

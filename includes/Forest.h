@@ -59,8 +59,12 @@ public:
 	Forest(Control & ctrl);
     ~Forest();
 
-   int CalculateCanopyConduct(const Basin &bas, const Atmosphere &atm, const Control &ctrl, const double &theta,const double &fc, UINT4 j, UINT4 r, UINT4 c);
-   UINT4 SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 fc, REAL8 soildepth, REAL8 ra, REAL8 gc, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, UINT4 s, UINT4 r, UINT4 c);
+   int CalculateCanopyConduct(const Basin &bas, const Atmosphere &atm, const Control &ctrl, const double &lwp, double &dgsdlwp, UINT4 j, UINT4 r, UINT4 c);
+   UINT4 SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
+			Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 poros, REAL8 rootdepth,
+			REAL8 Keff, REAL8 psiae, REAL8 bclambda,
+			REAL8 ra, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a,
+			UINT4 s, UINT4 r, UINT4 c);
    int CanopyInterception(Atmosphere &atm, Control &ctrl, REAL8 &DelCanStor, REAL8 &D, UINT4 s, UINT4 r, UINT4 c);
    int GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl);
 
@@ -120,6 +124,19 @@ public:
 			return _species[n].KBeers;
     }
 
+    REAL8 getSperry_d(UINT4 n, UINT4 row, UINT4 col) const {
+    	return _species[n].sperry_d;
+    }
+    REAL8 getSperry_c(UINT4 n, UINT4 row, UINT4 col) const {
+    	return _species[n].sperry_c;
+    }
+    REAL8 getSperry_Kp(UINT4 n, UINT4 row, UINT4 col) const {
+    	return _species[n].sperry_Kp;
+    }
+    REAL8 getRAI_a(UINT4 n, UINT4 row, UINT4 col) const {
+    	return _species[n].RAI_a;
+    }
+
     REAL8 getCanopyEmissivity(UINT4 n, UINT4 row, UINT4 col) const {
         	return _species[n].emissivity;
     }
@@ -130,6 +147,9 @@ public:
 
     REAL8 getTranspiration(UINT4 n, UINT4 row, UINT4 col) const {
        	return _species[n]._Transpiration->matrix[row][col];
+    }
+    REAL8 getLeafWaterPotential(UINT4 n, UINT4 row, UINT4 col) const {
+    	return _species[n]._LeafWatPot->matrix[row][col];
     }
 
 
@@ -195,6 +215,9 @@ public:
 
     grid *getTranspirationSpeciesMap(UINT4 n) const {
        	return _species[n]._Transpiration;
+    }
+    grid *getLeafWaterPotSpeciesMap(UINT4 n) const {
+    	return _species[n]._LeafWatPot;
     }
 
   /*  //setters

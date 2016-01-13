@@ -7,8 +7,9 @@
  *      Reads the configuration file (default name 'config.ini')
  *      and places the file names and control data in the Control object
  */
-
+#include <stdexcept>   // for exception, runtime_error, out_of_range
 #include <iostream>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include "ConfigFile.h"
 #include "InitConf.h"
@@ -16,6 +17,9 @@ using namespace std;
 
 int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 {
+
+	struct stat info; //needed to check the status of the folders
+
 	try{
 	ConfigFile Config(confilename);
 
@@ -23,14 +27,21 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	//check for slash \ at the end of the path string and if there is none appends it
 	if(path_BasinFolder.at(path_BasinFolder.length()-1) != '/')
 		path_BasinFolder.append("/");
+	if(stat(path_BasinFolder.c_str(), &info)!=0)
+				throw std::runtime_error(string("Folder not found: ") + path_BasinFolder);
 
 	Config.readInto(path_ClimMapsFolder, "Clim_Maps_Folder");
 	if(path_ClimMapsFolder.at(path_ClimMapsFolder.length()-1) != '/')
 		path_ClimMapsFolder.append("/");
+	if(stat(path_ClimMapsFolder.c_str(), &info)!=0)
+			throw std::runtime_error(string("Folder not found: ") + path_ClimMapsFolder);
 
 	Config.readInto(path_ResultsFolder, "Output_Folder");
 	if(path_ResultsFolder.at(path_ResultsFolder.length()-1) != '/')
 		path_ResultsFolder.append("/");
+	if(stat(path_ResultsFolder.c_str(), &info)!=0)
+		throw std::runtime_error(string("Folder not found: ") + path_ResultsFolder);
+
 
 	sw_reinfilt = Config.read<bool>("Reinfiltration");
 	sw_channel = Config.read<bool>("Channel");
@@ -166,6 +177,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_Canopy_Sens_Heat = Config.read<bool>("Report_Canopy_Sens_Heat");
 	Rep_Canopy_Water_Stor = Config.read<bool>("Report_Canopy_Water_Stor");
 	Rep_Transpiration = Config.read<bool>("Report_Transpiration");
+	Rep_LeafWaterPotential = Config.read<bool>("Report_LeafWaterPotential");
 
 	Config.readInto(fn_rep_mask, "TS_mask");
 
@@ -210,17 +222,23 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_Canopy_Sens_Heat = Config.read<bool>("Ts_Canopy_Sens_Heat");
 	RepTs_Canopy_Water_Stor = Config.read<bool>("Ts_Canopy_Water_Stor");
 	RepTs_Transpiration = Config.read<bool>("Ts_Transpiration");
+	RepTs_LeafWaterPotential = Config.read<bool>("Ts_LeafWaterPotential");
 
 
 	}
 	catch(ConfigFile::file_not_found &fn){
 		cout << "File " << fn.filename << " not found\n";
-		throw;
+		exit(EXIT_SUCCESS);
 	}
 	catch(ConfigFile::key_not_found &fn){
 			cout << "Key " << fn.key << " not found\n";
-			throw;;
+			exit(EXIT_SUCCESS);
 	}
+	catch(std::exception &e){
+				cout << e.what();
+				exit(EXIT_SUCCESS);
+		}
+
 
 
 

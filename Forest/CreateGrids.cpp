@@ -32,6 +32,7 @@ int Grove::CreateGrids(grid *base){
 		_WaterStorage = new grid (*base);
 		_ET = new grid (*base);
 		_Transpiration = new grid (*base);
+		_LeafWatPot = new grid (*base);
 
 
 	}catch(const exception& e){

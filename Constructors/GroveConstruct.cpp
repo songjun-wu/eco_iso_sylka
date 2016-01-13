@@ -31,6 +31,7 @@ Grove::Grove(){
 	_WaterStorage = NULL;
 	_ET = NULL;
 	_Transpiration = NULL;
+	_LeafWatPot = NULL;
 
 
 }

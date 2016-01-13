@@ -20,7 +20,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 	REAL8 sno_rain_thres = 0; //temperature threshold for snow rain transition, degC
 
 	REAL8 ra; //soil aerodynamic resistance
-	REAL8 gc; //canopy resistance
+
 
 	REAL8 evap = 0; //evaporation for the tree groves
 	REAL8 transp = 0; //transpiratin for the tree groves
@@ -36,6 +36,10 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 	REAL8 rootdepth;
 	REAL8 thetar;
 	REAL8 fc;
+	REAL8 poros;
+	REAL8 Keff;
+	REAL8 psi_ae;
+	REAL8 bclambda;
 
 	REAL8 froot1;
 	REAL8 froot2;
@@ -64,10 +68,10 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 	UINT4 s;
 	int  thre=0;
 #pragma omp parallel default(none)\
-		private( s, r,c, p, gc, treeheight, wind, za, z0o, zdo, \
+		private( s, r,c, p,  treeheight, wind, za, z0o, zdo, \
 							Tp, maxTp, minTp, snow, rain, sno_rain_thres, evap, \
 							transp, evap_f, transp_f, D, DelCanStor, theta, theta2, theta3, theta_available, ra, \
-							rootdepth, froot1, froot2, froot3, d1, d2, d3, thetar, fc) \
+							poros, psi_ae, Keff, bclambda, rootdepth, froot1, froot2, froot3, d1, d2, d3, thetar, fc) \
 					shared(nsp, atm, ctrl, dt, thre)
 {
 	thre = omp_get_num_threads();
@@ -82,13 +86,17 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 
 		/*--------*/
 		nsp = fForest->getNumSpecies();
-		gc = 0;
+
 		treeheight = 0;
 		evap_f = 0;
 		transp_f = 0;
 
 		thetar = _theta_r->matrix[r][c];
 		fc = _fieldcap->matrix[r][c];
+		poros = _porosity->matrix[r][c];
+		Keff = _Ksat->matrix[r][c];
+		psi_ae = _psi_ae->matrix[r][c];
+		bclambda = _BClambda->matrix[r][c];
 
 
 		d1 = _depth_layer1->matrix[r][c];
@@ -134,20 +142,18 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 				else if ((froot1 + froot2) > 0.95)
 					rootdepth = d1 + d2;
 
-				fForest->CalculateCanopyConduct(*this, atm, ctrl, theta_available, fc, s,
-										r, c);
+
 
 				ra = CalcAerodynResist(wind, za, 0, 0, z0o, zdo, treeheight,
 						fForest->getLAISpecies(s, r, c),
 						getCanopyTemp(s)->matrix[r][c],
 						atm.getTemperature()->matrix[r][c], ctrl.toggle_ra,
 						false);
-				gc = fForest->getCanopyConductance(s, r, c);
 
 				fForest->CanopyInterception(atm, ctrl, DelCanStor, D, s, r, c); //calculates canopy interception and trascolation
 
 				fForest->SolveCanopyEnergyBalance(*this, atm, ctrl, theta_available,
-						thetar, fc, rootdepth, ra, gc, DelCanStor, evap, transp,
+						thetar, poros, rootdepth, Keff, psi_ae, bclambda, ra, DelCanStor, evap, transp,
 						s, r, c);
 
 				_CanopyStorage->matrix[r][c] += DelCanStor * p;
