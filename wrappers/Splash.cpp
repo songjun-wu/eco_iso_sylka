@@ -5,8 +5,8 @@
  *      Author: Marco.Maneta
  */
 
-#include<string.h>
 #include "Sativa.h"
+#include <string.h>
 
 void message(){
 	cout << "USAGE: ech2o config.ini" << endl;
@@ -21,8 +21,8 @@ cout << " ______________________________________________________________________
 
 
      if (argc==3 && strcmp(argv[1],"-g")==0 ){
-		cout << "Generating configuration file template in" << argv[2] << endl;
-
+    	GenerateConfigTemplate(argv[2]);
+		cout << "Writing configuration file template in" << argv[2] << endl;
 		exit(EXIT_SUCCESS);
      }
 
