@@ -16,25 +16,27 @@ void GenerateConfigTemplate(const char *fn){
 
 try{
 
-		if( access(fn, F_OK) != -1 ){
-			ofOut.open(fn);
-			if(!ofOut)
-				throw std::ios::failure("Error opening file ");
-		}
-		else{
+		if (access(fn, F_OK) != -1) {
+
 			cout << "File exists. Do you want to overwrite? (y, n):  " << endl;
 			char c;
-			cin >> c;
+			cin.get(c);
 			switch (c) {
 			case 'y':
 				break;
 			case 'n':
-				throw std::ios::failure("Error opening file ");
+				exit(EXIT_SUCCESS);
 				break;
 			default:
 				cout << "Not a valid option. Bye" << endl;
+				exit(EXIT_SUCCESS);
+
 			}
 		}
+
+		ofOut.open(fn);
+		if(!ofOut)
+			throw std::ios::failure("Error opening file ");
 
 
 
@@ -247,7 +249,7 @@ try{
 }
 catch(const std::exception &e){
 	cout << "Failure writing configuration template file with  " << e.what() << endl;
-	throw;
+	exit(EXIT_FAILURE);
 }
 }
 

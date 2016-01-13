@@ -9,10 +9,10 @@
 #include <string.h>
 
 void message(){
-	cout << "USAGE: ech2o config.ini" << endl;
+	cout << "USAGE: ech2o <config.ini>" << endl;
 	cout << "\twhere config.ini is a valid ech2o configuration file" << endl;
-	cout << "OR: ech2o -g out_tpl_config.ini" << endl;
-	cout << "\tto write a configuration file template with name out_tpl_config.ini" << endl;
+	cout << "OR: ech2o -g <output_file>" << endl;
+	cout << "\tto write a configuration file template." << endl;
 }
 
 void Splash(int argc, char* argv[]){
@@ -26,7 +26,7 @@ cout << " ______________________________________________________________________
 		exit(EXIT_SUCCESS);
      }
 
-    if (argc!=2){
+    if (argc!=2 || strcmp(argv[1],"-g") == 0){
 		message();
 		exit(EXIT_SUCCESS);
 	}
