@@ -66,6 +66,7 @@ try{
     ofOut << "#" << endl << "# Time variables section" << endl << "#" << endl;
     ofOut << "Simul_start = 0 # always 0" << endl;
     ofOut << "Simul_end = 31536000 # seconds" << endl;
+    ofOut << "Simul_tstep = 86400 # seconds" << endl;
     ofOut << "Clim_input_tstep = 86400  " << endl;
     ofOut << "Report_interval = 86400" << endl << endl;
 

@@ -42,8 +42,8 @@ int Report2Maps(){
 				WriteMapSeries(oBasin->getSoilMoist3(), "SWC3_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Sat_Deficit)
 		WriteMapSeries(oBasin->getSaturationDeficit(), "SatDef", oControl->current_ts_count);
-	if (oControl->Rep_GWater)
-			WriteMapSeries(oBasin->getGrndWater(), "GW", oControl->current_ts_count);
+	/*if (oControl->Rep_GWater)
+			WriteMapSeries(oBasin->getGrndWater(), "GW", oControl->current_ts_count);*/
 	if (oControl->Rep_Soil_ETP)
 		WriteMapSeries(oBasin->getEvaporation(), "Evap", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Net_Rad)
@@ -293,13 +293,13 @@ int Report2Maps(){
 							oControl->path_ResultsFolder + "SoilSatDef.tab",
 							oControl->current_ts_count);
 	}
-	if (oControl->RepTs_GroundWater) {
+/*	if (oControl->RepTs_GroundWater) {
 		if (oControl->current_ts_count == 1)
 			oReport->RenameFile(oControl->path_ResultsFolder + "GroundWater.tab");
 		oReport->ReportTimeSeries(oBasin->getSoilMoist_av(),
 				oControl->path_ResultsFolder + "GroundWater.tab",
 				oControl->current_ts_count);
-	}
+	}*/
 	if (oControl->RepTs_Soil_ETP){
 		if(oControl->current_ts_count == 1)
 			oReport->RenameFile(oControl->path_ResultsFolder + "Evap.tab");
