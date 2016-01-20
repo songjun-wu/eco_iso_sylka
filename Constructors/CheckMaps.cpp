@@ -10,17 +10,15 @@
 void Basin::CheckMaps(Control &ctrl) {
 
 	UINT4 r, c;
-	UINT4 j =0;
-    bool excep_thrown = false; //  poor man way  to rethrow exception outside omp pragma
-    UINT4 length = _vSortedGrid.cells.size();
-	#pragma omp parallel for\
+	UINT4 j = 0;
+	bool excep_thrown = false; //  poor man way  to rethrow exception outside omp pragma
+	UINT4 length = _vSortedGrid.cells.size();
+#pragma omp parallel for\
 		  default(shared) private(r,c,j)
-	for (j = 0; j < length ; j++)
-		{
-			r = _vSortedGrid.cells[j].row;
-			c = _vSortedGrid.cells[j].col;
-			try{
-
+	for (j = 0; j < length; j++) {
+		r = _vSortedGrid.cells[j].row;
+		c = _vSortedGrid.cells[j].col;
+		try {
 
 			if (_vSortedGrid.cells[j].dir < 1
 					|| _vSortedGrid.cells[j].dir > 9) {
@@ -79,11 +77,11 @@ void Basin::CheckMaps(Control &ctrl) {
 						"Brooks and Cory lambda map contains no data values inside the valid domain...\n");
 				throw e;
 			}
-			if (_BClambda->matrix[r][c] <= 0.01) {
+			if (_BClambda->matrix[r][c] <= 2) {
 				string e(
-						"WARNING: Brooks and Corey lambda map is too small, switching to minimum value of 0.01...\n");
+						"WARNING: Brooks and Corey lambda map is too small, switching to minimum value of 2...\n");
 				cout << e;
-				_BClambda->matrix[r][c] = 0.01;
+				_BClambda->matrix[r][c] = 2;
 				//throw e;
 			}
 
@@ -235,17 +233,35 @@ void Basin::CheckMaps(Control &ctrl) {
 						"Topsoil Initial soil moisture map is lower than residual moisture inside the valid domain...\n");
 				throw e;
 			}
+			if (_soilmoist2->matrix[r][c] < _theta_r->matrix[r][c]) {
+				string e(
+						"Initial soil moisture map in soil layer 2 is lower than residual moisture inside the valid domain...\n");
+				throw e;
+			}
+			if (_soilmoist3->matrix[r][c] < _theta_r->matrix[r][c]) {
+				string e(
+						"Initial soil moisture map in soil layer 3  is lower than residual moisture inside the valid domain...\n");
+				throw e;
+			}
 			if (_soilmoist1->matrix[r][c] > _porosity->matrix[r][c]) {
 				string e(
 						"Topsoil Initial soil moisture map is larger than porosity inside the valid domain...\n");
 				throw e;
 			}
-			if (_channelwidth->matrix[r][c] < 0) {
+			if (_soilmoist2->matrix[r][c] > _porosity->matrix[r][c]) {
 				string e(
-						"The channel width map contains negative values\n");
+						"Initial soil moisture map in soil layer 2 is larger than porosity inside the valid domain...\n");
 				throw e;
 			}
-
+			if (_soilmoist3->matrix[r][c] > _porosity->matrix[r][c]) {
+				string e(
+						"Initial soil moisture map in soil layer 2  is larger than porosity inside the valid domain...\n");
+				throw e;
+			}
+			if (_channelwidth->matrix[r][c] < 0) {
+				string e("The channel width map contains negative values\n");
+				throw e;
+			}
 
 			if (_soilmoist2->matrix[r][c] == _soilmoist2->nodata) {
 				string e(
@@ -278,8 +294,6 @@ void Basin::CheckMaps(Control &ctrl) {
 				throw e;
 			}
 
-
-
 		} catch (string &e) {
 			cout << e;
 			cout << "In row " << r << " col " << c << endl;
@@ -287,6 +301,6 @@ void Basin::CheckMaps(Control &ctrl) {
 
 	}
 
-	if(excep_thrown)
+	if (excep_thrown)
 		throw;
 }
