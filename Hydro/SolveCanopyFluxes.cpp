@@ -152,7 +152,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 
 				fForest->CanopyInterception(atm, ctrl, DelCanStor, D, s, r, c); //calculates canopy interception and trascolation
 
-				fForest->SolveCanopyEnergyBalance(*this, atm, ctrl, theta_available,
+				fForest->SolveCanopyEnergyBalance(*this, atm, ctrl, theta_available+thetar,
 						thetar, poros, rootdepth, Keff, psi_ae, bclambda, ra, DelCanStor, evap, transp,
 						s, r, c);
 
