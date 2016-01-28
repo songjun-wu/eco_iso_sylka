@@ -120,7 +120,7 @@ int Report2Maps(){
 
 		if (oControl->Rep_Root_Mass) {
 			name << "root[" << i << "]";
-			WriteMapSeries(oBasin->getTreeHeight(i), name.str() , oControl->current_ts_count);
+			WriteMapSeries(oBasin->getRootMass(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
@@ -429,7 +429,7 @@ int Report2Maps(){
 				name << oControl->path_ResultsFolder << "RootMass[" << i << "].tab";
 				if(oControl->current_ts_count == 1)
 					oReport->RenameFile(name.str());
-				oReport->ReportTimeSeries(oBasin->getTreeHeight(i), name.str() , oControl->current_ts_count);
+				oReport->ReportTimeSeries(oBasin->getRootMass(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
