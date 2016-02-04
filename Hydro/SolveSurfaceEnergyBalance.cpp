@@ -33,7 +33,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 									UINT4 c){
 
 	float dt = ctrl.dt; //time step
-	REAL8 fA, fB, fC, fD, fE, fF, fG, fH; //pooling factors
+	REAL8 fA, fB, fC, fD, fG, fH; //pooling factors
 	REAL8 C; // soil heat capacity
 	REAL8 K; // soil thermal heat conductivity
 	REAL8 Pe = dt < 86400 ? 86400 : 31536000; //period is daily if time step is less than a day adn yearly if time step is daily or larger
@@ -97,8 +97,8 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 	fB = (-1/gamma) * (1/(ra + rs) + rc) * rho_a * spec_heat_air; //(-1/((ra + rs + rc) * gamma)) * rho_a * spec_heat_air; // pools together the latent heat factors
 	fC = (-1/(ra)) * rho_a * spec_heat_air; // pools together the sensible heat factors
 	fD =  -(d * C /(2*dt)) - PI * d * C / Pe ; //same for ground heat flux (both terms). Assumes C does not depend on Ts (tiny dependency does nto affect derivative)
-	fE = 0;// -( ((n - theta)*spec_heat_air*101325)/Ra ) * dampdepth / (2*dt);      //dampdepth * 101325 / (dt * Ra); // continued storage term because C depends on Ts
-	fF = 0;//-(PI*dampdepth/Pe) * ((n - theta)*spec_heat_air*101325)/Ra; // second term of ground heat flux
+	//fE = 0;// -( ((n - theta)*spec_heat_air*101325)/Ra ) * dampdepth / (2*dt);      //dampdepth * 101325 / (dt * Ra); // continued storage term because C depends on Ts
+	//fF = 0;//-(PI*dampdepth/Pe) * ((n - theta)*spec_heat_air*101325)/Ra; // second term of ground heat flux
 	fG = -spec_heat_ice * rho_w * h * (1 / dt); //and heat fluxes into the snow
 	fH = -1*lat_heat_fus * rho_w * MeltFac; // last value is M factor
 
@@ -118,24 +118,25 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 		desdTs = 611 * ( (17.3/( Ts + 237.7)) - ((17.3 * Ts)/(powl(Ts + 237.2 , 2))) )
 									* exp(17.3 * Ts /( Ts + 237.7));
 
-		//Td = -( 2 * dt * PI * d / (Pe * (d0-d)) ) * (Td - Ts) + Td; //updates average temperature of bottom thermal layer
-		//Td = (( 2 * dt * PI * d / (Pe * (d0-d)) ) *  Ts + Td)/(( 2 * dt * PI * d / (Pe * (d0-d)) ) + 1); //updates average temperature of bottom thermal layer
-		//Td = -(G/( C* sqrt(365*PI)*d ) * dt) + Td; //updates average temperature of bottom thermal layer
 		Td = -( ((d/d0) * 2 * PI * (Td - Ts) / Pe) * dt ) + Td;
 
-		LE = LatHeat(atm, SoilRH, ra, rs, rc, Ts, r, c);// * temp;
+
 		H = SensHeat(atm, ra, Ts, r, c);
 		if (h > 0.005){
 		 LE = fB = 0;
 		 G = 0;
 		}
-		else
+		else{
 		 G = GrndHeat(atm, ctrl, theta10cm, Ts, Td, r, c);
+		 LE = LatHeat(atm, SoilRH, ra, rs, rc, Ts, r, c);// * temp;
+		}
 		S = SnowHeat(atm, ctrl, Ts, r, c);
 		LM = MeltHeat(atm, ctrl, Ts, h, MeltFac, r, c);
+		if(LM == 0)
+			fH = 0;
 
 		fTs = NetRad(atm, Ts, Kbeers, lai, emis_can, Temp_can,  r, c) + LE + H + G + S + LM + R;
-		dfTs = fA*powl(Ts + 273.2, 3) + fB * desdTs * SoilRH + fC + ((G==0)? 0 : fD) + fE * (Tsold-Ts)/powl(Ts + 273.2,2) + fF * (Td-Ts)/powl(Ts + 273.2,2) + fG + ( ((Ts < 0) || (h<0.005)) ? 0 : fH);
+		dfTs = fA*powl(Ts + 273.2, 3) + fB * desdTs * SoilRH + fC + ((G==0)? 0 : fD) + fG + fH;
 
 		Ts1 = Ts - (fTs/dfTs);
 		_Temp_s->matrix[r][c] = Ts1;

@@ -22,8 +22,10 @@ REAL8 Basin::CalcSoilResist(double &theta, int row, int col, UINT4 option){
 		return 0;
 
 	if (option == 0)
+		return 0;
+	if (option == 1)
 		return rmin * exp(-Cs*(S));
-	else if (option == 1)
+	else if (option == 2)
 		return ( expl(8.206-4.255*S) );
 	else{
 		cout << "Wrong option in the Soil_resistance_opt toggle switch. Please verify the configuration file" << endl;
