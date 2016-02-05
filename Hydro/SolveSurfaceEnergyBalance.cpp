@@ -33,8 +33,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 									UINT4 c){
 
 	float dt = ctrl.dt; //time step
-	REAL8 fA, fB, fC, fD, fG, fGa, fH, fHa; //pooling factors
-	fGa = 0;
+	REAL8 fA, fB, fC, fD, fG, fH, fHa; //pooling factors
 	REAL8 C; // soil heat capacity
 	REAL8 K; // soil thermal heat conductivity
 	REAL8 Pe = dt < 86400 ? 86400 : 31536000; //period is daily if time step is less than a day adn yearly if time step is daily or larger
@@ -153,7 +152,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 
 
 		fTs = NetRad(atm, Ts, Kbeers, lai, emis_can, Temp_can,  r, c) + LE + H + G + S + LM + R;
-		dfTs = fA*powl(Ts + 273.2, 3) + fB * desdTs * SoilRH + fC + ((G==0)? 0 : fD) + fGa + fHa;
+		dfTs = fA*powl(Ts + 273.2, 3) + fB * desdTs * SoilRH + fC + ((G==0)? 0 : fD) + fG + fHa;
 
 
 		Ts1 = Ts - (fTs/dfTs);

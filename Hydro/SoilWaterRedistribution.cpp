@@ -11,7 +11,7 @@
 
 //using namespace arma;
 
-int Basin::SoilWaterRedistribution(const double &F, double &theta1,
+void Basin::SoilWaterRedistribution(const double &F, double &theta1,
 		double &theta2, double &theta3, double &pond, double &leak,  double dt,
 		int r, int c) {
 
@@ -21,7 +21,8 @@ int Basin::SoilWaterRedistribution(const double &F, double &theta1,
 	double thetar = _theta_r->matrix[r][c];
 	double thetafc = _fieldcap->matrix[r][c];
 	double thetas = _porosity->matrix[r][c];
-	double Ks = _Ksat->matrix[r][c];
+	double KvKh = _KvKs->matrix[r][c];
+	double Ks = _Ksat->matrix[r][c] * KvKh;
 	double L = _bedrock_leak->matrix[r][c];
 
 //depth of soil layers

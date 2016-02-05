@@ -39,6 +39,7 @@ class Basin {
 	/*Spatial properties of the basin*/
 	grid *_porosity; //volumetric
 	grid *_Ksat; //saturated hydraulic conductivity in m s-1
+	grid *_KvKs; //vertical to horiontal Ks anisotropy ratio
 	grid *_random_roughness; //terrain roughness to calculate aerodynamic resistance (m)
 	grid *_theta_r; //residual soil moisture volumetric
 	grid *_psi_ae; // soil air entry pressure in m
@@ -137,7 +138,7 @@ class Basin {
 	//Hydrologic processes
 
 	void Infilt_GreenAmpt(double &f, double &F, double &theta, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c);
-	int SoilWaterRedistribution(const double &F, double &theta1,
+	void SoilWaterRedistribution(const double &F, double &theta1,
 			double &theta2, double &theta3, double &pond, double &leak, double dt,
 			int r, int c);
 	void Infilt_Richards(Control &ctrl, double &f, double &F, double &theta1,

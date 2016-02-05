@@ -45,6 +45,8 @@ Basin::~Basin(){
 		delete _ponding;
 	if(_Ksat)
 		delete _Ksat;
+	if(_KvKs)
+		delete _KvKs;
 	if(_random_roughness)
 		delete _random_roughness;
 	if(_slope)
