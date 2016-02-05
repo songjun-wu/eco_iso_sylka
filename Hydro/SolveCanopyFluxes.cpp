@@ -179,7 +179,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 					Tp = atm.getTemperature()->matrix[r][c];
 					maxTp = atm.getMaxTemperature()->matrix[r][c];
 					minTp = atm.getMinTemperature()->matrix[r][c];
-					sno_rain_thres = atm.getRainSnowTempThreshold()->matrix[r][c];
+					sno_rain_thres = atm.getRainSnowTempThreshold();
 
 					if(maxTp <= sno_rain_thres){
 						snow = D;

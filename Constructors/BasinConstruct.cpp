@@ -28,6 +28,7 @@ Basin::Basin(Control &ctrl)
 		/*basin parameters and properties*/
 		_slope = new grid(ctrl.path_BasinFolder + ctrl.fn_slope, ctrl.MapType);
 		_Ksat = new grid(ctrl.path_BasinFolder + ctrl.fn_ksat, ctrl.MapType);
+		_KvKs = new grid(ctrl.path_BasinFolder + ctrl.fn_kvkh, ctrl.MapType);
 		_random_roughness = new grid(ctrl.path_BasinFolder + ctrl.fn_randrough, ctrl.MapType);
 		_porosity = new grid(ctrl.path_BasinFolder + ctrl.fn_poros, ctrl.MapType);
 		_psi_ae = new grid(ctrl.path_BasinFolder + ctrl.fn_psi_ae, ctrl.MapType);
@@ -134,6 +135,8 @@ Basin::Basin(Control &ctrl)
 			delete _ponding;
 		if(_Ksat)
 			delete _Ksat;
+		if(_KvKs)
+			delete _KvKs;
 		if(_random_roughness)
 			delete _random_roughness;
 		if(_slope)

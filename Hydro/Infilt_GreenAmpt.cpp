@@ -18,10 +18,12 @@ void Basin::Infilt_GreenAmpt(double &f, double &F, double &theta,
 	double tp = 0; //ponding time in secs
 	int k = 0;
 
+	double KvKh = _KvKs->matrix[r][c];
+
 	ef_poros = _porosity->matrix[r][c];
 	thetar = _theta_r->matrix[r][c];
 	psi = _psi_ae->matrix[r][c];
-	Ks = _Ksat->matrix[r][c];
+	Ks = _Ksat->matrix[r][c] * KvKh;
 	inp = pond / dt; //inp is potential water input in ms-1
 	if (inp < RNDOFFERR)
 		return;
