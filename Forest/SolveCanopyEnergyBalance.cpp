@@ -61,16 +61,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	REAL8 E = 0; // Temporary calculatio of transpiration
 	REAL8 RAI = 0; // Potential Root Area Index, which is maximum active RAI under current root density
 	//auxiliary functions to group common terms in derivatives
-	REAL8 PIZ = 0; // pi times root depth
-	REAL8 df2dS_numfac = 0;
 	REAL8 denfac = 0;
-	REAL8 dF2dS_num = 0;
-	REAL8 dF2dS_term = 0;
+
 
 	REAL8 gc = 0;
 	REAL8 lwp_min, lwp_max;
 	REAL8 dgcdfgspsi = 0;
-	REAL8 fgspsi = 0;
+
 
 
 	UINT4 nsp = getNumSpecies();
@@ -131,11 +128,6 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		Sold = (theta - thetar) / (poros - thetar);
 
-		// derivative of F[2] calculated in maxima
-		// derivative k*sqrt(R*s^-a)/(pi*Z) * L*g*exp(-(psi/d)^c) / (k*sqrt(R*s^-a)/(pi*Z) +  L*g*exp(-(psi/d)^c)) * (psi -psi_s)
-		df2dS_numfac = 0.5 * root_a *  Keff * Keff * LAI * RAI;
-		PIZ = PI * rootdepth;
-
 		int k = 0;
 
 		//state variables:
@@ -157,7 +149,9 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		x[2] = x[1];
 		x[3] = airTp;
 
-		CalculateCanopyConduct(bas, atm, ctrl, x[2], dgcdfgspsi, s, r, c); //used to calculate the gc factors other than f_lwp
+		//used to calculate the gc factors other than f_lwp
+		// this information is contained in dgcdfgspsi and is used to calculate gc in the solution scheme below
+		CalculateCanopyConduct(bas, atm, ctrl, x[2], dgcdfgspsi, s, r, c);
 
 		do {
 
@@ -168,7 +162,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			ra_t = ra + (1 / gc);
 
 			lambda = x[3] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
-
+//////STUFF TO CALCUALTE THE STOMATAL RELATIVE HUMIDITY. NOT USED AT THE MOMENT////////
 			//x[3] = _species[s]._Temp_c->matrix[r][c];
 			if(x[0]<0)
 				x[0] = 0.01;
@@ -187,7 +181,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			leafRH = 1;
 			dleafRHdT = 0;
 			dleafRHdpsi_l = 0;
-
+///////////////////////////////////////////////////////////////////////////////////////////
 			es = SatVaporPressure(x[3]);
 			desdTs = 611
 					* ((17.3 / (x[3] + 237.7))
@@ -206,7 +200,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 				temp = 0;
 			else
 				temp = -powl(x[2] / sperry_d, sperry_c);
-			if (temp <-708.4)
+			if (temp <-708.4) // here to prevent setting the perror underflow flag
 				gp = 0;
 			else
 				gp = sperry_ks * expl(temp);
@@ -217,9 +211,6 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			E = -LET / (rho_w * lambda);
 			E= std::max<REAL8>(0.0,E);
-
-			dF2dS_num = df2dS_numfac * gp * powl(x[0], -root_a - 1)* (x[2] - x[1]);
-			dF2dS_term = (dF2dS_num / (PIZ * PIZ * denfac * denfac));
 
 
 			F[0] = (x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
