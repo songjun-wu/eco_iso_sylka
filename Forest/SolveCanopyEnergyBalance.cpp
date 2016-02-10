@@ -158,12 +158,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		do {
 
-			gc = dgcdfgspsi * std::max<REAL8>(0, std::min<REAL8>(1, (lwp_min - x[2])/(lwp_min - lwp_max)));
+			//gc = dgcdfgspsi * std::max<REAL8>(0, std::min<REAL8>(1, (lwp_min - x[2])/(lwp_min - lwp_max)));
+			gc = dgcdfgspsi * 1 / (1 + powl(x[2]/lwp_min, lwp_max));
 
-			if(x[2]> lwp_min){
+/*			if(x[2]> lwp_min){
 				gc = 0.5*(1/(ra_t + ra));
 				x[2] = lwp_min*0.95;
-			}
+			}*/
 
 			if (gc < 1e-13)
 				gc = 1e-13;
@@ -247,7 +248,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			J(2,3) =0;// E==0 ? 0 : fD  / (rho_w * lambda) * (desdTs * leafRH + es * dleafRHdT);
 
 
-			J(3,2) = (x[2] > lwp_min) || (lwp_min < lwp_max) ? 0 :fD/(ra_t * gc * gc * (lwp_min - lwp_max) ) * dgcdfgspsi * (ea - es*leafRH); // dleafRHdpsi_l;
+			J(3,2) = fD/(ra_t * gc * gc * x[2]*( powl(x[2]/lwp_min, lwp_max) + 1)*( powl(x[2]/lwp_min, lwp_max) + 1) ) * dgcdfgspsi *lwp_max* powl(x[2]/lwp_min, lwp_max)*  (ea - es*leafRH); // dleafRHdpsi_l;
 			J(3,3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
 					+ fC + fD * desdTs * leafRH + fD* es * dleafRHdT;
 
@@ -257,7 +258,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 				//return 1;
 			}
 
-			if(x[2]> lwp_min){
+			if(E>1e-8){
 				cout << "E: ";
 			cout << E << endl;
 			cout << "x: " << x << endl;
