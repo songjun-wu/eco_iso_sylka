@@ -28,6 +28,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	REAL8 airRH; //air humidity
 	REAL8 airTp; // air temperature
 	REAL8 es; // saturated vapor pressure
+	REAL8 ea;
 	REAL8 desdTs; // derivative of saturation vapor pressure function with respect to Ts
 	REAL8 emissivity; //canopy emissivity
 	REAL8 albedo; //canopy albedo
@@ -83,6 +84,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		z = bas.getDEM()->matrix[r][c];
 		gamma = PsychrometricConst(101325, z);
 		airRH = atm.getRelativeHumidty()->matrix[r][c];
+
+		ea = SatVaporPressure(airTp) * airRH;
 
 
 		albedo = _species[s].albedo;
@@ -156,6 +159,12 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		do {
 
 			gc = dgcdfgspsi * std::max<REAL8>(0, std::min<REAL8>(1, (lwp_min - x[2])/(lwp_min - lwp_max)));
+
+			if(x[2]> lwp_min){
+				gc = 0.5*(1/(ra_t + ra));
+				x[2] = lwp_min*0.95;
+			}
+
 			if (gc < 1e-13)
 				gc = 1e-13;
 
@@ -189,10 +198,6 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 					* expl(17.3 * x[3] / (x[3] + 237.7));
 
 
-			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[3], r, c);
-			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[3], r, c);
-			H = SensHeatCanopy(atm, ra, x[3], r, c);
-
 			// Sperry stuff
 			gsr = Keff * sqrt(RAI * powl(x[0], -root_a)) / ( PI * rootdepth);
 
@@ -209,13 +214,17 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			gsrp = LAI * gsr * gp / denfac;
 
 
+			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[3], r, c);
+			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[3], r, c);
+			H = SensHeatCanopy(atm, ra, x[3], r, c);
+
 			E = -LET / (rho_w * lambda);
 			E= std::max<REAL8>(0.0,E);
 
 
 			F[0] = (x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
 			F[1] = psiae / powl(x[0], bclambda) - x[1];
-			F[2] = -gsrp * (x[2] - x[1]) - E;
+			F[2] = -(gsrp * (x[2] - x[1]) - E);
 			F[3] = NetRadCanopy(atm, x[3], emissivity, albedo, BeerK, LAI, r, c)
 					+ LE + H + LET;
 
@@ -238,7 +247,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			J(2,3) =0;// E==0 ? 0 : fD  / (rho_w * lambda) * (desdTs * leafRH + es * dleafRHdT);
 
 
-			J(3,2) = fD/(ra_t * gc * gc * (lwp_min - lwp_max) ) * es * dgcdfgspsi; // dleafRHdpsi_l;
+			J(3,2) = (x[2] > lwp_min) || (lwp_min < lwp_max) ? 0 :fD/(ra_t * gc * gc * (lwp_min - lwp_max) ) * dgcdfgspsi * (ea - es*leafRH); // dleafRHdpsi_l;
 			J(3,3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
 					+ fC + fD * desdTs * leafRH + fD* es * dleafRHdT;
 
@@ -248,16 +257,11 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 				//return 1;
 			}
 
-			if(E>1e-8){
+			if(x[2]> lwp_min){
 				cout << "E: ";
 			cout << E << endl;
-			cout << gsr << endl;
-			cout << gp << endl;
-			cout << gp * LAI << endl;
-			cout << gsrp << endl;
-			cout << x[1] << endl;
-			cout << x[2] << endl;
-			cout << F << endl << endl;
+			cout << "x: " << x << endl;
+			cout << "F " << F << endl << endl;
 			cout << gsrp * (x[2] - x[1]) << endl << endl;
 			cout << J << endl << endl;
 			}
@@ -269,7 +273,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 
 
-		} while (norm(F, "inf") > 0.0000001 && k < MAX_ITER);
+		} while (norm(F, "inf") > 0.000001 && k < MAX_ITER);
 
 		if (k >= MAX_ITER)
 			std::cout
