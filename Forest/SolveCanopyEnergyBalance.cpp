@@ -230,6 +230,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 					+ LE + H + LET;
 
 			fD = (-1 / (ra_t * gamma)) * rho_a * spec_heat_air; // pools together the latent heat factors
+			REAL8 dEdlwp =  fD/(ra_t * gc * gc * x[2]*( powl(x[2]/lwp_min, lwp_max) + 1)*( powl(x[2]/lwp_min, lwp_max) + 1)* (rho_w *lambda) ) * dgcdfgspsi *lwp_max* powl(x[2]/lwp_min, lwp_max)*  (ea - es*leafRH);
 
 			// Fill out the jacobian
 			J(0,0) = rootdepth * (poros - thetar) / dt;
@@ -244,7 +245,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			J(2,0) = 0;//dF2dS_term - (dF2dS_term / gsr);
 			J(2,1) = gsrp;
-			J(2,2) = -gsrp;//0 * sperry_c * powl(x[2] / sperry_d, sperry_c)* (x[2] - x[1]) / x[2] + gsrp + gsrp * gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c) * (x[2] - x[1]) / (x[2] * gsr) - E==0 ?  0 : fD * es *  dleafRHdpsi_l/  (rho_w * lambda);
+			J(2,2) = -gsrp - dEdlwp;//0 * sperry_c * powl(x[2] / sperry_d, sperry_c)* (x[2] - x[1]) / x[2] + gsrp + gsrp * gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c) * (x[2] - x[1]) / (x[2] * gsr) - E==0 ?  0 : fD * es *  dleafRHdpsi_l/  (rho_w * lambda);
 			J(2,3) =0;// E==0 ? 0 : fD  / (rho_w * lambda) * (desdTs * leafRH + es * dleafRHdT);
 
 
@@ -258,7 +259,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 				//return 1;
 			}
 
-			if(E>1e-8){
+			if(k>100){
 				cout << "E: ";
 			cout << E << endl;
 			cout << "x: " << x << endl;
@@ -274,7 +275,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 
 
-		} while (norm(F, "inf") > 0.000001 && k < MAX_ITER);
+		} while (norm(F, "inf") > 0.00000001 && k < MAX_ITER);
 
 		if (k >= MAX_ITER)
 			std::cout
