@@ -53,6 +53,12 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	REAL8 leavesurfRH; //relative humidity of the leave surface. 1 when leave is saturated with intercepted water, airRH when no water
 	REAL8 dleafRHdT = 0;
 	REAL8 dleafRHdpsi_l = 0;
+	REAL8 dgcdlwp = 0;
+	REAL8 dEdlwp = 0;
+	REAL8 dEdT = 0;
+	REAL8 dLETdlwp =0;
+	REAL8 dLETdT =0;
+
 
 	// variables for Sperry's model
 	REAL8 Sold = 0;  // Soil Saturation at beginning of t
@@ -158,22 +164,15 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		do {
 
-			//gc = dgcdfgspsi * std::max<REAL8>(0, std::min<REAL8>(1, (lwp_min - x[2])/(lwp_min - lwp_max)));
-			gc = dgcdfgspsi * 1 / (1 + powl(x[2]/lwp_min, lwp_max));
+			lambda = x[3] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
-/*			if(x[2]> lwp_min){
-				gc = 0.5*(1/(ra_t + ra));
-				x[2] = lwp_min*0.95;
-			}*/
+			gc = dgcdfgspsi * 1 / (1 + powl(x[2]/lwp_min, lwp_max));
 
 			if (gc < 1e-13)
 				gc = 1e-13;
 
 			ra_t = ra + (1 / gc);
 
-			lambda = x[3] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
-//////STUFF TO CALCUALTE THE STOMATAL RELATIVE HUMIDITY. NOT USED AT THE MOMENT////////
-			//x[3] = _species[s]._Temp_c->matrix[r][c];
 			if(x[0]<0)
 				x[0] = 0.01;
 			temp = -x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15));
@@ -182,25 +181,18 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			else
 				leafRH = 0;
 
-			dleafRHdT = leafRH *  x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15)*(x[3]+273.15));
-			if(leafRH == 1)
-				dleafRHdpsi_l = 0;
-			else
-				dleafRHdpsi_l = - rho_w * grav * Vw * leafRH  / (Rbar*(x[3]+273.15));
+			//leafRH = 1;
 
-			leafRH = 1;
-			dleafRHdT = 0;
-			dleafRHdpsi_l = 0;
-///////////////////////////////////////////////////////////////////////////////////////////
-			es = SatVaporPressure(x[3]);
-			desdTs = 611
-					* ((17.3 / (x[3] + 237.7))
-							- ((17.3 * x[3]) / (powl(x[3] + 237.2, 2))))
-					* expl(17.3 * x[3] / (x[3] + 237.7));
+			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[3], r, c);
+			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[3], r, c);
+			H = SensHeatCanopy(atm, ra, x[3], r, c);
 
+			E = -LET / (rho_w * lambda);
+			E= std::max<REAL8>(0.0,E);
 
 			// Sperry stuff
-			gsr = Keff * sqrt(RAI * powl(x[0], -root_a)) / ( PI * rootdepth);
+
+			gsr = Keff *powl(x[0],2*bclambda+3)* sqrt(RAI * powl(x[0], -root_a)) / ( PI * rootdepth);;
 
 			if(x[2]<0)
 				temp = 0;
@@ -215,13 +207,22 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			gsrp = LAI * gsr * gp / denfac;
 
 
-			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[3], r, c);
-			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[3], r, c);
-			H = SensHeatCanopy(atm, ra, x[3], r, c);
+			dleafRHdT = leafRH *  x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15)*(x[3]+273.15));
 
-			E = -LET / (rho_w * lambda);
-			E= std::max<REAL8>(0.0,E);
+			if(leafRH == 1)
+				dleafRHdpsi_l = 0;
+			else
+				dleafRHdpsi_l = - rho_w * grav * Vw * leafRH  / (Rbar*(x[3]+273.15));
 
+			es = SatVaporPressure(x[3]);
+			desdTs = es *  237.15 * 17.3 / (powl(x[3] + 237.2, 2));
+
+			dgcdlwp = - dgcdfgspsi * lwp_max * powl(x[2]/lwp_min, lwp_max) / (x[2] * ( powl(x[2]/lwp_min, lwp_max) + 1) * ( powl(x[2]/lwp_min, lwp_max) + 1));
+			dLETdlwp = LET / (ra_t * gc * gc) * dgcdlwp;
+			dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdpsi_l);
+
+		    dEdlwp = - dLETdlwp / (rho_w * lambda);
+		    dEdT = - dLETdT / (rho_w * lambda);
 
 			F[0] = (x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
 			F[1] = psiae / powl(x[0], bclambda) - x[1];
@@ -229,13 +230,10 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			F[3] = NetRadCanopy(atm, x[3], emissivity, albedo, BeerK, LAI, r, c)
 					+ LE + H + LET;
 
-			fD = (-1 / (ra_t * gamma)) * rho_a * spec_heat_air; // pools together the latent heat factors
-			REAL8 dEdlwp =  fD/(ra_t * gc * gc * x[2]*( powl(x[2]/lwp_min, lwp_max) + 1)*( powl(x[2]/lwp_min, lwp_max) + 1)* (rho_w *lambda) ) * dgcdfgspsi *lwp_max* powl(x[2]/lwp_min, lwp_max)*  (ea - es*leafRH);
-
 			// Fill out the jacobian
 			J(0,0) = rootdepth * (poros - thetar) / dt;
-			J(0,2) = E==0 ?  0 : - fD * es *  dleafRHdpsi_l/  (rho_w * lambda);
-			J(0,3) = E==0 ? 0 : -fD    / (rho_w * lambda) * (desdTs * leafRH + es * dleafRHdT);
+			J(0,2) = E==0 ?  0 : dEdlwp;
+			J(0,3) = E==0 ? 0 : dEdT;
 
 			if(x[0] <  0)
 				J(1,0) = 0;
@@ -245,13 +243,16 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			J(2,0) = 0;//dF2dS_term - (dF2dS_term / gsr);
 			J(2,1) = gsrp;
-			J(2,2) = -gsrp - dEdlwp;//0 * sperry_c * powl(x[2] / sperry_d, sperry_c)* (x[2] - x[1]) / x[2] + gsrp + gsrp * gsrp * sperry_c * powl(x[2] / sperry_d, sperry_c) * (x[2] - x[1]) / (x[2] * gsr) - E==0 ?  0 : fD * es *  dleafRHdpsi_l/  (rho_w * lambda);
-			J(2,3) =0;// E==0 ? 0 : fD  / (rho_w * lambda) * (desdTs * leafRH + es * dleafRHdT);
+			J(2,2) = -gsrp + dEdlwp;/* -sperry_c*powl(x[2]/sperry_d,sperry_c)*gsrp*(x[2]-x[1])/x[2]  +
+					gsrp +
+					gsrp*gsrp * PI * rootdepth * sperry_c * powl(x[2]/sperry_d,sperry_c) * (x[2]-x[1])  /  (x[2]*Keff *powl(x[0],2*bclambda+3)* sqrt(RAI) ) -
+					dEdlwp;*/
+			J(2,3) = E==0 ? 0 : dEdT;
 
 
-			J(3,2) = fD/(ra_t * gc * gc * x[2]*( powl(x[2]/lwp_min, lwp_max) + 1)*( powl(x[2]/lwp_min, lwp_max) + 1) ) * dgcdfgspsi *lwp_max* powl(x[2]/lwp_min, lwp_max)*  (ea - es*leafRH); // dleafRHdpsi_l;
+			J(3,2) = dLETdlwp;
 			J(3,3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
-					+ fC + fD * desdTs * leafRH + fD* es * dleafRHdT;
+					+ fC + dLETdT;
 
 			// solve system
 			if (!solve(deltax, J, -F)) {
@@ -275,7 +276,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 
 
-		} while (norm(F, "inf") > 0.00000001 && k < MAX_ITER);
+		} while (norm(F, "inf") > 0.000001 && k < MAX_ITER);
 
 		if (k >= MAX_ITER)
 			std::cout
