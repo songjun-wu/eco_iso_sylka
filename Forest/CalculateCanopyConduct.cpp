@@ -35,8 +35,8 @@ int Forest::CalculateCanopyConduct(const Basin &bas, const Atmosphere &atm,
 
 	f_light_coeff = _species[j].gs_light_coeff;
 
-	f_lwp_low = - _species[j].lwp_low;
-	f_lwp_high = - _species[j].lwp_high;
+	f_lwp_low = - _species[j].lwp_d;
+	f_lwp_high = - _species[j].lwp_c;
 
 	f_vpd_coeff = _species[j].gs_vpd_coeff;
 	es = SatVaporPressure(airTemp); //todo urgent: calculate vapor pressure deficit with respect to soil

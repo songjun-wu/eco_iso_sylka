@@ -72,7 +72,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 
 	REAL8 gc = 0;
-	REAL8 lwp_min, lwp_max;
+	REAL8 lwp_den, lwp_c; //denominator and exponent of lwp stomatal model
 	REAL8 dgcdfgspsi = 0;
 
 
@@ -105,8 +105,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		sperry_d = _species[s].sperry_d;
 		sperry_ks = _species[s].sperry_Kp / _species[s]._Height->matrix[r][c];
 
-		lwp_min = - _species[s].lwp_low;
-		lwp_max = - _species[s].lwp_high;
+		lwp_den = _species[s].lwp_d;
+		lwp_c = _species[s].lwp_c;
 
 
 		CanStor = getIntercWater(s, r, c);
@@ -139,11 +139,14 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		int k = 0;
 
-		//state variables:
-		// x[0]: S - (degree of saturation at time t+1)
-		// x[1]: psi_s - soil water potential
-		// x[2]: psi_l  leaf water potential
-		// x[3]: Ts - Leaf temperature
+
+		/***
+		* state variables:
+		* x[0]: S - (degree of saturation at time t+1)
+		* x[1]: psi_s - soil water potential
+		* x[2]: psi_l  leaf water potential
+		* x[3]: Ts - Leaf temperature
+		***/
 
 		colvec x(4);
 		colvec deltax(4);
@@ -166,7 +169,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			lambda = x[3] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
-			gc = dgcdfgspsi * 1 / (1 + powl(x[2]/lwp_min, lwp_max));
+			gc = dgcdfgspsi * 1 / (1 + powl(x[2]/lwp_den, lwp_c));
 
 			if (gc < 1e-13)
 				gc = 1e-13;
@@ -217,7 +220,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			es = SatVaporPressure(x[3]);
 			desdTs = es *  237.15 * 17.3 / (powl(x[3] + 237.2, 2));
 
-			dgcdlwp = - dgcdfgspsi * lwp_max * powl(x[2]/lwp_min, lwp_max) / (x[2] * ( powl(x[2]/lwp_min, lwp_max) + 1) * ( powl(x[2]/lwp_min, lwp_max) + 1));
+			dgcdlwp = - dgcdfgspsi * lwp_c * powl(x[2]/lwp_den, lwp_c) / (x[2] * ( powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[2]/lwp_den, lwp_c) + 1));
 			dLETdlwp = LET / (ra_t * gc * gc) * dgcdlwp;
 			dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdpsi_l);
 
@@ -235,10 +238,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			J(0,2) = E==0 ?  0 : dEdlwp;
 			J(0,3) = E==0 ? 0 : dEdT;
 
-			if(x[0] <  0)
-				J(1,0) = 0;
-			else
-				J(1,0) = -bclambda * psiae * powl(x[0], -(bclambda + 1));
+			J(1,0) = -bclambda * psiae * powl(x[0], -(bclambda + 1));
 			J(1,1) = -1;
 
 			J(2,0) = 0;//dF2dS_term - (dF2dS_term / gsr);
