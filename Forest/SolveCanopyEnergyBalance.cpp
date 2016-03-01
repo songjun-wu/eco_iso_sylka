@@ -99,7 +99,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		BeerK = _species[s].KBeers;
 		LAI = _species[s]._LAI->matrix[r][c];
 
-		RAI = _species[s]._RootMass->matrix[r][c] * _species[s].SRA;
+		RAI = 5.5; //_species[s]._RootMass->matrix[r][c] * _species[s].SRA;
 		root_a = _species[s].RAI_a;
 		sperry_c = _species[s].sperry_c;
 		sperry_d = _species[s].sperry_d;
@@ -195,7 +195,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			// Sperry stuff
 
-			gsr = Keff *powl(x[0],2*bclambda+3)* sqrt(RAI * powl(x[0], -root_a)) / ( PI * rootdepth);;
+			gsr = Keff *powl(x[0],2*bclambda+3)* sqrt(RAI) / ( PI * rootdepth);;
 
 			if(x[2]<0)
 				temp = 0;
@@ -208,6 +208,12 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			denfac = gsr + gp * LAI;
 			gsrp = LAI * gsr * gp / denfac;
+
+/*
+			if (gsrp< 1e-13 || x[2]<0)
+				LET = E =leafRH= gsrp = 0;
+*/
+
 
 
 			dleafRHdT = leafRH *  x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15)*(x[3]+273.15));
@@ -222,14 +228,14 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			dgcdlwp = - dgcdfgspsi * lwp_c * powl(x[2]/lwp_den, lwp_c) / (x[2] * ( powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[2]/lwp_den, lwp_c) + 1));
 			dLETdlwp = LET / (ra_t * gc * gc) * dgcdlwp;
-			dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdpsi_l);
+			dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdT);
 
 		    dEdlwp = - dLETdlwp / (rho_w * lambda);
 		    dEdT = - dLETdT / (rho_w * lambda);
 
 			F[0] = (x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
 			F[1] = psiae / powl(x[0], bclambda) - x[1];
-			F[2] = -(gsrp * (x[2] - x[1]) - E);
+			F[2] = (gsrp * (x[2] - x[1]) - E);
 			F[3] = NetRadCanopy(atm, x[3], emissivity, albedo, BeerK, LAI, r, c)
 					+ LE + H + LET;
 
@@ -241,13 +247,23 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			J(1,0) = -bclambda * psiae * powl(x[0], -(bclambda + 1));
 			J(1,1) = -1;
 
-			J(2,0) = 0;//dF2dS_term - (dF2dS_term / gsr);
-			J(2,1) = gsrp;
-			J(2,2) = -gsrp + dEdlwp;/* -sperry_c*powl(x[2]/sperry_d,sperry_c)*gsrp*(x[2]-x[1])/x[2]  +
-					gsrp +
-					gsrp*gsrp * PI * rootdepth * sperry_c * powl(x[2]/sperry_d,sperry_c) * (x[2]-x[1])  /  (x[2]*Keff *powl(x[0],2*bclambda+3)* sqrt(RAI) ) -
-					dEdlwp;*/
-			J(2,3) = E==0 ? 0 : dEdT;
+			J(2, 0) = gp * LAI * (x[2] - x[1]) * powl(x[0], 2 + 2 * bclambda)
+					* Keff * sqrt(RAI) * (3 + 2 * bclambda)
+					/ (PI * rootdepth * denfac)
+					- gp * LAI * (x[2] - x[1]) * powl(x[0], 5 + 4 * bclambda)
+							* Keff * Keff * RAI * (3 + 2 * bclambda)
+							/ powl((PI * rootdepth * denfac), 2); //0;//dF2dS_term - (dF2dS_term / gsr);
+			J(2, 1) = -gsrp;
+			J(2, 2) = -sperry_c * powl(x[2] / sperry_d, sperry_c) * gsrp
+					* (x[2] - x[1]) / x[2] + gsrp
+					+ gsrp * gsrp * PI * rootdepth * sperry_c
+							* powl(x[2] / sperry_d, sperry_c) * (x[2] - x[1])
+							/ (x[2] * Keff * powl(x[0], 2 * bclambda + 3)
+									* sqrt(RAI)) - dEdlwp;
+			J(2, 3) = E == 0 ? 0 : -dEdT;
+
+			if(E==0)
+				J(2,2) = 1;
 
 
 			J(3,2) = dLETdlwp;
