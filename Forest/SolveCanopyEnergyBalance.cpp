@@ -115,7 +115,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		leafRH = 1; //min<REAL8>(1.0,Calculate_gs_theta(theta, fc, _species[s].WiltingPoint, 2.0)); //calculates soil pore relative humidity
 		leavesurfRH = airRH + ((1 - airRH) / MaxCanStor) * CanStor;
 
-
+		LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, airTp, r, c);
 
 
 
@@ -186,19 +186,19 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			leafRH = 1;
 
-			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, airTp, r, c);
-			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[3], r, c);
+
+			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, airTp, r, c);
 			H = SensHeatCanopy(atm, ra, x[3], r, c);
 
 			E = -LET / (rho_w * lambda);
-			E= std::max<REAL8>(0.0,E);
+		//	E= std::max<REAL8>(0.0,E);
 
 			// Sperry stuff
 
 			gsr = Keff *powl(x[0],2*bclambda+3)* sqrt(RAI) / ( PI * rootdepth);;
 
 			if(x[2]<0)
-				temp = 0;
+				temp = -powl(x[1] / sperry_d, sperry_c);
 			else
 				temp = -powl(x[2] / sperry_d, sperry_c);
 			if (temp <-708.4) // here to prevent setting the perror underflow flag
@@ -226,17 +226,17 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			es = SatVaporPressure(x[3]);
 			desdTs = es *  237.15 * 17.3 / (powl(x[3] + 237.2, 2));
 
-			dgcdlwp = - dgcdfgspsi * lwp_c * powl(x[2]/lwp_den, lwp_c) / (x[2] * ( powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[2]/lwp_den, lwp_c) + 1));
-			dLETdlwp = LET / (ra_t * gc * gc) * dgcdlwp;
+			dgcdlwp = gc == 1e-13 ? 0 :  - dgcdfgspsi * lwp_c * powl(x[2]/lwp_den, lwp_c) / (x[2] * ( powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[2]/lwp_den, lwp_c) + 1));
+			dLETdlwp = 0;//LET / (ra_t * gc * gc) * dgcdlwp;
 			dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdT);
 
-		    dEdlwp = E == 0 ? 0 :- dLETdlwp / (rho_w * lambda);
-		    dEdT = E == 0 ? 0 : - dLETdT / (rho_w * lambda);
+		    dEdlwp = - dLETdlwp / (rho_w * lambda);
+		    dEdT = 0;//E == 0 ? 0 : - dLETdT / (rho_w * lambda);
 
 			F[0] = (x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
 			F[1] = psiae / powl(x[0], bclambda) - x[1];
 			F[2] = gsrp * (x[2] - x[1]) - E;
-			F[3] = NetRadCanopy(atm, x[3], emissivity, albedo, BeerK, LAI, r, c)
+			F[3] = NetRadCanopy(atm, airTp, emissivity, albedo, BeerK, LAI, r, c)
 					+ LE + H + LET;
 
 			// Fill out the jacobian
@@ -262,12 +262,12 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 									* sqrt(RAI)) - dEdlwp;
 			J(2, 3) = -dEdT;
 
-			if(E==0)
-				J(2,2) = 1;
+/*			if(E==0)
+				J(2,2) = 1;*/
 
 
 			J(3,2) = dLETdlwp;
-			J(3,3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
+			J(3,3) = fA * powl(x[3] + 273.2, 3)*0 + fB * desdTs * leavesurfRH
 					+ fC + dLETdT;
 
 			// solve system
