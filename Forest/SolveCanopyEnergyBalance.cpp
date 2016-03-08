@@ -22,13 +22,12 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	const REAL8 Rbar = 8.31446; // Universal gas constant in J K-1 mol-1
 	//energy balance parameters
 	REAL8 dt = ctrl.dt;
-	REAL8 fA, fB, fC, fD; //pooling factors
+	REAL8 fA, fB, fC; //pooling factors
 	REAL8 temp = 0;
 	REAL8 rho_a; //density of air
 	REAL8 airRH; //air humidity
 	REAL8 airTp; // air temperature
 	REAL8 es; // saturated vapor pressure
-	REAL8 ea;
 	REAL8 desdTs; // derivative of saturation vapor pressure function with respect to Ts
 	REAL8 emissivity; //canopy emissivity
 	REAL8 albedo; //canopy albedo
@@ -37,11 +36,6 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	REAL8 LE, H;
 	REAL8 z; //terrain height
 	REAL8 gamma; //psychrometric constant
-
-	REAL8 sperry_c;
-	REAL8 sperry_d;
-	REAL8 sperry_ks;
-	REAL8 root_a;
 
 	REAL8 lambda = lat_heat_vap;
 	REAL8 ra_t; //resistance to transpiration ra_t = ra + 1/gc
@@ -62,13 +56,9 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 	// variables for Sperry's model
 	REAL8 Sold = 0;  // Soil Saturation at beginning of t
-	REAL8 gp = 0; //plant conductance
-	REAL8 gsr = 0; //soil conductance
-	REAL8 gsrp = 0; //grs + gp
 	REAL8 E = 0; // Temporary calculatio of transpiration
-	REAL8 RAI = 0; // Potential Root Area Index, which is maximum active RAI under current root density
-	//auxiliary functions to group common terms in derivatives
-	REAL8 denfac = 0;
+
+
 
 
 	REAL8 gc = 0;
@@ -91,19 +81,11 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		gamma = PsychrometricConst(101325, z);
 		airRH = atm.getRelativeHumidty()->matrix[r][c];
 
-		ea = SatVaporPressure(airTp) * airRH;
-
 
 		albedo = _species[s].albedo;
 		emissivity = _species[s].emissivity;
 		BeerK = _species[s].KBeers;
 		LAI = _species[s]._LAI->matrix[r][c];
-
-		RAI = _species[s]._RootMass->matrix[r][c] * _species[s].SRA;
-		root_a = _species[s].RAI_a;
-		sperry_c = _species[s].sperry_c;
-		sperry_d = _species[s].sperry_d;
-		sperry_ks = _species[s].sperry_Kp / _species[s]._Height->matrix[r][c];
 
 		lwp_den = _species[s].lwp_d;
 		lwp_c = _species[s].lwp_c;
@@ -144,32 +126,28 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		* state variables:
 		* x[0]: S - (degree of saturation at time t+1)
 		* x[1]: psi_s - soil water potential
-		* x[2]: psi_l  leaf water potential
 		* x[3]: Ts - Leaf temperature
 		***/
 
-		colvec x(4);
-		colvec deltax(4);
-		colvec F(4);
-		mat J = zeros<mat>(4,4);
-
-		mat D = eye(4,4);
+		colvec x(3);
+		colvec deltax(3);
+		colvec F(3);
+		mat J = zeros<mat>(3,3);
 
 		//provide initial guess  for loop
 		x[0] = Sold;
 		x[1] = psiae / powl(x[0], bclambda);
-		x[2] = x[1];
-		x[3] = airTp;
+		x[2] = airTp;
 
 		//used to calculate the gc factors other than f_lwp
 		// this information is contained in dgcdfgspsi and is used to calculate gc in the solution scheme below
-		CalculateCanopyConduct(bas, atm, ctrl, x[2], dgcdfgspsi, s, r, c);
+		CalculateCanopyConduct(bas, atm, ctrl, x[1], dgcdfgspsi, s, r, c);
 
 		do {
 
-			lambda = x[3] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
+			lambda = x[2] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
-			gc = dgcdfgspsi * 1 / (1 + powl(x[2]/lwp_den, lwp_c));
+			gc = dgcdfgspsi * 1 / (1 + powl(x[1]/lwp_den, lwp_c));
 
 			if (gc < 1e-13)
 				gc = 1e-13;
@@ -178,7 +156,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			if(x[0]<0)
 				x[0] = 0.01;
-			temp = -x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15));
+			temp = -x[1] * rho_w * grav * Vw / (Rbar*(x[2]+273.15));
 			if (temp >-708.4)
 				leafRH = std::min<REAL8>(1,expl(temp));
 			else
@@ -186,72 +164,47 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			//leafRH = 1;
 
-			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[3], r, c);
-			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[3], r, c);
-			H = SensHeatCanopy(atm, ra, x[3], r, c);
+			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[2], r, c);
+			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[2], r, c);
+			H = SensHeatCanopy(atm, ra, x[2], r, c);
 
 			E = -LET / (rho_w * lambda);
 			E= std::max<REAL8>(0.0,E);
 
-			// Sperry stuff
 
-			gsr = Keff *powl(x[0],2*bclambda+3)* sqrt(RAI * powl(x[0], -root_a)) / ( PI * rootdepth);;
-
-			if(x[2]<0)
-				temp = 0;
-			else
-				temp = -powl(x[2] / sperry_d, sperry_c);
-			if (temp <-708.4) // here to prevent setting the perror underflow flag
-				gp = 0;
-			else
-				gp = sperry_ks * expl(temp);
-
-			denfac = gsr + gp * LAI;
-			gsrp = LAI * gsr * gp / denfac;
+			F[0] = (x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
+			F[1] = psiae / powl(x[0], bclambda) - x[1];
+			F[2] = NetRadCanopy(atm, x[2], emissivity, albedo, BeerK, LAI, r, c)
+					+ LE + H + LET;
 
 
-			dleafRHdT = leafRH *  x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15)*(x[3]+273.15));
+			dleafRHdT = leafRH *  x[1] * rho_w * grav * Vw / (Rbar*(x[2]+273.15)*(x[2]+273.15));
 
 			if(leafRH == 1)
 				dleafRHdpsi_l = 0;
 			else
-				dleafRHdpsi_l = - rho_w * grav * Vw * leafRH  / (Rbar*(x[3]+273.15));
+				dleafRHdpsi_l = - rho_w * grav * Vw * leafRH  / (Rbar*(x[2]+273.15));
 
-			es = SatVaporPressure(x[3]);
-			desdTs = es *  237.15 * 17.3 / (powl(x[3] + 237.2, 2));
+			es = SatVaporPressure(x[2]);
+			desdTs = es *  237.15 * 17.3 / (powl(x[2] + 237.2, 2));
 
-			dgcdlwp = - dgcdfgspsi * lwp_c * powl(x[2]/lwp_den, lwp_c) / (x[2] * ( powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[2]/lwp_den, lwp_c) + 1));
+			dgcdlwp = gc == 1e-13 ? 0 : - dgcdfgspsi * lwp_c * powl(x[2]/lwp_den, lwp_c) / (x[1] * ( powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[1]/lwp_den, lwp_c) + 1));
 			dLETdlwp = LET / (ra_t * gc * gc) * dgcdlwp;
-			dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdpsi_l);
+			dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdT);
 
 		    dEdlwp = - dLETdlwp / (rho_w * lambda);
 		    dEdT = - dLETdT / (rho_w * lambda);
 
-			F[0] = (x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
-			F[1] = psiae / powl(x[0], bclambda) - x[1];
-			F[2] = -(gsrp * (x[2] - x[1]) - E);
-			F[3] = NetRadCanopy(atm, x[3], emissivity, albedo, BeerK, LAI, r, c)
-					+ LE + H + LET;
-
 			// Fill out the jacobian
 			J(0,0) = rootdepth * (poros - thetar) / dt;
-			J(0,2) = E==0 ?  0 : dEdlwp;
-			J(0,3) = E==0 ? 0 : dEdT;
+			J(0,1) = E==0 ?  0 : dEdlwp;
+			J(0,2) = E==0 ? 0 : dEdT;
 
 			J(1,0) = -bclambda * psiae * powl(x[0], -(bclambda + 1));
 			J(1,1) = -1;
 
-			J(2,0) = 0;//dF2dS_term - (dF2dS_term / gsr);
-			J(2,1) = gsrp;
-			J(2,2) = -gsrp + dEdlwp;/* -sperry_c*powl(x[2]/sperry_d,sperry_c)*gsrp*(x[2]-x[1])/x[2]  +
-					gsrp +
-					gsrp*gsrp * PI * rootdepth * sperry_c * powl(x[2]/sperry_d,sperry_c) * (x[2]-x[1])  /  (x[2]*Keff *powl(x[0],2*bclambda+3)* sqrt(RAI) ) -
-					dEdlwp;*/
-			J(2,3) = E==0 ? 0 : dEdT;
-
-
-			J(3,2) = dLETdlwp;
-			J(3,3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
+			J(2,1) = dLETdlwp;
+			J(2,2) = fA * powl(x[2] + 273.2, 3) + fB * desdTs * leavesurfRH
 					+ fC + dLETdT;
 
 			// solve system
@@ -260,21 +213,9 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 				//return 1;
 			}
 
-			if(k>100){
-				cout << "E: ";
-			cout << E << endl;
-			cout << "x: " << x << endl;
-			cout << "F " << F << endl << endl;
-			cout << gsrp * (x[2] - x[1]) << endl << endl;
-			cout << J << endl << endl;
-			}
-
 			x += deltax;
 
 			k++;
-
-
-
 
 		} while (norm(F, "inf") > 0.000001 && k < MAX_ITER);
 
@@ -284,11 +225,11 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 					<< r << " col: " << c << " closure err: " << norm(deltax, 2)
 					<< endl;
 
-		if (x[3] < atm.getTemperature()->matrix[r][c]) { //if the calculated canopy temperature is lower than air temperature make it air temperature
-			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[3], r, c);
-			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[3], r, c);
-			x[3] = atm.getTemperature()->matrix[r][c];
-			_species[s]._Temp_c->matrix[r][c] = x[3];
+		if (x[2] < atm.getTemperature()->matrix[r][c]) { //if the calculated canopy temperature is lower than air temperature make it air temperature
+			LET = LatHeatCanopy(bas, atm, leafRH, ra_t, x[2], r, c);
+			LE = LatHeatCanopy(bas, atm, leavesurfRH, ra, x[2], r, c);
+			x[2] = atm.getTemperature()->matrix[r][c];
+			_species[s]._Temp_c->matrix[r][c] = x[2];
 		}
 
 		evap_a = std::min<REAL8>(-evap_a, fabs(-LE / (rho_w * lambda))); //swap sign since outgoing evaporation is negative and we accumulate it as positive. Also checks for negative evap
@@ -296,14 +237,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		DelCanStor -= evap_a * ctrl.dt;
 
-		_species[s]._NetR_Can->matrix[r][c] = NetRadCanopy(atm, x[3], emissivity,
+		_species[s]._NetR_Can->matrix[r][c] = NetRadCanopy(atm, x[2], emissivity,
 				albedo, BeerK, LAI, r, c);
 		_species[s]._LatHeat_Can->matrix[r][c] = LE + LET; //LatHeatCanopy(atm, ra, Ts1, r, c);
-		_species[s]._SensHeat_Can->matrix[r][c] = SensHeatCanopy(atm, ra, x[3],
+		_species[s]._SensHeat_Can->matrix[r][c] = SensHeatCanopy(atm, ra, x[2],
 				r, c);
-		_species[s]._LeafWatPot->matrix[r][c] = -(x[2] - x[1])*0.0098;
 
-		CalculateCanopyConduct(bas, atm, ctrl, x[2], dgcdfgspsi, s, r, c); //Updates canopy conductance with final values of lwp
+		CalculateCanopyConduct(bas, atm, ctrl, x[1], dgcdfgspsi, s, r, c); //Updates canopy conductance with final values of soil potential
 
 		///////////this chunk of code is to make sure we are not transpiring below residual moisture content
         /////////// Probably not needed anymore since mass balance is enforced in the system of eqs.
