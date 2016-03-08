@@ -159,11 +159,7 @@ int Report2Maps(){
 			WriteMapSeries(oBasin->getTranspiration(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
-		if (oControl->Rep_LeafWaterPotential) {
-			name << "LWP[" << i << "]";
-			WriteMapSeries(oBasin->getLeafWaterPotential(i), name.str() , oControl->current_ts_count);
-			name.str("");
-		}
+
 
 
 	}
@@ -478,13 +474,6 @@ int Report2Maps(){
 				if(oControl->current_ts_count == 1)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getTranspiration(i), name.str() , oControl->current_ts_count);
-				name.str("");
-			}
-			if (oControl->RepTs_LeafWaterPotential) {
-				name << oControl->path_ResultsFolder << "LeafWaterPot[" << i << "].tab";
-				if(oControl->current_ts_count == 1)
-					oReport->RenameFile(name.str());
-				oReport->ReportTimeSeries(oBasin->getLeafWaterPotential(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 		}
