@@ -43,6 +43,8 @@ try{
 
 
 	ofOut << "#ECH2O configuration file v1.6b" << std::endl << std::endl;
+	ofOut << "# Please, check Appendix A of Documentation  " << std::endl;
+	ofOut << "# for units of parameters and variables  " << std::endl << std::endl;
 
     ofOut << "#" << endl << "#Folder section" << endl << "#" << endl << endl;
 
@@ -88,16 +90,16 @@ try{
     ofOut << "# Climate input information" << endl;
     ofOut << "# Maps in this section to be contained in folder pointed by Clim_Maps_Folder" << endl;
     ofOut << "#" << endl;
-    ofOut << "Snow_rain_temp_threshold = 2 " << "# Snow to rain temperatures threshold in degC" << endl;
-    ofOut << "Isohyet_map = isohyet.map" << "# Precipitation multiplier map"<< endl;
-    ofOut << "Precipitation = Precip.bin" << "# Precip rate in meters/second"<< endl;
-    ofOut << "AirTemperature = Tavg.bin" << "# Average air temperature in degC" << endl;
-    ofOut << "MaxAirTemp = Tmax.bin" << "# Maximum air temperature in degC" << endl;
-    ofOut << "MinAirTemp = Tmin.bin" << "# Minimum air temperature in degC"<< endl;
-    ofOut << "RelativeHumidity = RH.bin" << "# air relative humidity in kPa/kPa"<< endl;
-    ofOut << "WindSpeed = windspeed.bin" << "# Wind speed in meters/second" << endl;
-    ofOut << "IncomingLongWave = Ldown.bin" << "# Downwelling longwave radiation in W/sq.meter" << endl;
-    ofOut << "IncomingShortWave = Sdown.bin" << "# Solar radiation in W/sq.meter" << endl << endl;
+    ofOut << "Snow_rain_temp_threshold = 2 " << " # Snow to rain temperatures threshold in degC" << endl;
+    ofOut << "Isohyet_map = isohyet.map " << " # Precipitation multiplier map"<< endl;
+    ofOut << "Precipitation = Precip.bin " << " # Precip rate in meters/second"<< endl;
+    ofOut << "AirTemperature = Tavg.bin " << " # Average air temperature in degC" << endl;
+    ofOut << "MaxAirTemp = Tmax.bin " << " # Maximum air temperature in degC" << endl;
+    ofOut << "MinAirTemp = Tmin.bin " << " # Minimum air temperature in degC"<< endl;
+    ofOut << "RelativeHumidity = RH.bin " << " # air relative humidity in kPa/kPa"<< endl;
+    ofOut << "WindSpeed = windspeed.bin " << " # Wind speed in meters/second" << endl;
+    ofOut << "IncomingLongWave = Ldown.bin " << " # Downwelling longwave radiation in W/sq.meter" << endl;
+    ofOut << "IncomingShortWave = Sdown.bin " << " # Solar radiation in W/sq.meter" << endl << endl;
 
     ofOut << "#" << endl;
     ofOut << "# Spatial input information" << endl;
