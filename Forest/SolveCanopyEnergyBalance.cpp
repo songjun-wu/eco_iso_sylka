@@ -224,7 +224,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 				dleafRHdpsi_l = - rho_w * grav * Vw * leafRH  / (Rbar*(x[3]+273.15));
 
 			es = SatVaporPressure(x[3]);
-			desdTs = es *  237.15 * 17.3 / (powl(x[3] + 237.2, 2));
+			//desdTs = es *  237.15 * 17.3 / (powl(x[3] + 237.2, 2));
+			desdTs = es *  611 * ( (17.3/(x[3] + 237.3)) - 17.3*x[3] / (powl(x[3] + 237.3, 2)));
 
 			dgcdlwp = gc == 1e-13 ? 0 :  - dgcdfgspsi * lwp_c * powl(x[2]/lwp_den, lwp_c) / (x[2] * ( powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[2]/lwp_den, lwp_c) + 1));
 			dLETdlwp = 0;//LET / (ra_t * gc * gc) * dgcdlwp;
