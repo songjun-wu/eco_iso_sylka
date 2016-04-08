@@ -152,6 +152,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		colvec xp(4);
 		colvec deltax(4);
 		colvec F(4);
+		cx_mat eigvec;
+		cx_vec  eigval;
 		mat J = zeros<mat>(4,4);
 
 		mat D = eye(4,4);
@@ -159,8 +161,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		//provide initial guess  for loop
 		x[0] = Sold;
 		x[1] = psiae / powl(x[0], bclambda);
-		x[2] = sperry_d;//x[1];
+		x[2] = x[1];
 		x[3] = airTp;
+
+		D(0,0) = 10000;//1/x[0];
+		D(1,1) = 1;//1/x[1];
+		D(2,2) = 1000000;//1/x[2];
+		D(3,3) = 0.001;//1/x[3];
 
 		//used to calculate the gc factors other than f_lwp
 		// this information is contained in dgcdfgspsi and is used to calculate gc in the solution scheme below
@@ -168,7 +175,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		do {
 
-			lambda = x[3] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
+			//lambda = x[3] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
 			gc = dgcdfgspsi * 1 / (1 + powl(x[2]/lwp_den, lwp_c));
 
@@ -177,8 +184,6 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			ra_t = ra + (1 / gc);
 
-			if(x[0]<0)
-				x[0] = 0.01;
 			temp = -x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15));
 			if (temp >-708.4)
 				leafRH = std::min<REAL8>(1,expl(temp));
@@ -192,7 +197,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			H = SensHeatCanopy(atm, ra, x[3], r, c);
 
 			E = -LET / (rho_w * lambda);
-			E= std::max<REAL8>(0.0,E);
+			//E= std::max<REAL8>(0.0,E);
 
 			// Sperry stuff
 
@@ -225,12 +230,12 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			desdTs = es *  237.15 * 17.3 / (powl(x[3] + 237.3, 2));
 			//desdTs = es *  611 * ( (17.3/(x[3] + 237.3)) - 17.3*x[3] / (powl(x[3] + 237.3, 2)) );
 
-			dgcdlwp = gc == 1e-13 ? 0 :  - dgcdfgspsi * lwp_c * powl(x[2]/lwp_den, lwp_c) / (x[2] * ( powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[2]/lwp_den, lwp_c) + 1));
+			dgcdlwp =   - dgcdfgspsi * lwp_c * powl(x[2]/lwp_den, lwp_c) / (x[2] * ( powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[2]/lwp_den, lwp_c) + 1));
 			dLETdlwp = LET / (ra_t * gc * gc) * dgcdlwp;
 			dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdT);
 
-		    dEdlwp = - dLETdlwp / (rho_w * lambda);
-		    dEdT = E == 0 ? 0 : - dLETdT / (rho_w * lambda);
+		    dEdlwp =  - dLETdlwp / (rho_w * lambda);
+		    dEdT =  - dLETdT / (rho_w * lambda);
 
 			F[0] = (x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
 			F[1] = psiae / powl(x[0], bclambda) - x[1];
@@ -272,7 +277,9 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 					+ fC + dLETdT;
 
 			// solve system
-			if (!solve(deltax, J, -F)) {
+			//cout << "Cond num " << cond(D*J) << endl;
+
+			if (!solve(deltax,D* J, -D*F)) {
 				cout << "Singular Jacobian found in Newton solver for canopy balance.\n";
 				//return 1;
 			}
@@ -283,11 +290,14 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			cout << "x: " << x << endl;
 			cout << "F " << F << endl << endl;
 			cout << gsrp * (x[2] - x[1]) << endl << endl;
-			cout << J << endl << endl;
+			cout << D*J << endl << endl;
+			eig_gen(eigval, eigvec, D*J);
+			cout << "eigval " << eigval << endl;
+			cout << "eigvec  " << eigvec << endl;
 			}
 
-			xp = x + deltax;
-						while((xp[2]<0)){
+			xp = x + 0.5*deltax;
+						while((xp[0]<0) || (xp[2]<0)){
 							deltax*=0.5;
 							xp =x + deltax;
 						}
