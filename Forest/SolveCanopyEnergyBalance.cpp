@@ -70,6 +70,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	//auxiliary functions to group common terms in derivatives
 	REAL8 denfac = 0;
 
+	REAL8 dgsr = 0;
+	REAL8 dgp = 0;
 
 	REAL8 gc = 0;
 	REAL8 lwp_den, lwp_c; //denominator and exponent of lwp stomatal model
@@ -164,10 +166,12 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		x[2] = x[1];
 		x[3] = airTp;
 
-		D(0,0) = 10000;//1/x[0];
+
+		D(0,0) = 1;//1/x[0];
 		D(1,1) = 1;//1/x[1];
-		D(2,2) = 1000000;//1/x[2];
+		D(2,2) = 1000000000;//1/x[2];
 		D(3,3) = 0.001;//1/x[3];
+
 
 		//used to calculate the gc factors other than f_lwp
 		// this information is contained in dgcdfgspsi and is used to calculate gc in the solution scheme below
@@ -177,16 +181,16 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			//lambda = x[3] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
-			gc = dgcdfgspsi * 1 / (1 + powl(x[2]/lwp_den, lwp_c));
+			gc = dgcdfgspsi * 1 / (1 + powl(x[2] / lwp_den, lwp_c));
 
 			if (gc < 1e-13)
 				gc = 1e-13;
 
 			ra_t = ra + (1 / gc);
 
-			temp = -x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15));
-			if (temp >-708.4)
-				leafRH = std::min<REAL8>(1,expl(temp));
+			temp = -x[2] * rho_w * grav * Vw / (Rbar * (x[3] + 273.15));
+			if (temp > -708.4)
+				leafRH = std::min<REAL8>(1, expl(temp));
 			else
 				leafRH = 0;
 
@@ -197,14 +201,16 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			H = SensHeatCanopy(atm, ra, x[3], r, c);
 
 			E = -LET / (rho_w * lambda);
-			//E= std::max<REAL8>(0.0,E);
+			//E = std::max<REAL8>(0.0, E);
 
 			// Sperry stuff
 
-			gsr = Keff *powl(x[0],2*bclambda+3)* sqrt(RAI) / ( PI * rootdepth);;
+			gsr = Keff * powl(x[0], 2 * bclambda + 3) * sqrt(RAI)
+					/ ( PI * rootdepth);
+
 
 			temp = -powl(x[2] / sperry_d, sperry_c);
-			if (temp <-708.4) // here to prevent setting the perror underflow flag
+			if (temp < -708.4) // here to prevent setting the perror underflow flag
 				gp = 0;
 			else
 				gp = sperry_ks * expl(temp);
@@ -212,68 +218,59 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			denfac = gsr + gp * LAI;
 			gsrp = LAI * gsr * gp / denfac;
 
-/*
-			if (gsrp< 1e-13 || x[2]<0)
-				LET = E =leafRH= gsrp = 0;
-*/
 
+			dgsr = Keff * powl(x[0], 2 * bclambda + 2) * sqrt(RAI) * (2 * bclambda + 3)
+							/ ( PI * rootdepth);
+			dgp = gp * sperry_c * powl(x[2]/sperry_d, sperry_c) / x[2];
 
+			dleafRHdT = leafRH * x[2] * rho_w * grav * Vw
+					/ (Rbar * (x[3] + 273.15) * (x[3] + 273.15));
 
-			dleafRHdT = leafRH *  x[2] * rho_w * grav * Vw / (Rbar*(x[3]+273.15)*(x[3]+273.15));
-
-			if(leafRH == 1)
-				dleafRHdpsi_l =dleafRHdT = 0;
+			if (leafRH == 1)
+				dleafRHdpsi_l = dleafRHdT = 0;
 			else
-				dleafRHdpsi_l = - rho_w * grav * Vw * leafRH  / (Rbar*(x[3]+273.15));
+				dleafRHdpsi_l = -rho_w * grav * Vw * leafRH
+						/ (Rbar * (x[3] + 273.15));
 
 			es = SatVaporPressure(x[3]);
 			desdTs = es *  237.15 * 17.3 / (powl(x[3] + 237.3, 2));
-			//desdTs = es *  611 * ( (17.3/(x[3] + 237.3)) - 17.3*x[3] / (powl(x[3] + 237.3, 2)) );
+			desdTs = es * 611
+					* ((17.3 / (x[3] + 237.3))
+							- 17.3 * x[3] / (powl(x[3] + 237.3, 2)));
 
-			dgcdlwp =   - dgcdfgspsi * lwp_c * powl(x[2]/lwp_den, lwp_c) / (x[2] * ( powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[2]/lwp_den, lwp_c) + 1));
+			dgcdlwp =-dgcdfgspsi * lwp_c * powl(x[2] / lwp_den, lwp_c)/ (x[2] * (powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[2]/lwp_den, lwp_c) + 1));
 			dLETdlwp = LET / (ra_t * gc * gc) * dgcdlwp;
-			dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdT);
+			dLETdT = -rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdT);
 
-		    dEdlwp =  - dLETdlwp / (rho_w * lambda);
-		    dEdT =  - dLETdT / (rho_w * lambda);
+		    dEdlwp = -dLETdlwp / (rho_w * lambda);
+		    dEdT = -dLETdT / (rho_w * lambda);
 
-			F[0] = (x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
-			F[1] = psiae / powl(x[0], bclambda) - x[1];
+			F[0] = 0;//(x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
+			F[1] = 0;//psiae / powl(x[0], bclambda) - x[1];
 			F[2] = gsrp * (x[2] - x[1]) - E;
 			F[3] = NetRadCanopy(atm, x[3], emissivity, albedo, BeerK, LAI, r, c)
 					+ LE + H + LET;
 
 			// Fill out the jacobian
-			J(0,0) = rootdepth * (poros - thetar) / dt;
-			J(0,2) = dEdlwp;
-			J(0,3) =  dEdT;
+			J(0, 0) =1;// rootdepth * (poros - thetar) / dt;
+			J(0, 2) = 0;//dEdlwp;
+			J(0, 3) = 0;//dEdT;
 
-			J(1,0) = -bclambda * psiae * powl(x[0], -(bclambda + 1));
-			J(1,1) = -1;
+			J(1, 0) = 0;//-bclambda * psiae * powl(x[0], -(bclambda + 1));
+			J(1, 1) = 1;//-1;
 
-		J(2, 0) = gp * LAI * (x[2] - x[1]) * powl(x[0], 2 + 2 * bclambda)
-					* Keff * sqrt(RAI) * (3 + 2 * bclambda)
-					/ (PI * rootdepth * denfac)
-					- gp * LAI * (x[2] - x[1]) * powl(x[0], 5 + 4 * bclambda)
-							* Keff * Keff * RAI * (3 + 2 * bclambda)
-							/ powl((PI * rootdepth * denfac), 2);
-			J(2, 1) = -gsrp;
-			J(2, 2) = -sperry_c * powl(x[2] / sperry_d, sperry_c) * gsrp
-					* (x[2] - x[1]) / x[2] + gsrp
-					+ gsrp * gsrp * PI * rootdepth * sperry_c
-							* powl(x[2] / sperry_d, sperry_c) * (x[2] - x[1])
-							/ (x[2] * Keff * powl(x[0], 2 * bclambda + 3)
-									* sqrt(RAI)) - dEdlwp;
-			J(2, 3) = -dEdT;
+			J(2, 0) = 0;//(dgsr * gp*LAI / denfac - gsr* dgsr * gp*LAI / (denfac*denfac)) * (x[2] - x[1]);
+			J(2, 1) = 0;//'-gsrp;
+			J(2, 2) = (gsr * dgp * LAI / denfac - gsr * gp * dgp * LAI*LAI / (denfac * denfac))*(x[2] - x[1]) + gsrp;
+			J(2, 3) = 0;//-dEdT;
 
 /*			if(E==0)
 				J(2,2) = 1;*/
 
 			//J(2,2) = 1;
 
-
-			J(3,2) = dLETdlwp;
-			J(3,3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
+			J(3, 2) = 0;//dLETdlwp;
+			J(3, 3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
 					+ fC + dLETdT;
 
 			// solve system
@@ -291,12 +288,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			cout << "F " << F << endl << endl;
 			cout << gsrp * (x[2] - x[1]) << endl << endl;
 			cout << D*J << endl << endl;
+			cout << "Cond num " << cond(D*J) << endl;
 			eig_gen(eigval, eigvec, D*J);
 			cout << "eigval " << eigval << endl;
 			cout << "eigvec  " << eigvec << endl;
 			}
 
-			xp = x + 0.5*deltax;
+			xp = x + deltax;
 						while((xp[0]<0) || (xp[2]<0)){
 							deltax*=0.5;
 							xp =x + deltax;
