@@ -162,15 +162,15 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		//provide initial guess  for loop
 		x[0] = Sold;
-		x[1] = psiae / powl(x[0], bclambda);
-		x[2] = x[1];
+		x[1] = psiae*0.0098 / powl(x[0], bclambda);
+		x[2] = 1.1*x[1];
 		x[3] = airTp;
 
 
-		D(0,0) = 1;//1/x[0];
+	/*	D(0,0) = 1;//1/x[0];
 		D(1,1) = 1;//1/x[1];
-		D(2,2) = 1000000000;//1/x[2];
-		D(3,3) = 0.001;//1/x[3];
+		D(2,2) = 10;//1/x[2];
+		D(3,3) = 0.1;//1/x[3];*/
 
 
 		//used to calculate the gc factors other than f_lwp
@@ -205,8 +205,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			// Sperry stuff
 
-			gsr = Keff * powl(x[0], 2 * bclambda + 3) * sqrt(RAI)
-					/ ( PI * rootdepth);
+			gsr = Keff*1e6 * powl(x[0], 2 * bclambda + 3) * sqrt(RAI)
+					/ ( PI * rootdepth * grav * rho_w) * 1000000;
 
 
 			temp = -powl(x[2] / sperry_d, sperry_c);
@@ -219,9 +219,9 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			gsrp = LAI * gsr * gp / denfac;
 
 
-			dgsr = Keff * powl(x[0], 2 * bclambda + 2) * sqrt(RAI) * (2 * bclambda + 3)
-							/ ( PI * rootdepth);
-			dgp = gp * sperry_c * powl(x[2]/sperry_d, sperry_c) / x[2];
+			dgsr = Keff *1e6 * powl(x[0], 2 * bclambda + 2) * sqrt(RAI) * (2 * bclambda + 3)
+							/ ( PI * rootdepth * grav * rho_w) * 1000000 ;
+			dgp = -gp * sperry_c * powl(x[2]/sperry_d, sperry_c) / x[2];
 
 			dleafRHdT = leafRH * x[2] * rho_w * grav * Vw
 					/ (Rbar * (x[3] + 273.15) * (x[3] + 273.15));
@@ -233,13 +233,16 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 						/ (Rbar * (x[3] + 273.15));
 
 			es = SatVaporPressure(x[3]);
-			desdTs = es *  237.15 * 17.3 / (powl(x[3] + 237.3, 2));
-			desdTs = es * 611
-					* ((17.3 / (x[3] + 237.3))
+			//desdTs = es *  237.15 * 17.3 / (powl(x[3] + 237.3, 2));
+			desdTs = es * ((17.3 / (x[3] + 237.3))
 							- 17.3 * x[3] / (powl(x[3] + 237.3, 2)));
 
 			dgcdlwp =-dgcdfgspsi * lwp_c * powl(x[2] / lwp_den, lwp_c)/ (x[2] * (powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[2]/lwp_den, lwp_c) + 1));
-			dLETdlwp = LET / (ra_t * gc * gc) * dgcdlwp;
+			if (dgcdfgspsi == 0)
+							dLETdlwp = LET = E =  0;
+			else
+				dLETdlwp = -spec_heat_air * rho_a * (ea - es) * lwp_c *  powl(x[2]/lwp_den, lwp_c) / (gamma * dgcdfgspsi*x[2]*ra_t*ra_t);
+
 			dLETdT = -rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdT);
 
 		    dEdlwp = -dLETdlwp / (rho_w * lambda);
@@ -247,9 +250,9 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			F[0] = 0;//(x[0] - Sold) * (poros - thetar) * rootdepth / dt + E;
 			F[1] = 0;//psiae / powl(x[0], bclambda) - x[1];
-			F[2] = gsrp * (x[2] - x[1]) - E;
-			F[3] = NetRadCanopy(atm, x[3], emissivity, albedo, BeerK, LAI, r, c)
-					+ LE + H + LET;
+			F[2] = dgcdfgspsi == 0 ? 0 : powl(gsrp * (x[2] - x[1]) - E*1e6,2);
+			F[3] = powl(NetRadCanopy(atm, x[3], emissivity, albedo, BeerK, LAI, r, c)
+					+ LE + H + LET,2);
 
 			// Fill out the jacobian
 			J(0, 0) =1;// rootdepth * (poros - thetar) / dt;
@@ -260,18 +263,18 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			J(1, 1) = 1;//-1;
 
 			J(2, 0) = 0;//(dgsr * gp*LAI / denfac - gsr* dgsr * gp*LAI / (denfac*denfac)) * (x[2] - x[1]);
-			J(2, 1) = 0;//'-gsrp;
-			J(2, 2) = (gsr * dgp * LAI / denfac - gsr * gp * dgp * LAI*LAI / (denfac * denfac))*(x[2] - x[1]) + gsrp;
-			J(2, 3) = 0;//-dEdT;
+			J(2, 1) = 0;//-gsrp;
+			J(2, 2) = dgcdfgspsi == 0 ? 1 : 2*F[2]*((gsr * dgp * LAI / denfac - gsr * gp * dgp * LAI*LAI / (denfac * denfac))*(x[2] - x[1]) + gsrp - dEdlwp  * 1e6);
+			J(2, 3) = dgcdfgspsi == 0 ? 0 : 2*F[2]*(-dEdT);
 
 /*			if(E==0)
 				J(2,2) = 1;*/
 
 			//J(2,2) = 1;
 
-			J(3, 2) = 0;//dLETdlwp;
-			J(3, 3) = fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
-					+ fC + dLETdT;
+			J(3, 2) = dgcdfgspsi == 0 ? 2*F[3]*dLETdlwp;
+			J(3, 3) = 2*F[3]*(fA * powl(x[3] + 273.2, 3) + fB * desdTs * leavesurfRH
+					+ fC + dLETdT);
 
 			// solve system
 			//cout << "Cond num " << cond(D*J) << endl;
@@ -283,22 +286,24 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 			if(k>100){
 				cout << "E: ";
-			cout << E << endl;
-			cout << "x: " << x << endl;
-			cout << "F " << F << endl << endl;
+			cout << E*1e6 << endl;
 			cout << gsrp * (x[2] - x[1]) << endl << endl;
-			cout << D*J << endl << endl;
+			cout << "x: " << x << endl;
+			cout << "deltax: " << deltax << endl;
+			cout << "F " << F << endl;
+
+			cout << D*J << endl;
 			cout << "Cond num " << cond(D*J) << endl;
-			eig_gen(eigval, eigvec, D*J);
-			cout << "eigval " << eigval << endl;
-			cout << "eigvec  " << eigvec << endl;
+			//eig_gen(eigval, eigvec, D*J);
+			//cout << "eigval " << eigval << endl;
+			//cout << "eigvec  " << eigvec << endl;
 			}
 
 			xp = x + deltax;
-						while((xp[0]<0) || (xp[2]<0)){
+			/*			while((xp[0]<0) || (xp[2]<0)){
 							deltax*=0.5;
 							xp =x + deltax;
-						}
+						}*/
 
 						x = xp;
 
@@ -332,7 +337,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		_species[s]._LatHeat_Can->matrix[r][c] = LE + LET; //LatHeatCanopy(atm, ra, Ts1, r, c);
 		_species[s]._SensHeat_Can->matrix[r][c] = SensHeatCanopy(atm, ra, x[3],
 				r, c);
-		_species[s]._LeafWatPot->matrix[r][c] = -(x[2] - x[1])*0.0098;
+		_species[s]._LeafWatPot->matrix[r][c] = -(x[2] - x[1]);
 
 		CalculateCanopyConduct(bas, atm, ctrl, x[2], dgcdfgspsi, s, r, c); //Updates canopy conductance with final values of lwp
 
