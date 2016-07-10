@@ -14,7 +14,7 @@
 #include <time.h>
 #include "Sativa.h"
 
-time_t start, end;
+time_t start, theend;
 int main(int argc, char* argv[])
 {
 # ifdef _OPENMP
@@ -57,8 +57,8 @@ catch(...){
 }
 
 	  CrunchWorld();
-    time(&end);
-    int tot_sec = difftime(end, start);
+    time(&theend);
+    int tot_sec = difftime(theend, start);
 
 
     int dd = tot_sec/86400;
