@@ -41,12 +41,12 @@ class Forest {
 
 			/*State variables*/
 
-			int GrowTrees(UINT4 j, UINT4 r, UINT4 c, REAL8 dt, REAL8 fa, REAL8 ft, REAL8 fw, REAL8 T, REAL8 usablewater);
+			int GrowTrees(UINT4 j, UINT4 r, UINT4 c, REAL8 dt, REAL8 fa, REAL8 ft, REAL8 fw, REAL8 T, REAL8 usablewater, bool supress_root_growth);
 			int GrowStem(UINT4 spec, UINT4 row, UINT4 col);
 			int GrowLAI(UINT4 spec, UINT4 row, UINT4 col, REAL8 T, REAL8 waterusable, REAL8 dt);
-			int GrowRoots(UINT4 spec, UINT4 row, UINT4 col, REAL8 dt);
+			int GrowRoots(UINT4 spec, UINT4 row, UINT4 col, REAL8 dt, bool supress);
 
-			int GrowGrass(UINT4 j, UINT4 r, UINT4 c, REAL8 dt);
+			int GrowGrass(UINT4 j, UINT4 r, UINT4 c, REAL8 dt, bool supress_root_growth);
 			int GrowGrassLAI(UINT4 spec, UINT4 row, UINT4 col, REAL8 dt);
 
 			double NetRadCanopy(Atmosphere &atm, const double &Ts, REAL8 emiss, REAL8 albedo, REAL8 Kbeers, REAL8 lai, int row, int col);

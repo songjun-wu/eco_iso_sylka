@@ -43,6 +43,9 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 		throw std::runtime_error(string("Folder not found: ") + path_ResultsFolder);
 
 
+	sw_veg_dyn = Config.read<bool>("Vegetation_dynamics");
+	sw_plant_hydr = Config.read<bool>("Plant_hydraulics");
+	sw_root_dyn = Config.read<bool>("Supress_root_dynamics");
 	sw_reinfilt = Config.read<bool>("Reinfiltration");
 	sw_channel = Config.read<bool>("Channel");
 

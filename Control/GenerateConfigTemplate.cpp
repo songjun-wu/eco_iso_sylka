@@ -42,7 +42,7 @@ try{
 
 
 
-	ofOut << "#ECH2O configuration file v1.6" << std::endl << std::endl;
+	ofOut << "#ECH2O configuration file v1.7" << std::endl << std::endl;
 
     ofOut << "#" << endl << "#Folder section" << endl << "#" << endl << endl;
 
@@ -56,6 +56,9 @@ try{
     ofOut << "#" << endl << "# Options section" << endl << "#" << endl << endl;
 
     ofOut << "# Boolean switches" << endl;
+    ofOut << "Vegetation_dynamics = 1" << endl;
+    ofOut << "Plant_hydraulics = 1" << endl;
+    ofOut << "Supress_root_dynamics = 0" << endl;
     ofOut << "Reinfiltration = 1" << endl;
     ofOut << "Channel = 1" << endl << endl;
 

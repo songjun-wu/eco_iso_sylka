@@ -34,6 +34,9 @@ struct Control{
 		string ForestStateVarsInputType; //indicates if the forest state variables are input as tables (tables) or maps (maps)
 
 		/*Option switches*/
+		bool sw_veg_dyn; //switch to turn on and off the dynamic vegetation model
+		bool sw_plant_hydr; //switch to turn on and off Sperry's plant hydraulic model
+		bool sw_root_dyn; //switch to suppress root dynamics and maintain constant its initial value
 		bool sw_reinfilt; //switch to turn on and off the reinfiltration option
 		bool sw_channel; //switch to turn on and off the channel option
 
