@@ -80,9 +80,9 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
 					* _species[j].GPP2NPP;
 
 			if (_species[j].is_grass)
-				GrowGrass(j, r, c, dt);
+				GrowGrass(j, r, c, dt, ctrl.sw_root_dyn);
 			else
-				GrowTrees(j, r, c, dt, fa, ft, fw, atm.getMinTemperature()->matrix[r][c], UsableTheta);
+				GrowTrees(j, r, c, dt, fa, ft, fw, atm.getMinTemperature()->matrix[r][c], UsableTheta, ctrl.sw_root_dyn);
 
 		}
 	return EXIT_SUCCESS;
