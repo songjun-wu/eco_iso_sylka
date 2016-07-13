@@ -83,7 +83,10 @@ Basin::Basin(Control &ctrl)
 
 
 		//Partial check of maps mainly to make sure no nodata is written within the valid domain
-		CheckMaps(ctrl);
+		if(ctrl.sw_map_checks)
+			printf("Skipping intial maps consistency checks...\n");
+		else
+			CheckMaps(ctrl);
 
 		/*state variables initialized with the base map*/
 		_catcharea = new grid(*_DEM);

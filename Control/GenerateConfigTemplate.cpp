@@ -56,6 +56,7 @@ try{
     ofOut << "#" << endl << "# Options section" << endl << "#" << endl << endl;
 
     ofOut << "# Boolean switches" << endl;
+    ofOut << "Skip_map_checks = 0" << endl;
     ofOut << "Vegetation_dynamics = 1" << endl;
     ofOut << "Plant_hydraulics = 1" << endl;
     ofOut << "Supress_root_dynamics = 0" << endl;
