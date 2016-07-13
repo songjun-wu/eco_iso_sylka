@@ -275,6 +275,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 				throw;
 			}
 
+/*
 			if (k > 100) {
 				cout << "E: ";
 				cout << E * 1e6 << endl;
@@ -289,6 +290,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 				//cout << "eigval " << eigval << endl;
 				//cout << "eigvec  " << eigvec << endl;
 			}
+*/
 
 			x += deltax;
 			k++;
