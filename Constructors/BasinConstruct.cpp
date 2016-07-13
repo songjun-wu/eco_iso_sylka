@@ -5,6 +5,7 @@
  *      Author: Marco Maneta
  */
 
+#include  <fstream>
 #include "Basin.h"
 
 Basin::Basin(Control &ctrl)
@@ -19,15 +20,32 @@ Basin::Basin(Control &ctrl)
 
 		_ldd = new grid(ctrl.path_BasinFolder + ctrl.fn_ldd, ctrl.MapType);
 
+		printf("Checking if file %s exists...\n", (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+		/*
+		 * Checks if there is a _vSordtedGrid object with the correct name in the spatial folder
+		 */
+		if (access((ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str(), F_OK) != -1) {
+			printf("File Found!. Loading object...\n");
+			loadSortedGrid(_vSortedGrid, (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+		}
+		else{
+			printf("File not found!. Initializing and sorting grid...\n");
+
 		/*sorts the basin with data cells according
 		 * to the ldd after _DEM and _ldd have been created*/
 		_vSortedGrid = Basin::SortGridLDD();
+
+		printf("Sorting done. Saving serialized sorted grid object for subsequent runs...\n");
+
+		saveSortedGrid(_vSortedGrid, (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+		}
 
 		fForest = new Forest(ctrl); //constructs the Forest object
 
 		/*basin parameters and properties*/
 		_slope = new grid(ctrl.path_BasinFolder + ctrl.fn_slope, ctrl.MapType);
 		_Ksat = new grid(ctrl.path_BasinFolder + ctrl.fn_ksat, ctrl.MapType);
+		_KvKs = new grid(ctrl.path_BasinFolder + ctrl.fn_kvkh, ctrl.MapType);
 		_random_roughness = new grid(ctrl.path_BasinFolder + ctrl.fn_randrough, ctrl.MapType);
 		_porosity = new grid(ctrl.path_BasinFolder + ctrl.fn_poros, ctrl.MapType);
 		_psi_ae = new grid(ctrl.path_BasinFolder + ctrl.fn_psi_ae, ctrl.MapType);
@@ -65,7 +83,10 @@ Basin::Basin(Control &ctrl)
 
 
 		//Partial check of maps mainly to make sure no nodata is written within the valid domain
-		CheckMaps(ctrl);
+		if(ctrl.sw_map_checks)
+			printf("Skipping intial maps consistency checks...\n");
+		else
+			CheckMaps(ctrl);
 
 		/*state variables initialized with the base map*/
 		_catcharea = new grid(*_DEM);
@@ -134,6 +155,8 @@ Basin::Basin(Control &ctrl)
 			delete _ponding;
 		if(_Ksat)
 			delete _Ksat;
+		if(_KvKs)
+			delete _KvKs;
 		if(_random_roughness)
 			delete _random_roughness;
 		if(_slope)

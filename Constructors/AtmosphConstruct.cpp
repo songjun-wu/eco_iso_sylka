@@ -52,7 +52,7 @@ Atmosphere::Atmosphere(Control &ctrl){
 			*_Wind_speed = *_zones;
 
 			_isohyet = new grid(ctrl.path_ClimMapsFolder + ctrl.fn_isohyet, ctrl.MapType);
-			_rain_snow_temp = new grid(ctrl.path_ClimMapsFolder + ctrl.fn_snow_rain_temp, ctrl.MapType);
+			_rain_snow_temp = ctrl.snow_rain_temp;
 
 			/*open climate data files*/
 
@@ -129,8 +129,6 @@ Atmosphere::Atmosphere(Control &ctrl){
 
 		  if (_isohyet)
 			  delete _isohyet;
-		  if(_rain_snow_temp)
-			  delete _rain_snow_temp;
 
 		  throw;
 		  }

@@ -46,8 +46,8 @@ int Forest::SetSpeciesParameters(Control &ctrl){
 				 _species[i].Spra = _tableParams->matrix[i][11];
 				 _species[i].gs_light_coeff = _tableParams->matrix[i][12];
 				 _species[i].gs_vpd_coeff = _tableParams->matrix[i][13];
-				 _species[i].lwp_low = _tableParams->matrix[i][14];
-				 _species[i].lwp_high = _tableParams->matrix[i][15];
+				 _species[i].lwp_min = _tableParams->matrix[i][14];
+				 _species[i].lwp_max = _tableParams->matrix[i][15];
 				 _species[i].WiltingPoint = _tableParams->matrix[i][16];
 				 _species[i].SLA = _tableParams->matrix[i][17];
 				 _species[i].SRA = _tableParams->matrix[i][18];

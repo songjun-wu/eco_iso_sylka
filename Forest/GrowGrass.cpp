@@ -17,7 +17,7 @@
 
 #include "Forest.h"
 
-int Forest::GrowGrass(UINT4 j, UINT4 r, UINT4 c, REAL8 dt){
+int Forest::GrowGrass(UINT4 j, UINT4 r, UINT4 c, REAL8 dt, bool supress_root_growth){
 
 	REAL8 lai_g, lai_d, lai_max;
 	REAL8 nr, nf;
@@ -37,7 +37,7 @@ int Forest::GrowGrass(UINT4 j, UINT4 r, UINT4 c, REAL8 dt){
 		   	_species[j]._Del_FoliageMass->matrix[r][c] = _species[j]._NPP->matrix[r][c] * nf;
 
 		   	GrowGrassLAI(j, r, c, dt); //Increase LAI of species j in r,c cell
-		   	GrowRoots(j, r, c, dt); //Increase root density of species j in r,c cell
+		   	GrowRoots(j, r, c, dt, supress_root_growth); //Increase root density of species j in r,c cell
 
 	return EXIT_SUCCESS;
 }

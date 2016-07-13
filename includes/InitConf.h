@@ -28,11 +28,16 @@ struct Control{
 		float current_t_step; //current time step (seconds)
 		unsigned int current_ts_count; //current count of time step
 
+
 		/*Control switches*/
 		string MapType; //indicates if the maps to be read are ASCII (grass) or PCRASTER (csf)
 		string ForestStateVarsInputType; //indicates if the forest state variables are input as tables (tables) or maps (maps)
 
 		/*Option switches*/
+		bool sw_map_checks; //switch to turn on and off the initial map consistency checks
+		bool sw_veg_dyn; //switch to turn on and off the dynamic vegetation model
+		bool sw_plant_hydr; //switch to turn on and off Sperry's plant hydraulic model
+		bool sw_root_dyn; //switch to suppress root dynamics and maintain constant its initial value
 		bool sw_reinfilt; //switch to turn on and off the reinfiltration option
 		bool sw_channel; //switch to turn on and off the channel option
 
@@ -50,8 +55,8 @@ struct Control{
 		string fn_chmanningn; //channel roughness parameter
 
 		/*Soil properties and parameters*/
-		string fn_isohyet; //map with rainfall multipliers
 		string fn_ksat; //soil hydraulic conductivity mh-1
+		string fn_kvkh; //vertical to horizontal ksat anisotropy ratio
 		string fn_randrough; //terrain base random roughness to calcualte aerodynamic resistance (m)
 		string fn_slope; //surface slope m m-1
 		string fn_poros; //volumetric
@@ -83,7 +88,9 @@ struct Control{
 		string fn_soiltemp;
 
 		/*Climate zones and climate input files*/
+		float snow_rain_temp; //threshold temp for snow rain transition, degC
 		string fn_climzones; //base climatic zones map with the grid geometry
+		string fn_isohyet; //map with rainfall multipliers
 		string fn_Ldown; //Incoming longwave radiation Wm-2
 		string fn_Sdown; //Incoming shortwave radiation Wm-2
 		string fn_temp; //average air temperature C
@@ -92,7 +99,6 @@ struct Control{
 		string fn_precip; //
 		string fn_rel_humid; //relative humidity
 		string fn_wind_speed; //wind speed ms-1
-		string fn_snow_rain_temp; //threshold temp for snow rain transition, degC
 
 		/*Forest patches and forest input files*/
 		int NumSpecs; //number of tree species in the simulation

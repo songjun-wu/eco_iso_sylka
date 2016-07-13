@@ -43,6 +43,10 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 		throw std::runtime_error(string("Folder not found: ") + path_ResultsFolder);
 
 
+	sw_map_checks = Config.read<bool>("Skip_map_checks");
+	sw_veg_dyn = Config.read<bool>("Vegetation_dynamics");
+	sw_plant_hydr = Config.read<bool>("Plant_hydraulics");
+	sw_root_dyn = Config.read<bool>("Supress_root_dynamics");
 	sw_reinfilt = Config.read<bool>("Reinfiltration");
 	sw_channel = Config.read<bool>("Channel");
 
@@ -72,7 +76,8 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_climzones, "ClimateZones");
 	Config.readInto(fn_patches, "ForestPatches");
 
-	Config.readInto(fn_ksat, "Hydraulic_Conductivity");
+	Config.readInto(fn_ksat, "Horiz_Hydraulic_Conductivity");
+	Config.readInto(fn_kvkh, "Vert_Horz_Anis_ratio");
 	Config.readInto(fn_randrough, "Terrain_Random_Roughness");
 	Config.readInto(fn_slope, "Slope");
 	Config.readInto(fn_poros, "Porosity");
@@ -84,8 +89,8 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_paramWp, "Veget_water_use_param2");
 	Config.readInto(fn_snowCf, "Snow_Melt_Coeff");
 
+	snow_rain_temp = Config.read<float>("Snow_rain_temp_threshold");
 	Config.readInto(fn_isohyet, "Isohyet_map");
-	Config.readInto(fn_snow_rain_temp, "Snow_rain_temp_threshold");
 	Config.readInto(fn_Ldown, "IncomingLongWave");
 	Config.readInto(fn_Sdown, "IncomingShortWave");
 	Config.readInto(fn_temp, "AirTemperature");

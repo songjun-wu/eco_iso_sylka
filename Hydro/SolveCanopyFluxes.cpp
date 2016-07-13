@@ -94,7 +94,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 		thetar = _theta_r->matrix[r][c];
 		fc = _fieldcap->matrix[r][c];
 		poros = _porosity->matrix[r][c];
-		Keff = _Ksat->matrix[r][c];
+		Keff = 2* _Ksat->matrix[r][c]*_KvKs->matrix[r][c] / (1 +_KvKs->matrix[r][c]) ; // harmonic mean of vertical and horizontal ksats
 		psi_ae = _psi_ae->matrix[r][c];
 		bclambda = _BClambda->matrix[r][c];
 
@@ -179,7 +179,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 					Tp = atm.getTemperature()->matrix[r][c];
 					maxTp = atm.getMaxTemperature()->matrix[r][c];
 					minTp = atm.getMinTemperature()->matrix[r][c];
-					sno_rain_thres = atm.getRainSnowTempThreshold()->matrix[r][c];
+					sno_rain_thres = atm.getRainSnowTempThreshold();
 
 					if(maxTp <= sno_rain_thres){
 						snow = D;

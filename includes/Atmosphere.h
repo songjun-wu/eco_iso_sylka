@@ -29,7 +29,7 @@ class Atmosphere{
 		grid *_isohyet; //map with rainfall multipliers to spatially distribute precipitation
 		UINT4 _vSsortedGridTotalCellNumber;
 
-		grid *_rain_snow_temp; //scalar with air temperature threshold for rain-snow partition
+		REAL8 _rain_snow_temp; //scalar with air temperature threshold for rain-snow partition
 
 		grid *_Ldown; //longwave downward radiation Wm-2
 		grid *_Sdown; //shortwave downward radiation Wm-2
@@ -80,7 +80,7 @@ public:
 		return _vSortedGrid;
 	}
 
-    grid *getRainSnowTempThreshold() const{
+	REAL8 getRainSnowTempThreshold() const{
     	return _rain_snow_temp;
     }
 	grid *getIncomingLongWave() const

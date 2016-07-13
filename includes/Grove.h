@@ -27,8 +27,8 @@ struct Grove {
 	REAL8 Spra; //coefficient a for allocation of NPP to stems
 	REAL8 gs_light_coeff; //curvature coefficient for light factor in stomatal conductance
 	REAL8 gs_vpd_coeff; //curvature coefficient for vapor pressure deficit factor in stomatal conductance
-	REAL8 lwp_low; //lwp level for complete closure on stomatal conductance (- m of head)
-	REAL8 lwp_high; //lwp level for no hydrologic control on stomatal conductance (- m of head)
+	REAL8 lwp_min; //lwp level for complete closure on stomatal conductance (- m of head)
+	REAL8 lwp_max; //lwp level for no hydrologic control on stomatal conductance (- m of head)
 	REAL8 WiltingPoint; //volumetric soil moisture at wilting point for the species
 	REAL8 SLA; //specific leaf area (m2 g-1)
 	REAL8 SRA; //specific root area (m2 g-1)

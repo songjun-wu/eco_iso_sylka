@@ -42,7 +42,7 @@ try{
 
 
 
-	ofOut << "#ECH2O configuration file v1.5" << std::endl << std::endl;
+	ofOut << "#ECH2O configuration file v1.7" << std::endl << std::endl;
 
     ofOut << "#" << endl << "#Folder section" << endl << "#" << endl << endl;
 
@@ -56,12 +56,25 @@ try{
     ofOut << "#" << endl << "# Options section" << endl << "#" << endl << endl;
 
     ofOut << "# Boolean switches" << endl;
+    ofOut << "Skip_map_checks = 0" << endl;
+    ofOut << "Vegetation_dynamics = 1" << endl;
+    ofOut << "Plant_hydraulics = 1" << endl;
+    ofOut << "Supress_root_dynamics = 0" << endl;
     ofOut << "Reinfiltration = 1" << endl;
     ofOut << "Channel = 1" << endl << endl;
 
-    ofOut << "#toggle switches" << endl;
-    ofOut << "Aerodyn_resist_opt = 0  #0 = Pen-Mont option - 1 = Thom and Oliver 1977 = 1" << endl;
-    ofOut << "Soil_resistance_opt = 1 #0 = Passerat de Silans et al 1989 - 1 = Ivanov et al " << endl;
+    ofOut << "# TOGGLE SWITCHES:" << endl;
+    ofOut << "# Aerodynamic resistance choices: " << endl;
+    ofOut << "# 0 = Penman Monteith option " << endl;
+    ofOut << "# 1 = Thom and Oliver 1977 " << endl;
+    ofOut << "Aerodyn_resist_opt = 0 " << endl << endl;
+
+    ofOut << "# Soil resistance to vapor diffusion choices: " << endl;
+    ofOut << "# 0 = No resistance: " << endl;
+    ofOut << "# 1 = Passerat de Silans et al 1989 " << endl;
+    ofOut << "# 2 = Thom and Oliver 1977 " << endl;
+    ofOut << "# 3 = Sakaguchi and Zeng 2009 " << endl;
+    ofOut << "Soil_resistance_opt = 2 " << endl << endl;
 
     ofOut << "#" << endl << "# Time variables section" << endl << "#" << endl;
     ofOut << "Simul_start = 0 # always 0" << endl;
@@ -75,9 +88,12 @@ try{
     ofOut << "ClimateZones = ClimZones.map" << endl;
     ofOut << "ForestPatches = patches.map" << endl << endl;
 
-    ofOut << "#" << endl << "# Climate input information" << endl << "#" << endl;
+    ofOut << "#" << endl;
+    ofOut << "# Climate input information" << endl;
+    ofOut << "# Maps in this section to be contained in folder pointed by Clim_Maps_Folder" << endl;
+    ofOut << "#" << endl;
+    ofOut << "Snow_rain_temp_threshold = 2 " << "# Snow to rain temperatures threshold in degC" << endl;
     ofOut << "Isohyet_map = isohyet.map" << endl;
-    ofOut << "Snow_rain_temp_threshold = snow_rain_thr.map" << endl;
     ofOut << "Precipitation = Precip.bin" << endl;
     ofOut << "AirTemperature = Tavg.bin" << endl;
     ofOut << "MaxAirTemp = Tmax.bin" << endl;
@@ -86,6 +102,11 @@ try{
     ofOut << "WindSpeed = windspeed.bin" << endl;
     ofOut << "IncomingLongWave = Ldown.bin" << endl;
     ofOut << "IncomingShortWave = Sdown.bin" << endl << endl;
+
+    ofOut << "#" << endl;
+    ofOut << "# Spatial input information" << endl;
+    ofOut << "# Maps below this lineto be contained in folder pointed by Maps_Folder" << endl;
+    ofOut << "#" << endl;
 
     ofOut << "Albedo = albedo.map" << endl;
     ofOut << "Surface_emissivity = emissivity.map" << endl;
@@ -102,21 +123,22 @@ try{
     ofOut << "mannings_n = chanmanningn.map" << endl;
 
     ofOut << "#   " << endl;
-    ofOut << "#initial conditions  " << endl;
+    ofOut << "# Hydrologic Initial Conditions  " << endl;
+    ofOut << "# Forest Initial states are included as maps or tables" << endl;
     ofOut << "#   " << endl;
     ofOut << "Streamflow = streamflow.map " << endl;
     ofOut << "snow_water_equivalent = swe.map " << endl;
     ofOut << "Soil_moisture_1 = soilmoist.map " << endl;
     ofOut << "Soil_moisture_2 = soilmoist.map " << endl;
-    ofOut << "Soil_moisture_3 = soilmoist.map " << endl << endl;
-
+    ofOut << "Soil_moisture_3 = soilmoist.map " << endl;
     ofOut << "Soil_temperature = soiltemp.map " << endl << endl;
 
     ofOut << "#   " << endl;
     ofOut << "#Soil parameters  " << endl;
     ofOut << "#   " << endl;
     ofOut << "Slope = slope.map " << endl;
-    ofOut << "Hydraulic_Conductivity = Ksat.map " << endl;
+    ofOut << "Horiz_Hydraulic_Conductivity = Keff.map " << endl;
+    ofOut << "Vert_Horz_Anis_ratio = KvKh.map " << endl;
     ofOut << "Terrain_Random_Roughness = randrough.map " << endl;
     ofOut << "Porosity = poros.map " << endl;
     ofOut << "Air_entry_pressure = psi_ae.map " << endl;
@@ -132,7 +154,7 @@ try{
     ofOut << "Soil_bedrock_leakance = leakance.map " << endl << endl;
 
     ofOut << "#   " << endl;
-    ofOut << "#Forest Parameters  " << endl;
+    ofOut << "#Forest Parameters and initial states " << endl;
     ofOut << "#   " << endl;
     ofOut << "Number_of_Species = 1 " << endl;
     ofOut << "Species_Parameters = SpeciesParams.tab " << endl;
