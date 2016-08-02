@@ -17,7 +17,8 @@ Why it exists?
 The Latest Version
 ------------------
 
-  Details of the latest version can be found on the ECH2O software page under http://hs.umt.edu/RegionalHydrologyLab/software/default.php.
+  Details of the latest version (source and binaries) can be found on the ECH2O software page under http://hs.umt.edu/RegionalHydrologyLab/software/default.php.
+   
 
 Documentation
 -------------
@@ -27,11 +28,15 @@ Documentation
   up-to-date documentation can be found at
   http://hs.umt.edu/RegionalHydrologyLab/software/documentation-ech2o.php.
 
-Installation
-------------
+Installation of Binary Distributions
+------------------------------------
 
-  Please see the file called INSTALL.  Platform specific notes can be
-  found in README.platforms.
+  Please see the file called INSTALL.rst.
+  
+Compilation of source code
+--------------------------
+  
+  Please see the file called INSTALL.rst.
 
 Licensing
 ---------
