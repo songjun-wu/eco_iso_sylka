@@ -1,3 +1,26 @@
+@rem ***************************************************************************
+@rem Ech2o, a spatially-distributed, ecohydrologic simulator
+@rem Copyright (c) 2016 Marco Maneta <marco.maneta@umontana.edu>
+@rem
+@rem     This file is part of ech2o, a hydrologic model developed at the 
+@rem     University of Montana.
+@rem
+@rem     Ech2o is free software: you can redistribute it and/or modify
+@rem     it under the terms of the GNU General Public License as published by
+@rem     the Free Software Foundation, either version 3 of the License, or
+@rem     (at your option) any later version.
+@rem
+@rem     Ech2o is distributed in the hope that it will be useful,
+@rem     but WITHOUT ANY WARRANTY; without even the implied warranty of
+@rem     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+@rem     GNU General Public License for more details.
+@rem
+@rem     You should have received a copy of the GNU General Public License
+@rem     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
+@rem
+@rem Contributors:
+@rem    Marco Maneta
+@rem ***************************************************************************
 @ECHO OFF
 
 REM Command file for Sphinx documentation
