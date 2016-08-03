@@ -18,9 +18,8 @@ Tutorial
 .. toctree::
    :maxdepth: 3
 
-   ../README
-   ../INSTALL
    CaseStudy
+   Setup
    Keywords
 
 

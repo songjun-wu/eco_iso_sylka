@@ -146,18 +146,15 @@ Delineating the drainage network
 
 The drainage network is derived from the DEM using a steepest-descent
 algorithm on the 8 neighbor window around each cell. From a PCRaster
-environment type the command
-
-::
+environment type the command::
 
     pcrcalc ldd.map = lddcreate(DEM.map, 1e9,1e9,1e9,1e9)
 
-NOTE TO LINUX USERS:
+.. attention:: NOTE TO LINUX USERS
+     Please, note that if you are following this tutorial in a linux computer
+     you need to place the arguments to *pcrcalc* between quotes like
 
-Please, note that if you are following this tutorial in a linux computer
-you need to place the arguments to *pcrcalc* between quotes like:
-
-``pcrcalc ’ldd.map = lddcreate(DEM.map, 1e9,1e9,1e9,1e9)’``
+      $ pcrcalc ’ldd.map = lddcreate(DEM.map, 1e9,1e9,1e9,1e9)’
 
 This command instructs PCRaster to calculate the local drainage
 direction (ldd) for each cell using the dem () and save the drainage
@@ -514,7 +511,7 @@ incident local precipitation
     pcrcalc isohyet.map = uniform(boolean(..\Spatial\unit.map))+0.5
 
 Reporting results
-~~~~~~~~~~~~~~~~~
+-----------------
 
 The report time series section is another series of boolean switches
 that turn on or off the reporting (writing to the results folder) of
@@ -541,7 +538,7 @@ contained in into a map using
     col2map --clone base.map probes.txt Tsmask.map
 
 Running the program
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 FIRST, MAKE SURE THE FOLDER WHERE ECH2O IS TOLD TO WRITE THE RESULTS
 EXISTS. ECH2O WILL NOT CREATE THE FOLDER IF IT DOES NOT EXIST AND WILL
@@ -608,7 +605,7 @@ located). This file contains summary information on the water balance of
 the basin in total volumes of water (:math:`m^{3}`).
 
 Spinning-up the model
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 As you see, the model diverges from the initial conditions provided and
 will finish with a very different spatial distribution of the state
