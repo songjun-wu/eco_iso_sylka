@@ -18,9 +18,9 @@ Tutorial
 .. toctree::
    :maxdepth: 3
 
-   LICENSE
-   README
-   INSTALL
+   ../../../LICENSE
+   ../../../README
+   ../../../INSTALL
    CaseStudy
    Keywords
 
