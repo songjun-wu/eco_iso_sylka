@@ -34,7 +34,7 @@ Documentation
   http://hs.umt.edu/RegionalHydrologyLab/software/documentation-ech2o.php.
   
 Third-party dependencies
-------------
+------------------------
 
   ECH2O depends on the following third-party libraries with the following licenses
   
