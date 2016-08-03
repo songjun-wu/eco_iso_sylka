@@ -19,6 +19,11 @@ The Latest Version
 
   Details of the latest version (source and binaries) can be found on the ECH2O software page under http://hs.umt.edu/RegionalHydrologyLab/software/default.php.
    
+Data Preprocessing
+------------------
+
+  ECH2O uses the PCRASTER map format (aka cross-system format) for data pre- and post-processing, and for visulalization. PCRASTER can be downloaded free of charge from 
+
 
 Documentation
 -------------
@@ -27,6 +32,16 @@ Documentation
   included in pdf format in the Documentation directory.  The most
   up-to-date documentation can be found at
   http://hs.umt.edu/RegionalHydrologyLab/software/documentation-ech2o.php.
+  
+Third-party dependencies
+------------
+
+  ECH2O depends on the following third-party libraries with the following licenses
+  
+  - armadillo (Mozilla Public License 2.0) and dependencies therein 
+  - libcsf (BSD License)
+  
+  For convenience a precompiled version of the libcsf for Linux and Windows 64 bit architectures is distributed with the source code   
 
 Installation of Binary Distributions
 ------------------------------------

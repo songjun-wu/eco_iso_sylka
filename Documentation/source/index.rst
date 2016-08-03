@@ -20,6 +20,7 @@ Tutorial
 
    LICENSE
    README
+   INSTALL
    CaseStudy
    Keywords
 
