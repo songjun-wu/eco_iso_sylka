@@ -328,49 +328,49 @@ covered in each forest patch is specified in file *SpecsProp.tab*).
 The parameters that define the vegetation in the forest is provided in
 table [tab:exspecpars]
 
-\|p6.5cm\| l\|
+.. csv-table:: **Sample parameter configuration file for one tree species**
+   :header: "Parameter", "Species ID"
+   :widths: 20, 20
 
-| 
-| Parameter & Species 1
-| SpeciesID & 1
-| NPP/GPPRatio & 0.47
-| gsmax(ms-1) & 0.09
-| CanopyQuantumEffic(gCJ-1) & 0.0000018
-| MaxForestAge(yrs) & 290
-| OptimalTemp(C) & 18
-| MaxTemp(C) & 30
-| MinTemp(C) & 0
-| FoliageAllocCoef\_a & 2.235
-| FoliageAllocCoef\_b & 0.006
-| StemAllocCoef\_a & 3.3
-| StemAllocCoef\_b & 6.00E-07
-| gs\_light\_coeff & 300
-| gs\_vpd\_coeff & 0.0019
-| lwp\_d & 0.2
-| lwp\_c & 2
-| WiltingPnt & 0.05
-| SpecificLeafArea(m2g-1) & 0.003
-| SpecificRootArea(m2kg-1) & 0.022
-| Crown2StemDRat & 0.25
-| TreeShapeParam & 0.4
-| WoodDens(gCm-2) & 220000
-| Fhdmax & 15
-| Fhdmin & 5
-| LeafTurnoverRate(s-1) & 8.56E-09
-| MaxLeafTurnoverWaterStress(s-1) & 0.000000018
-| LeafTurnoverWaterStressParam & 0.2
-| MaxLeafTurnoverTempStress(s-1) & 0.000000018
-| LeafTurnoverTempStressParam & 0.2
-| ColdStressParam(degC) & 1
-| RootTurnoverRate(s-1) & 5.34E-09
-| MaxCanStorageParam(m) & 0.0000624
-| albedo & 0.1
-| emissivity & 0.95
-| KBeers & 0.55
-| CanopyWatEffic(gCm-1) & 800
-| is\_grass & 0
-| DeadGrassLeafTurnoverRate(s-1) & 0
-| DeadGrassLeafTurnoverTempAdjustment (degC) & 0
+   SpeciesID , 1
+   NPP/GPPRatio , 0.47
+   gsmax(ms-1) , 0.09
+   CanopyQuantumEffic(gCJ-1) , 0.0000018
+   MaxForestAge(yrs) , 290
+   OptimalTemp(C) , 18
+   MaxTemp(C) , 30
+   MinTemp(C) , 0
+   FoliageAllocCoef\_a , 2.235
+   FoliageAllocCoef\_b , 0.006
+   StemAllocCoef\_a , 3.3
+   StemAllocCoef\_b , 6.00E-07
+   gs\_light\_coeff , 300
+   gs\_vpd\_coeff , 0.0019
+   gs_psi\_d , 0.2
+   gs_psi\_c , 2
+   WiltingPnt , 0.05
+   SpecificLeafArea(m2g-1) , 0.003
+   SpecificRootArea(m2kg-1) , 0.022
+   Crown2StemDRat , 0.25
+   TreeShapeParam , 0.4
+   WoodDens(gCm-2) , 220000
+   Fhdmax , 15
+   Fhdmin , 5
+   LeafTurnoverRate(s-1) , 8.56E-09
+   MaxLeafTurnoverWaterStress(s-1) , 0.000000018
+   LeafTurnoverWaterStressParam , 0.2
+   MaxLeafTurnoverTempStress(s-1) , 0.000000018
+   LeafTurnoverTempStressParam , 0.2
+   ColdStressParam(degC) , 1
+   RootTurnoverRate(s-1) , 5.34E-09
+   MaxCanStorageParam(m) , 0.0000624
+   albedo , 0.1
+   emissivity , 0.95
+   KBeers , 0.55
+   CanopyWatEffic(gCm-1) , 800
+   is\_grass , 0
+   DeadGrassLeafTurnoverRate(s-1) , 0
+   DeadGrassLeafTurnoverTempAdjustment (degC) , 0
 
 The parameters are listed in the order they should appear in the
 vegetation configuration file. Make sure you include in the first line
