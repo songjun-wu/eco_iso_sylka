@@ -50,7 +50,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	REAL8 rho_a; //density of air
 	REAL8 airRH; //air humidity
 	REAL8 airTp; // air temperature
-	REAL8 es; // saturated vapor pressure
+	REAL8 es, ea; // saturated vapor pressure
 	REAL8 desdTs; // derivative of saturation vapor pressure function with respect to Ts
 	REAL8 emissivity; //canopy emissivity
 	REAL8 albedo; //canopy albedo
@@ -103,6 +103,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		z = bas.getDEM()->matrix[r][c];
 		gamma = PsychrometricConst(101325, z);
 		airRH = atm.getRelativeHumidty()->matrix[r][c];
+
+		ea = SatVaporPressure(airTp) * airRH;
 
 
 		albedo = _species[s].albedo;
@@ -212,8 +214,11 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			desdTs = es * ((17.3 / (x[2] + 237.3))
 							- 17.3 * x[2] / (powl(x[2] + 237.3, 2)));
 
-			dgcdlwp = gc == 1e-13 ? 0 : - dgcdfgspsi * lwp_c * powl(x[2]/lwp_den, lwp_c) / (x[1] * ( powl(x[2]/lwp_den, lwp_c) + 1) * ( powl(x[1]/lwp_den, lwp_c) + 1));
-			dLETdlwp = LET / (ra_t * gc * gc) * dgcdlwp;
+			//dgcdlwp = gc == 1e-13 ? 0 : - dgcdfgspsi * lwp_c * powl(x[1]/lwp_den, lwp_c) / (x[1] * ( powl(x[1]/lwp_den, lwp_c) + 1) * ( powl(x[1]/lwp_den, lwp_c) + 1));
+			if (dgcdfgspsi == 0)
+				dLETdlwp = 0;
+			else
+				dLETdlwp = - rho_a * spec_heat_air * (ea - es) * lwp_c * powl(x[1]/lwp_den, lwp_c) / (dgcdfgspsi * x[1] * gamma *ra_t * ra_t);
 			dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdT);
 
 		    dEdlwp = - dLETdlwp / (rho_w * lambda);
