@@ -39,7 +39,6 @@
 #include "Report.h"
 
 
-
 extern Basin *oBasin;
 extern Atmosphere *oAtmosphere;
 extern Control *oControl;
