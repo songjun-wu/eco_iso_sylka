@@ -8,7 +8,7 @@ The CSF PCRaster format
 -----------------------
 
 Ech2o reads spatial information using the binary raster format
-(cross-system format, CSF) used in the free GIS PCRaster [1]_ . By using
+(cross-system format, CSF) used in the free GIS `PCRaster <http://pcraster.geo.uu.nl>`_. By using
 this format, full GIS capability for data pre-processing,
 post-processing and visualization is added to .
 
@@ -143,7 +143,7 @@ Because this information is spatially variable, it is introduce in as
 maps. While some terrain properties such as its slope can be directly
 calculated from the DEM, information on the spatial distribution of most
 other properties listed in Table [tab:soilvars] need to be obtained from
-surveys, external databases such as SSURGO, CONUS-SOIL, etc  [2]_ .
+surveys, external databases such as SSURGO, CONUS-SOIL, etc  (e.g. http://www.soilinfo.psu.edu) .
 
 +--------------------------------+------------------------+
 | Property                       | Units                  |
@@ -381,14 +381,14 @@ Table [tab:vegparams]: Format of the vegetation parameters file
     MaxForestAge OptimalTemp MaxTemp MinTemp 
     FoliageAllocCoef_a	FoliageAllocCoef_b 
     StemAllocCoef_a	StemAllocCoef_b	gs_light_coeff	gs_vpd_coeff
-    lwp_low lwp_high WiltingPnt	SpecificLeafArea
+    gs_psi_d gs_psi_c WiltingPnt	SpecificLeafArea
      SpecificRootArea Crown2StemDRat 
     TreeShapeParam	WoodDens Fhdmax	Fhdmin LeafTurnoverRate
     MaxLeafTurnoverWaterStress LeafTurnoverWaterStressParam
     MaxLeafTurnoverTempStress LeafTurnoverTempStressParam
     ColdStressParam	RootTurnoverRate MaxCanStorageParam albedo
-    emissivity	KBeers	CanopyWatEffic sperry_d_par sperry_c_par 
-    sperry_K_param gsr_param_a is_grass 
+    emissivity	KBeers	CanopyWatEffic 
+    is_grass 
     DeadGrassLeafTurnoverRate DeadGrassLeafTurnoverTempAdjustment 
 
 
@@ -435,11 +435,11 @@ gs\_light\_coeff
 gs\_vpd\_coeff 
     Parameter controlling stomatal sensitivity to vapor pressure deficit. Typical value around 0.002
 
-lwp\_low
-    Lowest leaf water potential before stomatal function shuts down. Typical value around -400 m of head
+gs_psi_d
+    Soil moisture suction potential at which stomatal function is reduced by 50%. Typical value around 0.5 m of suction head
 
-lwp\_high
-    Leaf water potential threshold beyond which stomatal efficiency is maximal. Typical value around -7 m of head
+gs_psi_c
+    Parameter controlling stomatal sensitivity to soil moisture content. Typical value around 2
 
 WiltingPnt
     Volumetric soil water content at wilting point, dependent on plant and soil characteristics.
@@ -501,18 +501,6 @@ KBeers
 CanopyWatEffic
      Water use efficiency of the canopy, in terms of grams of carbon assimilated per meter of transpired water, :math:`gCm^{-1}`
 
-sperry\_d\_param
-    Normalization denominator factor in Sperry’s model of plant hydraulic conductance, in :math:`m`. Typical value 204 m
-
-sperry\_c\_param
-    Exponent parameter c in Sperry’s model of plant hydraulic conductance. Typical value 2 m
-
-sperry\_K\_param
-    Hydraulic conductivity of plant tissue, in :math:`ms^{-1}`. Typical value 1.15-e6 :math:`ms^{-1}`
-
-gsr\_param\_a
-    Parameter that controls the loss of conductance in the rhizosphere as soil dries. Typical value 8
-
 is\_grass
     Switch that indicates if the vegetation type is herbaceous (1) or not (0)
 
@@ -535,7 +523,7 @@ Initialization using tables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Initialization of the state variables for vegetation using tables is
-often easier during the first model run. can be initialized with tables
+often easier during the first model run. Ech2o can be initialized with tables
 by setting *Species\_State\_Variable\_Input\_Method* = tables in the
 configuration file.
 
@@ -681,9 +669,9 @@ bas[0,...,NumSpecies-1].map
 age[0,...,NumSpecies-1].map
     One map per vegetation type included in the simulation. The map contains the age in each pixel of the vegetation type identified by the index in the file name. In years.
 
-  A way to produce these maps is to turn on the reporting flag for these
-  maps during an initial run of using tables. Then rename the last time
-  step of the corresponding files in the results folder with the
-  appropriate names and copy these files to the maps folder. The case
-  study included in this manual explains how initialize the model using
-  this technique.
+A way to produce these maps is to turn on the reporting flag for these
+maps during an initial run of using tables. Then rename the last time
+step of the corresponding files in the results folder with the
+appropriate names and copy these files to the maps folder. The case
+study included in this manual explains how initialize the model using
+this technique.
