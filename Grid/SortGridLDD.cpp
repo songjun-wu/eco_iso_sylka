@@ -29,6 +29,7 @@
  */
 
 #include "Basin.h"
+#include "ConstAndFuncs.h"
 
 vectCells Basin::SortGridLDD(){
 
@@ -77,6 +78,7 @@ vectCells Basin::SortGridLDD(){
 	    //It stops when the array has the same number of ldd cells than the map
 	    UINT4 x = 0;
 	    UINT4 i = 0;
+	    std::cout << "Sorting DEM drainage network... " << std::endl;
 	    do
 	    {
 	    x++;
@@ -116,6 +118,8 @@ vectCells Basin::SortGridLDD(){
 	          c = map2array.cells[i].col;
 	          temp->matrix[r][c] = (REAL4)checked;
 	      }
+
+	     printProgBar(map2array.cells.size() * 100 / counter);
 	    }while(map2array.cells.size()< counter);
 
 	    delete temp;

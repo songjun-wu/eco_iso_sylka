@@ -11,7 +11,8 @@ Grid/SortGridLDD.o: ../Grid/SortGridLDD.cpp \
  /home/marco/workspace/ech2o/includes/ConstAndFuncs.h \
  /home/marco/workspace/ech2o/includes/Forest.h \
  /home/marco/workspace/ech2o/includes/Grove.h \
- /home/marco/workspace/ech2o/includes/Basin.h
+ /home/marco/workspace/ech2o/includes/Basin.h \
+ /home/marco/workspace/ech2o/includes/ConstAndFuncs.h
 
 /home/marco/workspace/ech2o/includes/Basin.h:
 
@@ -38,3 +39,5 @@ Grid/SortGridLDD.o: ../Grid/SortGridLDD.cpp \
 /home/marco/workspace/ech2o/includes/Grove.h:
 
 /home/marco/workspace/ech2o/includes/Basin.h:
+
+/home/marco/workspace/ech2o/includes/ConstAndFuncs.h:
