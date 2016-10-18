@@ -63,6 +63,9 @@ vectCells Basin::SortGridLDD(){
 
 	    //calculates how many cells are in the ldd area. Needed for stop condition
 	       UINT4 counter = 0;
+           #pragma omp parallel for\
+           default(shared) private(r,c) \
+           reduction (+:counter)
 	       for(r=1; r < nr-1; r++)
 	       {
 	        for(c=1; c < nc-1; c++)
@@ -79,6 +82,7 @@ vectCells Basin::SortGridLDD(){
 	    UINT4 x = 0;
 	    UINT4 i = 0;
 	    std::cout << "Sorting DEM drainage network... " << std::endl;
+
 	    do
 	    {
 	    x++;

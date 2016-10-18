@@ -51,6 +51,10 @@ vectCells Atmosphere::SortGrid(int zoneId){
      }
     }
 */
+/*
+#pragma omp parallel for\
+ private(r,c, value)
+*/
     for(r=1; r < nr-1; r++)
     {
      for(c=1; c < nc-1; c++)
