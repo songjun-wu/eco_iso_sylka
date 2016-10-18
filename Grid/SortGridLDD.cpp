@@ -128,5 +128,23 @@ vectCells Basin::SortGridLDD(){
 
 	    delete temp;
 	    return map2array;
+	    std::cout << endl;
 
 }
+
+void loadSortedGrid(vectCells &v, const char *filename)
+{
+
+	std::ifstream ifs(filename);
+	boost::archive::text_iarchive ia(ifs);
+	ia >> v;
+	ifs.close();
+}
+
+void saveSortedGrid(vectCells &v, const char *filename){
+	std::ofstream ofs(filename);
+	boost::archive::text_oarchive oa(ofs);
+	oa << v;
+	ofs.close();
+}
+
