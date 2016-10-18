@@ -1,10 +1,9 @@
 Control/ReadConfigFile.o: ../Control/ReadConfigFile.cpp \
- /home/marco/workspace/ech2o/includes/ConfigFile.h \
- /home/marco/workspace/ech2o/includes/InitConf.h \
- /home/marco/workspace/ech2o/includes/ParsingFunctions.h
+ ../includes/ConfigFile.h ../includes/InitConf.h \
+ ../includes/ParsingFunctions.h
 
-/home/marco/workspace/ech2o/includes/ConfigFile.h:
+../includes/ConfigFile.h:
 
-/home/marco/workspace/ech2o/includes/InitConf.h:
+../includes/InitConf.h:
 
-/home/marco/workspace/ech2o/includes/ParsingFunctions.h:
+../includes/ParsingFunctions.h:

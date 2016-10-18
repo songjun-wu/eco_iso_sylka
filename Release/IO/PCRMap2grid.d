@@ -1,13 +1,10 @@
-IO/PCRMap2grid.o: ../IO/PCRMap2grid.cpp \
- /home/marco/workspace/ech2o/includes/Grid.h \
- /home/marco/workspace/ech2o/includes/csf.h \
- /home/marco/workspace/ech2o/includes/csftypes.h \
- /home/marco/workspace/ech2o/includes/csfattr.h
+IO/PCRMap2grid.o: ../IO/PCRMap2grid.cpp ../includes/Grid.h \
+ ../includes/csf.h ../includes/csftypes.h ../includes/csfattr.h
 
-/home/marco/workspace/ech2o/includes/Grid.h:
+../includes/Grid.h:
 
-/home/marco/workspace/ech2o/includes/csf.h:
+../includes/csf.h:
 
-/home/marco/workspace/ech2o/includes/csftypes.h:
+../includes/csftypes.h:
 
-/home/marco/workspace/ech2o/includes/csfattr.h:
+../includes/csfattr.h:

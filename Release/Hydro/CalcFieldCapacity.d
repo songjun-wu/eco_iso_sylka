@@ -1,40 +1,32 @@
 Hydro/CalcFieldCapacity.o: ../Hydro/CalcFieldCapacity.cpp \
- /home/marco/workspace/ech2o/includes/Basin.h \
- /home/marco/workspace/ech2o/includes/Atmosphere.h \
- /home/marco/workspace/ech2o/includes/Grid.h \
- /home/marco/workspace/ech2o/includes/csf.h \
- /home/marco/workspace/ech2o/includes/csftypes.h \
- /home/marco/workspace/ech2o/includes/csfattr.h \
- /home/marco/workspace/ech2o/includes/InitConf.h \
- /home/marco/workspace/ech2o/includes/ParsingFunctions.h \
- /home/marco/workspace/ech2o/includes/SortGrid.h \
- /home/marco/workspace/ech2o/includes/ConstAndFuncs.h \
- /home/marco/workspace/ech2o/includes/Forest.h \
- /home/marco/workspace/ech2o/includes/Grove.h \
- /home/marco/workspace/ech2o/includes/Basin.h
+ ../includes/Basin.h ../includes/Atmosphere.h ../includes/Grid.h \
+ ../includes/csf.h ../includes/csftypes.h ../includes/csfattr.h \
+ ../includes/InitConf.h ../includes/ParsingFunctions.h \
+ ../includes/SortGrid.h ../includes/ConstAndFuncs.h ../includes/Forest.h \
+ ../includes/Grove.h ../includes/Basin.h
 
-/home/marco/workspace/ech2o/includes/Basin.h:
+../includes/Basin.h:
 
-/home/marco/workspace/ech2o/includes/Atmosphere.h:
+../includes/Atmosphere.h:
 
-/home/marco/workspace/ech2o/includes/Grid.h:
+../includes/Grid.h:
 
-/home/marco/workspace/ech2o/includes/csf.h:
+../includes/csf.h:
 
-/home/marco/workspace/ech2o/includes/csftypes.h:
+../includes/csftypes.h:
 
-/home/marco/workspace/ech2o/includes/csfattr.h:
+../includes/csfattr.h:
 
-/home/marco/workspace/ech2o/includes/InitConf.h:
+../includes/InitConf.h:
 
-/home/marco/workspace/ech2o/includes/ParsingFunctions.h:
+../includes/ParsingFunctions.h:
 
-/home/marco/workspace/ech2o/includes/SortGrid.h:
+../includes/SortGrid.h:
 
-/home/marco/workspace/ech2o/includes/ConstAndFuncs.h:
+../includes/ConstAndFuncs.h:
 
-/home/marco/workspace/ech2o/includes/Forest.h:
+../includes/Forest.h:
 
-/home/marco/workspace/ech2o/includes/Grove.h:
+../includes/Grove.h:
 
-/home/marco/workspace/ech2o/includes/Basin.h:
+../includes/Basin.h:

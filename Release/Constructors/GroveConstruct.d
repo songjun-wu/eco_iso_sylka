@@ -1,16 +1,13 @@
 Constructors/GroveConstruct.o: ../Constructors/GroveConstruct.cpp \
- /home/marco/workspace/ech2o/includes/Grove.h \
- /home/marco/workspace/ech2o/includes/Grid.h \
- /home/marco/workspace/ech2o/includes/csf.h \
- /home/marco/workspace/ech2o/includes/csftypes.h \
- /home/marco/workspace/ech2o/includes/csfattr.h
+ ../includes/Grove.h ../includes/Grid.h ../includes/csf.h \
+ ../includes/csftypes.h ../includes/csfattr.h
 
-/home/marco/workspace/ech2o/includes/Grove.h:
+../includes/Grove.h:
 
-/home/marco/workspace/ech2o/includes/Grid.h:
+../includes/Grid.h:
 
-/home/marco/workspace/ech2o/includes/csf.h:
+../includes/csf.h:
 
-/home/marco/workspace/ech2o/includes/csftypes.h:
+../includes/csftypes.h:
 
-/home/marco/workspace/ech2o/includes/csfattr.h:
+../includes/csfattr.h:
