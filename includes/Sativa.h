@@ -31,7 +31,7 @@
 #ifndef SATIVA_H_
 #define SATIVA_H_
 
-#define VERSION "V 5.2.2ns_beta"
+#define VERSION "V 5.2.3ns_beta"
 
 #include "Basin.h"
 #include "Atmosphere.h"
