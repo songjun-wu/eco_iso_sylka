@@ -27,7 +27,8 @@
  *  Created on: Oct 9, 2009
  *      Author: Marco Maneta
  */
-
+#include <unistd.h>
+#include  <fstream>
 #include "Basin.h"
 
 Basin::Basin(Control &ctrl)
@@ -42,9 +43,25 @@ Basin::Basin(Control &ctrl)
 
 		_ldd = new grid(ctrl.path_BasinFolder + ctrl.fn_ldd, ctrl.MapType);
 
+		printf("Checking if file %s exists...\n", (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+		/*
+		 * Checks if there is a _vSordtedGrid object with the correct name in the spatial folder
+		 */
+		if (access((ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str(), F_OK) != -1) {
+			printf("File Found!. Loading object...\n");
+			loadSortedGrid(_vSortedGrid, (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+		}
+		else{
+			printf("File not found!. Initializing and sorting grid...\n");
+
 		/*sorts the basin with data cells according
 		 * to the ldd after _DEM and _ldd have been created*/
 		_vSortedGrid = Basin::SortGridLDD();
+
+		printf("Sorting done. Saving serialized sorted grid object for subsequent runs...\n");
+
+		saveSortedGrid(_vSortedGrid, (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+		}
 
 		fForest = new Forest(ctrl); //constructs the Forest object
 
