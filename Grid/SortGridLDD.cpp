@@ -29,6 +29,7 @@
  */
 
 #include "Basin.h"
+#include "ConstAndFuncs.h"
 
 vectCells Basin::SortGridLDD(){
 
@@ -62,6 +63,9 @@ vectCells Basin::SortGridLDD(){
 
 	    //calculates how many cells are in the ldd area. Needed for stop condition
 	       UINT4 counter = 0;
+           #pragma omp parallel for\
+           default(shared) private(r,c) \
+           reduction (+:counter)
 	       for(r=1; r < nr-1; r++)
 	       {
 	        for(c=1; c < nc-1; c++)
@@ -77,6 +81,8 @@ vectCells Basin::SortGridLDD(){
 	    //It stops when the array has the same number of ldd cells than the map
 	    UINT4 x = 0;
 	    UINT4 i = 0;
+	    std::cout << "Sorting DEM drainage network... " << std::endl;
+
 	    do
 	    {
 	    x++;
@@ -116,9 +122,29 @@ vectCells Basin::SortGridLDD(){
 	          c = map2array.cells[i].col;
 	          temp->matrix[r][c] = (REAL4)checked;
 	      }
+
+	     printProgBar(map2array.cells.size() * 100 / counter);
 	    }while(map2array.cells.size()< counter);
 
 	    delete temp;
 	    return map2array;
+	    std::cout << endl;
 
 }
+
+void loadSortedGrid(vectCells &v, const char *filename)
+{
+
+	std::ifstream ifs(filename);
+	boost::archive::text_iarchive ia(ifs);
+	ia >> v;
+	ifs.close();
+}
+
+void saveSortedGrid(vectCells &v, const char *filename){
+	std::ofstream ofs(filename);
+	boost::archive::text_oarchive oa(ofs);
+	oa << v;
+	ofs.close();
+}
+

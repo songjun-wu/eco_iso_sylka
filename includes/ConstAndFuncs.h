@@ -55,6 +55,8 @@ const double thermal_conduct_air = 0.024; //thermal conductivity of air Wm-1C-1
 const double max_snow_albedo = 0.8; //maximum albedo of snow
 
 
+//Print progress bar when sorting gridd in GridLdd.cpp
+extern void printProgBar( int percent );
 
 //Calculates density of air
 inline double AirDensity(const double &T /*, const double &P*/){ //TODO: include readings of air pressure to improve calculation of air density
