@@ -10,6 +10,8 @@ RM := rm -rf
 -include sources.mk
 -include wrappers/subdir.mk
 -include Report/subdir.mk
+-include Release-Windows.bak/wrappers/subdir.mk
+-include Release-Windows.bak/subdir.mk
 -include Radiation/subdir.mk
 -include ParsingFunctions/subdir.mk
 -include IO/subdir.mk

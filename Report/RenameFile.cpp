@@ -34,20 +34,20 @@
 int Report::RenameFile(string oldname){
 
 
-/*	remove(oldname.c_str());
+	remove(oldname.c_str());
 	if(errno != 0 && errno != 2)
 	{
 		cout << errno << " " << oldname;
 		perror("error");
 		throw (EXIT_FAILURE);
-	}*/
-	rename(oldname.c_str(), (oldname + ".old").c_str());
+	}
+/*	rename(oldname.c_str(), (oldname + ".old").c_str());
 	if(errno != 0 && errno != 2)
 	{
 		cout << errno << " " << oldname;
 		perror("Error creating backup .old file");
 		throw (EXIT_FAILURE);
-	}
+	}*/
 
 	return EXIT_SUCCESS;
 }
