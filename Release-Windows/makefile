@@ -57,7 +57,7 @@ all: ech2o.exe
 ech2o.exe: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross G++ Linker'
-	x86_64-w64-mingw32-g++ -L"/home/marco/workspace/ech2o/lib" -fopenmp -static -o "ech2o.exe" $(OBJS) $(USER_OBJS) $(LIBS)
+	x86_64-w64-mingw32-g++ -L"../lib" -fopenmp -static -o "ech2o.exe" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

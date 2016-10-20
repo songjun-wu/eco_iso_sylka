@@ -47,8 +47,8 @@ grid::grid(UINT4 row, UINT4 cols): r(row), c(cols)
         matrix[i] = new REAL8[cols];
     }catch(std::bad_alloc){cerr << "unable to allocate memory...";
     cin.get(); exit(-1);}
-#pragma omp parallel for\
-	 private(i,j)
+
+    #pragma omp parallel for
     for (UINT4 i = 0; i<r; i++)
         for (UINT4 j = 0; j<c; j++)
             matrix[i][j] = 0;

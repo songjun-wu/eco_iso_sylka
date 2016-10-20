@@ -27,7 +27,7 @@
  *  Created on: Oct 9, 2009
  *      Author: Marco Maneta
  */
-
+#include <unistd.h>
 #include  <fstream>
 #include "Basin.h"
 
