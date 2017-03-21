@@ -35,6 +35,8 @@ Hydro \
 IO \
 ParsingFunctions \
 Radiation \
+Release-Windows.bak \
+Release-Windows.bak/wrappers \
 Report \
 . \
 wrappers \

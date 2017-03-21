@@ -62,6 +62,7 @@ The Linux binaries have been compiled in openSUSE Leap with gcc 4.8.5.
     * armadillo (version 7)
         * armadillo may require that ATLAS and LAPACK are installed
     * libc6 libraries
+    * Boost::serialization from the Boost C++ libraries (libboost_serialization)
 
 2.2. Installation
 ^^^^^^^^^^^^^^^^^

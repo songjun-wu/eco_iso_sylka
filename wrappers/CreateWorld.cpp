@@ -65,6 +65,7 @@ try{
 		ofSummary << "SWE\t";
 		ofSummary << "Soil water < fc\t";
 		ofSummary << "Evapotranspiration\t";
+		ofSummary << "Bedrock leakage\t";
 		ofSummary << "Overland flow\t";
 		ofSummary << "Groundwater flow\t";
 		ofSummary << "Mass Balance Error\n";
