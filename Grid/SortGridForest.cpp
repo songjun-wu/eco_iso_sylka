@@ -39,7 +39,10 @@ vectCells Forest::SortGrid(){
     UINT4 nc = _patches->c;
 
     vectCells NotSortedArray; //array to hold the non-mv cells as read left to right and top to bottom
-
+/*
+    #pragma omp parallel for\
+     private(r,c, value)
+*/
     for(r=1; r < nr-1; r++)
     {
      for(c=1; c < nc-1; c++)
