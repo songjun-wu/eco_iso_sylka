@@ -68,13 +68,14 @@ struct Budget {
 	double ovlndflow; //m3s-1
 	double gwtrflow; //m3s-1
 
-
-
+  //saturation extent
+  double satarea; //%
 
 	double AccountFluxes(const grid *map, const Basin *b);
 	double AccountFluxes(const grid *map, const Atmosphere *b);
 	double AccountFluxes(const vectCells *timeseries, const Basin *b);
 	double AccountStorages(const grid *map, const Basin *b);
+	double AccountRelArea(const grid *map, const Basin *b);
 
 	void TotalPrecipitation(const grid* map, const Atmosphere *b);
 	void TotalEvaporation(const grid* map, const Basin *b);
@@ -88,6 +89,7 @@ struct Budget {
 						const grid *GravWater,
 						const grid *GrndWater,
 						const Basin *b);
+	void TotalSaturationArea(const grid* map, const Basin*b);
 
 	void MassBalanceError();
 
@@ -107,6 +109,8 @@ struct Budget {
 		leakage = 0;
 		ovlndflow = 0;
 		gwtrflow = 0;
+
+		satarea = 0;
 
 		//calculate initial storages
 		initsnowpack = AccountStorages(b->getSnowWaterEquiv(), b);

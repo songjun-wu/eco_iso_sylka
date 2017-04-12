@@ -70,6 +70,7 @@ class Basin {
 	grid *_soildepth; //soil depth m
 	grid *_depth_layer1; //depth of layer 1. 0.1 m by default
 	grid *_depth_layer2; //depth of layer 2. Depth of layer 3 is calculated form depth
+	grid *_Kroot; // exponential root profile shape (m-1)
 	grid *_rootfrac1; //fraction of roots in soil layer 1
 	grid *_rootfrac2; //fraction of roots in soil layer 2. For layer three it is calculated from layer 1 and 2
 	grid *_fieldcap; //field capacity volumetric
@@ -97,6 +98,7 @@ class Basin {
 	grid *_snow; //snow water equivalent in m
 	grid *_ponding; // water ponding on the soil surface in m
 	grid *_infilt_cap; //infilt capacity m s-1
+	grid *_IsSaturated; // Saturated locations
 	grid *_soilmoist1; // average volumetric soil moisture over layer 1 or over entire soil profile
 	grid *_soilmoist2; //average volumetric soil moisture of the second soil layer
 	grid *_soilmoist3; //average volumetric soil moisture of the bottom soil layer
@@ -136,6 +138,7 @@ class Basin {
 	int CalcCatchArea();
 	int CalcFieldCapacity();
 	int CalcInitialStreamStorage();
+	int CalcRootDistrib();
 
 	double NetRad(Atmosphere &atm, const double &Ts, REAL8 Kbeers, REAL8 lai,
 			REAL8 ec, REAL8 Tc, int row, int col);
@@ -226,6 +229,7 @@ public:
 
 	int DailySurfaceRouting(Atmosphere &atm, Control &ctrl);
 	int DailyGWRouting(Atmosphere &atm, Control &ctrl);
+	int CalculateSatArea(Atmosphere &atm, Control &ctrl);
 
 	//Getters
 
@@ -290,6 +294,9 @@ public:
 	}
 	grid *getStreamflow() const {
 		return _Disch_old;
+	}
+	grid *getSatArea() const {
+		return _IsSaturated;
 	}
 
 	grid *getSoilMoist1() const {
