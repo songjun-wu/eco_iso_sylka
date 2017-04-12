@@ -121,7 +121,7 @@ Basin::Basin(Control &ctrl)
 		//_Temp_s_old = new grid(*_DEM);
 		_CanopyStorage = new grid(*_DEM);
 
-
+		_IsSaturated = new grid(*_DEM);  //saturation map
 		_soilmoist_av = new grid(*_DEM); //average volumetric soil moisture of the first 10 cm of the soil as calculated using a hydrstatic equilibrium moisture profile
 		_ponding = new grid(*_DEM);
 		_infilt_cap = new grid(*_DEM); //infilt cap m h-1
@@ -254,6 +254,8 @@ Basin::Basin(Control &ctrl)
 			delete _soilmoist3;
 		if(_bedrock_leak)
 			delete _bedrock_leak;
+		if(_IsSaturated)
+			delete _IsSaturated;
 
 
 		if(fForest)

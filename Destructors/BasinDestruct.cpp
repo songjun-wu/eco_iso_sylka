@@ -146,6 +146,8 @@ Basin::~Basin(){
 		delete _soilmoist3;
 	if(_bedrock_leak)
 		delete _bedrock_leak;
+	if(_IsSaturated)
+			delete _IsSaturated;
 
 
 	if(fForest)
