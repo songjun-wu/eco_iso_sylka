@@ -82,8 +82,9 @@ Basin::Basin(Control &ctrl)
 		_paramWp = new grid(ctrl.path_BasinFolder + ctrl.fn_paramWp, ctrl.MapType);
 		_meltCoeff = new grid(ctrl.path_BasinFolder + ctrl.fn_snowCf, ctrl.MapType);
 
-		_rootfrac1 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay1, ctrl.MapType);
-		_rootfrac2 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay2, ctrl.MapType);
+		//_rootfrac1 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay1, ctrl.MapType);
+		//_rootfrac2 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay2, ctrl.MapType);
+		_Kroot = new grid(ctrl.path_BasinFolder + ctrl.fn_Kroot, ctrl.MapType);
 
 		_snow = new grid(ctrl.path_BasinFolder + ctrl.fn_swe, ctrl.MapType);
 		_albedo = new grid(ctrl.path_BasinFolder + ctrl.fn_albedo, ctrl.MapType);
@@ -201,10 +202,12 @@ Basin::Basin(Control &ctrl)
 			delete _depth_layer1;
 		if(_depth_layer2)
 			delete _depth_layer2;
-		if(_rootfrac1)
-			delete _rootfrac1;
-		if(_rootfrac2)
-			delete _rootfrac2;
+		// if(_rootfrac1)
+		// 	delete _rootfrac1;
+		// if(_rootfrac2)
+		// 	delete _rootfrac2;
+		if(_Kroot)
+			delete _Kroot;
 		if(_fieldcap)
 			delete _fieldcap;
 		if(_paramWc)
@@ -262,6 +265,7 @@ Basin::Basin(Control &ctrl)
 	CalcCatchArea(); //Fills-in the _catcharea map with the upstream catchment area of each cell
 	CalcFieldCapacity(); //calcualte the value of field capacity using the Brooks and Corey Formula
 	CalcInitialStreamStorage(); //Reads initial streamflow map and populate _ponding variable with initial storage in stream
+	CalcRootDistrib(); //from the species root profile and layer depth --> root frac in each layer
 
 /*	for(unsigned int r = 0; r <  _NRows; r++)//remove!!!!!
 	      for(unsigned int c = 0; c <  _NCols; c++)

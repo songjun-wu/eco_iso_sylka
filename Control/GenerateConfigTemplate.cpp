@@ -170,8 +170,9 @@ try{
     ofOut << "Depth_soil_layer_2 = depth_soil2.map " << endl;
     ofOut << "Veget_water_use_param1 = Wc.map " << endl;
     ofOut << "Veget_water_use_param2 = Wp.map " << endl;
-    ofOut << "Fraction_roots_soil_layer_1 = rootfrac1.map " << endl;
-    ofOut << "Fraction_roots_soil_layer_2 = rootfrac2.map " << endl;
+    //ofOut << "Fraction_roots_soil_layer_1 = rootfrac1.map " << endl;
+    //ofOut << "Fraction_roots_soil_layer_2 = rootfrac2.map " << endl;
+    ofOut << "Root_profile_coef = Kroot.map " << endl;
     ofOut << "Soil_bedrock_leakance = leakance.map " << endl << endl;
 
     ofOut << "#   " << endl;
