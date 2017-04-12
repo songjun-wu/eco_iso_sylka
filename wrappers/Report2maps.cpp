@@ -55,6 +55,8 @@ int Report2Maps(){
 		WriteMapSeries(oBasin->getInfiltCap(), "If", oControl->current_ts_count);
     if (oControl->Rep_Streamflow)
     	WriteMapSeries(oBasin->getStreamflow(), "Q", oControl->current_ts_count);
+    if (oControl->Rep_Saturation_Area)
+		WriteMapSeries(oBasin->getSatArea(), "SatArea_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_Average)
 		WriteMapSeries(oBasin->getSoilMoist_av(), "SWCav", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_L1)

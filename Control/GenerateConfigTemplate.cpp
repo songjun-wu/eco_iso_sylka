@@ -203,6 +203,7 @@ try{
     ofOut << "Report_SWE = 1 " << endl;
     ofOut << "Report_Infilt_Cap = 0 " << endl;
     ofOut << "Report_Streamflow = 1 " << endl;
+    ofOut << "Report_Saturation_Area = 0 " << endl;
     ofOut << "Report_Soil_Water_Content_Average = 1 " << endl;
     ofOut << "Report_Soil_Water_Content_L1 = 1 " << endl;
     ofOut << "Report_Soil_Water_Content_L2 = 1 " << endl;

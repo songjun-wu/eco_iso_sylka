@@ -143,6 +143,7 @@ struct Control{
 		bool Rep_SWE;
 		bool Rep_Infilt_Cap;
 		bool Rep_Streamflow;
+		bool Rep_Saturation_Area;
 		bool Rep_Soil_Water_Content_Average;
 		bool Rep_Soil_Water_Content_L1;
 		bool Rep_Soil_Water_Content_L2;

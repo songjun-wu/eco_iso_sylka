@@ -68,6 +68,7 @@ try{
 		ofSummary << "Bedrock leakage\t";
 		ofSummary << "Overland flow\t";
 		ofSummary << "Groundwater flow\t";
+		ofSummary << "Saturation extent\t";
 		ofSummary << "Mass Balance Error\n";
 
 

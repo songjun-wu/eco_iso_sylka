@@ -171,6 +171,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_SWE = Config.read<bool>("Report_SWE");
 	Rep_Infilt_Cap = Config.read<bool>("Report_Infilt_Cap");
 	Rep_Streamflow = Config.read<bool>("Report_Streamflow");
+	Rep_Saturation_Area = Config.read<bool>("Report_Saturation_Area");
 	Rep_Soil_Water_Content_Average = Config.read<bool>("Report_Soil_Water_Content_Average");
 	Rep_Soil_Water_Content_L1 = Config.read<bool>("Report_Soil_Water_Content_L1");
 	Rep_Soil_Water_Content_L2 = Config.read<bool>("Report_Soil_Water_Content_L2");
