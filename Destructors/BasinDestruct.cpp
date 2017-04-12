@@ -94,10 +94,10 @@ Basin::~Basin(){
 		delete _depth_layer1;
 	if(_depth_layer2)
 		delete _depth_layer2;
-	// if(_rootfrac1)
-	// 	delete _rootfrac1;
-	// if(_rootfrac2)
-	// 	delete _rootfrac2;
+	if(_rootfrac1)
+		delete _rootfrac1;
+	if(_rootfrac2)
+		delete _rootfrac2;
 	if(_Kroot)
 		delete _Kroot;
 	if(_fieldcap)
@@ -147,7 +147,7 @@ Basin::~Basin(){
 	if(_bedrock_leak)
 		delete _bedrock_leak;
 	if(_IsSaturated)
-			delete _IsSaturated;
+		delete _IsSaturated;
 
 
 	if(fForest)
