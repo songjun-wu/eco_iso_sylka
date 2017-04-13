@@ -149,9 +149,9 @@ try{
     ofOut << "#   " << endl;
     ofOut << "Streamflow = streamflow.map " << endl;
     ofOut << "snow_water_equivalent = swe.map " << endl;
-    ofOut << "Soil_moisture_1 = soilmoist.map " << endl;
-    ofOut << "Soil_moisture_2 = soilmoist.map " << endl;
-    ofOut << "Soil_moisture_3 = soilmoist.map " << endl;
+    ofOut << "Soil_moisture_1 = Soil_moisture_1.map " << endl;
+    ofOut << "Soil_moisture_2 = Soil_moisture_2.map " << endl;
+    ofOut << "Soil_moisture_3 = Soil_moisture_3.map " << endl;
     ofOut << "Soil_temperature = soiltemp.map " << endl << endl;
 
     ofOut << "#   " << endl;
@@ -172,7 +172,7 @@ try{
     ofOut << "Veget_water_use_param2 = Wp.map " << endl;
     //ofOut << "Fraction_roots_soil_layer_1 = rootfrac1.map " << endl;
     //ofOut << "Fraction_roots_soil_layer_2 = rootfrac2.map " << endl;
-    ofOut << "Root_profile_coef = Kroot.map " << endl;
+    ofOut << "Root_profile_coeff = Kroot.map " << endl;
     ofOut << "Soil_bedrock_leakance = leakance.map " << endl << endl;
 
     ofOut << "#   " << endl;
@@ -206,30 +206,30 @@ try{
     ofOut << "Report_Streamflow = 1 " << endl;
     ofOut << "Report_Saturation_Area = 0 " << endl;
     ofOut << "Report_Soil_Water_Content_Average = 1 " << endl;
-    ofOut << "Report_Soil_Water_Content_L1 = 1 " << endl;
-    ofOut << "Report_Soil_Water_Content_L2 = 1 " << endl;
-    ofOut << "Report_Soil_Water_Content_L3 = 1 " << endl;
-    ofOut << "Report_Soil_Sat_Deficit = 1 " << endl;
-    ofOut << "Report_Ground_Water = 0 " << endl;
-    ofOut << "Report_Soil_ETP = 1 " << endl;
+    ofOut << "Report_Soil_Water_Content_L1 = 0 " << endl;
+    ofOut << "Report_Soil_Water_Content_L2 = 0 " << endl;
+    ofOut << "Report_Soil_Water_Content_L3 = 0 " << endl;
+    ofOut << "Report_Soil_Sat_Deficit = 0 " << endl;
+    //ofOut << "Report_Ground_Water = 0 " << endl;
+    ofOut << "Report_Soil_ETP = 0 " << endl;
     ofOut << "Report_Soil_Net_Rad = 0 " << endl;
     ofOut << "Report_Soil_LE = 0 " << endl;
     ofOut << "Report_Sens_Heat = 0 " << endl;
     ofOut << "Report_Grnd_Heat = 0 " << endl;
     ofOut << "Report_Snow_Heat = 0 " << endl;
-    ofOut << "Report_Soil_Temperature = 1 " << endl;
-    ofOut << "Report_Skin_Temperature = 1 " << endl << endl;
+    ofOut << "Report_Soil_Temperature = 0 " << endl;
+    ofOut << "Report_Skin_Temperature = 0 " << endl << endl;
 
-    ofOut << "Report_Veget_frac = 1 " << endl;
-    ofOut << "Report_Stem_Density = 1 " << endl;
+    ofOut << "Report_Veget_frac = 0 " << endl;
+    ofOut << "Report_Stem_Density = 0 " << endl;
     ofOut << "Report_Leaf_Area_Index = 1 " << endl;
     ofOut << "Report_Stand_Age = 0 " << endl;
     ofOut << "Report_Canopy_Conductance = 0 " << endl;
     ofOut << "Report_GPP = 0 " << endl;
-    ofOut << "Report_NPP = 1 " << endl;
-    ofOut << "Report_Basal_Area = 1 " << endl;
-    ofOut << "Report_Tree_Height = 1 " << endl;
-    ofOut << "Report_Root_Mass = 1 " << endl;
+    ofOut << "Report_NPP = 0 " << endl;
+    ofOut << "Report_Basal_Area = 0 " << endl;
+    ofOut << "Report_Tree_Height = 0 " << endl;
+    ofOut << "Report_Root_Mass = 0 " << endl;
     ofOut << "Report_Canopy_Temp = 0 " << endl;
     ofOut << "Report_Canopy_NetR = 0 " << endl;
     ofOut << "Report_Canopy_LE = 0 " << endl;
@@ -261,6 +261,7 @@ try{
     ofOut << "Ts_Soil_Water_Content_L2 = 1 " << endl;
     ofOut << "Ts_Soil_Water_Content_L3 = 1 " << endl;
     ofOut << "Ts_Soil_Sat_Deficit = 0 " << endl;
+    //ofOut << "Ts_Ground_Water = 0 " << endl;
     ofOut << "Ts_Soil_ETP = 1 " << endl;
     ofOut << "Ts_Soil_Net_Rad = 0 " << endl;
     ofOut << "Ts_Soil_LE = 1 " << endl;
