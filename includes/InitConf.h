@@ -57,6 +57,7 @@ struct Control{
 		string ForestStateVarsInputType; //indicates if the forest state variables are input as tables (tables) or maps (maps)
 
 		/*Option switches*/
+		bool sw_veg_dyn; //switch to turn on and off the dynamic vegetation module (allocation and lai calculation)
 		bool sw_reinfilt; //switch to turn on and off the reinfiltration option
 		bool sw_channel; //switch to turn on and off the channel option
 

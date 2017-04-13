@@ -81,6 +81,7 @@ try{
     ofOut << "#" << endl << "# Options section" << endl << "#" << endl << endl;
 
     ofOut << "# Boolean switches" << endl;
+    ofOut << "Vegetation_dynamics = 1" << endl;
     ofOut << "Reinfiltration = 1" << endl;
     ofOut << "Channel = 1" << endl << endl;
 
