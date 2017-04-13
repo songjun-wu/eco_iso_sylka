@@ -81,6 +81,8 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 	_dailyGwtrOutput.cells.clear();
 	_GWupstreamBC->reset();
 	_Disch_upstreamBC->reset();
+	// Set EvapS to zero before looping over baresoil/understory
+	_EvaporationS->reset();
 
 #pragma omp parallel default(shared) private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can,\
 		evap, infcap, accinf, theta, theta2, theta3, ponding,leak,  gw, za, z0u, zdu, z0o, zdo, wind, treeheight,\
@@ -178,7 +180,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 
 				SolveSurfaceEnergyBalance(atm, ctrl, ra, rs, 0.0, BeersK, LAI,
 						emis_can, Temp_can, nr, le, sens, grndh, snowh, mltht,
-						Tsold, evap, ponding, theta, Ts, Tdold, p, r, c);
+						Tsold, evap, ponding, theta, Ts, Tdold, p, r, c, s);
 
 				//For soil hydrology option 0 theta1 is the total soil layer
 				_soilmoist1->matrix[r][c] = theta; //soil moisture at t=t+1
@@ -187,6 +189,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 
 
 				_Evaporation->matrix[r][c] += evap; //evaporation at t=t+1
+				_EvaporationS->matrix[r][c] += evap; //soil evaporation at t=t+1
 
 		}//for
 

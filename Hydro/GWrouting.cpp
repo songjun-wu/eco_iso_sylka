@@ -52,7 +52,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl) {
 	REAL8 theta3 = 0;
 	REAL8 f = 0;
 	REAL8 F = 0;
-	REAL8 ca = 0; //catchment area
+	//REAL8 ca = 0; //catchment area
 	REAL8 gw = 0; //gravitational water
 	REAL8 returnflow = 0; //flow from gw in excess of the available soil storage
 	//REAL8 maxR = 0; //maximum gravitational water possible
@@ -79,7 +79,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl) {
 		theta1 = _soilmoist1->matrix[r][c];
 		theta2 = _soilmoist2->matrix[r][c];
 		theta3 = _soilmoist3->matrix[r][c];
-		ca = _catcharea->matrix[r][c];
+		//ca = _catcharea->matrix[r][c];
 		gw = _GravityWater->matrix[r][c];
 
 		fc = _fieldcap->matrix[r][c];
@@ -121,7 +121,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl) {
 		}
 
 		qj1i = _GWupstreamBC->matrix[r][c];	// discharge (j is timestep) so j1i is total discharge per unit width from upstream at t+1
-		hji1 = _GrndWaterOld->matrix[r][c]; //head at the cell itself (end of it so j+1) at t
+		hji1 = 0; //Not used since local GW head is embedded in updated theta3 which becomes R
 		R = _GravityWater->matrix[r][c]; //recharge to the groundwater system at the end of the time step in meters
 		_GravityWater->matrix[r][c] = 0; //gravity water becomes groundwater
 
@@ -228,16 +228,15 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl) {
 		else
 			_ponding->matrix[r][c] = 0.0;
 
-		_GrndWater->matrix[r][c] = 0.0;
+		// Save river discharge
 		_Disch_old->matrix[r][c] = Qk1;
 		Qk1 = 0;
 
 	}
 
-//	*_GrndWaterOld = *_GrndWater;
-
-//	if(upstreamBC)
-//		delete upstreamBC;
+	// Save previous GW and surface state
+	*_GrndWaterOld = *_GrndWater;
+	*_PondingOld = *_ponding;
 
 	return EXIT_SUCCESS;
 }

@@ -113,6 +113,7 @@ Basin::Basin(Control &ctrl)
 		_catcharea = new grid(*_DEM);
 		_fieldcap = new grid(*_DEM);
 		_Rn = new grid(*_DEM);
+		_RnToC = new grid(*_DEM);
 		_latheat = new grid(*_DEM);
 		_sensheat = new grid(*_DEM);
 		_grndheat = new grid(*_DEM);
@@ -125,18 +126,24 @@ Basin::Basin(Control &ctrl)
 
 		_IsSaturated = new grid(*_DEM);  //saturation map
 		_soilmoist_av = new grid(*_DEM); //average volumetric soil moisture of the first 10 cm of the soil as calculated using a hydrstatic equilibrium moisture profile
+		_soilmoist_12 = new grid(*_DEM); //average volumetric soil moisture of the upper two layers
 		_ponding = new grid(*_DEM);
 		_infilt_cap = new grid(*_DEM); //infilt cap m h-1
 		_AccumInfilt = new grid(*_DEM); //accumulated infiltration in meters
 		_Evaporation = new grid(*_DEM); //actual evaporation in m s-1
 		_BedrockLeakageFlux = new grid(*_DEM); //bedrock leakage flux in m s-1
 		_SoilWaterDepth = new grid(*_DEM); //soil moisture depth m
+		_WaterTableDepth = new grid(*_DEM); //reconstructed WTD in meters
 		_SoilSatDeficit = new grid(*_DEM); //soil moisture including water below and above field capacity
 		_GravityWater = new grid(*_DEM); //soil water storage beyond
+		_PondingOld = new grid(*_DEM); //surface storage at teh beginning of the time step
 		_GrndWaterOld = new grid(*_DEM); //groundwater storage at teh beginning of the time step
 		_GrndWater = new grid(*_DEM); //groundwater storage at the end of the time step
 		_GWupstreamBC = new grid(*_DEM); //gw flux upstream boundary conditin (ms-1)
 		_Disch_upstreamBC = new grid(*_DEM);
+		_EvaporationS = new grid(*_DEM); //actual soil evaporation in m s-1
+		_EvaporationI_all = new grid(*_DEM); //actual evaporation from summed interception in m s-1
+		_Transpiration_all = new grid(*_DEM); //transpiration from summed in m s-1
 
 
 	}catch (std::bad_alloc &)
@@ -149,6 +156,8 @@ Basin::Basin(Control &ctrl)
 		delete _snow;
 	if(_Rn)
 		delete _Rn;
+	if(_RnToC)
+		delete _RnToC;
 	if(_latheat)
 		delete _latheat;
 	if(_sensheat)
@@ -223,6 +232,8 @@ Basin::Basin(Control &ctrl)
 		delete _BedrockLeakageFlux;
 	if(_SoilWaterDepth)
 		delete _SoilWaterDepth;
+	if(_WaterTableDepth)
+		delete _WaterTableDepth;
 	if(_SoilSatDeficit)
 		delete _SoilSatDeficit;
 	if(_CanopyStorage)
@@ -235,6 +246,8 @@ Basin::Basin(Control &ctrl)
 		delete _catcharea;
 	if(_GravityWater)
 		delete _GravityWater;
+	if(_PondingOld)
+		delete _PondingOld;
 	if(_GrndWaterOld)
 		delete _GrndWaterOld;
 	if(_GrndWater)
@@ -249,6 +262,8 @@ Basin::Basin(Control &ctrl)
 		delete _Manningn;
 	if(_soilmoist_av)
 		delete _soilmoist_av;
+	if(_soilmoist_12)
+		delete _soilmoist_12;
 	if(_soilmoist2)
 		delete _soilmoist2;
 	if(_soilmoist3)
@@ -257,6 +272,12 @@ Basin::Basin(Control &ctrl)
 		delete _bedrock_leak;
 	if(_IsSaturated)
 		delete _IsSaturated;
+	if(_EvaporationS)
+		delete _EvaporationS;
+	if(_EvaporationI_all)
+		delete _EvaporationI_all;
+	if(_Transpiration_all)
+		delete _Transpiration_all;
 
 
 	if(fForest)

@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * Report2maps.cpp
@@ -57,20 +57,26 @@ int Report2Maps(){
     	WriteMapSeries(oBasin->getStreamflow(), "Q", oControl->current_ts_count);
     if (oControl->Rep_Saturation_Area)
 		WriteMapSeries(oBasin->getSatArea(), "SatArea_", oControl->current_ts_count);
+	if (oControl->Rep_Ponding)
+		WriteMapSeries(oBasin->getPondingWater(), "Ponding_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_Average)
 		WriteMapSeries(oBasin->getSoilMoist_av(), "SWCav", oControl->current_ts_count);
+	if (oControl->Rep_Soil_Water_Content_12)
+		WriteMapSeries(oBasin->getSoilMoist_12(), "SWCup", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_L1)
 			WriteMapSeries(oBasin->getSoilMoist1(), "SWC1_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_L2)
 				WriteMapSeries(oBasin->getSoilMoist2(), "SWC2_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_L3)
 				WriteMapSeries(oBasin->getSoilMoist3(), "SWC3_", oControl->current_ts_count);
+	if (oControl->Rep_WaterTableDepth)
+		WriteMapSeries(oBasin->getWaterTableDepth(), "WTD_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Sat_Deficit)
 		WriteMapSeries(oBasin->getSaturationDeficit(), "SatDef", oControl->current_ts_count);
-	/*if (oControl->Rep_GWater)
-			WriteMapSeries(oBasin->getGrndWater(), "GW", oControl->current_ts_count);*/
+	if (oControl->Rep_GWater)
+			WriteMapSeries(oBasin->getGrndWaterOld(), "GW", oControl->current_ts_count);
 	if (oControl->Rep_Soil_ETP)
-		WriteMapSeries(oBasin->getEvaporation(), "Evap", oControl->current_ts_count);
+		WriteMapSeries(oBasin->getEvaporationS(), "EvapS", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Net_Rad)
 		WriteMapSeries(oBasin->getNetRad(), "NetR", oControl->current_ts_count);
 	if (oControl->Rep_Soil_LE)
@@ -86,106 +92,124 @@ int Report2Maps(){
 	if (oControl->Rep_Skin_Temperature)
 			WriteMapSeries(oBasin->getSkinTemp(), "Tskin", oControl->current_ts_count);
 
+	if (oControl->Rep_Total_ET)
+		WriteMapSeries(oBasin->getEvaporation(), "Evap", oControl->current_ts_count);
+	if (oControl->Rep_Transpiration_ToC)
+		WriteMapSeries(oBasin->getTranspiration_all(), "EvapT", oControl->current_ts_count);
+	if (oControl->Rep_Einterception_ToC)
+		WriteMapSeries(oBasin->getEvaporationI_all(), "EvapI", oControl->current_ts_count);
+
+	if (oControl->Rep_Net_Rad_ToC)
+		WriteMapSeries(oBasin->getNetRadToC(), "NetRToC", oControl->current_ts_count);
+
 	for (int i = 0; i < oControl->NumSpecs; i++) {
 		stringstream name;
 
 		if (oControl->Rep_Veget_frac) {
-			name << "p[" << i << "]";
+			name << "p_" << i << "_";
 			WriteMapSeries(oBasin->getVegetFrac(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Stem_Density) {
-			name << "ntr[" << i << "]";
+			name << "ntr_" << i << "_";
 			WriteMapSeries(oBasin->getStemDensity(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Leaf_Area_Index) {
-			name << "lai[" << i << "]";
+			name << "lai_" << i << "_";
 			WriteMapSeries(oBasin->getLAI(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Stand_Age) {
-			name << "age[" << i << "]";
+			name << "age_" << i << "_";
 			WriteMapSeries(oBasin->getStandAge(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Canopy_Conductance) {
-			name << "gc[" << i << "]";
+			name << "gc_" << i << "_";
 			WriteMapSeries(oBasin->getCanopyCond(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_GPP) {
-			name << "gpp[" << i << "]";
+			name << "gpp_" << i << "_";
 			WriteMapSeries(oBasin->getGPP(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_NPP) {
-			name << "npp[" << i << "]";
+			name << "npp_" << i << "_";
 			WriteMapSeries(oBasin->getNPP(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Basal_Area) {
-			name << "bas[" << i << "]";
+			name << "bas_" << i << "_";
 			WriteMapSeries(oBasin->getBasalArea(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Tree_Height) {
-			name << "hgt[" << i << "]";
+			name << "hgt_" << i << "_";
 			WriteMapSeries(oBasin->getTreeHeight(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Root_Mass) {
-			name << "root[" << i << "]";
+			name << "root_" << i << "_";
 			WriteMapSeries(oBasin->getRootMass(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Canopy_Temp) {
-			name << "Tc[" << i << "]";
+			name << "Tc_" << i << "_";
 			WriteMapSeries(oBasin->getCanopyTemp(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Canopy_NetR) {
-			name << "RNc[" << i << "]";
+			name << "RNc_" << i << "_";
 			WriteMapSeries(oBasin->getCanopyNetRad(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
-		if (oControl->Rep_Canopy_LE) {
-			name << "LEc[" << i << "]";
-			WriteMapSeries(oBasin->getCanopyLatHeat(i), name.str() , oControl->current_ts_count);
+		if (oControl->Rep_Canopy_LE_E) {
+			name << "LEEi_" << i << "_";
+			WriteMapSeries(oBasin->getCanopyLatHeatE(i), name.str() , oControl->current_ts_count);
+			name.str("");
+		}
+		if (oControl->Rep_Canopy_LE_T) {
+			name << "LETr_" << i << "_";
+			WriteMapSeries(oBasin->getCanopyLatHeatT(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Canopy_Sens_Heat) {
-			name << "Hc[" << i << "]";
+			name << "Hc_" << i << "_";
 			WriteMapSeries(oBasin->getCanopySensHeat(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Canopy_Water_Stor) {
-			name << "Cs[" << i << "]";
+			name << "Cs_" << i << "_";
 			WriteMapSeries(oBasin->getCanopyWaterStor(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Transpiration) {
-			name << "Trp[" << i << "]";
+			name << "Trp_" << i << "_";
 			WriteMapSeries(oBasin->getTranspiration(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
-
-
+		if (oControl->Rep_Einterception) {
+			name << "Eint_" << i << "_";
+			WriteMapSeries(oBasin->getEinterception(i), name.str() , oControl->current_ts_count);
+			name.str("");
+		}
 
 	}
 ////////////////////////////////////////Time series output section/////////////////////////////////////////
@@ -279,12 +303,26 @@ int Report2Maps(){
 						oControl->path_ResultsFolder + "Streamflow.tab",
 						oControl->current_ts_count);
 	}
+	if (oControl->RepTs_Ponding){
+		if(oControl->GetTimeStep() <= oControl->report_times)
+			oReport->RenameFile(oControl->path_ResultsFolder + "Ponding.tab");
+		oReport->ReportTimeSeries(oBasin->getPondingWater(),
+				oControl->path_ResultsFolder + "Ponding.tab",
+				oControl->current_ts_count);
+	}
 	if (oControl->RepTs_Soil_Water_Content_Average){
 		if(oControl->GetTimeStep() <= oControl->report_times)
 			oReport->RenameFile(oControl->path_ResultsFolder + "SoilMoistureAv.tab");
 		oReport->ReportTimeSeries(oBasin->getSoilMoist_av(),
 						oControl->path_ResultsFolder + "SoilMoistureAv.tab",
 						oControl->current_ts_count);
+	}
+	if (oControl->RepTs_Soil_Water_Content_12){
+		if(oControl->GetTimeStep() <= oControl->report_times)
+			oReport->RenameFile(oControl->path_ResultsFolder + "SoilMoistureUp.tab");
+		oReport->ReportTimeSeries(oBasin->getSoilMoist_12(),
+				oControl->path_ResultsFolder + "SoilMoistureUp.tab",
+				oControl->current_ts_count);
 	}
 	if (oControl->RepTs_Soil_Water_Content_L1){
 		if(oControl->GetTimeStep() <= oControl->report_times)
@@ -307,6 +345,13 @@ int Report2Maps(){
 								oControl->path_ResultsFolder + "SoilMoistureL3.tab",
 								oControl->current_ts_count);
 	}
+	if (oControl->RepTs_WaterTableDepth){
+		if(oControl->GetTimeStep() <= oControl->report_times)
+			oReport->RenameFile(oControl->path_ResultsFolder + "WaterTableDepth.tab");
+		oReport->ReportTimeSeries(oBasin->getWaterTableDepth(),
+				oControl->path_ResultsFolder + "WaterTableDepth.tab",
+				oControl->current_ts_count);
+	}
 	if (oControl->RepTs_Soil_Sat_Deficit){
 		if(oControl->GetTimeStep() <= oControl->report_times)
 				oReport->RenameFile(oControl->path_ResultsFolder + "SoilSatDef.tab");
@@ -314,18 +359,18 @@ int Report2Maps(){
 							oControl->path_ResultsFolder + "SoilSatDef.tab",
 							oControl->current_ts_count);
 	}
-/*	if (oControl->RepTs_GroundWater) {
-		if (oControl->current_ts_count == 1)
+	if (oControl->RepTs_GroundWater) {
+		if (oControl->GetTimeStep() <= oControl->report_times)
 			oReport->RenameFile(oControl->path_ResultsFolder + "GroundWater.tab");
-		oReport->ReportTimeSeries(oBasin->getSoilMoist_av(),
+		oReport->ReportTimeSeries(oBasin->getGrndWaterOld(),
 				oControl->path_ResultsFolder + "GroundWater.tab",
 				oControl->current_ts_count);
-	}*/
+	}
 	if (oControl->RepTs_Soil_ETP){
 		if(oControl->GetTimeStep() <= oControl->report_times)
-			oReport->RenameFile(oControl->path_ResultsFolder + "Evap.tab");
-		oReport->ReportTimeSeries(oBasin->getEvaporation(),
-						oControl->path_ResultsFolder + "Evap.tab",
+			oReport->RenameFile(oControl->path_ResultsFolder + "EvapS.tab");
+		oReport->ReportTimeSeries(oBasin->getEvaporationS(),
+						oControl->path_ResultsFolder + "EvapS.tab",
 						oControl->current_ts_count);
 	}
 	if (oControl->RepTs_Soil_Net_Rad){
@@ -377,13 +422,42 @@ int Report2Maps(){
 			oReport->ReportTimeSeries(oBasin->getSkinTemp(),
 						oControl->path_ResultsFolder + "SkinTemp.tab",
 						oControl->current_ts_count);
-		}
+	}
+
+	if (oControl->RepTs_Total_ET){
+		if(oControl->GetTimeStep() <= oControl->report_times)
+			oReport->RenameFile(oControl->path_ResultsFolder + "Evap.tab");
+		oReport->ReportTimeSeries(oBasin->getEvaporation(),
+				oControl->path_ResultsFolder + "Evap.tab",
+				oControl->current_ts_count);
+	}
+	if (oControl->RepTs_Transpiration_ToC){
+		if(oControl->GetTimeStep() <= oControl->report_times)
+			oReport->RenameFile(oControl->path_ResultsFolder + "EvapT.tab");
+		oReport->ReportTimeSeries(oBasin->getTranspiration_all(),
+				oControl->path_ResultsFolder + "EvapT.tab",
+				oControl->current_ts_count);
+	}
+	if (oControl->RepTs_Einterception_ToC){
+		if(oControl->GetTimeStep() <= oControl->report_times)
+			oReport->RenameFile(oControl->path_ResultsFolder + "EvapI.tab");
+		oReport->ReportTimeSeries(oBasin->getEvaporationI_all(),
+				oControl->path_ResultsFolder + "EvapI.tab",
+				oControl->current_ts_count);
+	}
+	if (oControl->RepTs_Net_Rad_ToC){
+		if(oControl->GetTimeStep() <= oControl->report_times)
+			oReport->RenameFile(oControl->path_ResultsFolder + "NetRadToC.tab");
+		oReport->ReportTimeSeries(oBasin->getNetRadToC(),
+				oControl->path_ResultsFolder + "NetRadToC.tab",
+				oControl->current_ts_count);
+	}
 
 	for (int i = 0; i < oControl->NumSpecs; i++) {
 			stringstream name;
 
 			if (oControl->RepTs_Veget_frac) {
-				name << oControl->path_ResultsFolder << "p[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "p_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getVegetFrac(i), name.str() , oControl->current_ts_count);
@@ -391,7 +465,7 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_Stem_Density) {
-				name << oControl->path_ResultsFolder << "num_of_tress[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "num_of_tress_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getStemDensity(i), name.str() , oControl->current_ts_count);
@@ -399,7 +473,7 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_Leaf_Area_Index) {
-				name << oControl->path_ResultsFolder << "lai[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "lai_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getLAI(i), name.str() , oControl->current_ts_count);
@@ -407,7 +481,7 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_Canopy_Conductance) {
-				name << oControl->path_ResultsFolder << "CanopyConduct[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "CanopyConduct_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getCanopyCond(i), name.str() , oControl->current_ts_count);
@@ -415,7 +489,7 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_GPP) {
-				name << oControl->path_ResultsFolder << "GPP[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "GPP_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getGPP(i), name.str() , oControl->current_ts_count);
@@ -423,7 +497,7 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_NPP) {
-				name << oControl->path_ResultsFolder << "NPP[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "NPP_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getNPP(i), name.str() , oControl->current_ts_count);
@@ -431,7 +505,7 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_Basal_Area) {
-				name << oControl->path_ResultsFolder << "BasalArea[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "BasalArea_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getBasalArea(i), name.str() , oControl->current_ts_count);
@@ -439,7 +513,7 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_Tree_Height) {
-				name << oControl->path_ResultsFolder << "ThreeHeight[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "ThreeHeight_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getTreeHeight(i), name.str() , oControl->current_ts_count);
@@ -447,7 +521,7 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_Root_Mass) {
-				name << oControl->path_ResultsFolder << "RootMass[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "RootMass_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getRootMass(i), name.str() , oControl->current_ts_count);
@@ -455,7 +529,7 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_Canopy_Temp) {
-				name << oControl->path_ResultsFolder << "CanopyTemp[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "CanopyTemp_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getCanopyTemp(i), name.str() , oControl->current_ts_count);
@@ -463,23 +537,30 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_Canopy_NetR) {
-				name << oControl->path_ResultsFolder << "CanopyNetRad[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "CanopyNetRad_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getCanopyNetRad(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
-			if (oControl->RepTs_Canopy_LE) {
-				name << oControl->path_ResultsFolder << "CanopyLatHeat[" << i << "].tab";
+			if (oControl->RepTs_Canopy_LE_E) {
+				name << oControl->path_ResultsFolder << "CanopyLatHeatEi_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
-				oReport->ReportTimeSeries(oBasin->getCanopyLatHeat(i), name.str() , oControl->current_ts_count);
+				oReport->ReportTimeSeries(oBasin->getCanopyLatHeatE(i), name.str() , oControl->current_ts_count);
+				name.str("");
+			}
+			if (oControl->RepTs_Canopy_LE_T) {
+				name << oControl->path_ResultsFolder << "CanopyLatHeatTr_" << i << ".tab";
+				if(oControl->GetTimeStep() <= oControl->report_times)
+					oReport->RenameFile(name.str());
+				oReport->ReportTimeSeries(oBasin->getCanopyLatHeatT(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
 			if (oControl->RepTs_Canopy_Sens_Heat) {
-				name << oControl->path_ResultsFolder << "CanopySensHeat[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "CanopySensHeat_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getCanopySensHeat(i), name.str() , oControl->current_ts_count);
@@ -487,7 +568,7 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_Canopy_Water_Stor) {
-				name << oControl->path_ResultsFolder << "CanopyWaterStor[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "CanopyWaterStor_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getCanopyWaterStor(i), name.str() , oControl->current_ts_count);
@@ -495,17 +576,20 @@ int Report2Maps(){
 			}
 
 			if (oControl->RepTs_Transpiration) {
-				name << oControl->path_ResultsFolder << "Transpiration[" << i << "].tab";
+				name << oControl->path_ResultsFolder << "Transpiration_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getTranspiration(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
+			if (oControl->RepTs_Einterception) {
+				name << oControl->path_ResultsFolder << "Einterception_" << i << ".tab";
+				if(oControl->GetTimeStep() <= oControl->report_times)
+					oReport->RenameFile(name.str());
+				oReport->ReportTimeSeries(oBasin->getEinterception(i), name.str() , oControl->current_ts_count);
+				name.str("");
+			}
 		}
-
-
-
-
 
 		return EXIT_SUCCESS;
 }

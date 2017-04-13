@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * grove.h
@@ -97,10 +97,12 @@ struct Grove {
 	grid *_Del_RootMass; //increment of root mass gCm-2
 	grid *_Temp_c; //canopy temperature C
 	grid *_NetR_Can;//canopy net radiation Wm-2
-	grid *_LatHeat_Can;//Canopy latent heat Wm-2
+	grid *_LatHeat_CanE;//Canopy latent heat E interception Wm-2
+	grid *_LatHeat_CanT;//Canopy latent heat transpiration Wm-2
 	grid *_SensHeat_Can;//Canopy sensible heat Wm-2
 	grid *_WaterStorage; //current water stored in canopy m
 	grid *_ET; //Actual evapotranspiration ms-1
+	grid *_Einterception; //evaporation if interception component ms-1
 	grid *_Transpiration; //transpiration component ms-1
 	grid *_LeafWatPot; // leaf water potential (positive m of head)
 

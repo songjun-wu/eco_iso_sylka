@@ -34,6 +34,9 @@ int CalculateBudgets(){
 
 			oBudget->TotalPrecipitation(oAtmosphere->getPrecipitation(), oAtmosphere);
 			oBudget->TotalEvaporation(oBasin->getEvaporation(), oBasin);
+			oBudget->TotalEvaporationS(oBasin->getEvaporationS(), oBasin);
+			oBudget->TotalEvaporationI(oBasin->getEvaporationI_all(), oBasin);
+			oBudget->TotalTranspiration(oBasin->getTranspiration_all(), oBasin);
 			oBudget->TotalBedrockLeakage(oBasin->getBedrockLeakage(), oBasin);
 			oBudget->TotalOvlndFlow(oBasin->getDailyOvlndOutput(), oBasin);
 			oBudget->TotalGrndFlow(oBasin->getDailyGwtrOutput(), oBasin);
@@ -42,7 +45,7 @@ int CalculateBudgets(){
 									oBasin->getPondingWater(),
 									oBasin->getSoilWaterDepth(),
 									oBasin->getGravityWater(),
-									oBasin->getGrndWater(),
+									oBasin->getGrndWaterOld(),
 									oBasin);
 			oBudget->TotalSaturationArea(oBasin->getSatArea(), oBasin);
 			oBudget->MassBalanceError();

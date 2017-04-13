@@ -78,8 +78,12 @@ grid *Basin::getCanopyNetRad(UINT4 n) const {
 	return fForest->getCanopyNetRadSpeciesMap(n);
 }
 
-grid *Basin::getCanopyLatHeat(UINT4 n) const {
-	return fForest->getCanopyLatHeatSpeciesMap(n);
+grid *Basin::getCanopyLatHeatE(UINT4 n) const {
+	return fForest->getCanopyLatHeatESpeciesMap(n);
+}
+
+grid *Basin::getCanopyLatHeatT(UINT4 n) const {
+	return fForest->getCanopyLatHeatTSpeciesMap(n);
 }
 
 grid *Basin::getCanopySensHeat(UINT4 n) const {
@@ -92,6 +96,10 @@ grid *Basin::getCanopyWaterStor(UINT4 n) const {
 
 grid *Basin::getTranspiration(UINT4 n) const {
 	return fForest->getTranspirationSpeciesMap(n);
+}
+
+grid *Basin::getEinterception(UINT4 n) const {
+	return fForest->getEinterceptionSpeciesMap(n);
 }
 
 grid *Basin::getLeafWaterPotential(UINT4 n) const {

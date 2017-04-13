@@ -64,6 +64,9 @@ struct Budget {
 
 	//water outputs
 	double evaporation; //m3s-1
+	double evaporationS; //m3s-1
+	double evaporationI; //m3s-1
+	double transpiration; //m3s-1
 	double leakage; //m3s-1
 	double ovlndflow; //m3s-1
 	double gwtrflow; //m3s-1
@@ -79,6 +82,9 @@ struct Budget {
 
 	void TotalPrecipitation(const grid* map, const Atmosphere *b);
 	void TotalEvaporation(const grid* map, const Basin *b);
+	void TotalEvaporationS(const grid* map, const Basin *b);
+	void TotalEvaporationI(const grid* map, const Basin *b);
+	void TotalTranspiration(const grid* map, const Basin *b);
 	void TotalBedrockLeakage(const grid* map, const Basin*b);
 	void TotalOvlndFlow(const vectCells *timeseries, const Basin *b);
 	void TotalGrndFlow(const vectCells *timeseries, const Basin*b);
@@ -106,6 +112,9 @@ struct Budget {
 		snowfall = 0;
 
 		evaporation = 0;
+		evaporationS = 0;
+		evaporationI = 0;
+		transpiration = 0;
 		leakage = 0;
 		ovlndflow = 0;
 		gwtrflow = 0;

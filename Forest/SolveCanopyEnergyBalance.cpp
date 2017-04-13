@@ -36,7 +36,7 @@ using namespace arma;
 UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 		Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 poros, REAL8 rootdepth,
 		REAL8 Keff, REAL8 psiae, REAL8 bclambda,
-		REAL8 ra, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a,
+		REAL8 ra, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, REAL8 &netR_a,
 		UINT4 s, UINT4 r, UINT4 c) {
 
 	//some constants
@@ -93,7 +93,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 	UINT4 nsp = getNumSpecies();
 
 	if (s == nsp - 1) //for bare soil, water reaching the ground is pp times its proportion of the cell
-		evap_a = transp_a = 0;
+		evap_a = transp_a = netR_a = 0;
 	else {
 
 
@@ -266,9 +266,11 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		DelCanStor -= evap_a * ctrl.dt;
 
-		_species[s]._NetR_Can->matrix[r][c] = NetRadCanopy(atm, x[2], emissivity,
-				albedo, BeerK, LAI, r, c);
-		_species[s]._LatHeat_Can->matrix[r][c] = LE + LET; //LatHeatCanopy(atm, ra, Ts1, r, c);
+		netR_a = NetRadCanopy(atm, x[2], emissivity,	albedo, BeerK, LAI, r, c);
+
+		_species[s]._NetR_Can->matrix[r][c] = netR_a ; //Net radiation
+		_species[s]._LatHeat_CanE->matrix[r][c] = LE ; // Latent heat of canopy evap
+		_species[s]._LatHeat_CanT->matrix[r][c] = LET; // Latent heat of transpiration
 		_species[s]._SensHeat_Can->matrix[r][c] = SensHeatCanopy(atm, ra, x[2],
 				r, c);
 
@@ -287,7 +289,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		//////////////////////////////////////////
 
-		_species[s]._ET->matrix[r][c] = evap_a + transp_a;
+		_species[s]._Einterception->matrix[r][c] = evap_a;
 		_species[s]._Transpiration->matrix[r][c] = transp_a;
 
 		_species[s]._WaterStorage->matrix[r][c] -= evap_a * ctrl.dt;
