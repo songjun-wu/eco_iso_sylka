@@ -44,6 +44,7 @@ int CalculateBudgets(){
 									oBasin->getGravityWater(),
 									oBasin->getGrndWater(),
 									oBasin);
+			oBudget->TotalSaturationArea(oBasin->getSatArea(), oBasin);
 			oBudget->MassBalanceError();
 
 		return EXIT_SUCCESS;
