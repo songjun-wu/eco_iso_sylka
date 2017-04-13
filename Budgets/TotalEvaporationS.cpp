@@ -2,7 +2,7 @@
  * Ech2o, a spatially-distributed, ecohydrologic simulator
  * Copyright (c) 2016 Marco Maneta <marco.maneta@umontana.edu>
  *
- *     This file is part of ech2o, a hydrologic model developed at the 
+ *     This file is part of ech2o, a hydrologic model developed at the
  *     University of Montana.
  *
  *     Ech2o is free software: you can redistribute it and/or modify
@@ -19,44 +19,18 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
- * GroveConstruct.cpp
+ * TotalEvaporationS.cpp
  *
- *  Created on: Jun 17, 2010
- *      Author: marco
+ *  Created on: Jan 17, 2017
+ *      Author: Sylvain Kuppel
  */
 
-#include "Grove.h"
+#include "Budget.h"
 
-Grove::Grove(){
-
-	_fraction = NULL;
-	_StemDensity = NULL;
-	_LAI = NULL;
-	_grassLAI_g = NULL;
-	_grassLAI_d = NULL;
-	_AGE = NULL;
-	_CanopyConductance = NULL;
-	_GPP = NULL;
-	_NPP = NULL;
-	_BasalArea = NULL;
-	_Height = NULL;
-	_RootMass = NULL;
-	_Del_FoliageMass = NULL;
-	_Del_StemMass = NULL;
-	_Del_RootMass = NULL;
-	_Temp_c = NULL;
-	_NetR_Can = NULL;
-	_LatHeat_CanE = NULL;
-	_LatHeat_CanT = NULL;
-	_SensHeat_Can = NULL;
-	_WaterStorage = NULL;
-	_ET = NULL;
-	_Einterception = NULL;
-	_Transpiration = NULL;
-	_LeafWatPot = NULL;
-
-
+void Budget::TotalEvaporationS(const grid* map, const Basin *b)
+{
+	evaporationS += AccountFluxes(map, b);
 }

@@ -53,7 +53,8 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 									REAL8 &Tdold,
 									REAL8 p,
 									UINT4 r,
-									UINT4 c){
+									UINT4 c,
+									UINT4 s){
 
 	float dt = ctrl.dt; //time step
 	REAL8 fA, fB, fC, fD, fG, fH, fHa; //pooling factors
@@ -79,11 +80,12 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 	REAL8 h; //snow water equivalent
 	REAL8 n; //porosity
 	REAL8 fc; //field capacity
-	REAL8 thetar; //residual moisture content
+	//REAL8 thetar; //residual moisture content
 	REAL8 SoilRH; //soil relative humidity
-	REAL8 ea; //emissivity of air
+	//REAL8 ea; //emissivity of air
+	REAL8 nrad_a; // net radiation
 	REAL8 rho_a; //density of air
-	REAL8 RainIntensity; //ms-1
+	//REAL8 RainIntensity; //ms-1
 	//REAL8 exfilt;
 	REAL8 lambda = Ts1 < 0 ?  lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
@@ -98,7 +100,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 
 	h = _snow->matrix[r][c];
 	n = _porosity->matrix[r][c];
-	ea = AirEmissivity(atm.getTemperature()->matrix[r][c]);
+	//ea = AirEmissivity(atm.getTemperature()->matrix[r][c]);
 	rho_a = AirDensity(atm.getTemperature()->matrix[r][c]); //kgm-3
 
 	C = SoilHeatCapacity(_soil_dry_heatcap->matrix[r][c],  n, theta10cm, Ts1);
@@ -108,7 +110,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 	d = sqrt( (K/C) / ( 2 * ( 2 * PI / Pe) ) );
 
 	fc = _fieldcap->matrix[r][c];
-	thetar = _theta_r->matrix[r][c];
+	//thetar = _theta_r->matrix[r][c];
 	if (h>0.005){
 		SoilRH = 1; //relative humidity in snow pores is assumed to be saturated. Switch when there is at least 1 cms of snow
 		rs = 0; //no extra resistance to evaporation
@@ -132,7 +134,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 
 	//exfilt = ExfiltrationCapacity(theta, dt, r, c);
 
-	RainIntensity = pond * p / dt;
+	//RainIntensity = pond * p / dt;
 	R = 0; //h > 0 ? RainHeat(atm, RainIntensity, r, c) : 0.0; //heat advected by rain only if there is snowpack present
 
 
@@ -190,10 +192,12 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 		std::cout << "WARNING: non-convergence in surface energy balance at cell row: " << r << " col: " << c << " closure err: " << (Ts1 - Ts) << endl;
 
 	//Td = -G/( C* (d + d0) )* dt + Td;
+	nrad_a = NetRad(atm, Ts1, Kbeers, lai, emis_can, Temp_can, r, c);
 
+	if(s == fForest->getNumSpecies()-1)
+	  _RnToC->matrix[r][c] += nrad_a * p;
 
-
-	nrad += NetRad(atm, Ts1, Kbeers, lai, emis_can, Temp_can, r, c) * p;
+	nrad += nrad_a * p;
 	latheat += LE * p;
 	sensheat += SensHeat(atm, ra, Ts1, r, c) * p; //SensHeat(atm, ra, Ts1, r, c) * p;
 	grndheat += GrndHeat(atm, ctrl, theta10cm, Ts1, Td, r, c) * p;

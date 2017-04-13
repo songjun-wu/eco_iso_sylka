@@ -66,8 +66,10 @@ Grove::~Grove(){
 		delete _Temp_c;
 	if(_NetR_Can)
 		delete _NetR_Can;
-	if(_LatHeat_Can)
-		delete _LatHeat_Can;
+	if(_LatHeat_CanE)
+		delete _LatHeat_CanE;
+	if(_LatHeat_CanT)
+		delete _LatHeat_CanT;
 	if(_SensHeat_Can)
 		delete _SensHeat_Can;
 	if(_WaterStorage)
@@ -76,6 +78,8 @@ Grove::~Grove(){
 		delete _ET;
 	if(_Transpiration)
 		delete _Transpiration;
+	if(_Einterception)
+		delete _Einterception;
 	if(_LeafWatPot)
 		delete _LeafWatPot;
 

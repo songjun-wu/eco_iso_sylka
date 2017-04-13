@@ -102,10 +102,12 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
 			_species[j]._NPP->matrix[r][c] = _species[j]._GPP->matrix[r][c]
 					* _species[j].GPP2NPP;
 
-			if (_species[j].is_grass)
-				GrowGrass(j, r, c, dt);
-			else
-				GrowTrees(j, r, c, dt, fa, ft, fw, atm.getMinTemperature()->matrix[r][c], UsableTheta);
+			if(ctrl.sw_veg_dyn){
+				if (_species[j].is_grass)
+					GrowGrass(j, r, c, dt);
+				else
+					GrowTrees(j, r, c, dt, fa, ft, fw, atm.getMinTemperature()->matrix[r][c], UsableTheta);
+			}
 
 		}
 	return EXIT_SUCCESS;

@@ -47,12 +47,13 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 
 	REAL8 evap = 0; //evaporation for the tree groves
 	REAL8 transp = 0; //transpiratin for the tree groves
+	REAL8 netR = 0; //net radiation for the tree groves
 	REAL8 evap_f = 0; //total evaporation for the entire cell
 	REAL8 transp_f = 0; //total transpiration for the entire cell
 	//REAL8 ETP;
 
 	//canopy storage parameters
-	REAL8 D = 0; //canopy trascolation
+	REAL8 D = 0; //canopy trascolation (amount of water that actually reach the ground)
 	REAL8 DelCanStor = 0; //Canopy Storage
 
 	//soil parameters
@@ -90,16 +91,20 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 	//unsigned int j;
 	UINT4 s;
 	int  thre=0;
+
+	// Set Rn to zero
+	_RnToC->reset();
+
 #pragma omp parallel default(none)\
 		private( s, r,c, p,  treeheight, wind, za, z0o, zdo, \
 							Tp, maxTp, minTp, snow, rain, sno_rain_thres, evap, \
-							transp, evap_f, transp_f, D, DelCanStor, theta, theta2, theta3, theta_available, ra, \
+							transp, netR, evap_f, transp_f, D, DelCanStor, theta, theta2, theta3, theta_available, ra, \
 							poros, psi_ae, Keff, bclambda, rootdepth, froot1, froot2, froot3, d1, d2, d3, thetar, fc) \
 					shared(nsp, atm, ctrl, dt, thre)
 {
 	thre = omp_get_num_threads();
     #pragma omp single
-	printf("\nnum threads %d: ", thre);
+	printf("\nnum threads %d: \n", thre);
     #pragma omp for nowait
 	for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
 
@@ -136,6 +141,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 			D = 0;
 			evap = 0;
 			transp = 0;
+			netR = 0;
 
 			if (s == nsp - 1) { //if this is bare ground set D to precip and skip the tree stuff
 
@@ -176,10 +182,12 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 				fForest->CanopyInterception(atm, ctrl, DelCanStor, D, s, r, c); //calculates canopy interception and trascolation
 
 				fForest->SolveCanopyEnergyBalance(*this, atm, ctrl, theta_available+thetar,
-						thetar, poros, rootdepth, Keff, psi_ae, bclambda, ra, DelCanStor, evap, transp,
+						thetar, poros, rootdepth, Keff, psi_ae, bclambda, ra, DelCanStor, evap, transp, netR,
 						s, r, c);
 
 				_CanopyStorage->matrix[r][c] += DelCanStor * p;
+
+				_RnToC->matrix[r][c] += netR * p ;
 
 				if (_CanopyStorage->matrix[r][c] < RNDOFFERR)
 					_CanopyStorage->matrix[r][c] = 0.0;
@@ -224,6 +232,9 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
 		} //end for
 
 		_Evaporation->matrix[r][c] = evap_f + transp_f; //total evaporation for the entire cell
+		// Vegetation-summed values
+		_Transpiration_all->matrix[r][c]  = transp_f ;
+		_EvaporationI_all->matrix[r][c] = evap_f ;
 
 	}//end for
 }//end omp parallel

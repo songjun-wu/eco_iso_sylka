@@ -19,44 +19,34 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
- * GroveConstruct.cpp
+ * AccountArea.cpp
  *
- *  Created on: Jun 17, 2010
- *      Author: marco
+ *  Created on: Nov 7, 2016
+ *      Author: Sylvain Kuppel
  */
+#include "Budget.h"
 
-#include "Grove.h"
+double Budget::AccountRelArea(const grid *map, const Basin *b)
+{
 
-Grove::Grove(){
+  UINT4 length = b->getSortedGrid().cells.size();
+  UINT4 r, c;
+  REAL8 result = 0;
+  
+#pragma omp parallel for			\
+  default(shared) private(r,c)			\
+  reduction (+:result)
 
-	_fraction = NULL;
-	_StemDensity = NULL;
-	_LAI = NULL;
-	_grassLAI_g = NULL;
-	_grassLAI_d = NULL;
-	_AGE = NULL;
-	_CanopyConductance = NULL;
-	_GPP = NULL;
-	_NPP = NULL;
-	_BasalArea = NULL;
-	_Height = NULL;
-	_RootMass = NULL;
-	_Del_FoliageMass = NULL;
-	_Del_StemMass = NULL;
-	_Del_RootMass = NULL;
-	_Temp_c = NULL;
-	_NetR_Can = NULL;
-	_LatHeat_CanE = NULL;
-	_LatHeat_CanT = NULL;
-	_SensHeat_Can = NULL;
-	_WaterStorage = NULL;
-	_ET = NULL;
-	_Einterception = NULL;
-	_Transpiration = NULL;
-	_LeafWatPot = NULL;
+  for (UINT4 i = 0; i< length; i++){
+    
+    r = b->getSortedGrid().cells[i].row;
+    c = b->getSortedGrid().cells[i].col;
 
-
+    result += (map->matrix[r][c]/length);
+  }
+  
+  return result;
 }

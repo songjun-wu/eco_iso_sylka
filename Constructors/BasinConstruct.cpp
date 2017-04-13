@@ -56,11 +56,11 @@ Basin::Basin(Control &ctrl)
 
 		/*sorts the basin with data cells according
 		 * to the ldd after _DEM and _ldd have been created*/
-		_vSortedGrid = Basin::SortGridLDD();
+			_vSortedGrid = Basin::SortGridLDD();
 
-		printf("Sorting done. Saving serialized sorted grid object for subsequent runs...\n");
+			printf("Sorting done. Saving serialized sorted grid object for subsequent runs...\n");
 
-		saveSortedGrid(_vSortedGrid, (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+			saveSortedGrid(_vSortedGrid, (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
 		}
 
 		fForest = new Forest(ctrl); //constructs the Forest object
@@ -77,13 +77,14 @@ Basin::Basin(Control &ctrl)
 		_soildepth = new grid(ctrl.path_BasinFolder + ctrl.fn_soildepth, ctrl.MapType);
 		_depth_layer1 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer1, ctrl.MapType);
 		_depth_layer2 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer2, ctrl.MapType);
-		_bedrock_leak = new grid(ctrl.path_BasinFolder + ctrl.fn_bedrock_leak, ctrl.MapType);  //soil moisture 3rd layer volumetric
+		_bedrock_leak = new grid(ctrl.path_BasinFolder + ctrl.fn_bedrock_leak, ctrl.MapType);
 		_paramWc = new grid(ctrl.path_BasinFolder + ctrl.fn_paramWc, ctrl.MapType);
 		_paramWp = new grid(ctrl.path_BasinFolder + ctrl.fn_paramWp, ctrl.MapType);
 		_meltCoeff = new grid(ctrl.path_BasinFolder + ctrl.fn_snowCf, ctrl.MapType);
 
-		_rootfrac1 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay1, ctrl.MapType);
-		_rootfrac2 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay2, ctrl.MapType);
+		//_rootfrac1 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay1, ctrl.MapType);
+		//_rootfrac2 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay2, ctrl.MapType);
+		_Kroot = new grid(ctrl.path_BasinFolder + ctrl.fn_Kroot, ctrl.MapType);
 
 		_snow = new grid(ctrl.path_BasinFolder + ctrl.fn_swe, ctrl.MapType);
 		_albedo = new grid(ctrl.path_BasinFolder + ctrl.fn_albedo, ctrl.MapType);
@@ -112,6 +113,7 @@ Basin::Basin(Control &ctrl)
 		_catcharea = new grid(*_DEM);
 		_fieldcap = new grid(*_DEM);
 		_Rn = new grid(*_DEM);
+		_RnToC = new grid(*_DEM);
 		_latheat = new grid(*_DEM);
 		_sensheat = new grid(*_DEM);
 		_grndheat = new grid(*_DEM);
@@ -119,149 +121,175 @@ Basin::Basin(Control &ctrl)
 		_Temp_s = new grid(*_DEM);
 		//_Temp_s_old = new grid(*_DEM);
 		_CanopyStorage = new grid(*_DEM);
+		_rootfrac1 = new grid(*_DEM);
+		_rootfrac2 = new grid(*_DEM);
 
-
+		_IsSaturated = new grid(*_DEM);  //saturation map
 		_soilmoist_av = new grid(*_DEM); //average volumetric soil moisture of the first 10 cm of the soil as calculated using a hydrstatic equilibrium moisture profile
+		_soilmoist_12 = new grid(*_DEM); //average volumetric soil moisture of the upper two layers
 		_ponding = new grid(*_DEM);
 		_infilt_cap = new grid(*_DEM); //infilt cap m h-1
 		_AccumInfilt = new grid(*_DEM); //accumulated infiltration in meters
 		_Evaporation = new grid(*_DEM); //actual evaporation in m s-1
 		_BedrockLeakageFlux = new grid(*_DEM); //bedrock leakage flux in m s-1
 		_SoilWaterDepth = new grid(*_DEM); //soil moisture depth m
+		_WaterTableDepth = new grid(*_DEM); //reconstructed WTD in meters
 		_SoilSatDeficit = new grid(*_DEM); //soil moisture including water below and above field capacity
 		_GravityWater = new grid(*_DEM); //soil water storage beyond
+		_PondingOld = new grid(*_DEM); //surface storage at teh beginning of the time step
 		_GrndWaterOld = new grid(*_DEM); //groundwater storage at teh beginning of the time step
 		_GrndWater = new grid(*_DEM); //groundwater storage at the end of the time step
 		_GWupstreamBC = new grid(*_DEM); //gw flux upstream boundary conditin (ms-1)
 		_Disch_upstreamBC = new grid(*_DEM);
-
+		_EvaporationS = new grid(*_DEM); //actual soil evaporation in m s-1
+		_EvaporationI_all = new grid(*_DEM); //actual evaporation from summed interception in m s-1
+		_Transpiration_all = new grid(*_DEM); //transpiration from summed in m s-1
 
 
 	}catch (std::bad_alloc &)
-	  { cerr << " Cleaning basin objects..." << "\n";
-		if(_DEM)
-			delete _DEM;
-		if(_ldd)
-			delete _ldd;
-		if(_snow)
-			delete _snow;
-		if(_Rn)
-			delete _Rn;
-		if(_latheat)
-			delete _latheat;
-		if(_sensheat)
-			delete _sensheat;
-		if(_grndheat)
-			delete _grndheat;
-		if(_snwheat)
-			delete _snwheat;
-		if(_Temp_s)
-			delete _Temp_s;
-		if(_Temp_s_old)
-			delete _Temp_s_old;
-		if(_albedo)
-			delete _albedo;
-		if(_emiss_surf)
-			delete _emiss_surf;
-		if(_soil_dry_heatcap)
-			delete _soil_dry_heatcap;
-		if(_soil_dry_thermcond)
-			delete _soil_dry_thermcond;
-		if(_dampdepth)
-			delete _dampdepth;
-		if(_Temp_d)
-			delete _Temp_d;
-		if(_ponding)
-			delete _ponding;
-		if(_Ksat)
-			delete _Ksat;
-		if(_KvKs)
-			delete _KvKs;
-		if(_random_roughness)
-			delete _random_roughness;
-		if(_slope)
-			delete _slope;
-		if(_porosity)
-			delete _porosity;
-		if(_psi_ae)
-			delete _psi_ae;
-		if(_BClambda)
-			delete _BClambda;
-		if(_theta_r)
-			delete _theta_r;
-		if(_infilt_cap)
-			delete _infilt_cap;
-		if(_soilmoist1)
-			delete _soilmoist1;
-		if(_AccumInfilt)
-			delete _AccumInfilt;
-		if(_soildepth)
-			delete _soildepth;
-		if(_depth_layer1)
-			delete _depth_layer1;
-		if(_depth_layer2)
-			delete _depth_layer2;
-		if(_rootfrac1)
-			delete _rootfrac1;
-		if(_rootfrac2)
-			delete _rootfrac2;
-		if(_fieldcap)
-			delete _fieldcap;
-		if(_paramWc)
-			delete _paramWc;
-		if(_paramWp)
-			delete _paramWp;
-		if(_meltCoeff)
-			delete _meltCoeff;
-		if(_Evaporation)
-			delete _Evaporation;
-		if(_BedrockLeakageFlux)
-			delete _BedrockLeakageFlux;
-		if(_SoilWaterDepth)
-			delete _SoilWaterDepth;
-		if(_SoilSatDeficit)
-			delete _SoilSatDeficit;
-		if(_CanopyStorage)
-			delete _CanopyStorage;
-		if(_Disch_old)
-			delete _Disch_old;
-		if(_Disch_upstreamBC)
-			delete _Disch_upstreamBC;
-		if(_catcharea)
-			delete _catcharea;
-		if(_GravityWater)
-			delete _GravityWater;
-		if(_GrndWaterOld)
-			delete _GrndWaterOld;
-		if(_GrndWater)
-			delete _GrndWater;
-		if(_GWupstreamBC)
-			delete _GWupstreamBC;
-		if(_channelwidth)
-			delete _channelwidth;
-		if(_chGWparam)
-			delete _chGWparam;
-		if(_Manningn)
-			delete _Manningn;
-		if(_soilmoist_av)
-			delete _soilmoist_av;
-		if(_soilmoist2)
-			delete _soilmoist2;
-		if(_soilmoist3)
-			delete _soilmoist3;
-		if(_bedrock_leak)
-			delete _bedrock_leak;
+	{ cerr << " Cleaning basin objects..." << "\n";
+	if(_DEM)
+		delete _DEM;
+	if(_ldd)
+		delete _ldd;
+	if(_snow)
+		delete _snow;
+	if(_Rn)
+		delete _Rn;
+	if(_RnToC)
+		delete _RnToC;
+	if(_latheat)
+		delete _latheat;
+	if(_sensheat)
+		delete _sensheat;
+	if(_grndheat)
+		delete _grndheat;
+	if(_snwheat)
+		delete _snwheat;
+	if(_Temp_s)
+		delete _Temp_s;
+	if(_Temp_s_old)
+		delete _Temp_s_old;
+	if(_albedo)
+		delete _albedo;
+	if(_emiss_surf)
+		delete _emiss_surf;
+	if(_soil_dry_heatcap)
+		delete _soil_dry_heatcap;
+	if(_soil_dry_thermcond)
+		delete _soil_dry_thermcond;
+	if(_dampdepth)
+		delete _dampdepth;
+	if(_Temp_d)
+		delete _Temp_d;
+	if(_ponding)
+		delete _ponding;
+	if(_Ksat)
+		delete _Ksat;
+	if(_KvKs)
+		delete _KvKs;
+	if(_random_roughness)
+		delete _random_roughness;
+	if(_slope)
+		delete _slope;
+	if(_porosity)
+		delete _porosity;
+	if(_psi_ae)
+		delete _psi_ae;
+	if(_BClambda)
+		delete _BClambda;
+	if(_theta_r)
+		delete _theta_r;
+	if(_infilt_cap)
+		delete _infilt_cap;
+	if(_soilmoist1)
+		delete _soilmoist1;
+	if(_AccumInfilt)
+		delete _AccumInfilt;
+	if(_soildepth)
+		delete _soildepth;
+	if(_depth_layer1)
+		delete _depth_layer1;
+	if(_depth_layer2)
+		delete _depth_layer2;
+	if(_rootfrac1)
+		delete _rootfrac1;
+	if(_rootfrac2)
+		delete _rootfrac2;
+	if(_Kroot)
+		delete _Kroot;
+	if(_fieldcap)
+		delete _fieldcap;
+	if(_paramWc)
+		delete _paramWc;
+	if(_paramWp)
+		delete _paramWp;
+	if(_meltCoeff)
+		delete _meltCoeff;
+	if(_Evaporation)
+		delete _Evaporation;
+	if(_BedrockLeakageFlux)
+		delete _BedrockLeakageFlux;
+	if(_SoilWaterDepth)
+		delete _SoilWaterDepth;
+	if(_WaterTableDepth)
+		delete _WaterTableDepth;
+	if(_SoilSatDeficit)
+		delete _SoilSatDeficit;
+	if(_CanopyStorage)
+		delete _CanopyStorage;
+	if(_Disch_old)
+		delete _Disch_old;
+	if(_Disch_upstreamBC)
+		delete _Disch_upstreamBC;
+	if(_catcharea)
+		delete _catcharea;
+	if(_GravityWater)
+		delete _GravityWater;
+	if(_PondingOld)
+		delete _PondingOld;
+	if(_GrndWaterOld)
+		delete _GrndWaterOld;
+	if(_GrndWater)
+		delete _GrndWater;
+	if(_GWupstreamBC)
+		delete _GWupstreamBC;
+	if(_channelwidth)
+		delete _channelwidth;
+	if(_chGWparam)
+		delete _chGWparam;
+	if(_Manningn)
+		delete _Manningn;
+	if(_soilmoist_av)
+		delete _soilmoist_av;
+	if(_soilmoist_12)
+		delete _soilmoist_12;
+	if(_soilmoist2)
+		delete _soilmoist2;
+	if(_soilmoist3)
+		delete _soilmoist3;
+	if(_bedrock_leak)
+		delete _bedrock_leak;
+	if(_IsSaturated)
+		delete _IsSaturated;
+	if(_EvaporationS)
+		delete _EvaporationS;
+	if(_EvaporationI_all)
+		delete _EvaporationI_all;
+	if(_Transpiration_all)
+		delete _Transpiration_all;
 
 
-		if(fForest)
-			delete fForest;
+	if(fForest)
+		delete fForest;
 
-	    throw;
-	  }
+	throw;
+}
 
 	CalcCatchArea(); //Fills-in the _catcharea map with the upstream catchment area of each cell
 	CalcFieldCapacity(); //calcualte the value of field capacity using the Brooks and Corey Formula
 	CalcInitialStreamStorage(); //Reads initial streamflow map and populate _ponding variable with initial storage in stream
+	CalcRootDistrib(); //from the species root profile and layer depth --> root frac in each layer
 
 /*	for(unsigned int r = 0; r <  _NRows; r++)//remove!!!!!
 	      for(unsigned int c = 0; c <  _NCols; c++)

@@ -61,13 +61,19 @@ try{
 	throw;
 }
 		ofSummary << "Precipitation\t";
-		ofSummary << "Canopy Storage\t";
 		ofSummary << "SWE\t";
-		ofSummary << "Soil water < fc\t";
+		ofSummary << "Canopy storage\t";
+		ofSummary << "Ponding\t";
+		ofSummary << "Soil water\t";
+		ofSummary << "Groundwater\t";
 		ofSummary << "Evapotranspiration\t";
+		ofSummary << "Soil evaporation\t";
+		ofSummary << "Canopy evaporation\t";
+		ofSummary << "Transpiration\t";
 		ofSummary << "Bedrock leakage\t";
 		ofSummary << "Overland flow\t";
 		ofSummary << "Groundwater flow\t";
+		ofSummary << "Saturation extent\t";
 		ofSummary << "Mass Balance Error\n";
 
 

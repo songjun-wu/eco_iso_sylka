@@ -86,7 +86,7 @@ public:
    UINT4 SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 			Control &ctrl, REAL8 theta, REAL8 thetar, REAL8 poros, REAL8 rootdepth,
 			REAL8 Keff, REAL8 psiae, REAL8 bclambda,
-			REAL8 ra, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a,
+			REAL8 ra, REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, REAL8 &netR_a,
 			UINT4 s, UINT4 r, UINT4 c);
    int CanopyInterception(Atmosphere &atm, Control &ctrl, REAL8 &DelCanStor, REAL8 &D, UINT4 s, UINT4 r, UINT4 c);
    int GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl);
@@ -128,9 +128,13 @@ public:
            	return spe->_NetR_Can->matrix[row][col];
     }
 
-    REAL8 getCanopyLatHeat(UINT4 n, UINT4 row, UINT4 col) const {
+    REAL8 getCanopyLatHeatE(UINT4 n, UINT4 row, UINT4 col) const {
            	Grove *spe = &_species[n]; //ACHTUNG ACHTUNG! MEMORY LEAK??!?!?!
-           	return spe->_LatHeat_Can->matrix[row][col];
+           	return spe->_LatHeat_CanE->matrix[row][col];
+    }
+    REAL8 getCanopyLatHeatT(UINT4 n, UINT4 row, UINT4 col) const {
+            Grove *spe = &_species[n]; //ACHTUNG ACHTUNG! MEMORY LEAK??!?!?!
+            return spe->_LatHeat_CanT->matrix[row][col];
     }
 
     REAL8 getCanopySensHeat(UINT4 n, UINT4 row, UINT4 col) const {
@@ -167,7 +171,9 @@ public:
     REAL8 getEvapoTransp(UINT4 n, UINT4 row, UINT4 col) const {
     	return _species[n]._ET->matrix[row][col];
     }
-
+    REAL8 getEinterception(UINT4 n, UINT4 row, UINT4 col) const {
+      return _species[n]._Einterception->matrix[row][col];
+    }
     REAL8 getTranspiration(UINT4 n, UINT4 row, UINT4 col) const {
        	return _species[n]._Transpiration->matrix[row][col];
     }
@@ -224,8 +230,12 @@ public:
            	return _species[n]._NetR_Can;
     }
 
-    grid *getCanopyLatHeatSpeciesMap(UINT4 n) const {
-           	return _species[n]._LatHeat_Can;
+    grid *getCanopyLatHeatESpeciesMap(UINT4 n) const {
+           	return _species[n]._LatHeat_CanE;
+    }
+
+    grid *getCanopyLatHeatTSpeciesMap(UINT4 n) const {
+            return _species[n]._LatHeat_CanT;
     }
 
     grid *getCanopySensHeatSpeciesMap(UINT4 n) const {
@@ -235,7 +245,9 @@ public:
     grid *getCanopyWaterStorSpeciesMap(UINT4 n) const {
            	return _species[n]._WaterStorage;
     }
-
+    grid *getEinterceptionSpeciesMap(UINT4 n) const {
+        return _species[n]._Einterception;
+    }
     grid *getTranspirationSpeciesMap(UINT4 n) const {
        	return _species[n]._Transpiration;
     }

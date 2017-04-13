@@ -19,44 +19,47 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
- * GroveConstruct.cpp
+ * CalculateSatArea.cpp
  *
- *  Created on: Jun 17, 2010
- *      Author: marco
+ *  Created on: Nov 7, 2016
+ *      Author: Sylvain Kuppel
  */
 
-#include "Grove.h"
+#include"Basin.h"
 
-Grove::Grove(){
+int Basin::CalculateSatArea(Atmosphere &atm, Control &ctrl) {
 
-	_fraction = NULL;
-	_StemDensity = NULL;
-	_LAI = NULL;
-	_grassLAI_g = NULL;
-	_grassLAI_d = NULL;
-	_AGE = NULL;
-	_CanopyConductance = NULL;
-	_GPP = NULL;
-	_NPP = NULL;
-	_BasalArea = NULL;
-	_Height = NULL;
-	_RootMass = NULL;
-	_Del_FoliageMass = NULL;
-	_Del_StemMass = NULL;
-	_Del_RootMass = NULL;
-	_Temp_c = NULL;
-	_NetR_Can = NULL;
-	_LatHeat_CanE = NULL;
-	_LatHeat_CanT = NULL;
-	_SensHeat_Can = NULL;
-	_WaterStorage = NULL;
-	_ET = NULL;
-	_Einterception = NULL;
-	_Transpiration = NULL;
-	_LeafWatPot = NULL;
+  UINT4 r, c;
+  REAL8 poros; //porosity
 
+  REAL8 IsSaturated = 0; //
+  REAL8 theta1 = 0; // water content first layer
 
+#pragma omp parallel default(none)\
+  private(r,c, theta1, poros, IsSaturated) \
+  shared(atm, ctrl)
+  {
+    #pragma omp for nowait
+   
+    for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+      
+      r = _vSortedGrid.cells[j].row;
+      c = _vSortedGrid.cells[j].col;
+      IsSaturated = 0;
+      
+      //surface routing stuff
+      theta1 = _soilmoist1->matrix[r][c];
+      poros = _porosity->matrix[r][c];
+      
+      if (fabs(poros - theta1) < RNDOFFERR)
+	IsSaturated = 1;
+      
+      _IsSaturated->matrix[r][c] = IsSaturated;
+      
+    }
+  }   
+  return EXIT_SUCCESS;
 }

@@ -57,6 +57,7 @@ struct Control{
 		string ForestStateVarsInputType; //indicates if the forest state variables are input as tables (tables) or maps (maps)
 
 		/*Option switches*/
+		bool sw_veg_dyn; //switch to turn on and off the dynamic vegetation module (allocation and lai calculation)
 		bool sw_reinfilt; //switch to turn on and off the reinfiltration option
 		bool sw_channel; //switch to turn on and off the channel option
 
@@ -87,6 +88,7 @@ struct Control{
 		string fn_depth_layer2;  //depth of layer 2 in m. Layer 3 evaluated from soil depth
 		string fn_root_fraction_lay1; //fraction of roots in soil layer 1
 		string fn_root_fraction_lay2; // fraction of roots in soil layer 2. Soil layer 3 implied
+		string fn_Kroot; // coefficient for exponential root profile, in m-1
 		string fn_bedrock_leak; //bedrock leakance in s-1
 		string fn_paramWc; //empirical parameter in water efficiency function for GPP calculation (see Landsber and Waring, 1997 or TRIPLEX paper
 		string fn_paramWp;//empirical parameter in water efficiency function for GPP calculation (see Landsber and Waring, 1997 or TRIPLEX paper
@@ -143,12 +145,17 @@ struct Control{
 		bool Rep_SWE;
 		bool Rep_Infilt_Cap;
 		bool Rep_Streamflow;
+		bool Rep_Saturation_Area;
+		bool Rep_Ponding;
 		bool Rep_Soil_Water_Content_Average;
+		bool Rep_Soil_Water_Content_12;
 		bool Rep_Soil_Water_Content_L1;
 		bool Rep_Soil_Water_Content_L2;
 		bool Rep_Soil_Water_Content_L3;
+		bool Rep_WaterTableDepth;
 		bool Rep_Soil_Sat_Deficit;
 		bool Rep_GWater;
+		bool Rep_Total_ET;
 		bool Rep_Soil_ETP;
 		bool Rep_Soil_Net_Rad;
 		bool Rep_Soil_LE;
@@ -157,6 +164,11 @@ struct Control{
 		bool Rep_Snow_Heat;
 		bool Rep_Soil_Temperature;
 		bool Rep_Skin_Temperature;
+
+		bool Rep_Net_Rad_ToC;
+		bool Rep_Transpiration_ToC;
+		bool Rep_Einterception_ToC;
+
 		bool Rep_Veget_frac;
 		bool Rep_Stem_Density;
 		bool Rep_Leaf_Area_Index;
@@ -169,10 +181,12 @@ struct Control{
 		bool Rep_Root_Mass;
 		bool Rep_Canopy_Temp;
 		bool Rep_Canopy_NetR;
-		bool Rep_Canopy_LE;
+		bool Rep_Canopy_LE_E;
+		bool Rep_Canopy_LE_T;
 		bool Rep_Canopy_Sens_Heat;
 		bool Rep_Canopy_Water_Stor;
 		bool Rep_Transpiration;
+		bool Rep_Einterception;
 
 		/*time series reporting input files*/
 		string fn_rep_mask;
@@ -189,12 +203,16 @@ struct Control{
 		bool RepTs_SWE;
 		bool RepTs_Infilt_Cap;
 		bool RepTs_Streamflow;
+		bool RepTs_Ponding;
 		bool RepTs_Soil_Water_Content_Average;
+		bool RepTs_Soil_Water_Content_12;
 		bool RepTs_Soil_Water_Content_L1;
 		bool RepTs_Soil_Water_Content_L2;
 		bool RepTs_Soil_Water_Content_L3;
+		bool RepTs_WaterTableDepth;
 		bool RepTs_Soil_Sat_Deficit;
 		bool RepTs_GroundWater;
+		bool RepTs_Total_ET;
 		bool RepTs_Soil_ETP;
 		bool RepTs_Soil_Net_Rad;
 		bool RepTs_Soil_LE;
@@ -203,6 +221,11 @@ struct Control{
 		bool RepTs_Snow_Heat;
 		bool RepTs_Soil_Temperature;
 		bool RepTs_Skin_Temperature;
+
+		bool RepTs_Net_Rad_ToC;
+		bool RepTs_Transpiration_ToC;
+		bool RepTs_Einterception_ToC;
+
 		bool RepTs_Veget_frac;
 		bool RepTs_Stem_Density;
 		bool RepTs_Leaf_Area_Index;
@@ -214,10 +237,12 @@ struct Control{
 		bool RepTs_Root_Mass;
 		bool RepTs_Canopy_Temp;
 		bool RepTs_Canopy_NetR;
-		bool RepTs_Canopy_LE;
+		bool RepTs_Canopy_LE_E;
+		bool RepTs_Canopy_LE_T;
 		bool RepTs_Canopy_Sens_Heat;
 		bool RepTs_Canopy_Water_Stor;
 		bool RepTs_Transpiration;
+		bool RepTs_Einterception;
 
 
 

@@ -36,9 +36,11 @@ void Budget::MassBalanceError()
 	double outputs = 0.0;
 	double ds = 0.0;
 
-	inputs = precipitation + initsnowpack + initponding + initvadose + initgravwater + initgrndwater;
+	inputs = precipitation + initsnowpack + initponding + initvadose;
+	// + initgravwater + initgrndwater; -> obsolete: gravity and groundwater embedded in vadose...
 	outputs = evaporation + ovlndflow + gwtrflow + leakage;
-	ds = canopy + snowpack + ponding + vadose + gravwater + grndwater;
+	ds = canopy + snowpack + ponding + vadose;
+	//+ gravwater + grndwater;  -> obsolete: gravity and groundwater embedded in vadose...
 
 	if(inputs>0) MBErr = 100/inputs*(inputs-outputs - ds);
 	        else MBErr = 0;
