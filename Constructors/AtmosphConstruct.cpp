@@ -49,11 +49,6 @@ Atmosphere::Atmosphere(Control &ctrl){
 				_vSsortedGridTotalCellNumber += _vSortedGrid[i].cells.size();
 			}
 
-
-
-
-
-
 			/*constructs the object using the basemap so
 			attributes (lat, long, nodata...) are copied*/
 			_Ldown = new grid(*_zones);
@@ -64,6 +59,8 @@ Atmosphere::Atmosphere(Control &ctrl){
 			_Precip = new grid (*_zones);
 			_Rel_humid = new grid (*_zones);
 			_Wind_speed = new grid (*_zones);
+			_dDprecip = NULL;
+			_d18Oprecip = NULL;
 
 			*_Ldown = *_zones;
 			*_Sdown = *_zones;
@@ -73,6 +70,16 @@ Atmosphere::Atmosphere(Control &ctrl){
 			*_Precip = *_zones;
 			*_Rel_humid = *_zones;
 			*_Wind_speed = *_zones;
+
+			// Tracking
+			if(ctrl.sw_trck && ctrl.sw_dD){
+				_dDprecip = new grid(*_zones);
+				*_dDprecip = *_zones;
+			}
+			if(ctrl.sw_trck && ctrl.sw_d18O){
+				_d18Oprecip = new grid(*_zones);
+				*_d18Oprecip = *_zones;
+			}
 
 			_isohyet = new grid(ctrl.path_ClimMapsFolder + ctrl.fn_isohyet, ctrl.MapType);
 			_rain_snow_temp = ctrl.snow_rain_temp;
@@ -97,6 +104,16 @@ Atmosphere::Atmosphere(Control &ctrl){
 					if(errno!=0) throw ctrl.fn_rel_humid;
 				ifWindSpeed.open((ctrl.path_ClimMapsFolder + ctrl.fn_wind_speed).c_str(), ios::binary);
 					if(errno!=0) throw ctrl.fn_wind_speed;
+
+				// Tracking
+				if(ctrl.sw_trck and ctrl.sw_dD){
+					ifdDprecip.open((ctrl.path_ClimMapsFolder + ctrl.fn_dDprecip).c_str(), ios::binary);
+				if(errno!=0) throw ctrl.fn_dDprecip;}
+
+				if(ctrl.sw_trck and ctrl.sw_d18O){
+					ifd18Oprecip.open((ctrl.path_ClimMapsFolder + ctrl.fn_d18Oprecip).c_str(), ios::binary);
+				if(errno!=0) throw ctrl.fn_d18Oprecip;}
+
 			}
 			catch (string e){
 							cout << "Dang!!: cannot open " << e << "  file " << endl;
@@ -124,6 +141,17 @@ Atmosphere::Atmosphere(Control &ctrl){
 				throw string("relative humidity");
 			if(InitiateClimateMap(ifWindSpeed, *_Wind_speed)!= _vSsortedGridTotalCellNumber)
 				throw string("windspeed");
+
+			// Tracking: build inputs maps
+			if(ctrl.sw_trck){
+			  if(ctrl.sw_dD)
+			    if(InitiateClimateMap(ifdDprecip, *_dDprecip)!= _vSsortedGridTotalCellNumber)
+			      throw string("2H signature");
+			  if(ctrl.sw_d18O)
+			    if(InitiateClimateMap(ifd18Oprecip, *_d18Oprecip)!= _vSsortedGridTotalCellNumber)
+			      throw string("18O signature");
+			}
+
 			}catch (string e){
 				cout << "Error: some sections of the domain was not filled with " << e << " data." << endl;
 				cout << "Please verify that all the climate zones in the map are presented in the binary climate data file " << endl;
@@ -149,6 +177,8 @@ Atmosphere::Atmosphere(Control &ctrl){
 		  delete _Precip;
 		  delete _Rel_humid;
 		  delete _Wind_speed;
+		  delete _dDprecip;
+		  delete _d18Oprecip;
 
 		  if (_isohyet)
 			  delete _isohyet;

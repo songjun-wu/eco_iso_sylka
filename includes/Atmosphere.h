@@ -62,6 +62,8 @@ class Atmosphere{
 		grid *_Precip; // Precipitation intensity ms-1
 		grid *_Rel_humid; //relative humidity of air [0-1]
 		grid *_Wind_speed; //windspeed in ms-1
+		grid *_dDprecip; //Isotopic signature of precipitation (dD per mil)
+		grid *_d18Oprecip; //Isotopic signature of precipitation (d18O per mil)
 
 		void CountNumZones();
 		vectCells SortGrid(int zoneId);
@@ -78,6 +80,8 @@ class Atmosphere{
 		ifstream ifPrecip;
 		ifstream ifRelHumid;
 		ifstream ifWindSpeed;
+		ifstream ifdDprecip;
+		ifstream ifd18Oprecip;
 
 
 
@@ -141,6 +145,16 @@ public:
     grid *getWindSpeed() const
     {
             return _Wind_speed;
+    }
+
+    // Isotope tracking
+    grid *getdDprecip() const
+    {
+        return _dDprecip;
+    }
+    grid *getd18Oprecip() const
+    {
+        return _d18Oprecip;
     }
 
     //setter

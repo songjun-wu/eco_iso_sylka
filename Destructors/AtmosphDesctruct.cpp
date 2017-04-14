@@ -54,6 +54,10 @@ Atmosphere::~Atmosphere(){
 		delete[] _zoneId;
 	if(_isohyet)
 		delete _isohyet;
+	if(_dDprecip)
+		delete _dDprecip;
+	if(_d18Oprecip)
+		delete _d18Oprecip;
 
 
 	if(ifLdown.is_open())
@@ -72,4 +76,8 @@ Atmosphere::~Atmosphere(){
 		ifRelHumid.close();
 	if(ifWindSpeed.is_open())
 		ifWindSpeed.close();
+	if(ifdDprecip.is_open())
+		ifdDprecip.close();
+	if(ifd18Oprecip.is_open())
+		ifd18Oprecip.close();
 }
