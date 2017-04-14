@@ -34,7 +34,7 @@
 
 //using namespace arma;
 
-void Basin::SoilWaterRedistribution(const double &F, double &theta1,
+void Basin::SoilWaterRedistribution(Control &ctrl, Tracking &trck, const double &F, double &theta1,
 		double &theta2, double &theta3, double &pond, double &leak,  double dt,
 		int r, int c) {
 

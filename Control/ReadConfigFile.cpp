@@ -68,6 +68,14 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	sw_veg_dyn = Config.read<bool>("Vegetation dynamics");
 	sw_reinfilt = Config.read<bool>("Reinfiltration");
 	sw_channel = Config.read<bool>("Channel");
+	sw_trck = Config.read<bool>("Tracking");
+
+	// If there is water tracking, another config file will be read
+	if(sw_trck){
+		Config.readInto(fn_tracking, "TrackingConfig");
+		ReadConfigTrck(fn_tracking);
+		cout <<"+ Water tracking is activated: "<< fn_tracking << " read ok... " << "\n";
+	}
 
 	//toggle_soil_water_profile = Config.read<int>("Soil_water_profile_opt");
 	toggle_ra = Config.read<int>("Aerodyn_resist_opt");

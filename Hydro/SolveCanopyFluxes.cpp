@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * SolveCanopyFluxes.cpp
@@ -30,7 +30,7 @@
 
 #include"Basin.h"
 
-int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl) {
+int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 	UINT4 r, c;
 	REAL8 dt = ctrl.dt;

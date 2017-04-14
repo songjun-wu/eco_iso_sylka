@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * SolveTimeStep.cpp
@@ -33,15 +33,15 @@
 
 int SolveTimeStep(){
 
-
-	//oBasin->UpdateSnowPack(*oAtmosphere, *oControl);
-	oBasin->SolveCanopyFluxes(*oAtmosphere, *oControl);
-	oBasin->SolveSurfaceFluxes(*oAtmosphere, *oControl);
+	oBasin->SolveCanopyFluxes(*oAtmosphere, *oControl, *oTracking);
+	oBasin->SolveSurfaceFluxes(*oAtmosphere, *oControl, *oTracking);
 	oBasin->CalculateGrowForest(*oAtmosphere, *oControl);
-	//oBasin->DailySurfaceRouting(*oAtmosphere, *oControl);
-	//if(oControl->toggle_soil_water_profile < 2)
-	oBasin->DailyGWRouting(*oAtmosphere, *oControl);
+	oBasin->DailyGWRouting(*oAtmosphere, *oControl, *oTracking);
 	oBasin->CalculateSatArea(*oAtmosphere, *oControl);
+
+	// Increment age by one time step duration
+  	if(oControl->sw_trck && oControl->sw_Age)
+	  oTracking->IncrementAge(*oBasin, *oControl);
 
 		return EXIT_SUCCESS;
 }

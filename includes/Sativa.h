@@ -31,19 +31,20 @@
 #ifndef SATIVA_H_
 #define SATIVA_H_
 
-#define VERSION "V 5.2.3ns_beta"
+#define VERSION "V 5.4.0ns_trck"
 
 #include "Basin.h"
 #include "Atmosphere.h"
 #include "Budget.h"
 #include "Report.h"
-
+#include "Tracking.h"
 
 extern Basin *oBasin;
 extern Atmosphere *oAtmosphere;
 extern Control *oControl;
 extern Budget *oBudget;
 extern Report *oReport;
+extern Tracking *oTracking;
 
 extern ofstream ofSummary;
 

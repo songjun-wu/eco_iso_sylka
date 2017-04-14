@@ -24,6 +24,7 @@ RM := rm -rf
 -include Constructors/subdir.mk
 -include Budgets/subdir.mk
 -include Atmosphere/subdir.mk
+-include Tracking/subdir.mk
 -include subdir.mk
 -include objects.mk
 

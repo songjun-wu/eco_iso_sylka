@@ -42,6 +42,8 @@ int CrunchWorld(){
 		delete oBudget;
 	if(oReport)
 		delete oReport;
+	if(oTracking)
+		delete oTracking;
 
 	if(ofSummary.is_open())
 		ofSummary.close();

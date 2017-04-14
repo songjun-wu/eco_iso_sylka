@@ -74,7 +74,7 @@ public:
 
 	int IncrementAge(Basin &bsn, Control &ctrl);
 
-	int ReadConfigTrck(Control &ctrl, string confilename = "configTrck.ini");
+	//int ReadConfigTrck(Control &ctrl, string confilename = "configTrck.ini");
 
 	//Getters
 	grid *getdDsnowpack() const {
@@ -126,12 +126,6 @@ public:
 	grid *getdDtranspi_ToC() const {
 		return _dDtranspi_ToC;
 	}
-	grid *getdDSrfout() const {
-		return _dDSrfout;
-	}
-	grid *getdDGWout() const {
-		return _dDGWout;
-	}
 
 	// 18O
 	grid *getd18Osnowpack() const {
@@ -180,12 +174,6 @@ public:
 	}
 	grid *getd18Otranspi_ToC() const {
 		return _d18Otranspi_ToC;
-	}
-	grid *getd18OSrfout() const {
-		return _d18OSrfout;
-	}
-	grid *getd18OGWout() const {
-		return _d18OGWout;
 	}
 
 	// Age
@@ -236,32 +224,7 @@ public:
 	grid *getAgetranspi_ToC() const {
 		return _Agetranspi_ToC;
 	}
-	grid *getAgeSrfout() const {
-		return _AgeSrfout;
-	}
-	grid *getAgeGWout() const {
-		return _AgeGWout;
-	}
 
-	//setters
-	void resetDfluxes()  {
-		_dDSnowtoSrf->reset();
-		_totDLattoSrf->reset();
-		_totDLattoGW->reset();
-		_totDLattoChn->reset();
-	}
-	void reset18Ofluxes()  {
-		_d18OSnowtoSrf->reset();
-		_tot18OLattoSrf->reset();
-		_tot18OLattoGW->reset();
-		_tot18OLattoChn->reset();
-	}
-	void resetAgefluxes()  {
-		_AgeSnowtoSrf->reset();
-		_totAgeLattoSrf->reset();
-		_totAgeLattoGW->reset();
-		_totAgeLattoChn->reset();
-	}
 	void setdDsnowpack(UINT4 row, UINT4 col, REAL8 value) {
 		_dDsnowpack->matrix[row][col] = value;
 		}

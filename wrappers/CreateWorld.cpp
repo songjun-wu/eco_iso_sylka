@@ -46,10 +46,12 @@ int CreateWorld(char* argv[]){
 		oBudget = new Budget(oBasin, oControl);
 		cout << "Budget created ok... " << "\n";
 
-
-
 		oReport = new Report(*oControl);
 		cout << "Report created ok... " << "\n";
+
+		oTracking = new Tracking(*oControl, *oBasin);
+		if(oControl->sw_trck)
+			cout << "Isotope module created ok... " << "\n";
 
 try{
 		ofSummary.open("BasinSummary.txt");

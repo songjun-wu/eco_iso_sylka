@@ -35,5 +35,6 @@ Atmosphere *oAtmosphere  = NULL;
 Control *oControl  = NULL;
 Budget *oBudget  = NULL;
 Report *oReport  = NULL;
+Tracking *oTracking  = NULL;
 
 ofstream ofSummary;

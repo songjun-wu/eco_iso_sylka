@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylain Kuppel
  *******************************************************************************/
 /*
  * SolveEnergyBalance.cpp
@@ -30,7 +30,7 @@
 
 #include"Basin.h"
 
-int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
+int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 	int r, c;
 	float dt = ctrl.dt; //time step
@@ -117,10 +117,10 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl) {
 					Tsold = 0;
 					Tdold = 0;
 
-					Infilt_GreenAmpt(infcap, accinf, theta, theta2, theta3, ponding, gw, dt, r, c); //updates soil moisture
+					Infilt_GreenAmpt(ctrl, trck, infcap, accinf, theta, theta2, theta3, ponding, gw, dt, r, c); //updates soil moisture
 
 
-			        SoilWaterRedistribution(accinf, theta, theta2, theta3, ponding, leak, dt, r, c);
+			        SoilWaterRedistribution(ctrl, trck, accinf, theta, theta2, theta3, ponding, leak, dt, r, c);
 
 					_ponding->matrix[r][c] = ponding;
 					_GravityWater->matrix[r][c] = gw;

@@ -30,7 +30,7 @@
 
 #include "Basin.h"
 
-void Basin::Infilt_GreenAmpt(double &f, double &F, double &theta,
+void Basin::Infilt_GreenAmpt(Control &ctrl, Tracking &trck, double &f, double &F, double &theta,
 		double &theta2, double &theta3, double &pond, double &percolat,
 		double dt, int r, int c) //time step
 		{

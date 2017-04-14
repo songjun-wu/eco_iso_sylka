@@ -10,7 +10,8 @@ CPP_SRCS += \
 ../Constructors/ForestConstruct.cpp \
 ../Constructors/GroveConstruct.cpp \
 ../Constructors/ReportConstruct.cpp \
-../Constructors/checkForestDatabase.cpp 
+../Constructors/checkForestDatabase.cpp \
+../Constructors/TrackingConstruct.cpp 
 
 OBJS += \
 ./Constructors/AtmosphConstruct.o \
@@ -19,7 +20,8 @@ OBJS += \
 ./Constructors/ForestConstruct.o \
 ./Constructors/GroveConstruct.o \
 ./Constructors/ReportConstruct.o \
-./Constructors/checkForestDatabase.o 
+./Constructors/checkForestDatabase.o \
+./Constructors/TrackingConstruct.o 
 
 CPP_DEPS += \
 ./Constructors/AtmosphConstruct.d \
@@ -28,7 +30,8 @@ CPP_DEPS += \
 ./Constructors/ForestConstruct.d \
 ./Constructors/GroveConstruct.d \
 ./Constructors/ReportConstruct.d \
-./Constructors/checkForestDatabase.d 
+./Constructors/checkForestDatabase.d \
+./Constructors/TrackingConstruct.d
 
 
 # Each subdirectory must supply rules for building sources it contributes

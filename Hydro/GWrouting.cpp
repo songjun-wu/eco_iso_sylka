@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * GWrouting.cpp
@@ -30,7 +30,7 @@
 
 #include"Basin.h"
 
-int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl) {
+int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 	int r, c, d;
 	REAL8 dtdx;
@@ -90,7 +90,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl) {
 
 		if (ctrl.sw_reinfilt
 				&& !(ctrl.sw_channel && _channelwidth->matrix[r][c] > 0)) //if reinfiltration switch is on is not a channel cell or the channel switch is off
-			Infilt_GreenAmpt(f, F, theta1, theta2, theta3, ponding, gw, dt, r,
+			Infilt_GreenAmpt(ctrl, trck, f, F, theta1, theta2, theta3, ponding, gw, dt, r,
 					c);
 
 		if (theta3 > fc) {

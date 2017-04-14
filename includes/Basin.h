@@ -45,6 +45,7 @@
 
 using namespace std;
 class Forest;
+class Tracking;
 class Basin {
 
 	/*Properties of the simulation*/
@@ -543,7 +544,7 @@ public:
 
 		// Addition tracking
 	// ---------------------------------
-	Tracking *fTracking;
+	//Tracking *fTracking;
 
 	grid *getChannelWidth() const {
 		return _channelwidth;
