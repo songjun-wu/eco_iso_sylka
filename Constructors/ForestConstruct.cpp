@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * ForestConstruct.cpp
@@ -49,6 +49,14 @@ Forest::Forest(Control &ctrl)
 
 		for (UINT4 i = 0; i < _Nsp; i++) //initializes the grids in each Grove object
 			_species[i].CreateGrids(_patches);
+			// Tracking: vegetation-dependent maps
+			if(ctrl.sw_trck && ctrl.sw_dD)
+				_species[i].CreateGridsdD(_patches);
+			if(ctrl.sw_trck && ctrl.sw_d18O)
+				_species[i].CreateGridsd18O(_patches);
+			if(ctrl.sw_trck && ctrl.sw_Age)
+				_species[i].CreateGridsAge(_patches);
+		}
 
 		SetSpeciesParameters(ctrl);
 

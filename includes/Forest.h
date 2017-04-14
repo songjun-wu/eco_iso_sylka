@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * Forest.h
@@ -253,6 +253,64 @@ public:
     }
     grid *getLeafWaterPotSpeciesMap(UINT4 n) const {
     	return _species[n]._LeafWatPot;
+    }
+
+    // -- Tracking
+    // getters
+    grid *getdDcanopy(UINT4 n) const {
+      return _species[n]._dDcanopy;
+    }
+    grid *getd18Ocanopy(UINT4 n) const {
+          return _species[n]._d18Ocanopy;
+        }
+    grid *getAgecanopy(UINT4 n) const {
+          return _species[n]._Agecanopy;
+        }
+    grid *getdDevapI(UINT4 n) const {
+      return _species[n]._dDevapI;
+    }
+    grid *getd18OevapI(UINT4 n) const {
+          return _species[n]._d18OevapI;
+        }
+    grid *getAgeevapI(UINT4 n) const {
+          return _species[n]._AgeevapI;
+        }
+    grid *getdDtranspi(UINT4 n) const {
+      return _species[n]._dDtranspi;
+    }
+    grid *getd18Otranspi(UINT4 n) const {
+          return _species[n]._d18Otranspi;
+        }
+    grid *getAgetranspi(UINT4 n) const {
+          return _species[n]._Agetranspi;
+        }
+    // setters
+    void setdDcanopy(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._dDcanopy->matrix[row][col] = value;
+    }
+    void setd18Ocanopy(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._d18Ocanopy->matrix[row][col] = value;
+    }
+    void setAgecanopy(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._Agecanopy->matrix[row][col] = value;
+    }
+    void setdDevapI(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._dDevapI->matrix[row][col] = value;
+    }
+    void setd18OevapI(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._d18OevapI->matrix[row][col] = value;
+    }
+    void setAgeevapI(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._AgeevapI->matrix[row][col] = value;
+    }
+    void setdDtranspi(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._dDtranspi->matrix[row][col] = value;
+    }
+    void setd18Otranspi(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._d18Otranspi->matrix[row][col] = value;
+    }
+    void setAgetranspi(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._Agetranspi->matrix[row][col] = value;
     }
 
   /*  //setters

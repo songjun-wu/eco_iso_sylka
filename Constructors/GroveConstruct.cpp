@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * GroveConstruct.cpp
@@ -58,5 +58,15 @@ Grove::Grove(){
 	_Transpiration = NULL;
 	_LeafWatPot = NULL;
 
+	// Tracking
+	_dDcanopy = NULL;
+	_d18Ocanopy = NULL;
+	_Agecanopy = NULL;
+	_dDtranspi = NULL;
+	_d18Otranspi = NULL;
+	_Agetranspi = NULL;
+	_dDevapI = NULL;
+	_d18OevapI = NULL;
+	_AgeevapI = NULL;
 
 }

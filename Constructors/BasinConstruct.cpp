@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * BasinConstruct.cpp
@@ -105,10 +105,6 @@ Basin::Basin(Control &ctrl)
 		_Temp_s_old = new grid(ctrl.path_BasinFolder + ctrl.fn_soiltemp, ctrl.MapType);  //initial soil temperature C
 		_Disch_old =  new grid(ctrl.path_BasinFolder + ctrl.fn_streamflow, ctrl.MapType);  //initial soil temperature C
 
-
-		//Partial check of maps mainly to make sure no nodata is written within the valid domain
-		CheckMaps(ctrl);
-
 		/*state variables initialized with the base map*/
 		_catcharea = new grid(*_DEM);
 		_fieldcap = new grid(*_DEM);
@@ -153,6 +149,9 @@ Basin::Basin(Control &ctrl)
 			_FluxUptoSnow = new grid(*_DEM); // canopy/sky to snowpack
 			_FluxSrftoL1 = new grid(*_DEM); // surface to first layer
 		}
+
+		//Partial check of maps mainly to make sure no no data is written within the valid domain
+		CheckMaps(ctrl);
 
 
 	}catch (std::bad_alloc &)

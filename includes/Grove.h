@@ -106,12 +106,26 @@ struct Grove {
 	grid *_Transpiration; //transpiration component ms-1
 	grid *_LeafWatPot; // leaf water potential (positive m of head)
 
+	// Tracking
+	grid *_dDcanopy; // dD of interception water
+	grid *_d18Ocanopy; // d18O of interception water
+	grid *_Agecanopy; // Age of interception water
 
+	grid *_dDtranspi; // dD of transpirated water
+	grid *_d18Otranspi; // d18O of transpirated water
+	grid *_Agetranspi; // Age of transpirated water
+
+	grid *_dDevapI; // dD of evaporated interception
+	grid *_d18OevapI; // d18O of evaporated interception
+	grid *_AgeevapI; // Age of evaporated interception
 
 	Grove();
 	~Grove();
 
 	int CreateGrids(grid *base);
+	int CreateGridsdD(grid *base);
+	int CreateGridsd18O(grid *base);
+	int CreateGridsAge(grid *base);
 
 };
 

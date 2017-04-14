@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * GroveDestruct.cpp
@@ -82,6 +82,28 @@ Grove::~Grove(){
 		delete _Einterception;
 	if(_LeafWatPot)
 		delete _LeafWatPot;
+
+	// Tracking
+	if(_dDcanopy)
+		delete _dDcanopy;
+	if(_d18Ocanopy)
+		delete _d18Ocanopy;
+	if(_Agecanopy)
+		delete _Agecanopy;
+
+	if(_dDtranspi)
+		delete _dDtranspi;
+	if(_d18Otranspi)
+		delete _d18Otranspi;
+	if(_Agetranspi)
+		delete _Agetranspi;
+
+	if(_dDevapI)
+		delete _dDevapI;
+	if(_d18OevapI)
+		delete _d18OevapI;
+	if(_AgeevapI)
+		delete _AgeevapI;
 
 
 }
