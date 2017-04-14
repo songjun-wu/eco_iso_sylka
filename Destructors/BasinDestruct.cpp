@@ -166,4 +166,10 @@ Basin::~Basin(){
 
 	if(fForest)
 		delete fForest;
+
+	// Tracking
+	if(_FluxUptoSnow)
+		delete _FluxUptoSnow;
+	if(_FluxSrftoL1)
+		delete _FluxSrftoL1;
 }

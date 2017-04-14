@@ -145,6 +145,15 @@ Basin::Basin(Control &ctrl)
 		_EvaporationI_all = new grid(*_DEM); //actual evaporation from summed interception in m s-1
 		_Transpiration_all = new grid(*_DEM); //transpiration from summed in m s-1
 
+		// Tracking
+		_FluxUptoSnow = NULL;
+		_FluxSrftoL1 = NULL;
+		
+		if(ctrl.sw_trck){
+			_FluxUptoSnow = new grid(*_DEM); // canopy/sky to snowpack
+			_FluxSrftoL1 = new grid(*_DEM); // surface to first layer
+		}
+
 
 	}catch (std::bad_alloc &)
 	{ cerr << " Cleaning basin objects..." << "\n";
@@ -282,6 +291,12 @@ Basin::Basin(Control &ctrl)
 
 	if(fForest)
 		delete fForest;
+
+	// Tracking
+	if(_FluxUptoSnow)
+		delete _FluxUptoSnow;
+	if(_FluxSrftoL1)
+		delete _FluxSrftoL1;
 
 	throw;
 }

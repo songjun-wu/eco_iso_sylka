@@ -145,32 +145,8 @@ class Basin {
 	// ---------------------------------------------------------------------------------------
 	// A few useful (intregrated) fluxes for tracking isotopes and age
 	// "Vertical" (intra-cell) fluxes
-	grid *_FluxCnptoEvap; // canopy evaporation
 	grid *_FluxUptoSnow; // canopy/sky to snowpack
-	grid *_FluxSnowtoSrf; // snowmelt to surface
-	grid *_FluxUptoSrf; // canopy/sky to surface
-	grid *_FluxSrftoL1; // surface to first layer
-	grid *_FluxSrftoChn; // surface to channel (if channel cell)
-	grid *_FluxL1toSrf; // first layer to surface (return flow)
-	grid *_FluxL1toEvap; // evaporation from first layer
-	grid *_FluxL1toTransp; // transpiration drawn from first layer
-	grid *_FluxL1toL2; // percolation L1 to L2
-	grid *_FluxL2toL1; // capillary + return flow, L2 to L1
-	grid *_FluxL2toTransp; // transpiration drawn from 2nd layer
-	grid *_FluxL2toL3; // percolation L2 to L3
-	grid *_FluxL3toL2; // capillary + return flow, L2 to L3
-	grid *_FluxL3toTransp; // transpiration drawn from 3rd layer
-	grid *_FluxL3toGW; // recharge L3 to groundwater
-	grid *_FluxL3toLeak; // L3 to bedrock
-	grid *_FluxGWtoL3; // discharge, groundwater to L3
-	grid *_FluxGWtoChn; // seepage from groundwater to channel
-	// Lateral input/outputs
-	grid *_FluxSrftoLat; // overland run-off
-	grid *_FluxLattoSrf; // overland run-on
-	grid *_FluxGWtoLat; // subsurface outflow
-	grid *_FluxLattoGW; // subsurface inflow
-	grid *_FluxChntoLat; // channel outflow
-	grid *_FluxLattoChn; // channel inflow
+	grid *_FluxSrftoL1; // infiltration from first layer
 	// --------------------------------------------------------------------------------------
 
 	vectCells SortGridLDD();
@@ -542,87 +518,17 @@ public:
 		return _GrndWaterOld;
 	}
 
-		// Addition tracking
+	// Addition tracking
 	// ---------------------------------
-	//Tracking *fTracking;
 
 	grid *getChannelWidth() const {
 		return _channelwidth;
 	}
-	grid *getFluxCnptoEvap() const {
-		return _FluxCnptoEvap;
-	}
 	grid *getFluxUptoSnow() const {
 		return _FluxUptoSnow;
 	}
-	grid *getFluxSnowtoSrf() const {
-		return _FluxSnowtoSrf;
-	}
-	grid *getFluxUptoSrf() const {
-		return _FluxUptoSrf;
-	}
-	//	grid *getFluxSrftoChn() const {
-	//	  return _FluxSrftoChn;
-	//	}
 	grid *getFluxSrftoL1() const {
 		return _FluxSrftoL1;
-	}
-	grid *getFluxL1toSrf() const {
-		return _FluxL1toSrf;
-	}
-	grid *getFluxL1toL2() const {
-		return _FluxL1toL2;
-	}
-	grid *getFluxL2toL1() const {
-		return _FluxL2toL1;
-	}
-	grid *getFluxL2toL3() const {
-		return _FluxL2toL3;
-	}
-	grid *getFluxL3toL2() const {
-		return _FluxL3toL2;
-	}
-	grid *getFluxL3toLeak() const {
-		return _FluxL3toLeak;
-	}
-	grid *getFluxL3toGW() const {
-		return _FluxL3toGW;
-	}
-	grid *getFluxGWtoL3() const {
-		return _FluxGWtoL3;
-	}
-	grid *getFluxGWtoChn() const {
-		return _FluxGWtoChn;
-	}
-	grid *getFluxL1toEvap() const {
-		return _FluxL1toEvap;
-	}
-	grid *getFluxL1toTransp() const {
-		return _FluxL1toTransp;
-	}
-	grid *getFluxL2toTransp() const {
-		return _FluxL2toTransp;
-	}
-	grid *getFluxL3toTransp() const {
-		return _FluxL3toTransp;
-	}
-	grid *getFluxSrftoLat() const {
-		return _FluxSrftoLat;
-	}
-	grid *getFluxLattoSrf() const {
-		return _FluxLattoSrf;
-	}
-	grid *getFluxGWtoLat() const {
-		return _FluxGWtoLat;
-	}
-	grid *getFluxLattoGW() const {
-		return _FluxLattoGW;
-	}
-	grid *getFluxChntoLat() const {
-		return _FluxChntoLat;
-	}
-	grid *getFluxLattoChn() const {
-		return _FluxLattoChn;
 	}
 
 	// -- Getters of fTracking getters
