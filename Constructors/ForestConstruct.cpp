@@ -47,7 +47,7 @@ Forest::Forest(Control &ctrl)
 
 		_species = new Grove[_Nsp]; //creates Grove array with default constructor
 
-		for (UINT4 i = 0; i < _Nsp; i++) //initializes the grids in each Grove object
+		for (UINT4 i = 0; i < _Nsp; i++){ //initializes the grids in each Grove object
 			_species[i].CreateGrids(_patches);
 			// Tracking: vegetation-dependent maps
 			if(ctrl.sw_trck && ctrl.sw_dD)
