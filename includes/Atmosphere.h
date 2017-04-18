@@ -92,7 +92,7 @@ public:
     ~Atmosphere();
 
 
-    int AdvanceClimateMaps(); //external interface that updates all climate maps by calling UpdateClimateMap
+    int AdvanceClimateMaps(Control &ctrl); //external interface that updates all climate maps by calling UpdateClimateMap
 
 
 

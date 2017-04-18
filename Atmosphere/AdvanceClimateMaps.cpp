@@ -51,6 +51,14 @@ int Atmosphere::AdvanceClimateMaps(){
 	if(UpdateClimateMap(ifWindSpeed, *_Wind_speed)!=_vSsortedGridTotalCellNumber)
 		throw;
 
+	// Tracking
+	if(ctrl.sw_trck && ctrl.sw_dD){
+		if(UpdateClimateMap(ifdDprecip, *_dDprecip)!=_vSsortedGridTotalCellNumber)
+			throw;}
+	if(ctrl.sw_trck && ctrl.sw_d18O){
+		if(UpdateClimateMap(ifd18Oprecip, *_d18Oprecip)!=_vSsortedGridTotalCellNumber)
+			throw;}
+
 	return EXIT_SUCCESS;
 
 }
