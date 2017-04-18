@@ -30,7 +30,7 @@
 
 #include "Atmosphere.h"
 
-int Atmosphere::AdvanceClimateMaps(){
+int Atmosphere::AdvanceClimateMaps(Control &ctrl){
 
 
 	if(UpdateClimateMap(ifLdown, *_Ldown)!=_vSsortedGridTotalCellNumber)
