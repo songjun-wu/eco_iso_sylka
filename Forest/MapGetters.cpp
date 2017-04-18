@@ -105,3 +105,36 @@ grid *Basin::getEinterception(UINT4 n) const {
 grid *Basin::getLeafWaterPotential(UINT4 n) const {
 	return fForest->getLeafWaterPotSpeciesMap(n);
 }
+
+// -- Tracking: calls tracking data contained in forest class
+// dD
+grid *Basin::getdDcanopy(UINT4 n) const {
+	return fForest->getdDcanopy(n);
+}
+grid *Basin::getdDevapI(UINT4 n) const {
+	return fForest->getdDevapI(n);
+}
+grid *Basin::getdDtranspi(UINT4 n) const {
+	return fForest->getdDtranspi(n);
+}
+// d18O
+grid *Basin::getd18Ocanopy(UINT4 n) const {
+	return fForest->getd18Ocanopy(n);
+}
+grid *Basin::getd18OevapI(UINT4 n) const {
+	return fForest->getd18OevapI(n);
+}
+grid *Basin::getd18Otranspi(UINT4 n) const {
+	return fForest->getd18Otranspi(n);
+}
+// Age
+grid *Basin::getAgecanopy(UINT4 n) const {
+	return fForest->getAgecanopy(n);
+}
+grid *Basin::getAgeevapI(UINT4 n) const {
+	return fForest->getAgeevapI(n);
+}
+grid *Basin::getAgetranspi(UINT4 n) const {
+	return fForest->getAgetranspi(n);
+}
+

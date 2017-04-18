@@ -65,7 +65,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	if(stat(path_ResultsFolder.c_str(), &info)!=0)
 		throw std::runtime_error(string("Folder not found: ") + path_ResultsFolder);
 
-	sw_veg_dyn = Config.read<bool>("Vegetation dynamics");
+	sw_veg_dyn = Config.read<bool>("Vegetation_dynamics");
 	sw_reinfilt = Config.read<bool>("Reinfiltration");
 	sw_channel = Config.read<bool>("Channel");
 	sw_trck = Config.read<bool>("Tracking");

@@ -144,10 +144,24 @@ Basin::Basin(Control &ctrl)
 		// Tracking
 		_FluxUptoSnow = NULL;
 		_FluxSrftoL1 = NULL;
+		_FluxL1toSrf = NULL;
+		_FluxL1toL2 = NULL;
+		_FluxL2toL1 = NULL;
+		_FluxL2toL3 = NULL;
+		_FluxL3toL2 = NULL;
+		_FluxL3toGW = NULL;
+		_FluxGWtoL3 = NULL;
 		
 		if(ctrl.sw_trck){
 			_FluxUptoSnow = new grid(*_DEM); // canopy/sky to snowpack
 			_FluxSrftoL1 = new grid(*_DEM); // surface to first layer
+			_FluxL1toSrf = new grid(*_DEM); // first layer to surface (return flow)
+			_FluxL1toL2 = new grid(*_DEM); // percolation L1 to L2
+			_FluxL2toL1 = new grid(*_DEM); // capillary + return flow, L2 to L1
+			_FluxL2toL3 = new grid(*_DEM); // percolation L2 to L3
+			_FluxL3toL2 = new grid(*_DEM); // capillary + return flow, L2 to L3
+			_FluxL3toGW = new grid(*_DEM); // recharge L3 to groundwater
+			_FluxGWtoL3 = new grid(*_DEM); // discharge, groundwater to L3
 		}
 
 		//Partial check of maps mainly to make sure no no data is written within the valid domain
@@ -296,6 +310,20 @@ Basin::Basin(Control &ctrl)
 		delete _FluxUptoSnow;
 	if(_FluxSrftoL1)
 		delete _FluxSrftoL1;
+	if(_FluxL1toL2)
+		delete _FluxL1toL2;
+	if(_FluxL2toL3)
+		delete _FluxL2toL3;
+	if(_FluxL3toGW)
+		delete _FluxL3toGW;
+	if(_FluxL1toSrf)
+		delete _FluxL1toSrf;
+	if(_FluxL2toL1)
+		delete _FluxL2toL1;
+	if(_FluxL3toL2)
+		delete _FluxL3toL2;
+	if(_FluxGWtoL3)
+		delete _FluxGWtoL3;
 
 	throw;
 }

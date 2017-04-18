@@ -92,15 +92,27 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	UINT4 s;
 	int  thre=0;
 
-	// Set Rn to zero
+	// Tracking: contribution of each layer to transpiration
+	REAL8 pTrp1, pTrp2, pTrp3;
+	REAL8 dDtranspi_f, d18Otranspi_f, Agetranspi_f;
+	REAL8 dDevapI_f, d18OevapI_f, AgeevapI_f;
+	REAL8 dDnew, d18Onew, Agenew;
+
+	// Initialize to zero
 	_RnToC->reset();
+	if(ctrl.sw_trck){
+		//For tracking
+		_FluxUptoSnow->reset(); // canopy/sky to snowpack
+	}
 
 #pragma omp parallel default(none)\
 		private( s, r,c, p,  treeheight, wind, za, z0o, zdo, \
-							Tp, maxTp, minTp, snow, rain, sno_rain_thres, evap, \
-							transp, netR, evap_f, transp_f, D, DelCanStor, theta, theta2, theta3, theta_available, ra, \
-							poros, psi_ae, Keff, bclambda, rootdepth, froot1, froot2, froot3, d1, d2, d3, thetar, fc) \
-					shared(nsp, atm, ctrl, dt, thre)
+				Tp, maxTp, minTp, snow, rain, sno_rain_thres, evap, \
+				transp, netR, evap_f, transp_f, D, DelCanStor, theta, theta2, theta3, theta_available, ra, \
+				poros, psi_ae, Keff, bclambda, rootdepth, froot1, froot2, froot3, d1, d2, d3, thetar, fc, \
+				pTrp1, pTrp2, pTrp3, dDtranspi_f, d18Otranspi_f, Agetranspi_f,\
+				dDevapI_f, d18OevapI_f, AgeevapI_f, dDnew, d18Onew, Agenew) \
+		shared(nsp, atm, ctrl, trck, dt, thre)
 {
 	thre = omp_get_num_threads();
     #pragma omp single
@@ -126,6 +138,13 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 		psi_ae = _psi_ae->matrix[r][c];
 		bclambda = _BClambda->matrix[r][c];
 
+		// Tracking: initialize summed values
+		dDtranspi_f = 0;
+		d18Otranspi_f = 0;
+		Agetranspi_f = 0;
+		dDevapI_f = 0;
+		d18OevapI_f = 0;
+		AgeevapI_f = 0;
 
 		d1 = _depth_layer1->matrix[r][c];
 		d2 = _depth_layer2->matrix[r][c];
@@ -194,11 +213,42 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 				transp_f += transp * p;
 				evap_f += evap * p; //evaporation at t=t+1
+					
+				pTrp1 = ((theta-thetar)*froot1) / theta_available;
+				pTrp2 = ((theta2-thetar)*froot2) / theta_available;
+				pTrp3 = ((theta3-thetar)*froot3) / theta_available;
 
-				theta  -= transp * p * dt * ((theta-thetar)*froot1) / (d1*theta_available); //soil moisture at t=t+1
-				theta2 -= transp * p * dt * ((theta2-thetar)*froot2) / (d2*theta_available); //soil moisture at t=t+1
-				theta3 -= transp * p * dt * ((theta3-thetar)*froot3) / (d3*theta_available); //soil moisture at t=t+1
+				theta  -= transp * p * dt * pTrp1 /d1; //soil moisture at t=t+1
+				theta2 -= transp * p * dt * pTrp2 /d2; //soil moisture at t=t+1
+				theta3 -= transp * p * dt * pTrp3 /d3; //soil moisture at t=t+1
 
+				// Transpiration tracking: assumes total mixing of the water pulled from each soil layer
+				if(ctrl.sw_trck){
+
+					if(ctrl.sw_dD){
+						fForest->setdDtranspi(s, r, c,
+							pTrp1*trck.getdDsoil1()->matrix[r][c]+
+							pTrp2*trck.getdDsoil2()->matrix[r][c]+
+							pTrp3*trck.getdDsoil3()->matrix[r][c]);
+						dDtranspi_f += fForest->getdDtranspi(s)->matrix[r][c] * p ;
+					}
+					if(ctrl.sw_d18O){
+						fForest->setd18Otranspi(s, r, c,
+							pTrp1*trck.getd18Osoil1()->matrix[r][c]+
+							pTrp2*trck.getd18Osoil2()->matrix[r][c]+
+							pTrp3*trck.getd18Osoil3()->matrix[r][c]);
+						d18Otranspi_f += fForest->getd18Otranspi(s)->matrix[r][c] * p ;
+					}
+					if(ctrl.sw_Age){
+						fForest->setAgetranspi(s, r, c,
+							pTrp1*trck.getAgesoil1()->matrix[r][c]+
+							pTrp2*trck.getAgesoil2()->matrix[r][c]+
+							pTrp3*trck.getAgesoil3()->matrix[r][c]);
+						Agetranspi_f += fForest->getAgetranspi(s)->matrix[r][c] * p ;
+					}
+				}
+
+				// Update soil moisture objects after tracking
 				_soilmoist1->matrix[r][c] = theta;
 				_soilmoist2->matrix[r][c] = theta2;
 				_soilmoist3->matrix[r][c] = theta3;
@@ -207,24 +257,50 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 			}
 
 
-					Tp = atm.getTemperature()->matrix[r][c];
-					maxTp = atm.getMaxTemperature()->matrix[r][c];
-					minTp = atm.getMinTemperature()->matrix[r][c];
-					sno_rain_thres = atm.getRainSnowTempThreshold();
+			Tp = atm.getTemperature()->matrix[r][c];
+			maxTp = atm.getMaxTemperature()->matrix[r][c];
+			minTp = atm.getMinTemperature()->matrix[r][c];
+			sno_rain_thres = atm.getRainSnowTempThreshold();
 
-					if(maxTp <= sno_rain_thres){
-						snow = D;
-						rain = 0;
-					}
-					else if(minTp > sno_rain_thres){
-						rain = D;
-						snow = 0;
-					}
-					else{
-					snow = D * max<REAL8>(0.0, (sno_rain_thres - minTp) /(maxTp - minTp));
-					rain = D - snow;
-					}
+			if(maxTp <= sno_rain_thres){
+				snow = D;
+				rain = 0;
+			}
+			else if(minTp > sno_rain_thres){
+				rain = D;
+				snow = 0;
+			}
+			else{
+				snow = D * max<REAL8>(0.0, (sno_rain_thres - minTp) /(maxTp - minTp));
+				rain = D - snow;
+			}
 
+			// Water tracking
+			if(ctrl.sw_trck){
+
+				// Used later in SolveSurfaceFluxes
+				_FluxUptoSnow->matrix[r][c] += snow * p * dt;
+
+				// Mix in surface pool from rain throughfall
+				if(ctrl.sw_dD)
+					trck.setdDsurface(r, c,
+						trck.InputMix(_ponding->matrix[r][c],
+							trck.getdDsurface()->matrix[r][c],
+							rain*p*dt,atm.getdDprecip()->matrix[r][c]));
+				if(ctrl.sw_d18O)
+					trck.setd18Osurface(r, c,
+						trck.InputMix(_ponding->matrix[r][c],
+							trck.getd18Osurface()->matrix[r][c],
+							rain*p*dt,atm.getd18Oprecip()->matrix[r][c]));
+				
+				// This assumes that throughfall has age 0, i.e., there is no spill-over 
+				// from previously stored intercepted water
+				if(ctrl.sw_Age)
+					trck.setAgesurface(r, c,
+						trck.InputMix(_ponding->matrix[r][c],
+							trck.getAgesurface()->matrix[r][c],
+							rain*p*dt,0.0));
+			}
 
 			_snow->matrix[r][c] +=  snow * dt * p;
 			_ponding->matrix[r][c] += rain * dt * p;
@@ -235,10 +311,17 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 		// Vegetation-summed values
 		_Transpiration_all->matrix[r][c]  = transp_f ;
 		_EvaporationI_all->matrix[r][c] = evap_f ;
+		// applies for tracking as well
+		if(ctrl.sw_trck && ctrl.sw_dD)
+			trck.setdDtranspi_ToC(r ,c, dDtranspi_f);
+		if(ctrl.sw_trck && ctrl.sw_d18O)
+			trck.setd18Otranspi_ToC(r ,c, d18Otranspi_f);
+		if(ctrl.sw_trck && ctrl.sw_Age)
+			trck.setAgetranspi_ToC(r ,c, Agetranspi_f);
 
 	}//end for
 }//end omp parallel
 
 
-	return EXIT_SUCCESS;
+return EXIT_SUCCESS;
 }

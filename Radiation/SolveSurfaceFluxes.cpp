@@ -71,7 +71,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	REAL8 wind; //wind speed
 	REAL8 treeheight;
 
-	REAL8 nr, le, sens, grndh, snowh, mltht;
+	REAL8 nr, le, sens, grndh, snowh, mltht, dh_snow;
 
 	UINT4 nsp;
 	REAL8 p;//fraction of species s
@@ -86,7 +86,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 #pragma omp parallel default(shared) private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can,\
 		evap, infcap, accinf, theta, theta2, theta3, ponding,leak,  gw, za, z0u, zdu, z0o, zdo, wind, treeheight,\
-		nr, le, sens, grndh, snowh, mltht, p) //shared(ctrl, atm, nsp, dt)
+		nr, le, sens, grndh, snowh, mltht, dh_snow, p) //shared(ctrl, atm, nsp, dt)
 {
 //thre = omp_get_num_threads();
 //#pragma omp single
@@ -116,15 +116,24 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 					Ts = _Temp_s->matrix[r][c];
 					Tsold = 0;
 					Tdold = 0;
+					dh_snow = 0;
 
 					Infilt_GreenAmpt(ctrl, trck, infcap, accinf, theta, theta2, theta3, ponding, gw, dt, r, c); //updates soil moisture
 
+					// Flux tracking: back up new pool water content for use together with temporary variables in SoilWaterRedistribution
+					if(ctrl.sw_trck){
+						_soilmoist1->matrix[r][c] = theta;
+						_soilmoist2->matrix[r][c] = theta2;
+						_soilmoist3->matrix[r][c] = theta3;
+						_ponding->matrix[r][c] = ponding;
+						_GrndWater->matrix[r][c] = gw;
+					}
 
-			        SoilWaterRedistribution(ctrl, trck, accinf, theta, theta2, theta3, ponding, leak, dt, r, c);
+			        SoilWaterRedistribution(ctrl, trck, accinf, theta, theta2, theta3, ponding, gw, leak, dt, r, c);
 
 					_ponding->matrix[r][c] = ponding;
 					_GravityWater->matrix[r][c] = gw;
-
+					_GrndWater->matrix[r][c] = gw;
 					_BedrockLeakageFlux->matrix[r][c] = leak;
 
 
@@ -191,6 +200,19 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 				_Evaporation->matrix[r][c] += evap; //evaporation at t=t+1
 				_EvaporationS->matrix[r][c] += evap; //soil evaporation at t=t+1
 
+				// Soil evaporation tracking
+				if(ctrl.sw_trck){					
+					// Isotopes: for now no fractionation taken into account -> signature of first layer
+					if(ctrl.sw_dD)
+						trck.setdDevapS(r, c, trck.getdDsoil1()->matrix[r][c]);
+					if(ctrl.sw_d18O)
+						trck.setd18OevapS(r, c, trck.getd18Osoil1()->matrix[r][c]);
+					// Water age: as if uniformly evaporated from first layer
+					// TODO: recent (rain) water evaporated first?
+					if(ctrl.sw_Age)
+						trck.setAgeevapS(r, c, trck.getAgesoil1()->matrix[r][c]);
+				}
+
 		}//for
 
 
@@ -204,9 +226,83 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 		_Temp_d->matrix[r][c] = Tdold;
 
-		_ponding->matrix[r][c] += SnowOutput(atm, ctrl, mltht, r, c);
+		dh_snow = SnowOutput(atm, ctrl, mltht, r, c);
 
+		// Flux tracking: 
+		// - in snowpack (snowfall in + snowmelt out), considering that snowmelt "flushes" the most recent snowfall first, without mixing
+		// - in the surface pool, mixing of snowmelt
+		if(ctrl.sw_trck){
+			// Case where there is more snowfall than snowmelt: snowpack mixed, snowmelt has snowfall signature
+			if(_FluxUptoSnow->matrix[r][c] > dh_snow){
+				if(ctrl.sw_dD){
+					// Snowpack: last (same timestep) in, first melt
+					trck.setdDsnowpack(r, c,
+						trck.InputMix(_snow->matrix[r][c], trck.getdDsnowpack()->matrix[r][c],
+							_FluxUptoSnow->matrix[r][c] - dh_snow, atm.getdDprecip()->matrix[r][c]));
+					// Surface: snowfall (=rain) signature
+					trck.setdDsurface(r, c,
+						trck.InputMix(_ponding->matrix[r][c], trck.getdDsurface()->matrix[r][c],
+							dh_snow, atm.getdDprecip()->matrix[r][c]));
+				}
+				if(ctrl.sw_d18O){
+					// Snowpack: last (same timestep) in, first melt
+					trck.setd18Osnowpack(r, c,
+						trck.InputMix(_snow->matrix[r][c], trck.getd18Osnowpack()->matrix[r][c],
+							_FluxUptoSnow->matrix[r][c] - dh_snow, atm.getd18Oprecip()->matrix[r][c]));
+					// Surface: snowfall (=rain) signature
+					trck.setd18Osurface(r, c,
+						trck.InputMix(_ponding->matrix[r][c], trck.getd18Osurface()->matrix[r][c],
+							dh_snow, atm.getd18Oprecip()->matrix[r][c]));
+				}
+				if(ctrl.sw_Age){
+					// Snowpack: last (same timestep) in, first melt
+					trck.setAgesnowpack(r, c,
+						trck.InputMix(_snow->matrix[r][c], trck.getAgesnowpack()->matrix[r][c],
+							_FluxUptoSnow->matrix[r][c] - dh_snow,	0.0));
+					// Surface: snowfall (=rain) signature
+					trck.setAgesurface(r, c,
+						trck.InputMix(_ponding->matrix[r][c], trck.getAgesurface()->matrix[r][c],
+							dh_snow, 0.0));
+				}
+			} else {
+			// Case where there is more snowmelt than snowfall: no mixing in snowpack, snowmelt has mixed signature
+				if(ctrl.sw_dD){
+					// Snowpack: no change (all recent snow has melted)
+					// Surface: weighted snowfall (=rain) signature and previous snowpack
+					trck.setdDsurface(r, c,
+						trck.InputMix(_ponding->matrix[r][c], trck.getdDsurface()->matrix[r][c],
+							dh_snow,
+							// Ugly and "convoluted", but no waste of temp variables
+							trck.InputMix(dh_snow - _FluxUptoSnow->matrix[r][c], trck.getdDsnowpack()->matrix[r][c],
+								_FluxUptoSnow->matrix[r][c], atm.getdDprecip()->matrix[r][c])));
+				}
+				if(ctrl.sw_d18O){
+					// Snowpack: no change (all recent snow has melted)
+					// Surface: weighted snowfall (=rain) signature and previous snowpack
+					trck.setd18Osurface(r, c,
+						trck.InputMix(_ponding->matrix[r][c], trck.getd18Osurface()->matrix[r][c],
+							dh_snow,
+							// Ugly and "convoluted", but no waste of temp variables
+							trck.InputMix(dh_snow - _FluxUptoSnow->matrix[r][c], trck.getd18Osnowpack()->matrix[r][c],
+								_FluxUptoSnow->matrix[r][c], atm.getd18Oprecip()->matrix[r][c])));
+				}
+				if(ctrl.sw_Age){
+					// Snowpack: no change (all snow in melted)
+					// Surface: weighted snowfall (=rain) signature and previous snowpack
+					trck.setAgesurface(r, c,
+						trck.InputMix(_ponding->matrix[r][c], trck.getAgesurface()->matrix[r][c],
+							dh_snow,
+							// Ugly and "convoluted", but no waste of temp variables
+							trck.InputMix(dh_snow - _FluxUptoSnow->matrix[r][c], trck.getAgesnowpack()->matrix[r][c],
+								_FluxUptoSnow->matrix[r][c], 0.0)));
+				}
+			}
 
+		}
+		// Update surface pool
+		_ponding->matrix[r][c] += dh_snow;
+		// Back up before routing
+		_GrndWaterOld->matrix[r][c] = _GrndWater->matrix[r][c];
 
 	}//for
 }//end omp parallel block

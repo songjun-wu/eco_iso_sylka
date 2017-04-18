@@ -144,9 +144,17 @@ class Basin {
 	// Addition tracking
 	// ---------------------------------------------------------------------------------------
 	// A few useful (intregrated) fluxes for tracking isotopes and age
-	// "Vertical" (intra-cell) fluxes
+	// Vertical (intra-cell) fluxes downwards
 	grid *_FluxUptoSnow; // canopy/sky to snowpack
 	grid *_FluxSrftoL1; // infiltration from first layer
+	grid *_FluxL1toL2; // percolation L1 to L2
+	grid *_FluxL2toL3; // percolation L2 to L3
+	grid *_FluxL3toGW; // recharge L3 to groundwater
+	// Vertical (intra-cell) fluxes upwards
+	grid *_FluxL1toSrf; // first layer to surface (return flow)
+	grid *_FluxL2toL1; // capillary + return flow, L2 to L1
+	grid *_FluxL3toL2; // capillary + return flow, L2 to L3
+	grid *_FluxGWtoL3; // discharge, groundwater to L3
 	// --------------------------------------------------------------------------------------
 
 	vectCells SortGridLDD();
@@ -183,7 +191,7 @@ class Basin {
 
 	void Infilt_GreenAmpt(Control &ctrl, Tracking &trck, double &f, double &F, double &theta, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c);
 	void SoilWaterRedistribution(Control &ctrl, Tracking &trck, const double &F, double &theta1,
-			double &theta2, double &theta3, double &pond, double &leak, double dt,
+			double &theta2, double &theta3, double &pond, double &gw, double &leak, double dt,
 			int r, int c);
 	void Infilt_Richards(Control &ctrl, double &f, double &F, double &theta1,
 			double &theta2, double &theta3, double &leak, double &pond, double &percolat,
@@ -269,6 +277,15 @@ public:
 
 	grid *getDEM() const {
 		return _DEM;
+	}
+	grid *getSoilDepth() const {
+		return _soildepth;
+	}
+	grid *getSoilDepth1() const {
+		return _depth_layer1;
+	}
+	grid *getSoilDepth2() const {
+		return _depth_layer2;
 	}
 
 	grid *getNetRad() const {
@@ -529,6 +546,27 @@ public:
 	}
 	grid *getFluxSrftoL1() const {
 		return _FluxSrftoL1;
+	}
+	grid *getFluxL1toL2() const {
+		return _FluxL1toL2;
+	}
+	grid *getFluxL2toL3() const {
+		return _FluxL2toL3;
+	}
+	grid *getFluxL3toGW() const {
+		return _FluxL3toGW;
+	}
+	grid *getFluxL1toSrf() const {
+		return _FluxL1toSrf;
+	}
+	grid *getFluxL2toL1() const {
+		return _FluxL2toL1;
+	}
+	grid *getFluxL3toL2() const {
+		return _FluxL3toL2;
+	}
+	grid *getFluxGWtoL3() const {
+		return _FluxGWtoL3;
 	}
 
 	// -- Getters of fTracking getters

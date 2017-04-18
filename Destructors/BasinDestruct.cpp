@@ -172,4 +172,18 @@ Basin::~Basin(){
 		delete _FluxUptoSnow;
 	if(_FluxSrftoL1)
 		delete _FluxSrftoL1;
+	if(_FluxL1toL2)
+		delete _FluxL1toL2;
+	if(_FluxL2toL3)
+		delete _FluxL2toL3;
+	if(_FluxL3toGW)
+		delete _FluxL3toGW;
+	if(_FluxL1toSrf)
+		delete _FluxL1toSrf;
+	if(_FluxL2toL1)
+		delete _FluxL2toL1;
+	if(_FluxL3toL2)
+		delete _FluxL3toL2;
+	if(_FluxGWtoL3)
+		delete _FluxGWtoL3;
 }
