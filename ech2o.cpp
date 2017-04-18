@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
 
 			advance_climate += oControl->dt;
 			if (advance_climate >= oControl->BC_dt) {
-				oAtmosphere->AdvanceClimateMaps();
+				oAtmosphere->AdvanceClimateMaps(*oControl);
 				advance_climate = 0;
 			}
 
@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
 	int mm = tot_sec / 60;
 	tot_sec = tot_sec % 60;
 	int ss = tot_sec;
-	printf("\nTotal run time elapsed:  %i (days) %02i:%02i:%02i (hh:mm:ss)", dd,
+	printf("\nTotal run time elapsed:  %i (days) %02i:%02i:%02i (hh:mm:ss)\n", dd,
 			hh, mm, ss);
 
 	return 0;
