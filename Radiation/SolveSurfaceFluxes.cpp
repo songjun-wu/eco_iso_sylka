@@ -137,14 +137,9 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 					_BedrockLeakageFlux->matrix[r][c] = leak;
 
 
-					/*//this calculates the soil moisture profile to evaluate soil moisture of the top 10 cms of the soil
-					if(ctrl.sw_soil_water_profile == 1)
+					//this calculates the soil moisture profile to derive equivalent water table depth
+					if(ctrl.Rep_WaterTableDepth == 1 || ctrl.RepTs_WaterTableDepth == 1)
 						CalcSoilMoistureProfile(atm, ctrl, theta, r,c);
-					else
-						_soilmoist10cm->matrix[r][c] = _soilmoist->matrix[r][c]; //if no calculation of the soil moisture profile, soil moist at 10 equals average soil moisture
-
-					theta10cm = _soilmoist10cm->matrix[r][c];*/
-
 
 					nsp = fForest->getNumSpecies();
 					treeheight = 0;

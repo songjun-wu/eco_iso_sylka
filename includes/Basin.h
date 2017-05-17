@@ -410,7 +410,7 @@ public:
 	}
 
 	grid *getWaterTableDepth() const {
-		int r, c;
+		/* int r, c;
 		double depth, fc, eta;
 		double d1, d2, d3;
 #pragma omp parallel for\
@@ -444,7 +444,7 @@ public:
 								d1*(eta - _soilmoist1->matrix[r][c])/(eta - fc);
 				}
 			}
-		}
+		} */
 
 		return _WaterTableDepth;
 	}
