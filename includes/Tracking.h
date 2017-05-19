@@ -72,6 +72,9 @@ public:
 	//Destructor
 	~Tracking();
 
+	int dDfrac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl, REAL8 theta, int r, int c);
+	int d18Ofrac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl, REAL8 theta, int r, int c);
+
 	int IncrementAge(Basin &bsn, Control &ctrl);
 
 	//int ReadConfigTrck(Control &ctrl, string confilename = "configTrck.ini");

@@ -197,11 +197,21 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 				// Soil evaporation tracking
 				if(ctrl.sw_trck){					
-					// Isotopes: for now no fractionation taken into account -> signature of first layer
-					if(ctrl.sw_dD)
-						trck.setdDevapS(r, c, trck.getdDsoil1()->matrix[r][c]);
-					if(ctrl.sw_d18O)
-						trck.setd18OevapS(r, c, trck.getd18Osoil1()->matrix[r][c]);
+					//_FluxL1toEvap->matrix[r][c] += evap * dt;
+					// As if pool was the total quantity of soil-evaporated water
+					if(ctrl.sw_dD){
+						if(ctrl.sw_frac)
+							trck.dDfrac_Esoil(atm, *this, ctrl, theta, r, c);
+						else
+							trck.setdDevapS(r, c, trck.getdDsoil1()->matrix[r][c]);
+					}
+
+					if(ctrl.sw_d18O){
+						if(ctrl.sw_frac)
+							trck.d18Ofrac_Esoil(atm, *this, ctrl, theta, r, c);
+						else
+							trck.setd18OevapS(r, c, trck.getd18Osoil1()->matrix[r][c]);
+					}
 					// Water age: as if uniformly evaporated from first layer
 					// TODO: recent (rain) water evaporated first?
 					if(ctrl.sw_Age)

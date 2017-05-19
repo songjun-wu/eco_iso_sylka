@@ -35,7 +35,7 @@
 
 struct Control{
 
-		/*Folder paths*/
+	/*Folder paths*/
 		string path_BasinFolder; //folder where basin property maps are located
 		string path_ClimMapsFolder; //folder where weather maps series are located
 		string path_ResultsFolder; //folder where results will be placed
@@ -60,16 +60,11 @@ struct Control{
 		bool sw_veg_dyn; //switch to turn on and off the dynamic vegetation module (allocation and lai calculation)
 		bool sw_reinfilt; //switch to turn on and off the reinfiltration option
 		bool sw_channel; //switch to turn on and off the channel option
-		bool sw_trck; //switch to turn on and off the tracking option
-		bool sw_dD; //switch to turn on and off the dD tracking option (if sw_trck = 1)
-		bool sw_d18O; //switch to turn on and off the d18O tracking option (if sw_trck = 1)
-		bool sw_Age; //switch to turn on and off the age tracking option (if sw_trck = 1)
 
 		/*multiple option switches*/
 		//int toggle_soil_water_profile; //toggle between different soil moisture profile calculation
 		int toggle_ra; //toggle between aerodynamic resistance options
 		int toggle_rs; //toggle between different soil resistance option
-
 
 		/*Base maps filenames*/
 		string fn_dem; //local base dem filename that forces grid geometry
@@ -137,9 +132,126 @@ struct Control{
 		string fn_Heighttable;
 		string fn_RootMasstable;
 
+	/*report flags*/
+		bool Rep_Long_Rad_Down;
+		bool Rep_Short_Rad_Down;
+		bool Rep_Precip;
+		bool Rep_Rel_Humidity;
+		bool Rep_Wind_Speed;
+		bool Rep_AvgAir_Temperature;
+		bool Rep_MinAir_Temperature;
+		bool Rep_MaxAir_Temperature;
+		bool Rep_SWE;
+		bool Rep_Infilt_Cap;
+		bool Rep_Streamflow;
+		bool Rep_Saturation_Area;
+		bool Rep_Ponding;
+		bool Rep_Soil_Water_Content_Average;
+		bool Rep_Soil_Water_Content_12;
+		bool Rep_Soil_Water_Content_L1;
+		bool Rep_Soil_Water_Content_L2;
+		bool Rep_Soil_Water_Content_L3;
+		bool Rep_WaterTableDepth;
+		bool Rep_Soil_Sat_Deficit;
+		bool Rep_GWater;
+		bool Rep_Total_ET;
+		bool Rep_Soil_ETP;
+		bool Rep_Soil_Net_Rad;
+		bool Rep_Soil_LE;
+		bool Rep_Sens_Heat;
+		bool Rep_Grnd_Heat;
+		bool Rep_Snow_Heat;
+		bool Rep_Soil_Temperature;
+		bool Rep_Skin_Temperature;
+
+		bool Rep_Net_Rad_ToC;
+		bool Rep_Transpiration_ToC;
+		bool Rep_Einterception_ToC;
+
+		bool Rep_Veget_frac;
+		bool Rep_Stem_Density;
+		bool Rep_Leaf_Area_Index;
+		bool Rep_Stand_Age;
+		bool Rep_Canopy_Conductance;
+		bool Rep_GPP;
+		bool Rep_NPP;
+		bool Rep_Basal_Area;
+		bool Rep_Tree_Height;
+		bool Rep_Root_Mass;
+		bool Rep_Canopy_Temp;
+		bool Rep_Canopy_NetR;
+		bool Rep_Canopy_LE_E;
+		bool Rep_Canopy_LE_T;
+		bool Rep_Canopy_Sens_Heat;
+		bool Rep_Canopy_Water_Stor;
+		bool Rep_Transpiration;
+		bool Rep_Einterception;
+
+		/*time series reporting input files*/
+		string fn_rep_mask;
+
+	bool RepTs_OutletDischarge; //only reported at the outlets
+	bool RepTs_Long_Rad_Down;
+	bool RepTs_Short_Rad_Down;
+	bool RepTs_Precip;
+	bool RepTs_Rel_Humidity;
+	bool RepTs_Wind_Speed;
+	bool RepTs_AvgAir_Temperature;
+	bool RepTs_MinAir_Temperature;
+	bool RepTs_MaxAir_Temperature;
+	bool RepTs_SWE;
+	bool RepTs_Infilt_Cap;
+	bool RepTs_Streamflow;
+	bool RepTs_Ponding;
+	bool RepTs_Soil_Water_Content_Average;
+	bool RepTs_Soil_Water_Content_12;
+	bool RepTs_Soil_Water_Content_L1;
+	bool RepTs_Soil_Water_Content_L2;
+	bool RepTs_Soil_Water_Content_L3;
+	bool RepTs_WaterTableDepth;
+	bool RepTs_Soil_Sat_Deficit;
+	bool RepTs_GroundWater;
+	bool RepTs_Total_ET;
+	bool RepTs_Soil_ETP;
+	bool RepTs_Soil_Net_Rad;
+	bool RepTs_Soil_LE;
+	bool RepTs_Sens_Heat;
+	bool RepTs_Grnd_Heat;
+	bool RepTs_Snow_Heat;
+	bool RepTs_Soil_Temperature;
+	bool RepTs_Skin_Temperature;
+
+	bool RepTs_Net_Rad_ToC;
+	bool RepTs_Transpiration_ToC;
+	bool RepTs_Einterception_ToC;
+
+	bool RepTs_Veget_frac;
+	bool RepTs_Stem_Density;
+	bool RepTs_Leaf_Area_Index;
+	bool RepTs_Canopy_Conductance;
+	bool RepTs_GPP;
+	bool RepTs_NPP;
+	bool RepTs_Basal_Area;
+	bool RepTs_Tree_Height;
+	bool RepTs_Root_Mass;
+	bool RepTs_Canopy_Temp;
+	bool RepTs_Canopy_NetR;
+	bool RepTs_Canopy_LE_E;
+	bool RepTs_Canopy_LE_T;
+	bool RepTs_Canopy_Sens_Heat;
+	bool RepTs_Canopy_Water_Stor;
+	bool RepTs_Transpiration;
+	bool RepTs_Einterception;
 
 	// Tracking  -------------------------------------------------
-		string fn_tracking;	// Config file for tracking options
+	// Tracking inputs
+	string fn_tracking;
+	bool sw_trck; //switch to turn on and off the tracking option
+	bool sw_frac; //switch to turn on and off fractionation in soil evap
+	bool sw_dD; //switch to turn on and off the dD tracking option (if sw_trck = 1)
+	bool sw_d18O; //switch to turn on and off the d18O tracking option (if sw_trck = 1)
+	bool sw_Age; //switch to turn on and off the age tracking option (if sw_trck = 1)
+
 	/* input maps for initial values*/
 	string fn_dDprecip; // deuterium signature in precipitations (dD, per mil)
 	//string fn_dDcanopy;
@@ -149,6 +261,7 @@ struct Control{
 	string fn_dDsoil2;
 	string fn_dDsoil3;
 	string fn_dDgroundwater;
+	//string fn_dDchannel;
 
 	string fn_d18Oprecip; // O eighteen signature in precipitations (d18O, per mil)
 	//string fn_dDcanopy;
@@ -158,6 +271,7 @@ struct Control{
 	string fn_d18Osoil2;
 	string fn_d18Osoil3;
 	string fn_d18Ogroundwater;
+	//string fn_d18Ochannel;
 
 	//string fn_Agecanopy;
 	string fn_Agesnowpack;
@@ -166,63 +280,9 @@ struct Control{
 	string fn_Agesoil2;
 	string fn_Agesoil3;
 	string fn_Agegroundwater;
+	//string fn_Agechannel;
 
-		/*report flags*/
-	bool Rep_Long_Rad_Down;
-	bool Rep_Short_Rad_Down;
-	bool Rep_Precip;
-	bool Rep_Rel_Humidity;
-	bool Rep_Wind_Speed;
-	bool Rep_AvgAir_Temperature;
-	bool Rep_MinAir_Temperature;
-	bool Rep_MaxAir_Temperature;
-	bool Rep_SWE;
-	bool Rep_Infilt_Cap;
-	bool Rep_Streamflow;
-	bool Rep_Saturation_Area;
-	bool Rep_Ponding;
-	bool Rep_Soil_Water_Content_Average;
-	bool Rep_Soil_Water_Content_12;
-	bool Rep_Soil_Water_Content_L1;
-	bool Rep_Soil_Water_Content_L2;
-	bool Rep_Soil_Water_Content_L3;
-	bool Rep_WaterTableDepth;
-	bool Rep_Soil_Sat_Deficit;
-	bool Rep_GWater;
-	bool Rep_Total_ET;
-	bool Rep_Soil_ETP;
-	bool Rep_Soil_Net_Rad;
-	bool Rep_Soil_LE;
-	bool Rep_Sens_Heat;
-	bool Rep_Grnd_Heat;
-	bool Rep_Snow_Heat;
-	bool Rep_Soil_Temperature;
-	bool Rep_Skin_Temperature;
-
-	bool Rep_Net_Rad_ToC;
-	bool Rep_Transpiration_ToC;
-	bool Rep_Einterception_ToC;
-
-	bool Rep_Veget_frac;
-	bool Rep_Stem_Density;
-	bool Rep_Leaf_Area_Index;
-	bool Rep_Stand_Age;
-	bool Rep_Canopy_Conductance;
-	bool Rep_GPP;
-	bool Rep_NPP;
-	bool Rep_Basal_Area;
-	bool Rep_Tree_Height;
-	bool Rep_Root_Mass;
-	bool Rep_Canopy_Temp;
-	bool Rep_Canopy_NetR;
-	bool Rep_Canopy_LE_E;
-	bool Rep_Canopy_LE_T;
-	bool Rep_Canopy_Sens_Heat;
-	bool Rep_Canopy_Water_Stor;
-	bool Rep_Transpiration;
-	bool Rep_Einterception;
-
-	// Tracking  -------------------------------------------------
+	/* maps report */
 	bool Rep_dDprecip;
 	bool Rep_dDcanopy;
 	bool Rep_dDsnowpack;
@@ -267,129 +327,73 @@ struct Control{
 	bool Rep_Agetranspi;
 	bool Rep_Agetranspi_ToC;
 
-
-		/*time series reporting input files*/
-	string fn_rep_mask;
-
-		bool RepTs_OutletDischarge; //only reported at the outlets
-		bool RepTs_Long_Rad_Down;
-		bool RepTs_Short_Rad_Down;
-		bool RepTs_Precip;
-		bool RepTs_Rel_Humidity;
-		bool RepTs_Wind_Speed;
-		bool RepTs_AvgAir_Temperature;
-		bool RepTs_MinAir_Temperature;
-		bool RepTs_MaxAir_Temperature;
-		bool RepTs_SWE;
-		bool RepTs_Infilt_Cap;
-		bool RepTs_Streamflow;
-		bool RepTs_Ponding;
-		bool RepTs_Soil_Water_Content_Average;
-		bool RepTs_Soil_Water_Content_12;
-		bool RepTs_Soil_Water_Content_L1;
-		bool RepTs_Soil_Water_Content_L2;
-		bool RepTs_Soil_Water_Content_L3;
-		bool RepTs_WaterTableDepth;
-		bool RepTs_Soil_Sat_Deficit;
-		bool RepTs_GroundWater;
-		bool RepTs_Total_ET;
-		bool RepTs_Soil_ETP;
-		bool RepTs_Soil_Net_Rad;
-		bool RepTs_Soil_LE;
-		bool RepTs_Sens_Heat;
-		bool RepTs_Grnd_Heat;
-		bool RepTs_Snow_Heat;
-		bool RepTs_Soil_Temperature;
-		bool RepTs_Skin_Temperature;
-
-		bool RepTs_Net_Rad_ToC;
-		bool RepTs_Transpiration_ToC;
-		bool RepTs_Einterception_ToC;
-
-		bool RepTs_Veget_frac;
-		bool RepTs_Stem_Density;
-		bool RepTs_Leaf_Area_Index;
-		bool RepTs_Canopy_Conductance;
-		bool RepTs_GPP;
-		bool RepTs_NPP;
-		bool RepTs_Basal_Area;
-		bool RepTs_Tree_Height;
-		bool RepTs_Root_Mass;
-		bool RepTs_Canopy_Temp;
-		bool RepTs_Canopy_NetR;
-		bool RepTs_Canopy_LE_E;
-		bool RepTs_Canopy_LE_T;
-		bool RepTs_Canopy_Sens_Heat;
-		bool RepTs_Canopy_Water_Stor;
-		bool RepTs_Transpiration;
-		bool RepTs_Einterception;
-
-		// Tracking  -------------------------------------------------
-		bool RepTs_dDprecip;
+	// Time series
+	bool RepTs_dDprecip;
 	//bool RepTs_dDcanopy;
-		bool RepTs_dDsnowpack;
-		bool RepTs_dDsurface;
-		bool RepTs_dDsoil1;
-		bool RepTs_dDsoil2;
-		bool RepTs_dDsoil3;
+	bool RepTs_dDsnowpack;
+	bool RepTs_dDsurface;
+	bool RepTs_dDsoil1;
+	bool RepTs_dDsoil2;
+	bool RepTs_dDsoil3;
 	//bool RepTs_dDsoilAv;
-		bool RepTs_dDgroundwater;
-		bool RepTs_dDevapS;
-		bool RepTs_dDevapI;
-		bool RepTs_dDevapI_ToC;
-		bool RepTs_dDtranspi;
-		bool RepTs_dDtranspi_ToC;
+	bool RepTs_dDgroundwater;
+	bool RepTs_dDevapS;
+	bool RepTs_dDevapI;
+	bool RepTs_dDevapI_ToC;
+	bool RepTs_dDtranspi;
+	bool RepTs_dDtranspi_ToC;
 
-		bool RepTs_d18Oprecip;
+	bool RepTs_d18Oprecip;
 	//bool RepTs_d18Ocanopy;
-		bool RepTs_d18Osnowpack;
-		bool RepTs_d18Osurface;
-		bool RepTs_d18Osoil1;
-		bool RepTs_d18Osoil2;
-		bool RepTs_d18Osoil3;
+	bool RepTs_d18Osnowpack;
+	bool RepTs_d18Osurface;
+	bool RepTs_d18Osoil1;
+	bool RepTs_d18Osoil2;
+	bool RepTs_d18Osoil3;
 	//bool RepTs_d18OsoilAv;
-		bool RepTs_d18Ogroundwater;
-		bool RepTs_d18OevapS;
-		bool RepTs_d18OevapI;
-		bool RepTs_d18OevapI_ToC;
-		bool RepTs_d18Otranspi;
-		bool RepTs_d18Otranspi_ToC;
+	bool RepTs_d18Ogroundwater;
+	bool RepTs_d18OevapS;
+	bool RepTs_d18OevapI;
+	bool RepTs_d18OevapI_ToC;
+	bool RepTs_d18Otranspi;
+	bool RepTs_d18Otranspi_ToC;
 
 	//bool RepTs_Agecanopy;
-		bool RepTs_Agesnowpack;
-		bool RepTs_Agesurface;
-		bool RepTs_Agesoil1;
-		bool RepTs_Agesoil2;
-		bool RepTs_Agesoil3;
+	bool RepTs_Agesnowpack;
+	bool RepTs_Agesurface;
+	bool RepTs_Agesoil1;
+	bool RepTs_Agesoil2;
+	bool RepTs_Agesoil3;
 	//bool RepTs_AgesoilAv;
-		bool RepTs_Agegroundwater;
-		bool RepTs_AgeevapS;
-		bool RepTs_AgeevapI;
-		bool RepTs_AgeevapI_ToC;
-		bool RepTs_Agetranspi;
-		bool RepTs_Agetranspi_ToC;
+	bool RepTs_Agegroundwater;
+	bool RepTs_AgeevapS;
+	bool RepTs_AgeevapI;
+	bool RepTs_AgeevapI_ToC;
+	bool RepTs_Agetranspi;
+	bool RepTs_Agetranspi_ToC;
+	// --------------------------
 
 
-		Control(){ 	current_ts_count = 1;
-			toggle_ra = 0;
-		};
-
-		int ReadConfigFile(string confilename = "config.ini");
-
-		int ReadConfigTrck(string confilename = "configTrck.ini");
-
-		void AdvanceTimeStep(){
-			current_ts_count++;
-			current_t_step = current_ts_count * dt;
-		}
-
-		float GetTimeStep() {
-			return current_t_step;
-		}
-
-		unsigned int GetTimeStepCount() {
-			return current_ts_count;
-		}
+	Control(){ 	current_ts_count = 1;
+		toggle_ra = 0;
 	};
+
+	int ReadConfigFile(string confilename = "config.ini");
+
+	int ReadConfigTrck(string confilename = "configTrck.ini");
+
+	void AdvanceTimeStep(){
+		current_ts_count++;
+		current_t_step = current_ts_count * dt;
+	}
+
+	float GetTimeStep() {
+		return current_t_step;
+	}
+
+	unsigned int GetTimeStepCount() {
+		return current_ts_count;
+	}
+};
 
 #endif /* INITCONF_H_ */

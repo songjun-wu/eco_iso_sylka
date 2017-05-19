@@ -48,6 +48,7 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 
 		sw_dD = ConfigTrck.read<bool>("water_dD");
 		sw_d18O = ConfigTrck.read<bool>("water_d18O");
+		sw_frac = ConfigTrck.read<bool>("water_frac");
 		sw_Age = ConfigTrck.read<bool>("water_Age");
 
 		if(sw_dD){
