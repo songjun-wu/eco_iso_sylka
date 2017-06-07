@@ -104,6 +104,7 @@ struct Grove {
 	grid *_ET; //Actual evapotranspiration ms-1
 	grid *_Einterception; //evaporation if interception component ms-1
 	grid *_Transpiration; //transpiration component ms-1
+	grid *_Esoil; // soil evaporation component m.s-1
 	grid *_LeafWatPot; // leaf water potential (positive m of head)
 
 	// Tracking
@@ -118,6 +119,10 @@ struct Grove {
 	grid *_dDevapI; // dD of evaporated interception
 	grid *_d18OevapI; // d18O of evaporated interception
 	grid *_AgeevapI; // Age of evaporated interception
+
+	grid *_dDevapS; // dD of evaporated soil water (below each canopy type)
+	grid *_d18OevapS; // d18O of evaporated soil water (below each canopy type)
+	grid *_AgeevapS; // Age of evaporated soil water (below each canopy type)
 
 	Grove();
 	~Grove();

@@ -50,12 +50,12 @@ Tracking::~Tracking(){
 	//		delete _dDsoilAv;
 	if(_dDgroundwater)
 		delete _dDgroundwater;
-	if(_dDevapS)
-		delete _dDevapS;
-	if(_dDevapI_ToC)
-		delete _dDevapI_ToC;
-	if(_dDtranspi_ToC)
-		delete _dDtranspi_ToC;
+	if(_dDevapS_sum)
+		delete _dDevapS_sum;
+	if(_dDevapI_sum)
+		delete _dDevapI_sum;
+	if(_dDtranspi_sum)
+		delete _dDtranspi_sum;
 
 	//	if(_d18Oinput)
 	//		delete _d18Oinput;
@@ -75,12 +75,12 @@ Tracking::~Tracking(){
 	//		delete _d18OsoilAv;
 	if(_d18Ogroundwater)
 		delete _d18Ogroundwater;
-	if(_d18OevapS)
-		delete _d18OevapS;
-	if(_d18OevapI_ToC)
-		delete _d18OevapI_ToC;
-	if(_d18Otranspi_ToC)
-		delete _d18Otranspi_ToC;
+	if(_d18OevapS_sum)
+		delete _d18OevapS_sum;
+	if(_d18OevapI_sum)
+		delete _d18OevapI_sum;
+	if(_d18Otranspi_sum)
+		delete _d18Otranspi_sum;
 
 	//	if(_Agecanopy)
 	//		delete _Agecanopy;
@@ -98,10 +98,10 @@ Tracking::~Tracking(){
 	//		delete _AgesoilAv;
 	if(_Agegroundwater)
 		delete _Agegroundwater;
-	if(_AgeevapS)
-		delete _AgeevapS;
-	if(_AgeevapI_ToC)
-		delete _AgeevapI_ToC;
-	if(_Agetranspi_ToC)
-		delete _Agetranspi_ToC;
+	if(_AgeevapS_sum)
+		delete _AgeevapS_sum;
+	if(_AgeevapI_sum)
+		delete _AgeevapI_sum;
+	if(_Agetranspi_sum)
+		delete _Agetranspi_sum;
 }

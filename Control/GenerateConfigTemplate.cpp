@@ -215,8 +215,6 @@ try{
     ofOut << "Report_WaterTableDepth = 0 " << endl;
     ofOut << "Report_Soil_Sat_Deficit = 0 " << endl;
     ofOut << "Report_Ground_Water = 0 " << endl;
-    ofOut << "Report_Total_ET = 1 " << endl;
-    ofOut << "Report_Soil_ETP = 0 " << endl;
     ofOut << "Report_Soil_Net_Rad = 0 " << endl;
     ofOut << "Report_Soil_LE = 0 " << endl;
     ofOut << "Report_Sens_Heat = 0 " << endl;
@@ -225,9 +223,11 @@ try{
     ofOut << "Report_Soil_Temperature = 0 " << endl;
     ofOut << "Report_Skin_Temperature = 0 " << endl << endl;
 
-    ofOut << "Report_Transpiration_ToC = 0 " << endl;
-    ofOut << "Report_Einterception_ToC = 0 " << endl;
-    ofOut << "Report_Net_Rad_ToC = 0 " << endl << endl;
+    ofOut << "Report_Total_ET = 1 " << endl;
+    ofOut << "Report_Transpiration_sum = 0 " << endl;
+    ofOut << "Report_Einterception_sum = 0 " << endl;
+    ofOut << "Report_Esoil_sum = 0 " << endl;
+    ofOut << "Report_Net_Rad_sum = 0 " << endl << endl;
 
     ofOut << "Report_Veget_frac = 0 " << endl;
     ofOut << "Report_Stem_Density = 0 " << endl;
@@ -245,8 +245,10 @@ try{
     ofOut << "Report_Canopy_LE_T = 0 " << endl;
     ofOut << "Report_Canopy_Sens_Heat = 0 " << endl;
     ofOut << "Report_Canopy_Water_Stor = 0 " << endl;
+    ofOut << "Report_species_ET = 0 " << endl;
     ofOut << "Report_Transpiration = 0 " << endl;
-    ofOut << "Report_Einterception = 0 " << endl << endl;
+    ofOut << "Report_Einterception = 0 " << endl;
+    ofOut << "Report_Esoil = 0 " << endl << endl;
 
     ofOut << "#   " << endl;
     ofOut << "#Report time series section " << endl;
@@ -276,8 +278,6 @@ try{
     ofOut << "Ts_WaterTableDepth = 0 " << endl;
     ofOut << "Ts_Soil_Sat_Deficit = 0 " << endl;
     ofOut << "Ts_Ground_Water = 0 " << endl;
-    ofOut << "Ts_Total_ET = 1 " << endl;
-    ofOut << "Ts_Soil_ETP = 1 " << endl;
     ofOut << "Ts_Soil_Net_Rad = 0 " << endl;
     ofOut << "Ts_Soil_LE = 1 " << endl;
     ofOut << "Ts_Sens_Heat = 0 " << endl;
@@ -286,9 +286,11 @@ try{
     ofOut << "Ts_Soil_Temperature = 0 " << endl;
     ofOut << "Ts_Skin_Temperature = 0 " << endl << endl ;
 
-    ofOut << "Ts_Transpiration_ToC = 0 " << endl;
-    ofOut << "Ts_Einterception_ToC = 0 " << endl;
-    ofOut << "Ts_Net_Rad_ToC = 0 " << endl << endl;
+    ofOut << "Ts_Total_ET = 1 " << endl;
+    ofOut << "Ts_Transpiration_sum = 1 " << endl;
+    ofOut << "Ts_Einterception_sum = 1 " << endl;
+    ofOut << "Ts_Esoil_sum = 1 " << endl;
+    ofOut << "Ts_Net_Rad_sum = 0 " << endl << endl;
 
     ofOut << "Ts_Veget_frac = 0 " << endl;
     ofOut << "Ts_Stem_Density = 0 " << endl;
@@ -306,8 +308,10 @@ try{
     ofOut << "Ts_Canopy_LE_T = 0 " << endl;
     ofOut << "Ts_Canopy_Sens_Heat = 0 " << endl;
     ofOut << "Ts_Canopy_Water_Stor = 0 " << endl;
-    ofOut << "Ts_Transpiration = 1 " << endl;
-    ofOut << "Ts_Einterception = 1 " << endl;
+    ofOut << "Ts_species_ET = 0 " << endl;
+    ofOut << "Ts_Transpiration = 0 " << endl;
+    ofOut << "Ts_Einterception = 0 " << endl;
+    ofOut << "Ts_Esoil = 0 " << endl << endl;
 
 
 

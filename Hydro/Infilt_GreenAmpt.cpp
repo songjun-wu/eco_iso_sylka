@@ -32,14 +32,21 @@
 
 void Basin::Infilt_GreenAmpt(Control &ctrl, Tracking &trck, double &f, double &F, double &theta,
 		double &theta2, double &theta3, double &pond, double &gw,
-		double dt, int r, int c) //time step
-		{
+		double dt, int r, int c, UINT4 option) //time step
+{
 
 	double fF, dfF = 0;
 	double ef_poros, thetar, S, Ks, psi, inp, depth, depth2, depth3;
 	double DT = dt; //secs
 	double tp = 0; //ponding time in secs
 	int k = 0;
+
+	if(ctrl.sw_trck){
+		_FluxSrftoL1->matrix[r][c] = 0;
+		_FluxL1toL2->matrix[r][c] = 0;
+		_FluxL2toL3->matrix[r][c] = 0;
+		_FluxL3toGW->matrix[r][c] = 0;
+	}
 
 	double KvKh = _KvKs->matrix[r][c];
 	double fc = _fieldcap->matrix[r][c];
@@ -52,7 +59,7 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, Tracking &trck, double &f, double &F
 	inp = pond / dt; //inp is potential water input in ms-1
 	if (inp < RNDOFFERR)
 		return;
-	
+
 	depth = _depth_layer1->matrix[r][c]; //_soildepth->matrix[r][c];
 	depth2 = _depth_layer2->matrix[r][c];
 	depth3 = this->_soildepth->matrix[r][c] - depth - depth2;
@@ -143,8 +150,8 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, Tracking &trck, double &f, double &F
 			do {
 				deltaF = F1;
 				fF = deltaF - Fp - Ks * (DT - tp)
-						- psidtheta
-								* log((psidtheta + deltaF) / (psidtheta + Fp));
+																- psidtheta
+																* log((psidtheta + deltaF) / (psidtheta + Fp));
 				dfF = deltaF / (psidtheta + deltaF);
 				F1 -= fF / dfF;
 				k++;
@@ -152,7 +159,7 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, Tracking &trck, double &f, double &F
 
 			if (k >= MAX_ITER)
 				cout << "WARNING: Max no iterations reached for G&A solution "
-						<< endl;
+				<< endl;
 			//deltaF += Fp;
 			//		cout << "GA case 1 or 2 ocurring " << Fp << " " << deltaF << endl;
 		}
@@ -204,7 +211,9 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, Tracking &trck, double &f, double &F
 	// Gravity water (for tracking)
 	gw = max<double>(0,(theta3 - fc) * depth3);
 
-	if(ctrl.sw_trck){
+	// Mixing only if reinfiltration (option 1), otherwise (infiltration) it is done in
+	// SoilWateredistribution.cpp
+	if(ctrl.sw_trck and option==0){
 		if(ctrl.sw_dD){
 			// Update layer 1
 			trck.setdDsoil1(r, c,
@@ -212,7 +221,7 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, Tracking &trck, double &f, double &F
 							trck.getdDsoil1()->matrix[r][c],
 							_FluxSrftoL1->matrix[r][c],
 							trck.getdDsurface()->matrix[r][c],
-							_FluxL1toL2->matrix[r][c] ));
+							_FluxL1toL2->matrix[r][c]));
 			// Update layer 2
 			trck.setdDsoil2(r, c,
 					trck.InOutMix(_soilmoist2->matrix[r][c]*depth2,

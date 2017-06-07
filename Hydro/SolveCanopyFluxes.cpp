@@ -99,7 +99,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	REAL8 dDnew, d18Onew, Agenew;
 
 	// Initialize to zero
-	_RnToC->reset();
+	_Rn_sum->reset();
 	if(ctrl.sw_trck){
 		//For tracking
 		_FluxUptoSnow->reset(); // canopy/sky to snowpack
@@ -206,7 +206,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 				_CanopyStorage->matrix[r][c] += DelCanStor * p;
 
-				_RnToC->matrix[r][c] += netR * p ;
+				_Rn_sum->matrix[r][c] += netR * p ;
 
 				if (_CanopyStorage->matrix[r][c] < RNDOFFERR)
 					_CanopyStorage->matrix[r][c] = 0.0;
@@ -313,11 +313,11 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 		_EvaporationI_all->matrix[r][c] = evap_f ;
 		// applies for tracking as well
 		if(ctrl.sw_trck && ctrl.sw_dD)
-			trck.setdDtranspi_ToC(r ,c, dDtranspi_f);
+			trck.setdDtranspi_sum(r ,c, dDtranspi_f);
 		if(ctrl.sw_trck && ctrl.sw_d18O)
-			trck.setd18Otranspi_ToC(r ,c, d18Otranspi_f);
+			trck.setd18Otranspi_sum(r ,c, d18Otranspi_f);
 		if(ctrl.sw_trck && ctrl.sw_Age)
-			trck.setAgetranspi_ToC(r ,c, Agetranspi_f);
+			trck.setAgetranspi_sum(r ,c, Agetranspi_f);
 
 	}//end for
 }//end omp parallel

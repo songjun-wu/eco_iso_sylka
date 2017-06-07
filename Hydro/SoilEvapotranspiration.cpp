@@ -33,7 +33,7 @@ void Basin::SoilEvapotranspiration(REAL8 LE, //input latent heat
 									REAL8 Ts, //input surface temperature
 									REAL8 lambda,
 									REAL8 rs,// input the potential exfiltration capacity
-									REAL8 &etp, //output updated evapotranspiration
+									REAL8 &etp, //output soil evaporation
 									REAL8 &theta,//output updated soil moisture
 									REAL8 dt, //time step
 									UINT4 r,

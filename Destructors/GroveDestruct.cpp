@@ -80,6 +80,8 @@ Grove::~Grove(){
 		delete _Transpiration;
 	if(_Einterception)
 		delete _Einterception;
+	if(_Esoil)
+			delete _Esoil;
 	if(_LeafWatPot)
 		delete _LeafWatPot;
 
@@ -105,5 +107,11 @@ Grove::~Grove(){
 	if(_AgeevapI)
 		delete _AgeevapI;
 
+	if(_dDevapS)
+		delete _dDevapS;
+	if(_d18OevapS)
+		delete _d18OevapS;
+	if(_AgeevapS)
+		delete _AgeevapS;
 
 }

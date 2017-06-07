@@ -48,7 +48,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 									REAL8 &Tsold,
 									REAL8 &etp,
 									REAL8 &pond,
-									REAL8 &theta10cm,
+									REAL8 &theta,
 									REAL8 &Ts1,
 									REAL8 &Tdold,
 									REAL8 p,
@@ -103,8 +103,8 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 	//ea = AirEmissivity(atm.getTemperature()->matrix[r][c]);
 	rho_a = AirDensity(atm.getTemperature()->matrix[r][c]); //kgm-3
 
-	C = SoilHeatCapacity(_soil_dry_heatcap->matrix[r][c],  n, theta10cm, Ts1);
-	K = SoilHeatConductivity(_soil_dry_thermcond->matrix[r][c], n, 	theta10cm);
+	C = SoilHeatCapacity(_soil_dry_heatcap->matrix[r][c],  n, theta, Ts1);
+	K = SoilHeatConductivity(_soil_dry_thermcond->matrix[r][c], n, 	theta);
 
 	//d = sqrt((K/C) * Pe / PI);
 	d = sqrt( (K/C) / ( 2 * ( 2 * PI / Pe) ) );
@@ -117,7 +117,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 	}
 	else
 		//SoilRH = min<REAL8>( 1.0, Calculate_gs_theta(theta10cm, fc, thetar, 2.0) ); //calculates soil pore relative humidity
-		SoilRH = Calculate_soil_RH(theta10cm, fc);
+		SoilRH = Calculate_soil_RH(theta, fc);
 
 
 
@@ -157,7 +157,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 		 G = 0;
 		}
 		else{ // is snowpack is thicker than 5 mm, insulate the soil and shutoff ground heat and evaporation
-		 G = GrndHeat(atm, ctrl, theta10cm, Ts, Td, r, c);
+		 G = GrndHeat(atm, ctrl, theta, Ts, Td, r, c);
 		 LE = LatHeat(atm, SoilRH, ra, rs, rc, Ts, r, c);// * temp;
 		}
 		H = SensHeat(atm, ra, Ts, r, c);
@@ -195,12 +195,12 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 	nrad_a = NetRad(atm, Ts1, Kbeers, lai, emis_can, Temp_can, r, c);
 
 	if(s == fForest->getNumSpecies()-1)
-	  _RnToC->matrix[r][c] += nrad_a * p;
+	  _Rn_sum->matrix[r][c] += nrad_a * p;
 
 	nrad += nrad_a * p;
 	latheat += LE * p;
 	sensheat += SensHeat(atm, ra, Ts1, r, c) * p; //SensHeat(atm, ra, Ts1, r, c) * p;
-	grndheat += GrndHeat(atm, ctrl, theta10cm, Ts1, Td, r, c) * p;
+	grndheat += GrndHeat(atm, ctrl, theta, Ts1, Td, r, c) * p;
 	snowheat += SnowHeat(atm, ctrl, Ts1, r, c) * p;
 	meltheat += MeltHeat(atm, ctrl, Ts1, h, MeltFac, r, c) * p;
 	Tsold += Ts1 * p;
@@ -208,7 +208,8 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 
 
 
-	SoilEvapotranspiration(-LE*p, Ts1, lambda, rs, etp, theta10cm, dt, r, c);
+	//SoilEvapotranspiration(-LE*p, Ts1, lambda, rs, etp, theta, dt, r, c);
+	SoilEvapotranspiration(-LE*p, Ts1, lambda, p*rs, etp, theta, dt, r, c);
 
 	return EXIT_SUCCESS;
 }

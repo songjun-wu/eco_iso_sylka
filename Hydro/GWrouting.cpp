@@ -100,7 +100,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 		//if reinfiltration switch is on is not a channel cell or the channel switch is off
 		if (ctrl.sw_reinfilt && !(ctrl.sw_channel && _channelwidth->matrix[r][c] > 0))
-			Infilt_GreenAmpt(ctrl, trck, f, F, theta1, theta2, theta3, ponding, gw, dt, r,	c);
+			Infilt_GreenAmpt(ctrl, trck, f, F, theta1, theta2, theta3, ponding, gw, dt, r,	c, 1);
 
 		if (theta3 > fc) {
 			gw = (theta3 - fc) * d3;

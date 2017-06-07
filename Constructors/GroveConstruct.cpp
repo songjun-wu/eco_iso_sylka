@@ -56,6 +56,7 @@ Grove::Grove(){
 	_ET = NULL;
 	_Einterception = NULL;
 	_Transpiration = NULL;
+	_Esoil = NULL;
 	_LeafWatPot = NULL;
 
 	// Tracking
@@ -68,5 +69,8 @@ Grove::Grove(){
 	_dDevapI = NULL;
 	_d18OevapI = NULL;
 	_AgeevapI = NULL;
+	_dDevapS = NULL;
+	_d18OevapS = NULL;
+	_AgeevapS = NULL;
 
 }

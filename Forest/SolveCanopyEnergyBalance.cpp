@@ -291,6 +291,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm,
 
 		_species[s]._Einterception->matrix[r][c] = evap_a;
 		_species[s]._Transpiration->matrix[r][c] = transp_a;
+		_species[s]._ET->matrix[r][c] = transp_a + evap_a; // then Es is added in surface routines
 
 		_species[s]._WaterStorage->matrix[r][c] -= evap_a * ctrl.dt;
 

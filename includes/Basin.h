@@ -111,7 +111,7 @@ class Basin {
 	grid *_SoilSatDeficit; //soil saturation deficit (1 full deficit - 0 saturation)
 	grid *_AccumInfilt; //Accumulated infiltration m
 	grid *_Evaporation; //actual evaporation and transpiration in m s-1
-	grid *_EvaporationS; //actual soil evaporation in m s-1
+	grid *_EvaporationS_all; //actual soil evaporation in m s-1
 	grid *_EvaporationI_all; //actual evaporation from summed vegetation in m s-1
 	grid *_Transpiration_all; //transpiration from canopy in m s-1
 
@@ -124,7 +124,7 @@ class Basin {
 	grid *_GWupstreamBC; //gw flux upstream boundary conditin (ms-1)
 
 	grid *_Rn; //Net radiation for the soil surface Wm-2
-	grid *_RnToC; //Net radiation summed at the top of the canopy Wm-2
+	grid *_Rn_sum; //Net radiation summed at the top of the canopy Wm-2
 	grid *_latheat; //latent heat flux into the atmosphere Wm-2
 	grid *_sensheat; //sensible heat into the atmosphere Wm-2
 	grid *_grndheat; //ground heat flux Wm-2
@@ -189,7 +189,8 @@ class Basin {
 
 	//Hydrologic processes
 
-	void Infilt_GreenAmpt(Control &ctrl, Tracking &trck, double &f, double &F, double &theta, double &theta2, double &theta3, double &pond, double &percolat, double dt, int r, int c);
+	void Infilt_GreenAmpt(Control &ctrl, Tracking &trck, double &f, double &F, double &theta, double &theta2,
+			double &theta3, double &pond, double &percolat, double dt, int r, int c, UINT4 option);
 	void SoilWaterRedistribution(Control &ctrl, Tracking &trck, const double &F, double &theta1,
 			double &theta2, double &theta3, double &pond, double &gw, double &leak, double dt,
 			int r, int c);
@@ -292,8 +293,8 @@ public:
 		return _Rn;
 	}
 
-	grid *getNetRadToC() const {
-		return _RnToC;
+	grid *getNetRad_sum() const {
+		return _Rn_sum;
 	}
 
 	grid *getLatheat() const {
@@ -487,8 +488,8 @@ public:
 	grid *getEvaporation() const {
 		return _Evaporation;
 	}
-	grid *getEvaporationS() const {
-		return _EvaporationS;
+	grid *getEvaporationS_all() const {
+		return _EvaporationS_all;
 	}
 	grid *getEvaporationI_all() const {
 		return _EvaporationI_all;
@@ -574,16 +575,19 @@ public:
 	grid *getdDcanopy(UINT4 n) const ;
 	grid *getdDevapI(UINT4 n) const ;
 	grid *getdDtranspi(UINT4 n) const ;
+	grid *getdDevapS(UINT4 n) const ;
 
 	// 18O
 	grid *getd18Ocanopy(UINT4 n) const ;
 	grid *getd18OevapI(UINT4 n) const ;
 	grid *getd18Otranspi(UINT4 n) const ;
+	grid *getd18OevapS(UINT4 n) const ;
 
 	// Age
 	grid *getAgecanopy(UINT4 n) const ;
 	grid *getAgeevapI(UINT4 n) const ;
 	grid *getAgetranspi(UINT4 n) const ;
+	grid *getAgeevapS(UINT4 n) const ;
 
 	// --------------------------------------------------------------------------------------
 	// -- Getters of fForest getters
@@ -620,9 +624,13 @@ public:
 
 	grid *getCanopyWaterStor(UINT4 n) const;
 
+	grid *getETspecies(UINT4 n) const;
+
 	grid *getTranspiration(UINT4 n) const;
 
 	grid *getEinterception(UINT4 n) const;
+
+	grid *getEsoil(UINT4 n) const;
 
 	grid *getLeafWaterPotential(UINT4 n) const;
 

@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * SoilWaterRedistribution.cpp
@@ -35,8 +35,8 @@
 //using namespace arma;
 
 void Basin::SoilWaterRedistribution(Control &ctrl, Tracking &trck, const double &F, double &theta1,
-	double &theta2, double &theta3, double &pond, double &gw, double &leak,  double dt,
-	int r, int c) {
+		double &theta2, double &theta3, double &pond, double &gw, double &leak,  double dt,
+		int r, int c) {
 
 
 	//double K1, K12, K2, K23, K3;
@@ -126,12 +126,12 @@ void Basin::SoilWaterRedistribution(Control &ctrl, Tracking &trck, const double 
 			_FluxL2toL3->matrix[r][c] -= (theta3 - thetas) * d3;
 			_FluxL3toGW->matrix[r][c] -= (theta3 - thetas) * d3;
 		}
-		
+
 		theta3 = thetas;
 	}
 	if(theta2>thetas){
 		theta1 += (theta2 - thetas) * d2/d1;
-		
+
 		// Tracking
 		if(ctrl.sw_trck)
 			_FluxL1toL2->matrix[r][c] -= (theta2 - thetas) * d2;
@@ -155,12 +155,15 @@ void Basin::SoilWaterRedistribution(Control &ctrl, Tracking &trck, const double 
 	if(ctrl.sw_trck){
 		if(ctrl.sw_dD){
 			// Update layer 1
-			trck.setdDsoil1(r, c,
-					trck.InOutMix(_soilmoist1->matrix[r][c]*d1,
-							trck.getdDsoil1()->matrix[r][c],
-							_FluxSrftoL1->matrix[r][c],
-							trck.getdDsurface()->matrix[r][c],
-							_FluxL1toL2->matrix[r][c] ));
+			if(!ctrl.sw_lifo)
+				// If LIFO activated, no mixing in L1 before soil evap,
+				// L2 sees signature from previous timestep
+				trck.setdDsoil1(r, c,
+						trck.InOutMix(_soilmoist1->matrix[r][c]*d1,
+								trck.getdDsoil1()->matrix[r][c],
+								_FluxSrftoL1->matrix[r][c],
+								trck.getdDsurface()->matrix[r][c],
+								_FluxL1toL2->matrix[r][c] ));
 			// Update layer 2
 			trck.setdDsoil2(r, c,
 					trck.InOutMix(_soilmoist2->matrix[r][c]*d2,
@@ -184,12 +187,15 @@ void Basin::SoilWaterRedistribution(Control &ctrl, Tracking &trck, const double 
 		}
 		if(ctrl.sw_d18O){
 			// Update layer 1
-			trck.setd18Osoil1(r, c,
-					trck.InOutMix(_soilmoist1->matrix[r][c]*d1,
-							trck.getd18Osoil1()->matrix[r][c],
-							_FluxSrftoL1->matrix[r][c],
-							trck.getd18Osurface()->matrix[r][c],
-							_FluxL1toL2->matrix[r][c] ));
+			if(!ctrl.sw_lifo)
+				// If LIFO activated, no mixing in L1 before soil evap,
+				// L2 sees signature from previous timestep
+				trck.setd18Osoil1(r, c,
+						trck.InOutMix(_soilmoist1->matrix[r][c]*d1,
+								trck.getd18Osoil1()->matrix[r][c],
+								_FluxSrftoL1->matrix[r][c],
+								trck.getd18Osurface()->matrix[r][c],
+								_FluxL1toL2->matrix[r][c] ));
 			// Update layer 2
 			trck.setd18Osoil2(r, c,
 					trck.InOutMix(_soilmoist2->matrix[r][c]*d2,
@@ -213,12 +219,15 @@ void Basin::SoilWaterRedistribution(Control &ctrl, Tracking &trck, const double 
 		}
 		if(ctrl.sw_Age){
 			// Update layer 1
-			trck.setAgesoil1(r, c,
-					trck.InOutMix(_soilmoist1->matrix[r][c]*d1,
-							trck.getAgesoil1()->matrix[r][c],
-							_FluxSrftoL1->matrix[r][c],
-							trck.getAgesurface()->matrix[r][c],
-							_FluxL1toL2->matrix[r][c] ));
+			if(!ctrl.sw_lifo)
+				// If LIFO activated, no mixing in L1 before soil evap,
+				// L2 sees signature from previous timestep
+				trck.setAgesoil1(r, c,
+						trck.InOutMix(_soilmoist1->matrix[r][c]*d1,
+								trck.getAgesoil1()->matrix[r][c],
+								_FluxSrftoL1->matrix[r][c],
+								trck.getAgesurface()->matrix[r][c],
+								_FluxL1toL2->matrix[r][c] ));
 			// Update layer 2
 			trck.setAgesoil2(r, c,
 					trck.InOutMix(_soilmoist2->matrix[r][c]*d2,

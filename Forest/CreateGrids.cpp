@@ -57,6 +57,7 @@ int Grove::CreateGrids(grid *base){
 		_ET = new grid (*base);
 		_Einterception = new grid (*base);
 		_Transpiration = new grid (*base);
+		_Esoil = new grid (*base);
 		_LeafWatPot = new grid (*base);
 
 

@@ -30,14 +30,15 @@
 
 #include "Tracking.h"
 
-int Tracking::dDfrac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl, REAL8 theta_new,
+int Tracking::dDfrac_E(Atmosphere &atm, Basin &bsn, Control &ctrl,
+		REAL8 V_old, REAL8 V_new, REAL8 &dD_old, REAL8 &dD_new, REAL8 &dDevap,
 		int r, int c){
 
 	REAL8 alpha_p; // equilibrium isotope fractionation factor (fraction)
 	REAL8 eps_p; // equilibrium isotope fractionation factor (per mil)
 	REAL8 eps_k; // kinetic isotope fractionation factor (per mil)
 	REAL8 eps; // total isotope fractionation factor (per mil)
-	REAL8 dD_atm, dD_old; // Isotopic signatures (permil)
+	REAL8 dD_atm; // Isotopic signatures (permil)
 	REAL8 dD_star; // Limiting isotopic composition (per mil)
 	REAL8 m; // Calculation factor (-)
 	REAL8 T; // Air temperature (K)
@@ -47,8 +48,6 @@ int Tracking::dDfrac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl, REAL8 the
 	// Use soil temperature and relative humidity
 	T = bsn.getSoilTemp()->matrix[r][c] + 273.15 ;
 	h = atm.getRelativeHumidty()->matrix[r][c];
-	dD_old = _dDsoil1->matrix[r][c];///1000;
-
 
 	// Horita and Wesolowski (1994)
 	alpha_p = expl((1158.8*powl(T,3)*1e-9 - 1620.1*powl(T,2)*1e-6 + 794.84*T*1e-3 -\
@@ -64,6 +63,7 @@ int Tracking::dDfrac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl, REAL8 the
 	// for soil (n=1, open water n=0.5))
 	eps_k = (1-h)*25.0;
 
+	// Gibson and Reid (2010)
 	eps = eps_p/alpha_p + eps_k;
 
 	// (Gat and Levy, 1978) + (Gat, 1981)
@@ -73,26 +73,30 @@ int Tracking::dDfrac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl, REAL8 the
 	m = (h - eps/1000) / (1 - h + eps_k/1000);
 
 	// Evaporative loss fraction
-	f = theta_new/bsn.getSoilMoist1()->matrix[r][c];
+	f = V_new/V_old;
 
 	// (Hamilton et al., 2005)
 	// New isotopic signature in topsoil
-	_dDsoil1->matrix[r][c] = dD_star + (dD_old - dD_star) * powl(f,m);
+	dD_new = dD_star + (dD_old - dD_star) * powl(f,m);
+	if(abs(dD_new)>1e3)
+		cout << r << " " << c << " : dDsoil_new ->" << dD_new << " dDold ->" << dD_old <<
+		" dDstar ->" << dD_star << " f ->" << f <<" m ->" << m << endl;
 	// Isotopic signature of evaporated water
-	_dDevapS->matrix[r][c] = (_dDsoil1->matrix[r][c] - h*dD_atm - eps)/ (1-h-eps_k/1000);
+	dDevap = (dD_old - h*dD_atm - eps)/ (1-h+eps_k/1000);
 
 	return EXIT_SUCCESS;
 
 }
 
-int Tracking::d18Ofrac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl, REAL8 theta_new,
+int Tracking::d18Ofrac_E(Atmosphere &atm, Basin &bsn, Control &ctrl,
+		REAL8 V_old, REAL8 V_new, REAL8 &d18O_old, REAL8 &d18O_new, REAL8 &d18Oevap,
 		int r, int c){
 
 	REAL8 alpha_p; // equilibrium isotope fractionation factor (fraction)
 	REAL8 eps_p; // equilibrium isotope fractionation factor (per mil)
 	REAL8 eps_k; // kinetic isotope fractionation factor (per mil)
 	REAL8 eps; // total isotope fractionation factor (per mil)
-	REAL8 d18O_atm, d18O_old; // Isotopic signatures (permil)
+	REAL8 d18O_atm; // Isotopic signatures (permil)
 	REAL8 d18O_star; // Limiting isotopic composition (per mil)
 	REAL8 m; // Calculation factor (-)
 	REAL8 T; // Air temperature (K)
@@ -102,7 +106,6 @@ int Tracking::d18Ofrac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl, REAL8 t
 	// Use soil temperature and relative humidity
 	T = bsn.getSoilTemp()->matrix[r][c] + 273.15 ;
 	h = atm.getRelativeHumidty()->matrix[r][c];
-	d18O_old = _d18Osoil1->matrix[r][c];///1000;
 
 
 	// Horita and Wesolowski (1994)
@@ -129,13 +132,13 @@ int Tracking::d18Ofrac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl, REAL8 t
 	m = (h - eps/1000) / (1 - h + eps_k/1000);
 
 	// Evaporative loss fraction
-	f = theta_new/bsn.getSoilMoist1()->matrix[r][c];
+	f = V_new/V_old;
 
 	// (Hamilton et al., 2005)
 	// New isotopic signature in topsoil
-	_d18Osoil1->matrix[r][c] = d18O_star + (d18O_old - d18O_star) * powl(f,m);
+	d18O_new = d18O_star + (d18O_old - d18O_star) * powl(f,m);
 	// Isotopic signature of evaporated water
-	_d18OevapS->matrix[r][c] = (_d18Osoil1->matrix[r][c] - h*d18O_atm - eps)/ (1-h-eps_k/1000);
+	d18Oevap = (d18O_old - h*d18O_atm - eps)/ (1-h-eps_k/1000);
 
 	return EXIT_SUCCESS;
 

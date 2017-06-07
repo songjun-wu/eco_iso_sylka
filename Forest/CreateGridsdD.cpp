@@ -36,6 +36,7 @@ int Grove::CreateGridsdD(grid *base){
 		_dDcanopy = new grid (*base);
 		_dDevapI = new grid (*base);
 		_dDtranspi = new grid (*base);
+		_dDevapS = new grid (*base);
 
 	}catch(const exception& e){
 

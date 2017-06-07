@@ -177,6 +177,9 @@ public:
     REAL8 getTranspiration(UINT4 n, UINT4 row, UINT4 col) const {
        	return _species[n]._Transpiration->matrix[row][col];
     }
+    REAL8 getEsoil(UINT4 n, UINT4 row, UINT4 col) const {
+      return _species[n]._Esoil->matrix[row][col];
+    }
     REAL8 getLeafWaterPotential(UINT4 n, UINT4 row, UINT4 col) const {
     	return _species[n]._LeafWatPot->matrix[row][col];
     }
@@ -248,11 +251,25 @@ public:
     grid *getEinterceptionSpeciesMap(UINT4 n) const {
         return _species[n]._Einterception;
     }
+    grid *getETSpeciesMap(UINT4 n) const {
+       	return _species[n]._ET;
+    }
     grid *getTranspirationSpeciesMap(UINT4 n) const {
        	return _species[n]._Transpiration;
     }
+    grid *getEsoilSpeciesMap(UINT4 n) const {
+           	return _species[n]._Esoil;
+        }
     grid *getLeafWaterPotSpeciesMap(UINT4 n) const {
     	return _species[n]._LeafWatPot;
+    }
+
+   // setters
+   void setEsoilSpecies(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._Esoil->matrix[row][col] = value;
+    }
+   void setETSpecies(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+             _species[n]._ET->matrix[row][col] = value;
     }
 
     // -- Tracking
@@ -284,6 +301,15 @@ public:
     grid *getAgetranspi(UINT4 n) const {
           return _species[n]._Agetranspi;
         }
+    grid *getdDevapS(UINT4 n) const {
+      return _species[n]._dDevapS;
+    }
+    grid *getd18OevapS(UINT4 n) const {
+          return _species[n]._d18OevapS;
+        }
+    grid *getAgeevapS(UINT4 n) const {
+          return _species[n]._AgeevapS;
+        }
     // setters
     void setdDcanopy(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
           _species[n]._dDcanopy->matrix[row][col] = value;
@@ -312,7 +338,15 @@ public:
     void setAgetranspi(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
           _species[n]._Agetranspi->matrix[row][col] = value;
     }
-
+    void setdDevapS(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._dDevapS->matrix[row][col] = value;
+    }
+    void setd18OevapS(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._d18OevapS->matrix[row][col] = value;
+    }
+    void setAgeevapS(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._AgeevapS->matrix[row][col] = value;
+    }
   /*  //setters
     void setEvapoTransp(REAL8 ET, UINT4 n, UINT4 row, UINT4 col){
     	_species[n]._ET->matrix[row][col] = ET;

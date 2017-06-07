@@ -56,9 +56,9 @@ class Tracking {
 	//grid *_dDsoilAv,   *_d18OsoilAv, *_AgesoilAv; // Vadose average
 	grid *_dDgroundwater, *_d18Ogroundwater, *_Agegroundwater; // Groundwater
 	// Signature of outgoing water
-	grid *_dDevapS, *_d18OevapS, *_AgeevapS;
-	grid *_dDevapI_ToC, *_d18OevapI_ToC, *_AgeevapI_ToC;
-	grid *_dDtranspi_ToC, *_d18Otranspi_ToC, *_Agetranspi_ToC;
+	grid *_dDevapS_sum, *_d18OevapS_sum, *_AgeevapS_sum;
+	grid *_dDevapI_sum, *_d18OevapI_sum, *_AgeevapI_sum;
+	grid *_dDtranspi_sum, *_d18Otranspi_sum, *_Agetranspi_sum;
 
 	//check maps mainly to make sure no nodata values are in the domain.
 	void CheckMapsTrck(Control &ctrl, Basin &bsn);
@@ -72,8 +72,12 @@ public:
 	//Destructor
 	~Tracking();
 
-	int dDfrac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl, REAL8 theta, int r, int c);
-	int d18Ofrac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl, REAL8 theta, int r, int c);
+	int dDfrac_E(Atmosphere &atm, Basin &bsn, Control &ctrl,
+			REAL8 V_old, REAL8 V_new, REAL8 &dD_old, REAL8 &dD_new, REAL8 &dDevap,
+			int r, int c);
+	int d18Ofrac_E(Atmosphere &atm, Basin &bsn, Control &ctrl,
+			REAL8 V_old, REAL8 V_new, REAL8 &d18O_old, REAL8 &d18O_new, REAL8 &d18Oevap,
+			int r, int c);
 
 	int IncrementAge(Basin &bsn, Control &ctrl);
 
@@ -120,14 +124,14 @@ public:
 	grid *getdDgroundwater() const {
 		return _dDgroundwater;
 	}
-	grid *getdDevapS() const {
-		return _dDevapS;
+	grid *getdDevapS_sum() const {
+		return _dDevapS_sum;
 	}
-	grid *getdDevapI_ToC() const {
-		return _dDevapI_ToC;
+	grid *getdDevapI_sum() const {
+		return _dDevapI_sum;
 	}
-	grid *getdDtranspi_ToC() const {
-		return _dDtranspi_ToC;
+	grid *getdDtranspi_sum() const {
+		return _dDtranspi_sum;
 	}
 
 	// 18O
@@ -169,14 +173,14 @@ public:
 	grid *getd18Ogroundwater() const {
 		return _d18Ogroundwater;
 	}
-	grid *getd18OevapS() const {
-		return _d18OevapS;
+	grid *getd18OevapS_sum() const {
+		return _d18OevapS_sum;
 	}
-	grid *getd18OevapI_ToC() const {
-		return _d18OevapI_ToC;
+	grid *getd18OevapI_sum() const {
+		return _d18OevapI_sum;
 	}
-	grid *getd18Otranspi_ToC() const {
-		return _d18Otranspi_ToC;
+	grid *getd18Otranspi_sum() const {
+		return _d18Otranspi_sum;
 	}
 
 	// Age
@@ -218,14 +222,14 @@ public:
 	grid *getAgegroundwater() const {
 		return _Agegroundwater;
 	}
-	grid *getAgeevapS() const {
-		return _AgeevapS;
+	grid *getAgeevapS_sum() const {
+		return _AgeevapS_sum;
 	}
-	grid *getAgeevapI_ToC() const {
-		return _AgeevapI_ToC;
+	grid *getAgeevapI_sum() const {
+		return _AgeevapI_sum;
 	}
-	grid *getAgetranspi_ToC() const {
-		return _Agetranspi_ToC;
+	grid *getAgetranspi_sum() const {
+		return _Agetranspi_sum;
 	}
 
 	void setdDsnowpack(UINT4 row, UINT4 col, REAL8 value) {
@@ -246,14 +250,14 @@ public:
 	void setdDgroundwater(UINT4 row, UINT4 col, REAL8 value) {
 		_dDgroundwater->matrix[row][col] = value;
 	}
-	void setdDevapS(UINT4 row, UINT4 col, REAL8 value) {
-		_dDevapS->matrix[row][col] = value;
+	void setdDevapS_sum(UINT4 row, UINT4 col, REAL8 value) {
+		_dDevapS_sum->matrix[row][col] = value;
 	}
-	void setdDevapI_ToC(UINT4 row, UINT4 col, REAL8 value) {
-		_dDevapI_ToC->matrix[row][col] = value;
+	void setdDevapI_sum(UINT4 row, UINT4 col, REAL8 value) {
+		_dDevapI_sum->matrix[row][col] = value;
 	}
-	void setdDtranspi_ToC(UINT4 row, UINT4 col, REAL8 value) {
-		_dDtranspi_ToC->matrix[row][col] = value;
+	void setdDtranspi_sum(UINT4 row, UINT4 col, REAL8 value) {
+		_dDtranspi_sum->matrix[row][col] = value;
 	}
 
 	void setd18Osnowpack(UINT4 row, UINT4 col, REAL8 value) {
@@ -274,14 +278,14 @@ public:
 	void setd18Ogroundwater(UINT4 row, UINT4 col, REAL8 value) {
 		_d18Ogroundwater->matrix[row][col] = value;
 	}
-	void setd18OevapS(UINT4 row, UINT4 col, REAL8 value) {
-		_d18OevapS->matrix[row][col] = value;
+	void setd18OevapS_sum(UINT4 row, UINT4 col, REAL8 value) {
+		_d18OevapS_sum->matrix[row][col] = value;
 	}
-	void setd18OevapI_ToC(UINT4 row, UINT4 col, REAL8 value) {
-		_d18OevapI_ToC->matrix[row][col] = value;
+	void setd18OevapI_sum(UINT4 row, UINT4 col, REAL8 value) {
+		_d18OevapI_sum->matrix[row][col] = value;
 	}
-	void setd18Otranspi_ToC(UINT4 row, UINT4 col, REAL8 value) {
-		_d18Otranspi_ToC->matrix[row][col] = value;
+	void setd18Otranspi_sum(UINT4 row, UINT4 col, REAL8 value) {
+		_d18Otranspi_sum->matrix[row][col] = value;
 	}
 
 	void setAgesnowpack(UINT4 row, UINT4 col, REAL8 value) {
@@ -302,14 +306,14 @@ public:
 	void setAgegroundwater(UINT4 row, UINT4 col, REAL8 value) {
 		_Agegroundwater->matrix[row][col] = value;
 	}
-	void setAgeevapS(UINT4 row, UINT4 col, REAL8 value) {
-		_AgeevapS->matrix[row][col] = value;
+	void setAgeevapS_sum(UINT4 row, UINT4 col, REAL8 value) {
+		_AgeevapS_sum->matrix[row][col] = value;
 	}
-	void setAgeevapI_ToC(UINT4 row, UINT4 col, REAL8 value) {
-		_AgeevapI_ToC->matrix[row][col] = value;
+	void setAgeevapI_sum(UINT4 row, UINT4 col, REAL8 value) {
+		_AgeevapI_sum->matrix[row][col] = value;
 	}
-	void setAgetranspi_ToC(UINT4 row, UINT4 col, REAL8 value) {
-		_Agetranspi_ToC->matrix[row][col] = value;
+	void setAgetranspi_sum(UINT4 row, UINT4 col, REAL8 value) {
+		_Agetranspi_sum->matrix[row][col] = value;
 	}
 
 	// When there's only input

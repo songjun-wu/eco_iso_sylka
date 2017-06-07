@@ -191,7 +191,6 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_Soil_Sat_Deficit = Config.read<bool>("Report_Soil_Sat_Deficit");
 	Rep_GWater = Config.read<bool>("Report_Ground_Water");
 	Rep_Total_ET = Config.read<bool>("Report_Total_ET");
-	Rep_Soil_ETP = Config.read<bool>("Report_Soil_ETP");
 	Rep_Soil_Net_Rad = Config.read<bool>("Report_Soil_Net_Rad");
 	Rep_Soil_LE = Config.read<bool>("Report_Soil_LE");
 	Rep_Sens_Heat = Config.read<bool>("Report_Sens_Heat");
@@ -200,9 +199,10 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_Soil_Temperature = Config.read<bool>("Report_Soil_Temperature");
 	Rep_Skin_Temperature = Config.read<bool>("Report_Skin_Temperature");
 
-	Rep_Transpiration_ToC = Config.read<bool>("Report_Transpiration_ToC");
-	Rep_Einterception_ToC = Config.read<bool>("Report_Einterception_ToC");
-	Rep_Net_Rad_ToC = Config.read<bool>("Report_Net_Rad_ToC");
+	Rep_Transpiration_sum = Config.read<bool>("Report_Transpiration_sum");
+	Rep_Einterception_sum = Config.read<bool>("Report_Einterception_sum");
+	Rep_Esoil_sum = Config.read<bool>("Report_Esoil_sum");
+	Rep_Net_Rad_sum = Config.read<bool>("Report_Net_Rad_sum");
 
 	Rep_Veget_frac = Config.read<bool>("Report_Veget_frac");
 	Rep_Stem_Density = Config.read<bool>("Report_Stem_Density");
@@ -220,8 +220,10 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_Canopy_LE_T = Config.read<bool>("Report_Canopy_LE_T");
 	Rep_Canopy_Sens_Heat = Config.read<bool>("Report_Canopy_Sens_Heat");
 	Rep_Canopy_Water_Stor = Config.read<bool>("Report_Canopy_Water_Stor");
+	Rep_ETspecies = Config.read<bool>("Report_species_ET");
 	Rep_Transpiration = Config.read<bool>("Report_Transpiration");
 	Rep_Einterception = Config.read<bool>("Report_Einterception");
+	Rep_Esoil = Config.read<bool>("Report_Esoil");
 
 	Config.readInto(fn_rep_mask, "TS_mask");
 
@@ -246,8 +248,6 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_WaterTableDepth = Config.read<bool>("Ts_WaterTableDepth");
 	RepTs_Soil_Sat_Deficit = Config.read<bool>("Ts_Soil_Sat_Deficit");
 	RepTs_GroundWater = Config.read<bool>("Ts_Ground_Water");
-	RepTs_Total_ET = Config.read<bool>("Ts_Total_ET");
-	RepTs_Soil_ETP = Config.read<bool>("Ts_Soil_ETP");
 	RepTs_Soil_Net_Rad = Config.read<bool>("Ts_Soil_Net_Rad");
 	RepTs_Soil_LE = Config.read<bool>("Ts_Soil_LE");
 	RepTs_Sens_Heat = Config.read<bool>("Ts_Sens_Heat");
@@ -256,9 +256,11 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_Soil_Temperature = Config.read<bool>("Ts_Soil_Temperature");
 	RepTs_Skin_Temperature = Config.read<bool>("Ts_Skin_Temperature");
 	
-	RepTs_Transpiration_ToC = Config.read<bool>("Ts_Transpiration_ToC");
-	RepTs_Einterception_ToC = Config.read<bool>("Ts_Einterception_ToC");
-	RepTs_Net_Rad_ToC = Config.read<bool>("Ts_Net_Rad_ToC");
+	RepTs_Total_ET = Config.read<bool>("Ts_Total_ET");
+	RepTs_Transpiration_sum = Config.read<bool>("Ts_Transpiration_sum");
+	RepTs_Einterception_sum = Config.read<bool>("Ts_Einterception_sum");
+	RepTs_Esoil_sum = Config.read<bool>("Ts_Esoil_sum");
+	RepTs_Net_Rad_sum = Config.read<bool>("Ts_Net_Rad_sum");
 
 	RepTs_Veget_frac = Config.read<bool>("Ts_Veget_frac");
 	RepTs_Stem_Density = Config.read<bool>("Ts_Stem_Density");
@@ -275,8 +277,10 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_Canopy_LE_T = Config.read<bool>("Ts_Canopy_LE_T");
 	RepTs_Canopy_Sens_Heat = Config.read<bool>("Ts_Canopy_Sens_Heat");
 	RepTs_Canopy_Water_Stor = Config.read<bool>("Ts_Canopy_Water_Stor");
+	RepTs_ETspecies = Config.read<bool>("Ts_species_ET");
 	RepTs_Transpiration = Config.read<bool>("Ts_Transpiration");
 	RepTs_Einterception = Config.read<bool>("Ts_Einterception");
+	RepTs_Esoil = Config.read<bool>("Ts_Esoil");
 
 	}
 	catch(ConfigFile::file_not_found &fn){

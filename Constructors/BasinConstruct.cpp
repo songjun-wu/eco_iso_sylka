@@ -109,7 +109,7 @@ Basin::Basin(Control &ctrl)
 		_catcharea = new grid(*_DEM);
 		_fieldcap = new grid(*_DEM);
 		_Rn = new grid(*_DEM);
-		_RnToC = new grid(*_DEM);
+		_Rn_sum = new grid(*_DEM);
 		_latheat = new grid(*_DEM);
 		_sensheat = new grid(*_DEM);
 		_grndheat = new grid(*_DEM);
@@ -137,7 +137,7 @@ Basin::Basin(Control &ctrl)
 		_GrndWater = new grid(*_DEM); //groundwater storage at the end of the time step
 		_GWupstreamBC = new grid(*_DEM); //gw flux upstream boundary conditin (ms-1)
 		_Disch_upstreamBC = new grid(*_DEM);
-		_EvaporationS = new grid(*_DEM); //actual soil evaporation in m s-1
+		_EvaporationS_all = new grid(*_DEM); //actual soil evaporation in m s-1
 		_EvaporationI_all = new grid(*_DEM); //actual evaporation from summed interception in m s-1
 		_Transpiration_all = new grid(*_DEM); //transpiration from summed in m s-1
 
@@ -178,8 +178,8 @@ Basin::Basin(Control &ctrl)
 		delete _snow;
 	if(_Rn)
 		delete _Rn;
-	if(_RnToC)
-		delete _RnToC;
+	if(_Rn_sum)
+		delete _Rn_sum;
 	if(_latheat)
 		delete _latheat;
 	if(_sensheat)
@@ -294,8 +294,8 @@ Basin::Basin(Control &ctrl)
 		delete _bedrock_leak;
 	if(_IsSaturated)
 		delete _IsSaturated;
-	if(_EvaporationS)
-		delete _EvaporationS;
+	if(_EvaporationS_all)
+		delete _EvaporationS_all;
 	if(_EvaporationI_all)
 		delete _EvaporationI_all;
 	if(_Transpiration_all)

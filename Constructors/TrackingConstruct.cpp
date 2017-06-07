@@ -43,9 +43,9 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_dDsoil3 = NULL;
 	//_dDsoilAv = NULL;
 	_dDgroundwater = NULL;
-	_dDevapS = NULL;
-	_dDevapI_ToC = NULL;
-	_dDtranspi_ToC = NULL;
+	_dDevapS_sum = NULL;
+	_dDevapI_sum = NULL;
+	_dDtranspi_sum = NULL;
 
 	_d18Ocanopy = NULL;
 	_d18Osnowpack = NULL;
@@ -55,9 +55,9 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_d18Osoil3 = NULL;
 	//_d18OsoilAv = NULL;
 	_d18Ogroundwater = NULL;
-	_d18OevapS = NULL;
-	_d18OevapI_ToC = NULL;
-	_d18Otranspi_ToC = NULL;
+	_d18OevapS_sum = NULL;
+	_d18OevapI_sum = NULL;
+	_d18Otranspi_sum = NULL;
 
 	_Agecanopy = NULL;
 	_Agesnowpack = NULL;
@@ -67,9 +67,9 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_Agesoil3 = NULL;
 	//_AgesoilAv = NULL;
 	_Agegroundwater = NULL;
-	_AgeevapS = NULL;
-	_AgeevapI_ToC = NULL;
-	_Agetranspi_ToC = NULL;
+	_AgeevapS_sum = NULL;
+	_AgeevapI_sum = NULL;
+	_Agetranspi_sum = NULL;
 
 	if(!ctrl.sw_trck){
 		ctrl.sw_dD = 0;
@@ -89,9 +89,9 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_dDsoil3 = new grid(ctrl.path_BasinFolder + ctrl.fn_dDsoil3, ctrl.MapType);
 			//_dDsoilAv = new grid(*bsn.getDEM(), -60);
 			_dDgroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_dDgroundwater, ctrl.MapType);
-			_dDevapS = new grid(*bsn.getDEM());
-			_dDevapI_ToC = new grid(*bsn.getDEM());
-			_dDtranspi_ToC = new grid(*bsn.getDEM());
+			_dDevapS_sum = new grid(*bsn.getDEM());
+			_dDevapI_sum = new grid(*bsn.getDEM());
+			_dDtranspi_sum = new grid(*bsn.getDEM());
 		}
 
 		if(ctrl.sw_d18O){
@@ -104,9 +104,9 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_d18Osoil3 = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Osoil3, ctrl.MapType);
 			//_d18OsoilAv = new grid(*bsn.getDEM(), -60);
 			_d18Ogroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Ogroundwater, ctrl.MapType);
-			_d18OevapS = new grid(*bsn.getDEM());
-			_d18OevapI_ToC = new grid(*bsn.getDEM());
-			_d18Otranspi_ToC = new grid(*bsn.getDEM());
+			_d18OevapS_sum = new grid(*bsn.getDEM());
+			_d18OevapI_sum = new grid(*bsn.getDEM());
+			_d18Otranspi_sum = new grid(*bsn.getDEM());
 		}
 
 		if(ctrl.sw_Age){
@@ -119,9 +119,9 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_Agesoil3 = new grid(ctrl.path_BasinFolder + ctrl.fn_Agesoil3, ctrl.MapType);
 			//_AgesoilAv = new grid(*bsn.getDEM(), -60);
 			_Agegroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_Agegroundwater, ctrl.MapType);
-			_AgeevapS = new grid(*bsn.getDEM());
-			_AgeevapI_ToC = new grid(*bsn.getDEM());
-			_Agetranspi_ToC = new grid(*bsn.getDEM());
+			_AgeevapS_sum = new grid(*bsn.getDEM());
+			_AgeevapI_sum = new grid(*bsn.getDEM());
+			_Agetranspi_sum = new grid(*bsn.getDEM());
 		}
 
 		//Partial check of maps mainly to make sure no no data is written within the valid domain
@@ -147,12 +147,12 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	//		delete _dDsoilAv;
 	if(_dDgroundwater)
 		delete _dDgroundwater;
-	if(_dDevapS)
-		delete _dDevapS;
-	if(_dDevapI_ToC)
-		delete _dDevapI_ToC;
-	if(_dDtranspi_ToC)
-		delete _dDtranspi_ToC;
+	if(_dDevapS_sum)
+		delete _dDevapS_sum;
+	if(_dDevapI_sum)
+		delete _dDevapI_sum;
+	if(_dDtranspi_sum)
+		delete _dDtranspi_sum;
 
 	//	if(_d18Oinput)
 	//		delete _d18Oinput;
@@ -172,12 +172,12 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	//		delete _d18OsoilAv;
 	if(_d18Ogroundwater)
 		delete _d18Ogroundwater;
-	if(_d18OevapS)
-		delete _d18OevapS;
-	if(_d18OevapI_ToC)
-		delete _d18OevapI_ToC;
-	if(_d18Otranspi_ToC)
-		delete _d18Otranspi_ToC;
+	if(_d18OevapS_sum)
+		delete _d18OevapS_sum;
+	if(_d18OevapI_sum)
+		delete _d18OevapI_sum;
+	if(_d18Otranspi_sum)
+		delete _d18Otranspi_sum;
 
 	//	if(_Agecanopy)
 	//		delete _Agecanopy;
@@ -195,12 +195,12 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	//		delete _AgesoilAv;
 	if(_Agegroundwater)
 		delete _Agegroundwater;
-	if(_AgeevapS)
-		delete _AgeevapS;
-	if(_AgeevapI_ToC)
-		delete _AgeevapI_ToC;
-	if(_Agetranspi_ToC)
-		delete _Agetranspi_ToC;
+	if(_AgeevapS_sum)
+		delete _AgeevapS_sum;
+	if(_AgeevapI_sum)
+		delete _AgeevapI_sum;
+	if(_Agetranspi_sum)
+		delete _Agetranspi_sum;
 
 	throw;
 	}

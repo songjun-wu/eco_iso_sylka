@@ -50,6 +50,7 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 		sw_d18O = ConfigTrck.read<bool>("water_d18O");
 		sw_frac = ConfigTrck.read<bool>("water_frac");
 		sw_Age = ConfigTrck.read<bool>("water_Age");
+		sw_lifo = ConfigTrck.read<bool>("water_lifo");
 
 		if(sw_dD){
 
@@ -75,10 +76,11 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			//Rep_dDsoilAv = ConfigTrck.read<bool>("Rep_dDsoilAv");
 			Rep_dDgroundwater = ConfigTrck.read<bool>("Rep_dDgroundwater");
 			Rep_dDevapS = ConfigTrck.read<bool>("Rep_dDevapS");
+			Rep_dDevapS_sum = ConfigTrck.read<bool>("Rep_dDevapS_sum");
 			Rep_dDevapI = ConfigTrck.read<bool>("Rep_dDevapI");
-			Rep_dDevapI_ToC = ConfigTrck.read<bool>("Rep_dDevapI_ToC");
+			Rep_dDevapI_sum = ConfigTrck.read<bool>("Rep_dDevapI_sum");
 			Rep_dDtranspi = ConfigTrck.read<bool>("Rep_dDtranspi");
-			Rep_dDtranspi_ToC = ConfigTrck.read<bool>("Rep_dDtranspi_ToC");
+			Rep_dDtranspi_sum = ConfigTrck.read<bool>("Rep_dDtranspi_sum");
 			// Report time series
 			RepTs_dDprecip = ConfigTrck.read<bool>("Ts_dDprecip");
 			//RepTs_dDcanopy = ConfigTrck.read<bool>("Ts_dDcanopy");
@@ -90,10 +92,11 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			//RepTs_dDsoilAv = ConfigTrck.read<bool>("Ts_dDsoilAv");
 			RepTs_dDgroundwater = ConfigTrck.read<bool>("Ts_dDgroundwater");
 			RepTs_dDevapS = ConfigTrck.read<bool>("Ts_dDevapS");
+			RepTs_dDevapS_sum = ConfigTrck.read<bool>("Ts_dDevapS_sum");
 			RepTs_dDevapI = ConfigTrck.read<bool>("Ts_dDevapI");
-			RepTs_dDevapI_ToC = ConfigTrck.read<bool>("Ts_dDevapI_ToC");
+			RepTs_dDevapI_sum = ConfigTrck.read<bool>("Ts_dDevapI_sum");
 			RepTs_dDtranspi = ConfigTrck.read<bool>("Ts_dDtranspi");
-			RepTs_dDtranspi_ToC = ConfigTrck.read<bool>("Ts_dDtranspi_ToC");
+			RepTs_dDtranspi_sum = ConfigTrck.read<bool>("Ts_dDtranspi_sum");
 		}
 
 		if(sw_d18O){
@@ -104,8 +107,8 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			ConfigTrck.readInto(fn_d18Osnowpack, "init_d18O_snowpack");
 			ConfigTrck.readInto(fn_d18Osurface, "init_d18O_surface");
 			ConfigTrck.readInto(fn_d18Osoil1, "init_d18O_soil1");
-			ConfigTrck.readInto(fn_d18Osoil2, "init_d18O_canopy");
-			ConfigTrck.readInto(fn_d18Osoil3, "init_d18O_canopy");
+			ConfigTrck.readInto(fn_d18Osoil2, "init_d18O_soil2");
+			ConfigTrck.readInto(fn_d18Osoil3, "init_d18O_soil3");
 			ConfigTrck.readInto(fn_d18Ogroundwater, "init_d18O_groundwater");
 			//			ConfigTrck.readInto(fn_d18Ochannel, "init_d18O_channel");
 			// Report maps
@@ -119,10 +122,11 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			//Rep_d18OsoilAv = ConfigTrck.read<bool>("Rep_d18OsoilAv");
 			Rep_d18Ogroundwater = ConfigTrck.read<bool>("Rep_d18Ogroundwater");
 			Rep_d18OevapS = ConfigTrck.read<bool>("Rep_d18OevapS");
+			Rep_d18OevapS_sum = ConfigTrck.read<bool>("Rep_d18OevapS_sum");
 			Rep_d18OevapI = ConfigTrck.read<bool>("Rep_d18OevapI");
-			Rep_d18OevapI_ToC = ConfigTrck.read<bool>("Rep_d18OevapI_ToC");
+			Rep_d18OevapI_sum = ConfigTrck.read<bool>("Rep_d18OevapI_sum");
 			Rep_d18Otranspi = ConfigTrck.read<bool>("Rep_d18Otranspi");
-			Rep_d18Otranspi_ToC = ConfigTrck.read<bool>("Rep_d18Otranspi_ToC");
+			Rep_d18Otranspi_sum = ConfigTrck.read<bool>("Rep_d18Otranspi_sum");
 			// Report time series
 			RepTs_d18Oprecip = ConfigTrck.read<bool>("Ts_d18Oprecip");
 			//RepTs_d18Ocanopy = ConfigTrck.read<bool>("Ts_d18Ocanopy");
@@ -134,10 +138,11 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			//RepTs_d18OsoilAv = ConfigTrck.read<bool>("Ts_d18OsoilAv");
 			RepTs_d18Ogroundwater = ConfigTrck.read<bool>("Ts_d18Ogroundwater");
 			RepTs_d18OevapS = ConfigTrck.read<bool>("Ts_d18OevapS");
+			RepTs_d18OevapS_sum = ConfigTrck.read<bool>("Ts_d18OevapS_sum");
 			RepTs_d18OevapI = ConfigTrck.read<bool>("Ts_d18OevapI");
-			RepTs_d18OevapI_ToC = ConfigTrck.read<bool>("Ts_d18OevapI_ToC");
+			RepTs_d18OevapI_sum = ConfigTrck.read<bool>("Ts_d18OevapI_sum");
 			RepTs_d18Otranspi = ConfigTrck.read<bool>("Ts_d18Otranspi");
-			RepTs_d18Otranspi_ToC = ConfigTrck.read<bool>("Ts_d18Otranspi_ToC");
+			RepTs_d18Otranspi_sum = ConfigTrck.read<bool>("Ts_d18Otranspi_sum");
 		}
 
 		if(sw_Age){
@@ -161,10 +166,11 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			//Rep_AgesoilAv = ConfigTrck.read<bool>("Rep_AgesoilAv");
 			Rep_Agegroundwater = ConfigTrck.read<bool>("Rep_Agegroundwater");
 			Rep_AgeevapS = ConfigTrck.read<bool>("Rep_AgeevapS");
+			Rep_AgeevapS_sum = ConfigTrck.read<bool>("Rep_AgeevapS_sum");
 			Rep_AgeevapI = ConfigTrck.read<bool>("Rep_AgeevapI");
-			Rep_AgeevapI_ToC = ConfigTrck.read<bool>("Rep_AgeevapI_ToC");
+			Rep_AgeevapI_sum = ConfigTrck.read<bool>("Rep_AgeevapI_sum");
 			Rep_Agetranspi = ConfigTrck.read<bool>("Rep_Agetranspi");
-			Rep_Agetranspi_ToC = ConfigTrck.read<bool>("Rep_Agetranspi_ToC");
+			Rep_Agetranspi_sum = ConfigTrck.read<bool>("Rep_Agetranspi_sum");
 			// Report time series
 			//RepTs_Agecanopy = ConfigTrck.read<bool>("Ts_Agecanopy");
 			RepTs_Agesnowpack = ConfigTrck.read<bool>("Ts_Agesnowpack");
@@ -175,10 +181,11 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			//RepTs_AgesoilAv = ConfigTrck.read<bool>("Ts_AgesoilAv");
 			RepTs_Agegroundwater = ConfigTrck.read<bool>("Ts_Agegroundwater");
 			RepTs_AgeevapS = ConfigTrck.read<bool>("Ts_AgeevapS");
+			RepTs_AgeevapS_sum = ConfigTrck.read<bool>("Ts_AgeevapS_sum");
 			RepTs_AgeevapI = ConfigTrck.read<bool>("Ts_AgeevapI");
-			RepTs_AgeevapI_ToC = ConfigTrck.read<bool>("Ts_AgeevapI_ToC");
+			RepTs_AgeevapI_sum = ConfigTrck.read<bool>("Ts_AgeevapI_sum");
 			RepTs_Agetranspi = ConfigTrck.read<bool>("Ts_Agetranspi");
-			RepTs_Agetranspi_ToC = ConfigTrck.read<bool>("Ts_Agetranspi_ToC");
+			RepTs_Agetranspi_sum = ConfigTrck.read<bool>("Ts_Agetranspi_sum");
 		}
 	}
 	catch(ConfigFile::file_not_found &fn){

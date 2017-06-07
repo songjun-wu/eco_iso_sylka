@@ -154,8 +154,6 @@ struct Control{
 		bool Rep_WaterTableDepth;
 		bool Rep_Soil_Sat_Deficit;
 		bool Rep_GWater;
-		bool Rep_Total_ET;
-		bool Rep_Soil_ETP;
 		bool Rep_Soil_Net_Rad;
 		bool Rep_Soil_LE;
 		bool Rep_Sens_Heat;
@@ -164,9 +162,11 @@ struct Control{
 		bool Rep_Soil_Temperature;
 		bool Rep_Skin_Temperature;
 
-		bool Rep_Net_Rad_ToC;
-		bool Rep_Transpiration_ToC;
-		bool Rep_Einterception_ToC;
+		bool Rep_Net_Rad_sum;
+		bool Rep_Total_ET;
+		bool Rep_Transpiration_sum;
+		bool Rep_Einterception_sum;
+		bool Rep_Esoil_sum;
 
 		bool Rep_Veget_frac;
 		bool Rep_Stem_Density;
@@ -184,8 +184,10 @@ struct Control{
 		bool Rep_Canopy_LE_T;
 		bool Rep_Canopy_Sens_Heat;
 		bool Rep_Canopy_Water_Stor;
+		bool Rep_ETspecies;
 		bool Rep_Transpiration;
 		bool Rep_Einterception;
+		bool Rep_Esoil;
 
 		/*time series reporting input files*/
 		string fn_rep_mask;
@@ -211,8 +213,6 @@ struct Control{
 	bool RepTs_WaterTableDepth;
 	bool RepTs_Soil_Sat_Deficit;
 	bool RepTs_GroundWater;
-	bool RepTs_Total_ET;
-	bool RepTs_Soil_ETP;
 	bool RepTs_Soil_Net_Rad;
 	bool RepTs_Soil_LE;
 	bool RepTs_Sens_Heat;
@@ -221,9 +221,11 @@ struct Control{
 	bool RepTs_Soil_Temperature;
 	bool RepTs_Skin_Temperature;
 
-	bool RepTs_Net_Rad_ToC;
-	bool RepTs_Transpiration_ToC;
-	bool RepTs_Einterception_ToC;
+	bool RepTs_Net_Rad_sum;
+	bool RepTs_Total_ET;
+	bool RepTs_Transpiration_sum;
+	bool RepTs_Einterception_sum;
+	bool RepTs_Esoil_sum;
 
 	bool RepTs_Veget_frac;
 	bool RepTs_Stem_Density;
@@ -240,14 +242,17 @@ struct Control{
 	bool RepTs_Canopy_LE_T;
 	bool RepTs_Canopy_Sens_Heat;
 	bool RepTs_Canopy_Water_Stor;
+	bool RepTs_ETspecies;
 	bool RepTs_Transpiration;
 	bool RepTs_Einterception;
+	bool RepTs_Esoil;
 
 	// Tracking  -------------------------------------------------
 	// Tracking inputs
 	string fn_tracking;
 	bool sw_trck; //switch to turn on and off the tracking option
 	bool sw_frac; //switch to turn on and off fractionation in soil evap
+	bool sw_lifo; //switch to turn "last in last, first out" for topsoil evaporation (last = same tstep precip/melt)
 	bool sw_dD; //switch to turn on and off the dD tracking option (if sw_trck = 1)
 	bool sw_d18O; //switch to turn on and off the d18O tracking option (if sw_trck = 1)
 	bool sw_Age; //switch to turn on and off the age tracking option (if sw_trck = 1)
@@ -293,10 +298,11 @@ struct Control{
 	//bool Rep_dDsoilAv;
 	bool Rep_dDgroundwater;
 	bool Rep_dDevapS;
+	bool Rep_dDevapS_sum;
 	bool Rep_dDevapI;
-	bool Rep_dDevapI_ToC;
+	bool Rep_dDevapI_sum;
 	bool Rep_dDtranspi;
-	bool Rep_dDtranspi_ToC;
+	bool Rep_dDtranspi_sum;
 
 	bool Rep_d18Oprecip;
 	bool Rep_d18Ocanopy;
@@ -308,10 +314,11 @@ struct Control{
 	//bool Rep_d18OsoilAv;
 	bool Rep_d18Ogroundwater;
 	bool Rep_d18OevapS;
+	bool Rep_d18OevapS_sum;
 	bool Rep_d18OevapI;
-	bool Rep_d18OevapI_ToC;
+	bool Rep_d18OevapI_sum;
 	bool Rep_d18Otranspi;
-	bool Rep_d18Otranspi_ToC;
+	bool Rep_d18Otranspi_sum;
 
 	bool Rep_Agecanopy;
 	bool Rep_Agesnowpack;
@@ -322,10 +329,11 @@ struct Control{
 	//bool Rep_AgesoilAv;
 	bool Rep_Agegroundwater;
 	bool Rep_AgeevapS;
+	bool Rep_AgeevapS_sum;
 	bool Rep_AgeevapI;
-	bool Rep_AgeevapI_ToC;
+	bool Rep_AgeevapI_sum;
 	bool Rep_Agetranspi;
-	bool Rep_Agetranspi_ToC;
+	bool Rep_Agetranspi_sum;
 
 	// Time series
 	bool RepTs_dDprecip;
@@ -338,10 +346,11 @@ struct Control{
 	//bool RepTs_dDsoilAv;
 	bool RepTs_dDgroundwater;
 	bool RepTs_dDevapS;
+	bool RepTs_dDevapS_sum;
 	bool RepTs_dDevapI;
-	bool RepTs_dDevapI_ToC;
+	bool RepTs_dDevapI_sum;
 	bool RepTs_dDtranspi;
-	bool RepTs_dDtranspi_ToC;
+	bool RepTs_dDtranspi_sum;
 
 	bool RepTs_d18Oprecip;
 	//bool RepTs_d18Ocanopy;
@@ -353,10 +362,11 @@ struct Control{
 	//bool RepTs_d18OsoilAv;
 	bool RepTs_d18Ogroundwater;
 	bool RepTs_d18OevapS;
+	bool RepTs_d18OevapS_sum;
 	bool RepTs_d18OevapI;
-	bool RepTs_d18OevapI_ToC;
+	bool RepTs_d18OevapI_sum;
 	bool RepTs_d18Otranspi;
-	bool RepTs_d18Otranspi_ToC;
+	bool RepTs_d18Otranspi_sum;
 
 	//bool RepTs_Agecanopy;
 	bool RepTs_Agesnowpack;
@@ -367,10 +377,11 @@ struct Control{
 	//bool RepTs_AgesoilAv;
 	bool RepTs_Agegroundwater;
 	bool RepTs_AgeevapS;
+	bool RepTs_AgeevapS_sum;
 	bool RepTs_AgeevapI;
-	bool RepTs_AgeevapI_ToC;
+	bool RepTs_AgeevapI_sum;
 	bool RepTs_Agetranspi;
-	bool RepTs_Agetranspi_ToC;
+	bool RepTs_Agetranspi_sum;
 	// --------------------------
 
 

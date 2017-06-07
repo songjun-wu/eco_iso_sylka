@@ -40,8 +40,8 @@ Basin::~Basin(){
 		delete _snow;
 	if(_Rn)
 		delete _Rn;
-	if(_RnToC)
-		delete _RnToC;
+	if(_Rn_sum)
+		delete _Rn_sum;
 	if(_latheat)
 		delete _latheat;
 	if(_sensheat)
@@ -156,8 +156,8 @@ Basin::~Basin(){
 		delete _bedrock_leak;
 	if(_IsSaturated)
 		delete _IsSaturated;
-	if(_EvaporationS)
-		delete _EvaporationS;
+	if(_EvaporationS_all)
+		delete _EvaporationS_all;
 	if(_EvaporationI_all)
 		delete _EvaporationI_all;
 	if(_Transpiration_all)
