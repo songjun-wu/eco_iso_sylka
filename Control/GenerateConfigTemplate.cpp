@@ -100,10 +100,11 @@ try{
 
     ofOut << "#" << endl << "# Time variables section" << endl << "#" << endl;
     ofOut << "Simul_start = 0 # always 0" << endl;
-    ofOut << "Simul_end = 31536000 # seconds" << endl;
+    ofOut << "Simul_end = 31536000 # seconds (1 year)" << endl;
     ofOut << "Simul_tstep = 86400 # seconds" << endl;
     ofOut << "Clim_input_tstep = 86400  " << endl;
-    ofOut << "Report_interval = 86400" << endl << endl;
+    ofOut << "Report_interval = 86400" << endl ;
+    ofOut << "ReportMap_interval = 86400" << endl << endl;
 
     ofOut << "#" << endl << "# Base map section" << endl << "#" << endl;
     ofOut << "DEM = DEM.map" << endl;
@@ -223,6 +224,10 @@ try{
     ofOut << "Report_Soil_Temperature = 0 " << endl;
     ofOut << "Report_Skin_Temperature = 0 " << endl << endl;
 
+    ofOut << "Report_GW_to_Channel = 0 " << endl;
+    ofOut << "Report_Surface_to_Channel = 0 " << endl;
+    //ofOut << "Report_Return_Flow_Surface = 0 " << endl << endl;
+
     ofOut << "Report_Total_ET = 1 " << endl;
     ofOut << "Report_Transpiration_sum = 0 " << endl;
     ofOut << "Report_Einterception_sum = 0 " << endl;
@@ -285,6 +290,10 @@ try{
     ofOut << "Ts_Snow_Heat = 0 " << endl;
     ofOut << "Ts_Soil_Temperature = 0 " << endl;
     ofOut << "Ts_Skin_Temperature = 0 " << endl << endl ;
+
+    ofOut << "Ts_GW_to_Channel = 1 " << endl;
+    ofOut << "Ts_Surface_to_Channel = 1 " << endl;
+    //ofOut << "Ts_Return_Flow_Surface = 0 " << endl << endl;
 
     ofOut << "Ts_Total_ET = 1 " << endl;
     ofOut << "Ts_Transpiration_sum = 1 " << endl;

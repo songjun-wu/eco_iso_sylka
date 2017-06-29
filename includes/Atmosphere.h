@@ -88,7 +88,7 @@ class Atmosphere{
 public:
 
 	Atmosphere();
-    Atmosphere(Control & ctrl);
+    Atmosphere(Control &ctrl);
     ~Atmosphere();
 
 

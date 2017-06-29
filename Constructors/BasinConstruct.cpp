@@ -140,6 +140,8 @@ Basin::Basin(Control &ctrl)
 		_EvaporationS_all = new grid(*_DEM); //actual soil evaporation in m s-1
 		_EvaporationI_all = new grid(*_DEM); //actual evaporation from summed interception in m s-1
 		_Transpiration_all = new grid(*_DEM); //transpiration from summed in m s-1
+		_FluxGWtoChn = new grid(*_DEM); // discharge, groundwater to channel
+		_FluxSrftoChn = new grid(*_DEM); // discharge, ponding to channel
 
 		// Tracking
 		_FluxUptoSnow = NULL;
@@ -324,6 +326,10 @@ Basin::Basin(Control &ctrl)
 		delete _FluxL3toL2;
 	if(_FluxGWtoL3)
 		delete _FluxGWtoL3;
+	if(_FluxGWtoChn)
+		delete _FluxGWtoChn;
+	if(_FluxSrftoChn)
+		delete _FluxSrftoChn;
 
 	throw;
 }

@@ -121,7 +121,7 @@ class Basin {
 	grid *_PondingOld; //water stored at the surface at the beginning of the time step (0 if not channel, m)
 	grid *_GrndWaterOld; //water stored in the gw system at the beginning of the time step (m)
 	grid *_GrndWater; //water stored in the gw system at the end of the time step (m)
-	grid *_GWupstreamBC; //gw flux upstream boundary conditin (ms-1)
+	grid *_GWupstreamBC; //gw flux upstream boundary condition (m2.s-1)
 
 	grid *_Rn; //Net radiation for the soil surface Wm-2
 	grid *_Rn_sum; //Net radiation summed at the top of the canopy Wm-2
@@ -135,9 +135,9 @@ class Basin {
 	grid *_Disch_old;// streamflow out of each channel cell at the beginning of hte time step (m3 s-1)
 	grid *_Disch_upstreamBC; //upstream boundary condition (m3s-1)
 	vectCells _dailyOvlndOutput; //vector containing water output for each cell with no drainage (ldd value of 5). The vectCell structure contains the row and col
-								 //of the cell with no output and the area draining to that cell m3s-1
+	//of the cell with no output and the area draining to that cell m3s-1
 	vectCells _dailyGwtrOutput; //vector containing water output for each cell with no drainage (ldd value of 5). The vectCell structure contains the row and col
-								//of the cell with no output and the area draining to that cell m3s-1 ???
+	//of the cell with no output and the area draining to that cell m3s-1 ???
 
 	grid *_bedrock_leak;
 
@@ -155,6 +155,8 @@ class Basin {
 	grid *_FluxL2toL1; // capillary + return flow, L2 to L1
 	grid *_FluxL3toL2; // capillary + return flow, L2 to L3
 	grid *_FluxGWtoL3; // discharge, groundwater to L3
+	grid *_FluxGWtoChn; // discharge, groundwater to channel
+	grid *_FluxSrftoChn; // overland flow to channel
 	// --------------------------------------------------------------------------------------
 
 	vectCells SortGridLDD();
@@ -189,9 +191,9 @@ class Basin {
 
 	//Hydrologic processes
 
-	void Infilt_GreenAmpt(Control &ctrl, Tracking &trck, double &f, double &F, double &theta, double &theta2,
-			double &theta3, double &pond, double &percolat, double dt, int r, int c, UINT4 option);
-	void SoilWaterRedistribution(Control &ctrl, Tracking &trck, const double &F, double &theta1,
+	void Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta, double &theta2,
+			      double &theta3, double &pond, double &gw, double dt, int r, int c);
+	void SoilWaterRedistribution(Control &ctrl, const double &F, double &theta1,
 			double &theta2, double &theta3, double &pond, double &gw, double &leak, double dt,
 			int r, int c);
 	void Infilt_Richards(Control &ctrl, double &f, double &F, double &theta1,
@@ -568,6 +570,12 @@ public:
 	}
 	grid *getFluxGWtoL3() const {
 		return _FluxGWtoL3;
+	}
+	grid *getFluxGWtoChn() const {
+		return _FluxGWtoChn;
+	}
+	grid *getFluxSrftoChn() const {
+		return _FluxSrftoChn;
 	}
 
 	// -- Getters of fTracking getters

@@ -51,6 +51,10 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 		sw_frac = ConfigTrck.read<bool>("water_frac");
 		sw_Age = ConfigTrck.read<bool>("water_Age");
 		sw_lifo = ConfigTrck.read<bool>("water_lifo");
+		
+		// Put here because _FluxL1toSrf is calculated only if tracking is active
+		Rep_L1toSrf = ConfigTrck.read<bool>("Report_Return_Flow_Surface");
+		RepTs_L1toSrf = ConfigTrck.read<bool>("Ts_Return_Flow_Surface");
 
 		if(sw_dD){
 

@@ -52,8 +52,9 @@ class Tracking {
 	grid *_dDsurface,  *_d18Osurface, *_Agesurface; // Ponding
 	grid *_dDsoil1,    *_d18Osoil1, *_Agesoil1; // Vadose layer 1
 	grid *_dDsoil2,    *_d18Osoil2, *_Agesoil2; // Vadose layer 2
+	grid *_dDsoil_12,    *_d18Osoil_12, *_Agesoil_12; // Weighted average L1+L2
 	grid *_dDsoil3,    *_d18Osoil3, *_Agesoil3; // Vadose layer 3
-	//grid *_dDsoilAv,   *_d18OsoilAv, *_AgesoilAv; // Vadose average
+	//grid *_dDsoilAv,   *_d18OsoilAv, *_AgesoilAv; // Vadose weighted average
 	grid *_dDgroundwater, *_d18Ogroundwater, *_Agegroundwater; // Groundwater
 	// Signature of outgoing water
 	grid *_dDevapS_sum, *_d18OevapS_sum, *_AgeevapS_sum;
@@ -72,6 +73,33 @@ public:
 	//Destructor
 	~Tracking();
 
+	int MixingV_evapT(Basin &bsn, Control &ctrl,
+			   REAL8 &pTrp1, REAL8 &pTrp2, REAL8 &pTrp3,
+			   REAL8 &dDevapT_f, REAL8 &d18OevapT_f, REAL8 &AgeevapT_f, 
+			   REAL8 &p, int s, int r, int c);
+
+	void MixingV_down(Basin &bsn, Control &ctrl, 
+			  double &d1, double &d2, double &d3, double &fc,
+			  double &leak, int r, int c, bool reinf);
+
+	void MixingV_up(Basin &bsn, Control &ctrl, 
+			double &d1, double &d2, double &d3, double &fc,
+			int r, int c);
+
+	void MixingV_evapS(Atmosphere &atm, Basin &bsn, Control &ctrl, 
+			   double &d1, double &theta_lifo, double &theta_new,
+			   int r, int c);
+	
+	void MixingV_seep(Basin &bsn, Control &ctrl, double &ponding, double &qc, int r, int c);
+
+	void MixingV_snow(Atmosphere &atm, Basin &bsn, Control &ctrl, double &dh_snow, int r, int c);
+
+	void MixingV_through(Atmosphere &atm, Basin &bsn, Control &ctrl, double &rain, double &p, int r, int c);
+	
+	void MixingH(Basin &bsn, Control &ctrl, 
+		     double &hj1i1, double &alpha, double &ponding, double &Qk1,
+		     double &dtdx, double &dx, int r, int c, int rr, int cc);
+
 	int dDfrac_E(Atmosphere &atm, Basin &bsn, Control &ctrl,
 			REAL8 V_old, REAL8 V_new, REAL8 &dD_old, REAL8 &dD_new, REAL8 &dDevap,
 			int r, int c);
@@ -80,6 +108,11 @@ public:
 			int r, int c);
 
 	int IncrementAge(Basin &bsn, Control &ctrl);
+
+	// Soil averaged quantities
+	int CalcdDsoil_12(Basin &bsn);
+	int Calcd18Osoil_12(Basin &bsn);
+	int CalcAgesoil_12(Basin &bsn);
 
 	//int ReadConfigTrck(Control &ctrl, string confilename = "configTrck.ini");
 
@@ -97,30 +130,8 @@ public:
 		return _dDsoil2;
 	}
 	grid *getdDsoil3() const {
-		return _dDsoil3;
+	  return _dDsoil3;
 	}
-	/*	grid *getdDsoilAv(Basin &bsn) const {
-
-		double depth;
-		double d1, d2, d3;
-		int r, c;
-#pragma omp parallel for\
-		default(none) private(r,c,depth, d1, d2, d3)
-		for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
-			r = bsn.getSortedGrid().cells[j].row;
-			c = bsn.getSortedGrid().cells[j].col;
-			depth = bsn.getSoilDepth()->matrix[r][c];
-			d1 = bsn.getSoilDepth1()->matrix[r][c];
-			d2 = bsn.getSoilDepth1()->matrix[r][c];
-			d3 = depth - d1 - d2;
-			_dDsoilAv->matrix[r][c] = (_dDsoil1->matrix[r][c] * d1
-					+ _dDsoil2->matrix[r][c] * d2
-					+ _dDsoil3->matrix[r][c] * d3) / depth;
-		}
-
-		return _dDsoilAv;
-	}*/
-
 	grid *getdDgroundwater() const {
 		return _dDgroundwater;
 	}
@@ -133,6 +144,26 @@ public:
 	grid *getdDtranspi_sum() const {
 		return _dDtranspi_sum;
 	}
+	/*void getdDsoilAv(Basin &bsn) {  
+	  double depth, d1, d2, d3;
+	  int r, c;
+#pragma omp parallel for			\
+  default(none) private(r,c,depth, d1, d2, d3)
+	  for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
+	    r = bsn.getSortedGrid().cells[j].row;
+	    c = bsn.getSortedGrid().cells[j].col;
+	    depth = bsn.getSoilDepth()->matrix[r][c];
+	    d1 = bsn.getSoilDepth1()->matrix[r][c];
+	    d2 = bsn.getSoilDepth1()->matrix[r][c];
+	    d3 = depth - d1 - d2;
+	    _dDsoilAv->matrix[r][c] = (_dDsoil1->matrix[r][c] * d1
+				       + _dDsoil2->matrix[r][c] * d2
+				       + _dDsoil3->matrix[r][c] * d3) / depth;
+	  }
+	}*/
+	  
+	// -------
+	
 
 	// 18O
 	grid *getd18Osnowpack() const {
@@ -150,26 +181,6 @@ public:
 	grid *getd18Osoil3() const {
 		return _d18Osoil3;
 	}
-	/*	grid *getd18OsoilAv(Basin &bsn) const {
-
-		double depth;
-		double d1, d2, d3;
-		int r, c;
-#pragma omp parallel for\
-		default(none) private(r,c,depth, d1, d2, d3)
-		for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
-			r = bsn.getSortedGrid().cells[j].row;
-			c = bsn.getSortedGrid().cells[j].col;
-			depth = bsn.getSoilDepth()->matrix[r][c];
-			d1 = bsn.getSoilDepth1()->matrix[r][c];
-			d2 = bsn.getSoilDepth1()->matrix[r][c];
-			d3 = depth - d1 - d2;
-			_d18OsoilAv->matrix[r][c] = (_d18Osoil1->matrix[r][c] * d1
-					+ _d18Osoil2->matrix[r][c] * d2
-					+ _d18Osoil3->matrix[r][c] * d3) / depth;
-		}
-		return _d18OsoilAv;
-	}*/
 	grid *getd18Ogroundwater() const {
 		return _d18Ogroundwater;
 	}
@@ -182,6 +193,25 @@ public:
 	grid *getd18Otranspi_sum() const {
 		return _d18Otranspi_sum;
 	}
+	/*void Calcd18OsoilAv(Basin &bsn) const {
+	  double depth, d1, d2, d3;
+	  int r, c;
+#pragma omp parallel for					\
+  default(none) private(r,c,depth, d1, d2, d3)
+	  for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
+	    r = bsn.getSortedGrid().cells[j].row;
+	    c = bsn.getSortedGrid().cells[j].col;
+	    depth = bsn.getSoilDepth()->matrix[r][c];
+	    d1 = bsn.getSoilDepth1()->matrix[r][c];
+	    d2 = bsn.getSoilDepth1()->matrix[r][c];
+	    d3 = depth - d1 - d2;
+	    _d18OsoilAv->matrix[r][c] = (_d18Osoil1->matrix[r][c] * d1
+					 + _d18Osoil2->matrix[r][c] * d2
+					 + _d18Osoil3->matrix[r][c] * d3) / depth;
+	  }
+	  }*/
+	// ---
+
 
 	// Age
 	grid *getAgesnowpack() const {
@@ -199,26 +229,6 @@ public:
 	grid *getAgesoil3() const {
 		return _Agesoil3;
 	}
-	/*	grid *getAgesoilAv(Basin &bsn) const {
-
-		double depth;
-		double d1, d2, d3;
-		int r, c;
-#pragma omp parallel for\
-		default(none) private(r,c,depth, d1, d2, d3)
-		for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
-			r = bsn.getSortedGrid().cells[j].row;
-			c = bsn.getSortedGrid().cells[j].col;
-			depth = bsn.getSoilDepth()->matrix[r][c];
-			d1 = bsn.getSoilDepth1()->matrix[r][c];
-			d2 = bsn.getSoilDepth1()->matrix[r][c];
-			d3 = depth - d1 - d2;
-			_AgesoilAv->matrix[r][c] = (_Agesoil1->matrix[r][c] * d1
-					+ _Agesoil2->matrix[r][c] * d2
-					+ _Agesoil3->matrix[r][c] * d3) / depth;
-		}
-		return _AgesoilAv;
-	}*/
 	grid *getAgegroundwater() const {
 		return _Agegroundwater;
 	}
@@ -231,7 +241,26 @@ public:
 	grid *getAgetranspi_sum() const {
 		return _Agetranspi_sum;
 	}
+	/*void Calcd18OsoilAv(Basin &bsn) const {
+	  double depth, d1, d2, d3;
+	  int r, c;
+#pragma omp parallel for					\
+  default(none) private(r,c,depth, d1, d2, d3)
+	  for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
+	    r = bsn.getSortedGrid().cells[j].row;
+	    c = bsn.getSortedGrid().cells[j].col;
+	    depth = bsn.getSoilDepth()->matrix[r][c];
+	    d1 = bsn.getSoilDepth1()->matrix[r][c];
+	    d2 = bsn.getSoilDepth1()->matrix[r][c];
+	    d3 = depth - d1 - d2;
+	    _d18OsoilAv->matrix[r][c] = (_d18Osoil1->matrix[r][c] * d1
+					 + _d18Osoil2->matrix[r][c] * d2
+					 + _d18Osoil3->matrix[r][c] * d3) / depth;
+	  }
+	  }*/
+	// ---
 
+	// --- Setters
 	void setdDsnowpack(UINT4 row, UINT4 col, REAL8 value) {
 		_dDsnowpack->matrix[row][col] = value;
 		}
