@@ -186,4 +186,13 @@ Basin::~Basin(){
 		delete _FluxL3toL2;
 	if(_FluxGWtoL3)
 		delete _FluxGWtoL3;
+	if(_FluxLattoSrf)
+		delete _FluxLattoSrf;
+	if(_FluxLattoGW)
+		delete _FluxLattoGW;
+	if(_FluxGWtoChn)
+		delete _FluxGWtoChn;
+	if(_FluxSrftoChn)
+		delete _FluxSrftoChn;
+
 }

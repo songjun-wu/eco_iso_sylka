@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * sativa.cpp
@@ -37,7 +37,8 @@
 #include <time.h>
 #include "Sativa.h"
 
-float  report_time = 0; //resets to zero when Report_interval time interval passes
+float report_time = 0; //resets to zero when Report_interval time interval passes
+float reportMap_time = 0; //resets to zero when ReportMap_interval time interval passes
 float advance_climate = 0; // resets to zero when Clim_input_tstep passess
 
 time_t start, theend;
@@ -60,10 +61,17 @@ int main(int argc, char* argv[]) {
 
 			Report2Screen();
 
+			// Report time series
 			report_time += oControl->dt;
 			if (report_time >= oControl->report_times) { //if report time overdue
-				Report2Maps(); //report results
+				Report2Ts(); //report results
 				report_time = 0; //reset the counter
+			}
+			// Report maps
+			reportMap_time += oControl->dt;
+			if (reportMap_time >= oControl->reportMap_times) { //if report time overdue
+				Report2Maps(); //report results
+				reportMap_time = 0; //reset the counter
 			}
 
 			cout << "\nEnd time step " << oControl->current_ts_count;

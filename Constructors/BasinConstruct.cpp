@@ -140,6 +140,8 @@ Basin::Basin(Control &ctrl)
 		_EvaporationS_all = new grid(*_DEM); //actual soil evaporation in m s-1
 		_EvaporationI_all = new grid(*_DEM); //actual evaporation from summed interception in m s-1
 		_Transpiration_all = new grid(*_DEM); //transpiration from summed in m s-1
+		_FluxGWtoChn = new grid(*_DEM); // discharge, groundwater to channel
+		_FluxSrftoChn = new grid(*_DEM); // discharge, ponding to channel
 
 		// Tracking
 		_FluxUptoSnow = NULL;
@@ -152,6 +154,9 @@ Basin::Basin(Control &ctrl)
 		_FluxL3toGW = NULL;
 		_FluxGWtoL3 = NULL;
 		
+		_FluxLattoSrf = NULL;
+		_FluxLattoGW = NULL;
+		
 		if(ctrl.sw_trck){
 			_FluxUptoSnow = new grid(*_DEM); // canopy/sky to snowpack
 			_FluxSrftoL1 = new grid(*_DEM); // surface to first layer
@@ -162,6 +167,9 @@ Basin::Basin(Control &ctrl)
 			_FluxL3toL2 = new grid(*_DEM); // capillary + return flow, L2 to L3
 			_FluxL3toGW = new grid(*_DEM); // recharge L3 to groundwater
 			_FluxGWtoL3 = new grid(*_DEM); // discharge, groundwater to L3
+
+			_FluxLattoSrf = new grid(*_DEM);
+			_FluxLattoGW = new grid(*_DEM); 
 		}
 
 		//Partial check of maps mainly to make sure no no data is written within the valid domain
@@ -324,6 +332,14 @@ Basin::Basin(Control &ctrl)
 		delete _FluxL3toL2;
 	if(_FluxGWtoL3)
 		delete _FluxGWtoL3;
+	if(_FluxLattoSrf)
+		delete _FluxLattoSrf;
+	if(_FluxLattoGW)
+		delete _FluxLattoGW;
+	if(_FluxGWtoChn)
+		delete _FluxGWtoChn;
+	if(_FluxSrftoChn)
+		delete _FluxSrftoChn;
 
 	throw;
 }

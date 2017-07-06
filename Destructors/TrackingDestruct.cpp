@@ -44,6 +44,8 @@ Tracking::~Tracking(){
 		delete _dDsoil1;
 	if(_dDsoil2)
 		delete _dDsoil2;
+	if(_dDsoil_12)
+		delete _dDsoil_12;
 	if(_dDsoil3)
 		delete _dDsoil3;
 	//	if(_dDsoilAv)
@@ -69,6 +71,8 @@ Tracking::~Tracking(){
 		delete _d18Osoil1;
 	if(_d18Osoil2)
 		delete _d18Osoil2;
+	if(_d18Osoil_12)
+		delete _d18Osoil_12;
 	if(_d18Osoil3)
 		delete _d18Osoil3;
 	//	if(_d18OsoilAv)
@@ -92,6 +96,8 @@ Tracking::~Tracking(){
 		delete _Agesoil1;
 	if(_Agesoil2)
 		delete _Agesoil2;
+	if(_Agesoil_12)
+		delete _Agesoil_12;
 	if(_Agesoil3)
 		delete _Agesoil3;
 	//	if(_AgesoilAv)

@@ -77,7 +77,7 @@ int Tracking::dDfrac_E(Atmosphere &atm, Basin &bsn, Control &ctrl,
 
 	// (Hamilton et al., 2005)
 	// New isotopic signature in topsoil
-	dD_new = dD_star + (dD_old - dD_star) * powl(f,m);
+	dD_new = dD_star - (dD_star - dD_old) * powl(f,m);
 	if(abs(dD_new)>1e3)
 		cout << r << " " << c << " : dDsoil_new ->" << dD_new << " dDold ->" << dD_old <<
 		" dDstar ->" << dD_star << " f ->" << f <<" m ->" << m << endl;
@@ -136,9 +136,9 @@ int Tracking::d18Ofrac_E(Atmosphere &atm, Basin &bsn, Control &ctrl,
 
 	// (Hamilton et al., 2005)
 	// New isotopic signature in topsoil
-	d18O_new = d18O_star + (d18O_old - d18O_star) * powl(f,m);
+	d18O_new = d18O_star - (d18O_star - d18O_old) * powl(f,m);
 	// Isotopic signature of evaporated water
-	d18Oevap = (d18O_old - h*d18O_atm - eps)/ (1-h-eps_k/1000);
+	d18Oevap = (d18O_old - h*d18O_atm - eps)/ (1-h+eps_k/1000);
 
 	return EXIT_SUCCESS;
 

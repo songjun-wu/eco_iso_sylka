@@ -34,7 +34,7 @@
 
 //using namespace arma;
 
-void Basin::SoilWaterRedistribution(Control &ctrl, Tracking &trck, const double &F, double &theta1,
+void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &theta1,
 		double &theta2, double &theta3, double &pond, double &gw, double &leak,  double dt,
 		int r, int c) {
 
@@ -150,106 +150,6 @@ void Basin::SoilWaterRedistribution(Control &ctrl, Tracking &trck, const double 
 
 	gw = max<double>(0,(theta3 - fc) * d3);
 	leak = std::max<double>(0,(L3 - x[2])/dt);
-
-	// Update mixing
-	if(ctrl.sw_trck){
-		if(ctrl.sw_dD){
-			// Update layer 1
-			if(!ctrl.sw_lifo)
-				// If LIFO activated, no mixing in L1 before soil evap,
-				// L2 sees signature from previous timestep
-				trck.setdDsoil1(r, c,
-						trck.InOutMix(_soilmoist1->matrix[r][c]*d1,
-								trck.getdDsoil1()->matrix[r][c],
-								_FluxSrftoL1->matrix[r][c],
-								trck.getdDsurface()->matrix[r][c],
-								_FluxL1toL2->matrix[r][c] ));
-			// Update layer 2
-			trck.setdDsoil2(r, c,
-					trck.InOutMix(_soilmoist2->matrix[r][c]*d2,
-							trck.getdDsoil2()->matrix[r][c],
-							_FluxL1toL2->matrix[r][c],
-							trck.getdDsoil1()->matrix[r][c],
-							_FluxL2toL3->matrix[r][c] ));
-			// Update layer 3 (vadose)
-			trck.setdDsoil3(r, c,
-					trck.InOutMix(std::min<double>(fc,_soilmoist3->matrix[r][c])*d3,
-							trck.getdDsoil3()->matrix[r][c],
-							_FluxL2toL3->matrix[r][c],
-							trck.getdDsoil2()->matrix[r][c],
-							_FluxL3toGW->matrix[r][c]+leak));
-			// Update layer 3 (gw)
-			trck.setdDgroundwater(r, c,
-					trck.InputMix(_GrndWater->matrix[r][c],
-							trck.getdDgroundwater()->matrix[r][c],
-							_FluxL3toGW->matrix[r][c],
-							trck.getdDsoil3()->matrix[r][c]));
-		}
-		if(ctrl.sw_d18O){
-			// Update layer 1
-			if(!ctrl.sw_lifo)
-				// If LIFO activated, no mixing in L1 before soil evap,
-				// L2 sees signature from previous timestep
-				trck.setd18Osoil1(r, c,
-						trck.InOutMix(_soilmoist1->matrix[r][c]*d1,
-								trck.getd18Osoil1()->matrix[r][c],
-								_FluxSrftoL1->matrix[r][c],
-								trck.getd18Osurface()->matrix[r][c],
-								_FluxL1toL2->matrix[r][c] ));
-			// Update layer 2
-			trck.setd18Osoil2(r, c,
-					trck.InOutMix(_soilmoist2->matrix[r][c]*d2,
-							trck.getd18Osoil2()->matrix[r][c],
-							_FluxL1toL2->matrix[r][c],
-							trck.getd18Osoil1()->matrix[r][c],
-							_FluxL2toL3->matrix[r][c] ));
-			// Update layer 3 (vadose)
-			trck.setd18Osoil3(r, c,
-					trck.InOutMix(std::min<double>(fc,_soilmoist3->matrix[r][c])*d3,
-							trck.getd18Osoil3()->matrix[r][c],
-							_FluxL2toL3->matrix[r][c],
-							trck.getd18Osoil2()->matrix[r][c],
-							_FluxL3toGW->matrix[r][c]+leak));
-			// Update layer 3 (gw)
-			trck.setd18Ogroundwater(r, c,
-					trck.InputMix(_GrndWater->matrix[r][c],
-							trck.getd18Ogroundwater()->matrix[r][c],
-							_FluxL3toGW->matrix[r][c],
-							trck.getd18Osoil3()->matrix[r][c]));
-		}
-		if(ctrl.sw_Age){
-			// Update layer 1
-			if(!ctrl.sw_lifo)
-				// If LIFO activated, no mixing in L1 before soil evap,
-				// L2 sees signature from previous timestep
-				trck.setAgesoil1(r, c,
-						trck.InOutMix(_soilmoist1->matrix[r][c]*d1,
-								trck.getAgesoil1()->matrix[r][c],
-								_FluxSrftoL1->matrix[r][c],
-								trck.getAgesurface()->matrix[r][c],
-								_FluxL1toL2->matrix[r][c] ));
-			// Update layer 2
-			trck.setAgesoil2(r, c,
-					trck.InOutMix(_soilmoist2->matrix[r][c]*d2,
-							trck.getAgesoil2()->matrix[r][c],
-							_FluxL1toL2->matrix[r][c],
-							trck.getAgesoil1()->matrix[r][c],
-							_FluxL2toL3->matrix[r][c] ));
-			// Update layer 3 (vadose)
-			trck.setAgesoil3(r, c,
-					trck.InOutMix(std::min<double>(fc,_soilmoist3->matrix[r][c])*d3,
-							trck.getAgesoil3()->matrix[r][c],
-							_FluxL2toL3->matrix[r][c],
-							trck.getAgesoil2()->matrix[r][c],
-							_FluxL3toGW->matrix[r][c]+leak));
-			// Update layer 3 (gw)
-			trck.setAgegroundwater(r, c,
-					trck.InputMix(_GrndWater->matrix[r][c],
-							trck.getAgegroundwater()->matrix[r][c],
-							_FluxL3toGW->matrix[r][c],
-							trck.getAgesoil3()->matrix[r][c]));
-		}
-	}
 
 }
 

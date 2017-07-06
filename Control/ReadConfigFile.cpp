@@ -87,11 +87,17 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	endtime = Config.read<float>("Simul_end");
 	dt = Config.read<float>("Simul_tstep");
 	BC_dt = Config.read<float>("Clim_input_tstep");
-	report_times = Config.read<float>("Report_interval");
 
+	report_times = Config.read<float>("Report_interval");
 	if(report_times < dt){
 		cout << "WARNING: Report time step less than simulation time step. Changing report time step to simulation time step" << endl;
 		report_times = dt;
+	}
+
+	reportMap_times = Config.read<float>("ReportMap_interval");
+	if(reportMap_times < dt){
+		cout << "WARNING: ReportMap time step less than simulation time step. Changing reportMap time step to simulation time step" << endl;
+		reportMap_times = dt;
 	}
 
 	Config.readInto(MapType, "MapTypes" );
@@ -199,6 +205,10 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_Soil_Temperature = Config.read<bool>("Report_Soil_Temperature");
 	Rep_Skin_Temperature = Config.read<bool>("Report_Skin_Temperature");
 
+	Rep_GWtoChn = Config.read<bool>("Report_GW_to_Channel");
+	Rep_SrftoChn = Config.read<bool>("Report_Surface_to_Channel");
+	//Rep_L1toSrf = Config.read<bool>("Report_Return_Flow_Surface");
+
 	Rep_Transpiration_sum = Config.read<bool>("Report_Transpiration_sum");
 	Rep_Einterception_sum = Config.read<bool>("Report_Einterception_sum");
 	Rep_Esoil_sum = Config.read<bool>("Report_Esoil_sum");
@@ -255,6 +265,10 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_Snow_Heat = Config.read<bool>("Ts_Snow_Heat");
 	RepTs_Soil_Temperature = Config.read<bool>("Ts_Soil_Temperature");
 	RepTs_Skin_Temperature = Config.read<bool>("Ts_Skin_Temperature");
+
+	RepTs_GWtoChn = Config.read<bool>("Ts_GW_to_Channel");
+	RepTs_SrftoChn = Config.read<bool>("Ts_Surface_to_Channel");
+	//RepTs_L1toSrf = Config.read<bool>("Ts_Return_Flow_Surface");
 	
 	RepTs_Total_ET = Config.read<bool>("Ts_Total_ET");
 	RepTs_Transpiration_sum = Config.read<bool>("Ts_Transpiration_sum");

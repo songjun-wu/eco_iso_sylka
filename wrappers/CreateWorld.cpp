@@ -76,6 +76,8 @@ try{
 		ofSummary << "Overland flow\t";
 		ofSummary << "Groundwater flow\t";
 		ofSummary << "Saturation extent\t";
+		ofSummary << "Run-off to channel\t";
+		ofSummary << "GW to channel\t";
 		ofSummary << "Mass Balance Error\n";
 
 

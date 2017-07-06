@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * CalculateBudgets.cpp
@@ -48,6 +48,8 @@ int CalculateBudgets(){
 									oBasin->getGrndWaterOld(),
 									oBasin);
 			oBudget->TotalSaturationArea(oBasin->getSatArea(), oBasin);
+			oBudget->TotalGWtoChn(oBasin->getFluxGWtoChn(), oBasin);
+			oBudget->TotalSrftoChn(oBasin->getFluxSrftoChn(), oBasin);
 			oBudget->MassBalanceError();
 
 		return EXIT_SUCCESS;

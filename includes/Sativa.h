@@ -54,6 +54,7 @@ int SolveTimeStep();
 int CalculateBudgets();
 int Report2Screen();
 int Report2Maps();
+int Report2Ts();
 int CrunchWorld();
 
 void GenerateConfigTemplate(const char *fn);
