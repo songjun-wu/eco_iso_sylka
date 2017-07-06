@@ -142,8 +142,8 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	      }
 	      
 	      // Infiltration + percolation if exceeds porosity
-	      //Infilt_GreenAmpt(ctrl, infcap, accinf, theta, theta2, theta3, ponding, gw,
-	      //	       dt, r, c); 
+	      Infilt_GreenAmpt(ctrl, infcap, accinf, theta, theta2, theta3, ponding, gw,
+			       dt, r, c); 
 	      
 	      // Percolation if exceeding field capacity (L1 and L2), 
 	      // goes to GW in L3 (and bedrock leakage if activated)
