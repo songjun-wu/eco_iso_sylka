@@ -190,9 +190,28 @@ Basin::~Basin(){
 		delete _FluxLattoSrf;
 	if(_FluxLattoGW)
 		delete _FluxLattoGW;
+	if(_FluxLattoChn)
+		delete _FluxLattoChn;
+	if(_FluxSrftoLat)
+		delete _FluxSrftoLat;
 	if(_FluxGWtoChn)
 		delete _FluxGWtoChn;
 	if(_FluxSrftoChn)
 		delete _FluxSrftoChn;
-
+	if(_AccSrftoL1)
+		delete _AccSrftoL1;
+	if(_AccL1toSrf)
+		delete _AccL1toSrf;
+	if(_AccLattoGW)
+		delete _AccLattoGW;
+	if(_AccLattoSrf)
+		delete _AccLattoSrf;
+	if(_AccLattoChn)
+		delete _AccLattoChn;
+	if(_AccSrftoLat)
+		delete _AccSrftoLat;
+	if(_AccGWtoChn)
+		delete _AccGWtoChn;
+	if(_AccSrftoChn)
+		delete _AccSrftoChn;
 }

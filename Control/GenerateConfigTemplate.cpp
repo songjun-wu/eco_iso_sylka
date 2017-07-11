@@ -226,6 +226,8 @@ try{
 
     ofOut << "Report_GW_to_Channel = 0 " << endl;
     ofOut << "Report_Surface_to_Channel = 0 " << endl;
+    ofOut << "Report_GW_to_Channel_acc = 0 " << endl;
+    ofOut << "Report_Surface_to_Channel_acc = 0 " << endl;
     //ofOut << "Report_Return_Flow_Surface = 0 " << endl << endl;
 
     ofOut << "Report_Total_ET = 1 " << endl;
@@ -293,6 +295,8 @@ try{
 
     ofOut << "Ts_GW_to_Channel = 1 " << endl;
     ofOut << "Ts_Surface_to_Channel = 1 " << endl;
+    ofOut << "Ts_GW_to_Channel_acc = 1 " << endl;
+    ofOut << "Ts_Surface_to_Channel_acc = 1 " << endl;
     //ofOut << "Ts_Return_Flow_Surface = 0 " << endl << endl;
 
     ofOut << "Ts_Total_ET = 1 " << endl;

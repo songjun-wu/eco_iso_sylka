@@ -129,6 +129,9 @@ public:
 	grid *getdDsoil2() const {
 		return _dDsoil2;
 	}
+	grid *getdDsoil_12() const {
+		return _dDsoil_12;
+	}
 	grid *getdDsoil3() const {
 	  return _dDsoil3;
 	}
@@ -178,6 +181,9 @@ public:
 	grid *getd18Osoil2() const {
 		return _d18Osoil2;
 	}
+	grid *getd18Osoil_12() const {
+		return _d18Osoil_12;
+	}
 	grid *getd18Osoil3() const {
 		return _d18Osoil3;
 	}
@@ -225,6 +231,9 @@ public:
 	}
 	grid *getAgesoil2() const {
 		return _Agesoil2;
+	}
+	grid *getAgesoil_12() const {
+		return _Agesoil_12;
 	}
 	grid *getAgesoil3() const {
 		return _Agesoil3;

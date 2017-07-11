@@ -140,8 +140,10 @@ Basin::Basin(Control &ctrl)
 		_EvaporationS_all = new grid(*_DEM); //actual soil evaporation in m s-1
 		_EvaporationI_all = new grid(*_DEM); //actual evaporation from summed interception in m s-1
 		_Transpiration_all = new grid(*_DEM); //transpiration from summed in m s-1
-		_FluxGWtoChn = new grid(*_DEM); // discharge, groundwater to channel
-		_FluxSrftoChn = new grid(*_DEM); // discharge, ponding to channel
+		_FluxGWtoChn = new grid(*_DEM); // groundwater to channel
+		_FluxSrftoChn = new grid(*_DEM); // ponding to channel
+		_AccGWtoChn = new grid(*_DEM); // groundwater to channel (accumlated)
+		_AccSrftoChn = new grid(*_DEM); // ponding to channel (accumulated)
 
 		// Tracking
 		_FluxUptoSnow = NULL;
@@ -156,20 +158,38 @@ Basin::Basin(Control &ctrl)
 		
 		_FluxLattoSrf = NULL;
 		_FluxLattoGW = NULL;
+		_FluxSrftoLat = NULL;
+		_FluxLattoChn = NULL;
+
+		_AccSrftoL1 = NULL;
+		_AccL1toSrf = NULL;
+		_AccLattoSrf = NULL;
+		_AccLattoGW = NULL;
+		_AccSrftoLat = NULL;
+		_AccLattoChn = NULL;
 		
 		if(ctrl.sw_trck){
-			_FluxUptoSnow = new grid(*_DEM); // canopy/sky to snowpack
-			_FluxSrftoL1 = new grid(*_DEM); // surface to first layer
-			_FluxL1toSrf = new grid(*_DEM); // first layer to surface (return flow)
-			_FluxL1toL2 = new grid(*_DEM); // percolation L1 to L2
-			_FluxL2toL1 = new grid(*_DEM); // capillary + return flow, L2 to L1
-			_FluxL2toL3 = new grid(*_DEM); // percolation L2 to L3
-			_FluxL3toL2 = new grid(*_DEM); // capillary + return flow, L2 to L3
-			_FluxL3toGW = new grid(*_DEM); // recharge L3 to groundwater
-			_FluxGWtoL3 = new grid(*_DEM); // discharge, groundwater to L3
-
-			_FluxLattoSrf = new grid(*_DEM);
-			_FluxLattoGW = new grid(*_DEM); 
+		  _FluxUptoSnow = new grid(*_DEM); // canopy/sky to snowpack
+		  _FluxSrftoL1 = new grid(*_DEM); // surface to first layer
+		  _FluxL1toSrf = new grid(*_DEM); // first layer to surface (return flow)
+		  _FluxL1toL2 = new grid(*_DEM); // percolation L1 to L2
+		  _FluxL2toL1 = new grid(*_DEM); // capillary + return flow, L2 to L1
+		  _FluxL2toL3 = new grid(*_DEM); // percolation L2 to L3
+		  _FluxL3toL2 = new grid(*_DEM); // capillary + return flow, L2 to L3
+		  _FluxL3toGW = new grid(*_DEM); // recharge L3 to groundwater
+		  _FluxGWtoL3 = new grid(*_DEM); // discharge, groundwater to L3
+		  
+		  _FluxLattoSrf = new grid(*_DEM);
+		  _FluxLattoGW = new grid(*_DEM); 	
+		  _FluxSrftoLat = new grid(*_DEM);
+		  _FluxLattoChn = new grid(*_DEM); 
+		  // Accumulated fluxes
+		  _AccSrftoL1 = new grid(*_DEM);
+		  _AccL1toSrf = new grid(*_DEM);
+		  _AccLattoSrf = new grid(*_DEM);
+		  _AccLattoGW = new grid(*_DEM);
+		  _AccSrftoLat = new grid(*_DEM);
+		  _AccLattoChn = new grid(*_DEM);
 		}
 
 		//Partial check of maps mainly to make sure no no data is written within the valid domain
@@ -336,10 +356,30 @@ Basin::Basin(Control &ctrl)
 		delete _FluxLattoSrf;
 	if(_FluxLattoGW)
 		delete _FluxLattoGW;
+	if(_FluxLattoChn)
+		delete _FluxLattoChn;
+	if(_FluxSrftoLat)
+		delete _FluxSrftoLat;
 	if(_FluxGWtoChn)
 		delete _FluxGWtoChn;
 	if(_FluxSrftoChn)
 		delete _FluxSrftoChn;
+	if(_AccSrftoL1)
+		delete _AccSrftoL1;
+	if(_AccL1toSrf)
+		delete _AccL1toSrf;
+	if(_AccLattoGW)
+		delete _AccLattoGW;
+	if(_AccLattoSrf)
+		delete _AccLattoSrf;
+	if(_AccLattoChn)
+		delete _AccLattoChn;
+	if(_AccSrftoLat)
+		delete _AccSrftoLat;
+	if(_AccGWtoChn)
+		delete _AccGWtoChn;
+	if(_AccSrftoChn)
+		delete _AccSrftoChn;
 
 	throw;
 }

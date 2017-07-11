@@ -207,6 +207,8 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 
 	Rep_GWtoChn = Config.read<bool>("Report_GW_to_Channel");
 	Rep_SrftoChn = Config.read<bool>("Report_Surface_to_Channel");
+	Rep_GWtoChnacc = Config.read<bool>("Report_GW_to_Channel_acc");
+	Rep_SrftoChnacc = Config.read<bool>("Report_Surface_to_Channel_acc");
 	//Rep_L1toSrf = Config.read<bool>("Report_Return_Flow_Surface");
 
 	Rep_Transpiration_sum = Config.read<bool>("Report_Transpiration_sum");

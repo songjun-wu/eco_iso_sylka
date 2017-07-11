@@ -160,7 +160,18 @@ class Basin {
 	// Lateral (inter-cell), for report only
 	grid *_FluxLattoSrf; //Lateral overland input
 	grid *_FluxLattoGW; //Lateral GW input 
-	// --------------------------------------------------------------------------------------
+	grid *_FluxSrftoLat; //Lateral overland output
+	grid *_FluxLattoChn; //Channel input
+	// Accumulated fluxes, for report only
+	grid *_AccGWtoChn; //Groundwater seepage to channel
+	grid *_AccSrftoChn; //Overland to channel
+	grid *_AccSrftoL1; //Lateral overland input
+	grid *_AccL1toSrf; //Lateral GW input 
+	grid *_AccLattoSrf; //Lateral overland input
+	grid *_AccLattoGW; //Lateral GW input 
+	grid *_AccSrftoLat; //Lateral overland output
+	grid *_AccLattoChn; //Channel input
+ 	// --------------------------------------------------------------------------------------
 
 	vectCells SortGridLDD();
 
@@ -580,11 +591,42 @@ public:
 	grid *getFluxLattoSrf() const {
 		return _FluxLattoSrf;
 	}
+	grid *getFluxLattoChn() const {
+		return _FluxLattoChn;
+	}
+	grid *getFluxSrftoLat() const {
+		return _FluxSrftoLat;
+	}
 	grid *getFluxGWtoChn() const {
 		return _FluxGWtoChn;
 	}
 	grid *getFluxSrftoChn() const {
 		return _FluxSrftoChn;
+	}
+
+	grid *getAccGWtoChn() const {
+		return _AccGWtoChn;
+	}
+	grid *getAccSrftoChn() const {
+		return _AccSrftoChn;
+	}
+	grid *getAccSrftoL1() const {
+		return _AccSrftoL1;
+	}
+	grid *getAccL1toSrf() const {
+		return _AccL1toSrf;
+	}
+	grid *getAccLattoGW() const {
+		return _AccLattoGW;
+	}
+	grid *getAccLattoSrf() const {
+		return _AccLattoSrf;
+	}
+	grid *getAccLattoChn() const {
+		return _AccLattoChn;
+	}
+	grid *getAccSrftoLat() const {
+		return _AccSrftoLat;
 	}
 
 	// -- Getters of fTracking getters

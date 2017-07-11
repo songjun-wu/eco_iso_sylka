@@ -101,8 +101,8 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	// Initialize to zero
 	_Rn_sum->reset();
 	if(ctrl.sw_trck){
-		//For tracking
-		_FluxUptoSnow->reset(); // canopy/sky to snowpack
+	  //For tracking
+	  _FluxUptoSnow->reset(); // canopy/sky to snowpack
 	}
 
 #pragma omp parallel default(none)\
@@ -113,7 +113,6 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	   pTrp1, pTrp2, pTrp3, dDevapT_f, d18OevapT_f, AgeevapT_f,	\
 	   dDevapI_f, d18OevapI_f, AgeevapI_f)				\
   shared(nsp, atm, ctrl, trck, dt, thre)
-	//, dDnew, d18Onew, Agenew)		\
 	
 	{
 	  thre = omp_get_num_threads();
@@ -132,7 +131,10 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  treeheight = 0;
 	  evap_f = 0;
 	  transp_f = 0;
-	  
+
+	  theta = _soilmoist1->matrix[r][c]; //soil moisture at time t
+	  theta2 = _soilmoist2->matrix[r][c];
+	  theta3 = _soilmoist3->matrix[r][c];
 	  thetar = _theta_r->matrix[r][c];
 	  fc = _fieldcap->matrix[r][c];
 	  poros = _porosity->matrix[r][c];
