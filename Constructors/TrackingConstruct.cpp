@@ -46,7 +46,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_dDgroundwater = NULL;
 	_dDevapS_sum = NULL;
 	_dDevapI_sum = NULL;
-	_dDtranspi_sum = NULL;
+	_dDevapT_sum = NULL;
 
 	_d18Ocanopy = NULL;
 	_d18Osnowpack = NULL;
@@ -59,7 +59,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_d18Ogroundwater = NULL;
 	_d18OevapS_sum = NULL;
 	_d18OevapI_sum = NULL;
-	_d18Otranspi_sum = NULL;
+	_d18OevapT_sum = NULL;
 
 	_Agecanopy = NULL;
 	_Agesnowpack = NULL;
@@ -72,7 +72,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_Agegroundwater = NULL;
 	_AgeevapS_sum = NULL;
 	_AgeevapI_sum = NULL;
-	_Agetranspi_sum = NULL;
+	_AgeevapT_sum = NULL;
 
 	if(!ctrl.sw_trck){
 		ctrl.sw_dD = 0;
@@ -95,7 +95,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_dDgroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_dDgroundwater, ctrl.MapType);
 			_dDevapS_sum = new grid(*bsn.getDEM());
 			_dDevapI_sum = new grid(*bsn.getDEM());
-			_dDtranspi_sum = new grid(*bsn.getDEM());
+			_dDevapT_sum = new grid(*bsn.getDEM());
 		}
 
 		if(ctrl.sw_d18O){
@@ -111,7 +111,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_d18Ogroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Ogroundwater, ctrl.MapType);
 			_d18OevapS_sum = new grid(*bsn.getDEM());
 			_d18OevapI_sum = new grid(*bsn.getDEM());
-			_d18Otranspi_sum = new grid(*bsn.getDEM());
+			_d18OevapT_sum = new grid(*bsn.getDEM());
 		}
 
 		if(ctrl.sw_Age){
@@ -127,7 +127,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_Agegroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_Agegroundwater, ctrl.MapType);
 			_AgeevapS_sum = new grid(*bsn.getDEM());
 			_AgeevapI_sum = new grid(*bsn.getDEM());
-			_Agetranspi_sum = new grid(*bsn.getDEM());
+			_AgeevapT_sum = new grid(*bsn.getDEM());
 		}
 
 		//Partial check of maps mainly to make sure no no data is written within the valid domain
@@ -159,8 +159,8 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 		delete _dDevapS_sum;
 	if(_dDevapI_sum)
 		delete _dDevapI_sum;
-	if(_dDtranspi_sum)
-		delete _dDtranspi_sum;
+	if(_dDevapT_sum)
+		delete _dDevapT_sum;
 
 	//	if(_d18Oinput)
 	//		delete _d18Oinput;
@@ -186,8 +186,8 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 		delete _d18OevapS_sum;
 	if(_d18OevapI_sum)
 		delete _d18OevapI_sum;
-	if(_d18Otranspi_sum)
-		delete _d18Otranspi_sum;
+	if(_d18OevapT_sum)
+		delete _d18OevapT_sum;
 
 	//	if(_Agecanopy)
 	//		delete _Agecanopy;
@@ -211,8 +211,8 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 		delete _AgeevapS_sum;
 	if(_AgeevapI_sum)
 		delete _AgeevapI_sum;
-	if(_Agetranspi_sum)
-		delete _Agetranspi_sum;
+	if(_AgeevapT_sum)
+		delete _AgeevapT_sum;
 
 	throw;
 	}

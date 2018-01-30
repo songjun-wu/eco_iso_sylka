@@ -93,12 +93,12 @@ Grove::~Grove(){
 	if(_Agecanopy)
 		delete _Agecanopy;
 
-	if(_dDtranspi)
-		delete _dDtranspi;
-	if(_d18Otranspi)
-		delete _d18Otranspi;
-	if(_Agetranspi)
-		delete _Agetranspi;
+	if(_dDevapT)
+		delete _dDevapT;
+	if(_d18OevapT)
+		delete _d18OevapT;
+	if(_AgeevapT)
+		delete _AgeevapT;
 
 	if(_dDevapI)
 		delete _dDevapI;

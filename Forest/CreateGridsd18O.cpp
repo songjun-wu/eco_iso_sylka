@@ -35,7 +35,7 @@ int Grove::CreateGridsd18O(grid *base){
 	try{
 		_d18Ocanopy = new grid (*base);
 		_d18OevapI = new grid (*base);
-		_d18Otranspi = new grid (*base);
+		_d18OevapT = new grid (*base);
 		_d18OevapS = new grid (*base);
 
 	}catch(const exception& e){

@@ -184,7 +184,7 @@ class Basin {
 
 	double NetRad(Atmosphere &atm, const double &Ts, REAL8 Kbeers, REAL8 lai,
 			REAL8 ec, REAL8 Tc, int row, int col);
-	double LatHeat(Atmosphere &atm, double soilrelhumid, double ra, double rs,
+	double LatHeat(Atmosphere &atm, double beta, double ra, double rs,
 			double rc, const double &Ts, int row, int col);
 	double SensHeat(Atmosphere &atm, double ra, const double &Ts, int row,
 			int col);
@@ -213,11 +213,11 @@ class Basin {
 	void Infilt_Richards(Control &ctrl, double &f, double &F, double &theta1,
 			double &theta2, double &theta3, double &leak, double &pond, double &percolat,
 			double dt, int r, int c, int flowdir);
-	int SolveSurfaceEnergyBalance(Atmosphere &atm, Control &ctrl, REAL8 ra,
-			REAL8 rs, REAL8 rc, REAL8 Kbeers, REAL8 lai, REAL8 emis_can,
-			REAL8 Temp_can, REAL8 &nrad, REAL8 &latheat, REAL8 &sensheat,
-			REAL8 &grndheat, REAL8 &snowheat, REAL8 &meltheat, REAL8 &Tsold,
-			REAL8 &etp, REAL8 &pond, REAL8 &theta, REAL8 &Ts1, REAL8 &Tdold,
+	int SolveSurfaceEnergyBalance(Atmosphere &atm, Control &ctrl, Tracking &trck,
+				      REAL8 ra,	REAL8 rs, REAL8 rc, REAL8 Kbeers, REAL8 lai, REAL8 emis_can,
+				      REAL8 Temp_can, REAL8 &nrad, REAL8 &latheat, REAL8 &sensheat,
+				      REAL8 &grndheat, REAL8 &snowheat, REAL8 &meltheat, REAL8 &Tsold,
+				      REAL8 &etp, REAL8 &pond, REAL8 &theta, REAL8 &theta_lifo, REAL8 &Ts1, REAL8 &Tdold,
 			REAL8 p, UINT4 r, UINT4 c, UINT4 s);
 
 	//This functions updates soil moisture by solving the local soil water balance
@@ -354,7 +354,6 @@ public:
 	grid *getSatArea() const {
 		return _IsSaturated;
 	}
-
 	grid *getSoilMoist1() const {
 		return _soilmoist1;
 	}
@@ -493,11 +492,9 @@ public:
 	grid *getInfiltCap() const {
 		return _infilt_cap;
 	}
-
 	grid *getRootFrac1() const {
 		return _rootfrac1;
 	}
-
 	grid *getRootFrac2() const {
 		return _rootfrac2;
 	}
@@ -527,6 +524,15 @@ public:
 
 	grid *getPorosity() const {
 		return _porosity;
+	}
+	grid *getSoilMoistR() const {
+		return _theta_r;
+	}
+	grid *getPsiAE() const {
+	  return _psi_ae;
+	}
+	grid *getBClambda() const {
+	  return _BClambda;
 	}
 
 	grid *getFieldCapacity() const {
@@ -629,25 +635,6 @@ public:
 		return _AccSrftoLat;
 	}
 
-	// -- Getters of fTracking getters
-	// dD
-	grid *getdDcanopy(UINT4 n) const ;
-	grid *getdDevapI(UINT4 n) const ;
-	grid *getdDtranspi(UINT4 n) const ;
-	grid *getdDevapS(UINT4 n) const ;
-
-	// 18O
-	grid *getd18Ocanopy(UINT4 n) const ;
-	grid *getd18OevapI(UINT4 n) const ;
-	grid *getd18Otranspi(UINT4 n) const ;
-	grid *getd18OevapS(UINT4 n) const ;
-
-	// Age
-	grid *getAgecanopy(UINT4 n) const ;
-	grid *getAgeevapI(UINT4 n) const ;
-	grid *getAgetranspi(UINT4 n) const ;
-	grid *getAgeevapS(UINT4 n) const ;
-
 	// --------------------------------------------------------------------------------------
 	// -- Getters of fForest getters
 
@@ -693,6 +680,26 @@ public:
 
 	grid *getLeafWaterPotential(UINT4 n) const;
 
+	// Addition tracking
+	// ---------------------------------
+	// -- Getters of fTracking getters
+	// dD
+	grid *getdDcanopy(UINT4 n) const ;
+	grid *getdDevapI(UINT4 n) const ;
+	grid *getdDevapT(UINT4 n) const ;
+	grid *getdDevapS(UINT4 n) const ;
+
+	// 18O
+	grid *getd18Ocanopy(UINT4 n) const ;
+	grid *getd18OevapI(UINT4 n) const ;
+	grid *getd18OevapT(UINT4 n) const ;
+	grid *getd18OevapS(UINT4 n) const ;
+
+	// Age
+	grid *getAgecanopy(UINT4 n) const ;
+	grid *getAgeevapI(UINT4 n) const ;
+	grid *getAgeevapT(UINT4 n) const ;
+	grid *getAgeevapS(UINT4 n) const ;
 	//setters
 
 };

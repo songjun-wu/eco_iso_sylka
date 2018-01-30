@@ -157,7 +157,7 @@ extern double rlog(double u_za, double z_a, double z_d, double z_0, int option) 
 		}
 }
 
-extern double Calculate_soil_RH(const double &theta, const double &fieldcap){
+extern double Calculate_beta(const double &theta, const double &fieldcap){
 
 	//double Beta;
 

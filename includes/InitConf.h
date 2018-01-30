@@ -293,7 +293,11 @@ struct Control{
   bool sw_dD; //switch to turn on and off the dD tracking option (if sw_trck = 1)
   bool sw_d18O; //switch to turn on and off the d18O tracking option (if sw_trck = 1)
   bool sw_Age; //switch to turn on and off the age tracking option (if sw_trck = 1)
-  
+
+  // Toggle switch for fractionation
+  int toggle_hs; // toggle to choose which surface relative humidity for fractionation: 0->hs=1, 1->Lee&Pielke 1992, 2->Soderberg 2012
+  int toggle_n; // toggle to choose how the turbulent factor is calculated for kinetic fractionation: 0->n=1, 1->follows Mathieu and Bariac 1996
+
   /* input maps for initial values*/
   string fn_dDprecip; // deuterium signature in precipitations (dD, per mil)
   //string fn_dDcanopy;
@@ -339,8 +343,8 @@ struct Control{
   bool Rep_dDevapS_sum;
   bool Rep_dDevapI;
   bool Rep_dDevapI_sum;
-  bool Rep_dDtranspi;
-  bool Rep_dDtranspi_sum;
+  bool Rep_dDevapT;
+  bool Rep_dDevapT_sum;
   
   bool Rep_d18Oprecip;
   bool Rep_d18Ocanopy;
@@ -356,8 +360,8 @@ struct Control{
   bool Rep_d18OevapS_sum;
   bool Rep_d18OevapI;
   bool Rep_d18OevapI_sum;
-  bool Rep_d18Otranspi;
-  bool Rep_d18Otranspi_sum;
+  bool Rep_d18OevapT;
+  bool Rep_d18OevapT_sum;
   
   bool Rep_Agecanopy;
   bool Rep_Agesnowpack;
@@ -372,8 +376,8 @@ struct Control{
   bool Rep_AgeevapS_sum;
   bool Rep_AgeevapI;
   bool Rep_AgeevapI_sum;
-  bool Rep_Agetranspi;
-  bool Rep_Agetranspi_sum;
+  bool Rep_AgeevapT;
+  bool Rep_AgeevapT_sum;
   
   // Time series
   bool RepTs_dDprecip;
@@ -390,8 +394,8 @@ struct Control{
   bool RepTs_dDevapS_sum;
   bool RepTs_dDevapI;
   bool RepTs_dDevapI_sum;
-  bool RepTs_dDtranspi;
-  bool RepTs_dDtranspi_sum;
+  bool RepTs_dDevapT;
+  bool RepTs_dDevapT_sum;
   
   bool RepTs_d18Oprecip;
   //bool RepTs_d18Ocanopy;
@@ -407,8 +411,8 @@ struct Control{
   bool RepTs_d18OevapS_sum;
   bool RepTs_d18OevapI;
   bool RepTs_d18OevapI_sum;
-  bool RepTs_d18Otranspi;
-  bool RepTs_d18Otranspi_sum;
+  bool RepTs_d18OevapT;
+  bool RepTs_d18OevapT_sum;
   
   //bool RepTs_Agecanopy;
   bool RepTs_Agesnowpack;
@@ -423,8 +427,8 @@ struct Control{
   bool RepTs_AgeevapS_sum;
   bool RepTs_AgeevapI;
   bool RepTs_AgeevapI_sum;
-  bool RepTs_Agetranspi;
-  bool RepTs_Agetranspi_sum;
+  bool RepTs_AgeevapT;
+  bool RepTs_AgeevapT_sum;
   // --------------------------
   
   

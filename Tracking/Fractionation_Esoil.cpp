@@ -30,116 +30,112 @@
 
 #include "Tracking.h"
 
-int Tracking::dDfrac_E(Atmosphere &atm, Basin &bsn, Control &ctrl,
-		REAL8 V_old, REAL8 V_new, REAL8 &dD_old, REAL8 &dD_new, REAL8 &dDevap,
-		int r, int c){
+int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
+			 REAL8 V_old, REAL8 V_new, REAL8 &beta,
+			 REAL8 &di_old, REAL8 &di_new, REAL8 &dievap,
+			 REAL8 &Ts, int r, int c, int iso){
+  
+  REAL8 Ta = atm.getTemperature()->matrix[r][c] + 273.15 ; // Air temperature (K)
+  REAL8 ha = atm.getRelativeHumidty()->matrix[r][c]; // Atmospheric relative humidity (fraction)
+  REAL8 es_s = SatVaporPressure(Ts-273.15) ; //saturated vapor pressure in the atmosphere (Pa)
+  REAL8 ea_s = SatVaporPressure(Ta-273.15) ; // saturated vapor pressure at the surface (Pa)
+  
+  REAL8 ha_p; // Corrected relatvie air humidity above the surface (fraction)
+  REAL8 hs; // Soil vapor saturation at the surface (fraction)
+  REAL8 f; // Water loss fraction after evaporation (fraction)
+  REAL8 alpha_p = 0; // equilibrium isotope fractionation factor (fraction)
+  REAL8 eps_p; // equilibrium isotope fractionation factor (per mil)
+  REAL8 eps_k = 0; // kinetic isotope fractionation factor (per mil)
+  REAL8 eps; // total isotope fractionation factor (per mil)
+  REAL8 di_atm = 0; // Isotopic signatures (permil)
+  REAL8 di_s; // Limiting isotopic composition (per mil)
+  REAL8 m; // Calculation factor (-)
+  REAL8 n; // Parameter translating dominant water transport mode (-)
+  REAL8 th_r, th_s, psiae, bclambda;
+  REAL8 d1 = bsn.getSoilDepth1()->matrix[r][c];
 
-	REAL8 alpha_p; // equilibrium isotope fractionation factor (fraction)
-	REAL8 eps_p; // equilibrium isotope fractionation factor (per mil)
-	REAL8 eps_k; // kinetic isotope fractionation factor (per mil)
-	REAL8 eps; // total isotope fractionation factor (per mil)
-	REAL8 dD_atm; // Isotopic signatures (permil)
-	REAL8 dD_star; // Limiting isotopic composition (per mil)
-	REAL8 m; // Calculation factor (-)
-	REAL8 T; // Air temperature (K)
-	REAL8 h; // Relative humidity (fraction)
-	REAL8 f; // Water loss fraction after evaporation (fraction)
+  // Corrected relative humidity at the surface
+  ha_p = ha*ea_s/es_s;
+  
+  // Relative humidity in the soil
+  if(ctrl.toggle_hs == 0) {
+    // Just 1
+    hs = 1;
+  } else if (ctrl.toggle_hs == 1) {
+    // Corrected h for surface temperature and beta
+    hs = beta + (1-beta)*ha_p;
+  } else if (ctrl.toggle_hs == 2) {
+    // Sorderberg et al. (2012), orginially for dry soils 
+    // (departs from EcH2O's evaporation conceptualization of evap!
+    th_r = bsn.getSoilMoistR()->matrix[r][c];
+    th_s = bsn.getPorosity()->matrix[r][c];
+    psiae = bsn.getPsiAE()->matrix[r][c];
+    bclambda = bsn.getBClambda()->matrix[r][c];
+    hs = expl(psiae*powl((V_old/d1-th_r)/(th_s-th_r),-bclambda)*18.0145/(8.3145*Ts*1000)); // waterpot*molarmass/(R*Ts*waterdensity)
+  } else {
+    std::cout << "Wrong option in the surface humidity toggle switch for fractionation. Please verify the configuration file" << std::endl;
+    exit(EXIT_FAILURE);  
+  }
+  
+  // Horita and Wesolowski (1994)
+  if(iso == 0) // deuterium
+    alpha_p = expl((1158.8*powl(Ta,3)*1e-9 - 1620.1*powl(Ta,2)*1e-6 + 794.84*Ta*1e-3 - \
+		    161.04 + 2.9992*1e9/powl(Ta,3))/1000);
+  else if (iso == 1) // oxygen 18
+    alpha_p = expl((-7.685 + 6.7123*1000/Ta - 1.6664*1e6/powl(Ta,2) +
+		    0.35041*1e9/powl(Ta,3))/1000);
+  
+  // Skrzypek et al. (2015)
+  eps_p = (1 - 1/alpha_p)*1000;
+  
+  // (Gat, 1995) + (Gibson and Reid, 2014)
+  if(iso == 0) // deuterium
+    di_atm = (atm.getdDprecip()->matrix[r][c] - eps_p)/ alpha_p;
+  else if(iso ==1) // oxygen 18
+    di_atm = (atm.getd18Oprecip()->matrix[r][c] - eps_p)/ alpha_p;
 
-	// Use soil temperature and relative humidity
-	T = bsn.getSoilTemp()->matrix[r][c] + 273.15 ;
-	h = atm.getRelativeHumidty()->matrix[r][c];
+  // Water transport mode: from diffusive (=1, dry soil) to turbulent (=0.5, water body)
+  if(ctrl.toggle_n == 0) {
+    n = 1;
+  } else if (ctrl.toggle_n == 1) {
+    // Mathieu and Bariac (1996) + Braud et al. (2005)
+    n = 1 - 0.5*(V_old/d1-bsn.getSoilMoistR()->matrix[r][c])/
+      (bsn.getPorosity()->matrix[r][c]-bsn.getSoilMoistR()->matrix[r][c]);
+  } else {
+    std::cout << "Wrong option in the soil fractionation n toggle switch. Please verify the configuration file" << std::endl;
+    exit(EXIT_FAILURE);  
+  }
+  
+  // Kinetic fractionation factor epsilon_k
+  // Value of Di/D from Vogt (1976)
+  if(iso==0) // deuterium
+    eps_k = (hs-ha_p)*(1-0.9877)*1000*n; 
+  else if(iso==1) // oxygen 18
+    eps_k = (hs-ha_p)*(1-0.9859)*1000*n; 
 
-	// Horita and Wesolowski (1994)
-	alpha_p = expl((1158.8*powl(T,3)*1e-9 - 1620.1*powl(T,2)*1e-6 + 794.84*T*1e-3 -\
-			161.04 + 2.9992*1e9/powl(T,3))/1000);
+  // --- Generalized following Good et al. (2014) -------------
+  // Gibson and Reid (2010)
+  eps = hs*eps_p + eps_k;
+  // (Gat and Levy, 1978) + (Gat, 1981)
+  di_s = (ha_p*di_atm + eps) / (ha_p - eps/1000);
+  // (Welhan and Fritz, 1977) + (Allison and Leaney, 1982)
+  m = (ha_p - eps/1000) / (hs - ha_p + eps_k/1000);
+  // ----------------------------------------------------------
+  
+  // Evaporative loss fraction
+  f = V_new/V_old;
+  
+  // (Hamilton et al., 2005)
+  // New isotopic signature in topsoil
+  di_new = di_s - (di_s - di_old) * powl(f,m);
+  
+  //if(abs(di_new)>1e3)
+  //  cout << r << " " << c << " : disoil_new ->" << di_new << " diold ->" << di_old <<
+  //    " distar ->" << di_s << " f ->" << f <<" m ->" << m << endl;
 
-	// Skrzypek et al. (2015)
-	eps_p = (alpha_p - 1)*1000;
-
-	// (Gat, 1995) + (Gibson and Reid, 2014)
-	dD_atm = (atm.getdDprecip()->matrix[r][c] - eps_p)/ alpha_p;
-
-	// Gonfiantini (1986) + Araguas-Araguas et al. (2000)
-	// for soil (n=1, open water n=0.5))
-	eps_k = (1-h)*25.0;
-
-	// Gibson and Reid (2010)
-	eps = eps_p/alpha_p + eps_k;
-
-	// (Gat and Levy, 1978) + (Gat, 1981)
-	dD_star = (h*dD_atm + eps) /	(h - eps/1000);
-
-	// (Welhan and Fritz, 1977) + (Allison and Leaney, 1982)
-	m = (h - eps/1000) / (1 - h + eps_k/1000);
-
-	// Evaporative loss fraction
-	f = V_new/V_old;
-
-	// (Hamilton et al., 2005)
-	// New isotopic signature in topsoil
-	dD_new = dD_star - (dD_star - dD_old) * powl(f,m);
-	if(abs(dD_new)>1e3)
-		cout << r << " " << c << " : dDsoil_new ->" << dD_new << " dDold ->" << dD_old <<
-		" dDstar ->" << dD_star << " f ->" << f <<" m ->" << m << endl;
-	// Isotopic signature of evaporated water
-	dDevap = (dD_old - h*dD_atm - eps)/ (1-h+eps_k/1000);
-
-	return EXIT_SUCCESS;
-
-}
-
-int Tracking::d18Ofrac_E(Atmosphere &atm, Basin &bsn, Control &ctrl,
-		REAL8 V_old, REAL8 V_new, REAL8 &d18O_old, REAL8 &d18O_new, REAL8 &d18Oevap,
-		int r, int c){
-
-	REAL8 alpha_p; // equilibrium isotope fractionation factor (fraction)
-	REAL8 eps_p; // equilibrium isotope fractionation factor (per mil)
-	REAL8 eps_k; // kinetic isotope fractionation factor (per mil)
-	REAL8 eps; // total isotope fractionation factor (per mil)
-	REAL8 d18O_atm; // Isotopic signatures (permil)
-	REAL8 d18O_star; // Limiting isotopic composition (per mil)
-	REAL8 m; // Calculation factor (-)
-	REAL8 T; // Air temperature (K)
-	REAL8 h; // Relative humidity (fraction)
-	REAL8 f; // Water loss fraction after evaporation (fraction)
-
-	// Use soil temperature and relative humidity
-	T = bsn.getSoilTemp()->matrix[r][c] + 273.15 ;
-	h = atm.getRelativeHumidty()->matrix[r][c];
-
-
-	// Horita and Wesolowski (1994)
-	alpha_p = expl((-7.685 + 6.7123*1000/T - 1.6664*1e6/powl(T,2) +
-			0.35041*1e9/powl(T,3))/1000);
-
-	// Skrzypek et al. (2015)
-	eps_p = (alpha_p - 1)*1000;
-
-	// (Gat, 1995) + (Gibson and Reid, 2014)
-	d18O_atm = (atm.getd18Oprecip()->matrix[r][c] - eps_p)/ alpha_p;
-
-	// Gonfiantini (1986) + Araguas-Araguas et al. (2000)
-	// for soil (n=1, open water n=0.5))
-	eps_k = (1-h)*28.4;
-
-	// Gibson and Reid (2010)
-	eps = eps_p/alpha_p + eps_k;
-
-	// (Gat and Levy, 1978) + (Gat, 1981)
-	d18O_star = (h*d18O_atm + eps) /	(h - eps/1000);
-
-	// (Welhan and Fritz, 1977) + (Allison and Leaney, 1982)
-	m = (h - eps/1000) / (1 - h + eps_k/1000);
-
-	// Evaporative loss fraction
-	f = V_new/V_old;
-
-	// (Hamilton et al., 2005)
-	// New isotopic signature in topsoil
-	d18O_new = d18O_star - (d18O_star - d18O_old) * powl(f,m);
-	// Isotopic signature of evaporated water
-	d18Oevap = (d18O_old - h*d18O_atm - eps)/ (1-h+eps_k/1000);
-
-	return EXIT_SUCCESS;
-
+  // Isotopic signature of evaporated water
+  dievap = (hs*alpha_p*di_new - ha_p*di_atm - eps)/ (hs - ha_p + eps_k/1000);
+  
+  return EXIT_SUCCESS;
+  
 }

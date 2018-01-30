@@ -87,6 +87,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 	UINT4 nsp;
 	REAL8 p; //fraction of species s
+	REAL8 veg_p; //summed fraction of vegetation
 
 	//unsigned int j;
 	UINT4 s;
@@ -110,7 +111,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	   Tp, maxTp, minTp, snow, rain, sno_rain_thres, evap,		\
 	   transp, netR, evap_f, transp_f, D, DelCanStor, theta, theta2, theta3, theta_available, ra, \
 	   poros, psi_ae, Keff, bclambda, rootdepth, froot1, froot2, froot3, d1, d2, d3, thetar, fc, \
-	   pTrp1, pTrp2, pTrp3, dDevapT_f, d18OevapT_f, AgeevapT_f,	\
+	   pTrp1, pTrp2, pTrp3, veg_p, dDevapT_f, d18OevapT_f, AgeevapT_f, \
 	   dDevapI_f, d18OevapI_f, AgeevapI_f)				\
   shared(nsp, atm, ctrl, trck, dt, thre)
 	
@@ -128,6 +129,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  /*--------*/
 	  nsp = fForest->getNumSpecies();
 	  
+	  veg_p = 0;
 	  treeheight = 0;
 	  evap_f = 0;
 	  transp_f = 0;
@@ -172,6 +174,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	      
 	      wind = atm.getWindSpeed()->matrix[r][c];
 	      
+	      veg_p += p;
 	      treeheight = max<REAL8>(0.01, fForest->getTreeHeight(s, r, c));
 	      
 	      /*TODO: Tentative relationship between forest height and wind velocity profile parameters*/
@@ -228,37 +231,37 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	      // Transpiration tracking: assumes total mixing of the water pulled from each soil layer
 	      if(ctrl.sw_trck){
 		if(ctrl.sw_dD){
-		  fForest->setdDtranspi(s, r, c,
+		  fForest->setdDevapT(s, r, c,
 					pTrp1*trck.getdDsoil1()->matrix[r][c]+
 					pTrp2*trck.getdDsoil2()->matrix[r][c]+
 					pTrp3*trck.getdDsoil3()->matrix[r][c]);
-		  dDevapT_f += fForest->getdDtranspi(s)->matrix[r][c] * p ;
+		  dDevapT_f += fForest->getdDevapT(s)->matrix[r][c] * p * transp ;
 		}
 		if(ctrl.sw_d18O){
-		  fForest->setd18Otranspi(s, r, c,
+		  fForest->setd18OevapT(s, r, c,
 					  pTrp1*trck.getd18Osoil1()->matrix[r][c]+
 					  pTrp2*trck.getd18Osoil2()->matrix[r][c]+
 					  pTrp3*trck.getd18Osoil3()->matrix[r][c]);
-		  d18OevapT_f += fForest->getd18Otranspi(s)->matrix[r][c] * p ;
+		  d18OevapT_f += fForest->getd18OevapT(s)->matrix[r][c] * p * transp ;
 		}
 		if(ctrl.sw_Age){
-		  fForest->setAgetranspi(s, r, c,
+		  fForest->setAgeevapT(s, r, c,
 					 pTrp1*trck.getAgesoil1()->matrix[r][c]+
 					 pTrp2*trck.getAgesoil2()->matrix[r][c]+
 					 pTrp3*trck.getAgesoil3()->matrix[r][c]);
-		  AgeevapT_f += fForest->getAgetranspi(s)->matrix[r][c] * p ;
+		  AgeevapT_f += fForest->getAgeevapT(s)->matrix[r][c] * p * transp ;
 		}
 	      }
+
+	      // Update soil moisture objects
+	      _soilmoist1->matrix[r][c] = theta;
+	      _soilmoist2->matrix[r][c] = theta2;
+	      _soilmoist3->matrix[r][c] = theta3;
+
 	      //trck.MixingV_evapT(*this, ctrl, pTrp1, pTrp2, pTrp3, 
 	      //		 dDevapT_f, d18OevapT_f, AgeevapT_f, p, s, r, c);
 	      
-	    }
-	    
-	    // Update soil moisture objects
-	    _soilmoist1->matrix[r][c] = theta;
-	    _soilmoist2->matrix[r][c] = theta2;
-	    _soilmoist3->matrix[r][c] = theta3;
-	    
+	    } // end if bare / veg
 	    
 	    Tp = atm.getTemperature()->matrix[r][c];
 	    maxTp = atm.getMaxTemperature()->matrix[r][c];
@@ -288,21 +291,23 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    }
 
 	    _snow->matrix[r][c] +=  snow * dt * p;
-			_ponding->matrix[r][c] += rain * dt * p;
+	    _ponding->matrix[r][c] += rain * dt * p;
 			
-	  } //end for
+	  } //end for over species
 	  
 	  _Evaporation->matrix[r][c] = evap_f + transp_f; //total evaporation for the entire cell
 	  // Vegetation-summed values
 	  _Transpiration_all->matrix[r][c]  = transp_f ;
 	  _EvaporationI_all->matrix[r][c] = evap_f ;
 	  // applies for tracking as well
+	  // summed evapT dD, d18O and Age weighted by flux magnitude and cover ONLY over vegetated fraction
+	  // (otherwise results makes no sense whre bare frac is significant)
 	  if(ctrl.sw_trck && ctrl.sw_dD)
-	    trck.setdDtranspi_sum(r ,c, dDevapT_f);
+	    trck.setdDevapT_sum(r ,c, dDevapT_f / (transp_f * veg_p)); 
 	  if(ctrl.sw_trck && ctrl.sw_d18O)
-	    trck.setd18Otranspi_sum(r ,c, d18OevapT_f);
+	    trck.setd18OevapT_sum(r ,c, d18OevapT_f / (transp_f * veg_p));
 	  if(ctrl.sw_trck && ctrl.sw_Age)
-	    trck.setAgetranspi_sum(r ,c, AgeevapT_f);
+	    trck.setAgeevapT_sum(r ,c, AgeevapT_f / (transp_f * veg_p));
 	  
 	}//end for
  }//end omp parallel

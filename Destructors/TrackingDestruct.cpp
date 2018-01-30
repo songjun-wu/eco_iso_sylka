@@ -56,8 +56,8 @@ Tracking::~Tracking(){
 		delete _dDevapS_sum;
 	if(_dDevapI_sum)
 		delete _dDevapI_sum;
-	if(_dDtranspi_sum)
-		delete _dDtranspi_sum;
+	if(_dDevapT_sum)
+		delete _dDevapT_sum;
 
 	//	if(_d18Oinput)
 	//		delete _d18Oinput;
@@ -83,8 +83,8 @@ Tracking::~Tracking(){
 		delete _d18OevapS_sum;
 	if(_d18OevapI_sum)
 		delete _d18OevapI_sum;
-	if(_d18Otranspi_sum)
-		delete _d18Otranspi_sum;
+	if(_d18OevapT_sum)
+		delete _d18OevapT_sum;
 
 	//	if(_Agecanopy)
 	//		delete _Agecanopy;
@@ -108,6 +108,6 @@ Tracking::~Tracking(){
 		delete _AgeevapS_sum;
 	if(_AgeevapI_sum)
 		delete _AgeevapI_sum;
-	if(_Agetranspi_sum)
-		delete _Agetranspi_sum;
+	if(_AgeevapT_sum)
+		delete _AgeevapT_sum;
 }

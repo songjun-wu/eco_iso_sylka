@@ -121,8 +121,8 @@ grid *Basin::getdDcanopy(UINT4 n) const {
 grid *Basin::getdDevapI(UINT4 n) const {
 	return fForest->getdDevapI(n);
 }
-grid *Basin::getdDtranspi(UINT4 n) const {
-	return fForest->getdDtranspi(n);
+grid *Basin::getdDevapT(UINT4 n) const {
+	return fForest->getdDevapT(n);
 }
 grid *Basin::getdDevapS(UINT4 n) const {
 	return fForest->getdDevapS(n);
@@ -134,8 +134,8 @@ grid *Basin::getd18Ocanopy(UINT4 n) const {
 grid *Basin::getd18OevapI(UINT4 n) const {
 	return fForest->getd18OevapI(n);
 }
-grid *Basin::getd18Otranspi(UINT4 n) const {
-	return fForest->getd18Otranspi(n);
+grid *Basin::getd18OevapT(UINT4 n) const {
+	return fForest->getd18OevapT(n);
 }
 grid *Basin::getd18OevapS(UINT4 n) const {
 	return fForest->getd18OevapS(n);
@@ -147,8 +147,8 @@ grid *Basin::getAgecanopy(UINT4 n) const {
 grid *Basin::getAgeevapI(UINT4 n) const {
 	return fForest->getAgeevapI(n);
 }
-grid *Basin::getAgetranspi(UINT4 n) const {
-	return fForest->getAgetranspi(n);
+grid *Basin::getAgeevapT(UINT4 n) const {
+	return fForest->getAgeevapT(n);
 }
 grid *Basin::getAgeevapS(UINT4 n) const {
 	return fForest->getAgeevapS(n);

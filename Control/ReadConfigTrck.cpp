@@ -51,7 +51,11 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 		sw_frac = ConfigTrck.read<bool>("water_frac");
 		sw_Age = ConfigTrck.read<bool>("water_Age");
 		sw_lifo = ConfigTrck.read<bool>("water_lifo");
-		
+
+		if(sw_frac){
+		  toggle_hs = ConfigTrck.read<bool>("Fractionation_surface_relhum");
+		  toggle_n = ConfigTrck.read<bool>("Fractionation_turbulent_factor");
+		}
 		// Put here because _FluxL1toSrf is calculated only if tracking is active
 		Rep_SrftoL1 = ConfigTrck.read<bool>("Report_Infiltration");
 		Rep_L1toSrf = ConfigTrck.read<bool>("Report_Return_Flow_Surface");
@@ -107,8 +111,8 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			Rep_dDevapS_sum = ConfigTrck.read<bool>("Rep_dDevapS_sum");
 			Rep_dDevapI = ConfigTrck.read<bool>("Rep_dDevapI");
 			Rep_dDevapI_sum = ConfigTrck.read<bool>("Rep_dDevapI_sum");
-			Rep_dDtranspi = ConfigTrck.read<bool>("Rep_dDtranspi");
-			Rep_dDtranspi_sum = ConfigTrck.read<bool>("Rep_dDtranspi_sum");
+			Rep_dDevapT = ConfigTrck.read<bool>("Rep_dDevapT");
+			Rep_dDevapT_sum = ConfigTrck.read<bool>("Rep_dDevapT_sum");
 			// Report time series
 			RepTs_dDprecip = ConfigTrck.read<bool>("Ts_dDprecip");
 			//RepTs_dDcanopy = ConfigTrck.read<bool>("Ts_dDcanopy");
@@ -124,8 +128,8 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			RepTs_dDevapS_sum = ConfigTrck.read<bool>("Ts_dDevapS_sum");
 			RepTs_dDevapI = ConfigTrck.read<bool>("Ts_dDevapI");
 			RepTs_dDevapI_sum = ConfigTrck.read<bool>("Ts_dDevapI_sum");
-			RepTs_dDtranspi = ConfigTrck.read<bool>("Ts_dDtranspi");
-			RepTs_dDtranspi_sum = ConfigTrck.read<bool>("Ts_dDtranspi_sum");
+			RepTs_dDevapT = ConfigTrck.read<bool>("Ts_dDevapT");
+			RepTs_dDevapT_sum = ConfigTrck.read<bool>("Ts_dDevapT_sum");
 		}
 
 		if(sw_d18O){
@@ -155,8 +159,8 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			Rep_d18OevapS_sum = ConfigTrck.read<bool>("Rep_d18OevapS_sum");
 			Rep_d18OevapI = ConfigTrck.read<bool>("Rep_d18OevapI");
 			Rep_d18OevapI_sum = ConfigTrck.read<bool>("Rep_d18OevapI_sum");
-			Rep_d18Otranspi = ConfigTrck.read<bool>("Rep_d18Otranspi");
-			Rep_d18Otranspi_sum = ConfigTrck.read<bool>("Rep_d18Otranspi_sum");
+			Rep_d18OevapT = ConfigTrck.read<bool>("Rep_d18OevapT");
+			Rep_d18OevapT_sum = ConfigTrck.read<bool>("Rep_d18OevapT_sum");
 			// Report time series
 			RepTs_d18Oprecip = ConfigTrck.read<bool>("Ts_d18Oprecip");
 			//RepTs_d18Ocanopy = ConfigTrck.read<bool>("Ts_d18Ocanopy");
@@ -172,8 +176,8 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			RepTs_d18OevapS_sum = ConfigTrck.read<bool>("Ts_d18OevapS_sum");
 			RepTs_d18OevapI = ConfigTrck.read<bool>("Ts_d18OevapI");
 			RepTs_d18OevapI_sum = ConfigTrck.read<bool>("Ts_d18OevapI_sum");
-			RepTs_d18Otranspi = ConfigTrck.read<bool>("Ts_d18Otranspi");
-			RepTs_d18Otranspi_sum = ConfigTrck.read<bool>("Ts_d18Otranspi_sum");
+			RepTs_d18OevapT = ConfigTrck.read<bool>("Ts_d18OevapT");
+			RepTs_d18OevapT_sum = ConfigTrck.read<bool>("Ts_d18OevapT_sum");
 		}
 
 		if(sw_Age){
@@ -201,8 +205,8 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			Rep_AgeevapS_sum = ConfigTrck.read<bool>("Rep_AgeevapS_sum");
 			Rep_AgeevapI = ConfigTrck.read<bool>("Rep_AgeevapI");
 			Rep_AgeevapI_sum = ConfigTrck.read<bool>("Rep_AgeevapI_sum");
-			Rep_Agetranspi = ConfigTrck.read<bool>("Rep_Agetranspi");
-			Rep_Agetranspi_sum = ConfigTrck.read<bool>("Rep_Agetranspi_sum");
+			Rep_AgeevapT = ConfigTrck.read<bool>("Rep_AgeevapT");
+			Rep_AgeevapT_sum = ConfigTrck.read<bool>("Rep_AgeevapT_sum");
 			// Report time series
 			//RepTs_Agecanopy = ConfigTrck.read<bool>("Ts_Agecanopy");
 			RepTs_Agesnowpack = ConfigTrck.read<bool>("Ts_Agesnowpack");
@@ -217,8 +221,8 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 			RepTs_AgeevapS_sum = ConfigTrck.read<bool>("Ts_AgeevapS_sum");
 			RepTs_AgeevapI = ConfigTrck.read<bool>("Ts_AgeevapI");
 			RepTs_AgeevapI_sum = ConfigTrck.read<bool>("Ts_AgeevapI_sum");
-			RepTs_Agetranspi = ConfigTrck.read<bool>("Ts_Agetranspi");
-			RepTs_Agetranspi_sum = ConfigTrck.read<bool>("Ts_Agetranspi_sum");
+			RepTs_AgeevapT = ConfigTrck.read<bool>("Ts_AgeevapT");
+			RepTs_AgeevapT_sum = ConfigTrck.read<bool>("Ts_AgeevapT_sum");
 		}
 	}
 	catch(ConfigFile::file_not_found &fn){
