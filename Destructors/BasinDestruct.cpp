@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * BasinDestruct.cpp
@@ -130,10 +130,8 @@ Basin::~Basin(){
 		delete _catcharea;
 	if(_GravityWater)
 		delete _GravityWater;
-	if(_PondingOld)
-		delete _PondingOld;
-	if(_GrndWaterOld)
-		delete _GrndWaterOld;
+	if(_GrndWater_old)
+		delete _GrndWater_old;
 	if(_GrndWater)
 		delete _GrndWater;
 	if(_GWupstreamBC)
@@ -157,42 +155,71 @@ Basin::~Basin(){
 	if(_IsSaturated)
 		delete _IsSaturated;
 	if(_EvaporationS_all)
-		delete _EvaporationS_all;
+	  delete _EvaporationS_all;
 	if(_EvaporationI_all)
-		delete _EvaporationI_all;
+	  delete _EvaporationI_all;
 	if(_Transpiration_all)
-		delete _Transpiration_all;
+	  delete _Transpiration_all;
 
 
 	if(fForest)
 		delete fForest;
 
-	// Tracking
+	if(_ponding_old)
+	  delete _ponding_old;
 	if(_FluxUptoSnow)
 		delete _FluxUptoSnow;
 	if(_FluxSrftoL1)
 		delete _FluxSrftoL1;
+	if(_FluxInfilt)
+		delete _FluxInfilt;
+	if(_FluxExfilt)
+		delete _FluxExfilt;
+	if(_FluxLattoSrf)
+		delete _FluxLattoSrf;
+	if(_FluxLattoGW)
+		delete _FluxLattoGW;
+	if(_FluxLattoChn)
+		delete _FluxLattoChn;
+	if(_FluxSrftoLat)
+		delete _FluxSrftoLat;
+	if(_FluxGWtoLat)
+		delete _FluxGWtoLat;
+	if(_FluxGWtoChn)
+		delete _FluxGWtoChn;
+	if(_FluxSrftoChn)
+		delete _FluxSrftoChn;
+	if(_AccInfilt)
+		delete _AccInfilt;
+	if(_AccExfilt)
+		delete _AccExfilt;
+	if(_AccLattoGW)
+		delete _AccLattoGW;
+	if(_AccLattoSrf)
+		delete _AccLattoSrf;
+	if(_AccLattoChn)
+		delete _AccLattoChn;
+	if(_AccSrftoLat)
+		delete _AccSrftoLat;
+	if(_AccGWtoLat)
+		delete _AccGWtoLat;
+	if(_AccGWtoChn)
+		delete _AccGWtoChn;
+	if(_AccSrftoChn)
+		delete _AccSrftoChn;
+
+	// Tracking
 	if(_FluxL1toL2)
 		delete _FluxL1toL2;
 	if(_FluxL2toL3)
 		delete _FluxL2toL3;
 	if(_FluxL3toGW)
 		delete _FluxL3toGW;
-	if(_FluxL1toSrf)
-		delete _FluxL1toSrf;
 	if(_FluxL2toL1)
 		delete _FluxL2toL1;
 	if(_FluxL3toL2)
 		delete _FluxL3toL2;
 	if(_FluxGWtoL3)
 		delete _FluxGWtoL3;
-	if(_FluxLattoSrf)
-		delete _FluxLattoSrf;
-	if(_FluxLattoGW)
-		delete _FluxLattoGW;
-	if(_FluxGWtoChn)
-		delete _FluxGWtoChn;
-	if(_FluxSrftoChn)
-		delete _FluxSrftoChn;
 
 }

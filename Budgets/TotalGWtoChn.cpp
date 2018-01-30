@@ -34,5 +34,5 @@ void Budget::TotalGWtoChn(const grid *map, const Basin *b)
 {
   gwtochn += AccountStorages(map, b);
   // AccountStorages is used because FluxGWtoChn is already in m/tstep
-  // (not needs to multiply by dt)
+  // (no need to multiply by dt)
 }

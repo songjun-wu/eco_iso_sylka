@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta, Sylain Kuppel
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * SolveEnergyBalance.cpp
@@ -32,236 +32,252 @@
 
 int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
-	int r, c;
-	float dt = ctrl.dt; //time step
+  int r, c;
+  float dt = ctrl.dt; //time step
+  
+  
+  //energy balance parameters
+  
+  REAL8 ra; //soil aerodynamic resistance
+  REAL8 rs; //bare soil resistance (a function of soil moisture)
+  REAL8 Ts = 0; //
+  REAL8 Tsold = 0; //old surface temperature
+  REAL8 Tdold = 0; //temperature of lower soil thermal layer
+  
+  REAL8 LAI = 0;
+  REAL8 BeersK = 0;
+  REAL8 Temp_can = 0; //temperature of the canopy
+  REAL8 emis_can = 0; //emissivity of the canopy
+  
+  REAL8 evap = 0; //evaporation
+  
+  //infiltration parameters
+  REAL8 infcap = 0;
+  REAL8 accinf = 0;
+  REAL8 theta = 0; //soil moisture for entire soil profile or for first soil layer
+  REAL8 theta2 = 0; //for second and third soil moisture
+  REAL8 theta3 = 0; //layers in case Richard's equation is chosen
+  REAL8 ponding = 0;
+  REAL8 gw = 0; //gravitational water
+  REAL8 leak = 0; //bedrock leakage flux;
+  
+  double d1, d2, d3; // soil layers' depths
+  double fc; //field capacity
+  
+  //aerodynamic resistance parameters
+  REAL8 za; //height of wind speed measurements
+  REAL8 z0u; // roughness length for understory
+  REAL8 zdu; //zero plane displacement for understory
+  REAL8 z0o; // roughness length for overrstory
+  REAL8 zdo; //zero plane displacement for overstory
+  
+  REAL8 wind; //wind speed
+  REAL8 treeheight;
+  
+  REAL8 nr, le, sens, grndh, snowh, mltht, dh_snow, etc;
+  
+  UINT4 nsp;
+  REAL8 p;//fraction of species s
 
-
-	//energy balance parameters
-
-	REAL8 ra; //soil aerodynamic resistance
-	REAL8 rs; //bare soil resistance (a function of soil moisture)
-	REAL8 Ts = 0; //
-	REAL8 Tsold = 0; //old surface temperature
-	REAL8 Tdold = 0; //temperature of lower soil thermal layer
-
-	REAL8 LAI = 0;
-	REAL8 BeersK = 0;
-	REAL8 Temp_can = 0; //temperature of the canopy
-	REAL8 emis_can = 0; //emissivity of the canopy
-
-	REAL8 evap = 0; //evaporation
-
-	//infiltration parameters
-	REAL8 infcap = 0;
-	REAL8 accinf = 0;
-	REAL8 theta = 0; //soil moisture for entire soil profile or for first soil layer
-	REAL8 theta2 = 0; //for second and third soil moisture
-	REAL8 theta3 = 0; //layers in case Richard's equation is chosen
-	REAL8 ponding = 0;
-	REAL8 gw = 0; //gravitational water
-	REAL8 leak = 0; //bedrock leakage flux;
-
-	double d1, d2, d3; // soil layers' depths
-	double fc; //field capacity
-
-	//aerodynamic resistance parameters
-	REAL8 za; //height of wind speed measurements
-	REAL8 z0u; // roughness length for understory
-	REAL8 zdu; //zero plane displacement for understory
-	REAL8 z0o; // roughness length for overrstory
-	REAL8 zdo; //zero plane displacement for overstory
-
-	REAL8 wind; //wind speed
-	REAL8 treeheight;
-
-	REAL8 nr, le, sens, grndh, snowh, mltht, dh_snow, theta_old, etc;
-
-	UINT4 nsp;
-	REAL8 p;//fraction of species s
-
-	//needed in the water routing routines
-	_dailyOvlndOutput.cells.clear();
-	_dailyGwtrOutput.cells.clear();
-	_GWupstreamBC->reset();
-	_Disch_upstreamBC->reset();
-	// Set EvapS to zero before looping over baresoil/understory
-	_EvaporationS_all->reset();
-
-	/*if(ctrl.sw_trck){
-	  //For tracking
-	  _FluxSrftoL1->reset(); //
-	  _FluxL1toL2->reset(); //
-	  _FluxL2toL3->reset(); //
-	  _FluxL3toGW->reset(); //
-	  }*/
-	
+  REAL8 theta_lifo = 0;
+  
+  //needed in the water routing routines
+  _dailyOvlndOutput.cells.clear();
+  _dailyGwtrOutput.cells.clear();
+  _GWupstreamBC->reset();
+  _Disch_upstreamBC->reset();
+  // Set EvapS to zero before looping over baresoil/understory
+  _EvaporationS_all->reset();
+  
+  /*if(ctrl.sw_trck){
+  //For tracking
+  _FluxSrftoL1->reset(); //
+  _FluxL1toL2->reset(); //
+  _FluxL2toL3->reset(); //
+  _FluxL3toGW->reset(); //
+  }*/
+  
 #pragma omp parallel default(shared) private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can, \
 					     evap, infcap, accinf, theta, theta2, theta3, ponding,leak,  gw, za, z0u, zdu, z0o, zdo, wind, treeheight, \
-					     nr, le, sens, grndh, snowh, mltht, dh_snow, p, theta_old, etc,  \
+					     nr, le, sens, grndh, snowh, mltht, dh_snow, p, theta_lifo, etc, \
 					     d1, d2, d3, fc)
-	{
-	  //thre = omp_get_num_threads();
-	  //#pragma omp single
-	  //printf("\nnum threads %d: ", thre);
+  {
+    //thre = omp_get_num_threads();
+    //#pragma omp single
+    //printf("\nnum threads %d: ", thre);
 #pragma omp for nowait
-	  for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
-	    {
-	      r = _vSortedGrid.cells[j].row;
-	      c = _vSortedGrid.cells[j].col;
-	      
-	      
-	      wind = atm.getWindSpeed()->matrix[r][c];
-	      
-	      theta = _soilmoist1->matrix[r][c]; //soil moisture at time t
-	      theta2 = _soilmoist2->matrix[r][c];
-	      theta3 = _soilmoist3->matrix[r][c];
-	      ponding = _ponding->matrix[r][c]; //surface ponding at time t
-	      gw = _GravityWater->matrix[r][c]; //gravity water at time t
-	      leak = 0;
-
-	      fc = _fieldcap->matrix[r][c];
-	      d1 = _depth_layer1->matrix[r][c];
-	      d2 = _depth_layer2->matrix[r][c];
-	      d3 = _soildepth->matrix[r][c] - d1 - d2;
-	      
-	      nr = 0;
-	      le = 0;
-	      sens = 0;
-	      grndh = 0;
-	      snowh = 0;
-	      mltht = 0;
-	      Ts = _Temp_s->matrix[r][c];
-	      Tsold = 0;
-	      Tdold = 0;
-	      dh_snow = 0;
-	      
-	      // Tracking: initialize summed values
-	      if(ctrl.sw_trck){
-		// With lifo, save theta before infiltration for post-evap mixing equations
-		theta_old = theta;
-	      }
-	      
-	      // Infiltration + percolation if exceeds porosity
-	      Infilt_GreenAmpt(ctrl, infcap, accinf, theta, theta2, theta3, ponding, gw,
-			       dt, r, c); 
-	      
-	      // Percolation if exceeding field capacity (L1 and L2), 
-	      // goes to GW in L3 (and bedrock leakage if activated)
-	      SoilWaterRedistribution(ctrl, accinf, theta, theta2, theta3, ponding, gw, leak, dt, r, c);
-
-	      // Tracking
-	      if(ctrl.sw_trck)
-		trck.MixingV_down(*this, ctrl, d1, d2, d3, fc, leak, r, c, false);
-
-	      // Update global objects
-	      _ponding->matrix[r][c] = ponding;
-	      _GravityWater->matrix[r][c] = gw;
-	      _GrndWater->matrix[r][c] = gw;
-	      _BedrockLeakageFlux->matrix[r][c] = leak;
-	      
-	      // Calculates the soil moisture profile to derive equivalent water table depth
-	      if(ctrl.Rep_WaterTableDepth == 1 || ctrl.RepTs_WaterTableDepth == 1)
-		CalcSoilMoistureProfile(atm, ctrl, theta, r,c);
-	      
-	      if(ctrl.sw_trck){
-		_soilmoist1->matrix[r][c] = theta; 
-}
-
-	      
-	      nsp = fForest->getNumSpecies();
-	      treeheight = 0;
-	      
-	      for(UINT4 s = 0; s < nsp ; s++)
-		{
-		  p = fForest->getPropSpecies(s, r, c);
-		  if(p == 0)
-		    continue;//if no species j present, continue
-		  
-		  if(s == nsp -1){ //for bare soil, water reaching the ground is pp times its proportion of the cell
-		    LAI = 0;
-		    emis_can = 0;
-		    Temp_can = 0;
-		    za = _random_roughness->matrix[r][c] + 2;
-		    z0u = max<REAL8>(0.000005,_random_roughness->matrix[r][c] * 0.1);
-		    zdu = _random_roughness->matrix[r][c] * 0.7;
-		    z0o = 0; //no overstory
-		    zdo = 0;
-		  }
-		  else
-		    {
-		      treeheight = max<REAL8>(0.01,fForest->getTreeHeight(s, r, c)); //equations only apply to 40% of the tree as per Campbell and Norman 1998
-		      LAI = fForest->getLAISpecies(s, r, c);
-		      BeersK = fForest->getBeersCoeff(s, r, c);
-		      Temp_can = fForest->getCanopyTemp(s, r, c);
-		      emis_can = fForest->getCanopyEmissivity(s, r, c);
-		      za = treeheight + 2;
-		      z0o = powl(treeheight,1.19)*0.057544;     //treeheight > 1 ? 0.1 : treeheight * 0.1;
-		      zdo = powl(treeheight,0.98)*0.707946; //treeheight > 1 ? 0.1 : treeheight * 0.7;
-		      zdu = min<double>(_random_roughness->matrix[r][c], zdo * 0.1);//min<double>(treeheight * 0.1, zdo * 0.1);
-		      z0u = 0.1*zdu/0.7;
-		      
-		    }
-		  
-		  
-		  ra = CalcAerodynResist(wind, za, z0u, zdu, z0o, zdo, treeheight,
-					 LAI, Ts, atm.getTemperature()->matrix[r][c], ctrl.toggle_ra,
-					 true);
-		  
-		  //rs = CalcSoilResist(_soilmoist1->matrix[r][c], r, c, ctrl.toggle_rs);
-		  rs = CalcSoilResist(theta, r, c, ctrl.toggle_rs);
-		  //rs =  1/max<double>( 0.0000000000001, ExfiltrationCapacity(theta, dt, r, c) );
-		  
-		  //theta_old = theta;
-		  
-		  SolveSurfaceEnergyBalance(atm, ctrl, ra, rs, 0.0, BeersK, LAI,
-					    emis_can, Temp_can, nr, le, sens, grndh, snowh, mltht,
-					    Tsold, evap, ponding, theta, Ts, Tdold, p, r, c, s);
-		  
-		  
-		  _Evaporation->matrix[r][c] += evap; //evaporation at t=t+1 (weighted by p)
-		  _EvaporationS_all->matrix[r][c] += evap; //soil evaporation at t=t+1 (weighted by p)
-		  // individual component of Esoil and ET (below vegetation only, de-weighted!)
-		  if(s != nsp -1){
-		    fForest->setEsoilSpecies(s, r, c, evap/p);
-		    etc = fForest->getEvapoTransp(s, r, c);
-		    fForest->setETSpecies(s, r, c, etc + evap/p);
-		  }
-		  
-		  
-		}//for over the species
-	      
-	      // Flux tracking after evap
-	      if(ctrl.sw_trck)
-		trck.MixingV_evapS(atm, *this, ctrl, d1, theta_old, theta, r, c); 
-	      
-	      // Update soil moisture objects
-	      _soilmoist1->matrix[r][c] = theta; //soil moisture at t=t+1
-	      _soilmoist2->matrix[r][c] = theta2;
-	      _soilmoist3->matrix[r][c] = theta3;
-	      
-	      _Rn->matrix[r][c] = nr;
-	      _latheat->matrix[r][c] = le;
-	      _sensheat->matrix[r][c] = sens;
-	      _grndheat->matrix[r][c] = grndh;
-	      _snwheat->matrix[r][c] = snowh;
-	      _Temp_s_old->matrix[r][c] = Tsold;
-	      _Temp_s->matrix[r][c] = Tsold; //
-	      
-	      _Temp_d->matrix[r][c] = Tdold;
-	      
-	      dh_snow = SnowOutput(atm, ctrl, mltht, r, c);
-	      
-	      // Flux tracking after snowmelt
-	      if(ctrl.sw_trck)
-		trck.MixingV_snow(atm, *this, ctrl, dh_snow, r, c);
-
-	      // Update surface pool
-	      _ponding->matrix[r][c] += dh_snow;
-	      // Back up before routing
-	      _GrndWaterOld->matrix[r][c] = _GrndWater->matrix[r][c];
-	      
-	    }//for
-	}//end omp parallel block
+    for (unsigned int j = 0; j < _vSortedGrid.cells.size() ; j++)
+      {
+	r = _vSortedGrid.cells[j].row;
+	c = _vSortedGrid.cells[j].col;
 	
-	return EXIT_SUCCESS;
+	
+	wind = atm.getWindSpeed()->matrix[r][c];
+	
+	theta = _soilmoist1->matrix[r][c]; //soil moisture at time t
+	theta2 = _soilmoist2->matrix[r][c];
+	theta3 = _soilmoist3->matrix[r][c];
+	ponding = _ponding->matrix[r][c]; //surface ponding at time t
+	gw = _GravityWater->matrix[r][c]; //gravity water at time t
+	leak = 0;
+	
+	fc = _fieldcap->matrix[r][c];
+	d1 = _depth_layer1->matrix[r][c];
+	d2 = _depth_layer2->matrix[r][c];
+	d3 = _soildepth->matrix[r][c] - d1 - d2;
+	
+	nr = 0;
+	le = 0;
+	sens = 0;
+	grndh = 0;
+	snowh = 0;
+	mltht = 0;
+	Ts = _Temp_s->matrix[r][c];
+	Tsold = 0;
+	Tdold = 0;
+	dh_snow = 0;
+	
+	// Tracking: initialize summed values
+	if(ctrl.sw_trck && ctrl.sw_lifo)
+	  // With lifo, save theta before infiltration for post-evap mixing equations
+	  theta_lifo = theta;
+	
+	// Infiltration + percolation if exceeds porosity
+	Infilt_GreenAmpt(ctrl, infcap, accinf, theta, theta2, theta3, ponding, gw,
+			 dt, r, c); 
+	
+	// Percolation if exceeding field capacity (L1 and L2), 
+	// goes to GW in L3 (and bedrock leakage if activated)
+	SoilWaterRedistribution(ctrl, accinf, theta, theta2, theta3, ponding, gw, leak, dt, r, c);
+
+	// Store cumulated infitlration flux
+	_FluxInfilt->matrix[r][c] = _FluxSrftoL1->matrix[r][c];
+	_AccInfilt->matrix[r][c] += _FluxInfilt->matrix[r][c];
+
+	// Tracking
+	if(ctrl.sw_trck)
+	  trck.MixingV_down(*this, ctrl, d1, d2, d3, fc, leak, r, c, false);
+	
+	// Update global objects
+	_ponding->matrix[r][c] = ponding;
+	_GravityWater->matrix[r][c] = gw;
+	_GrndWater->matrix[r][c] = gw;
+	_BedrockLeakageFlux->matrix[r][c] = leak;
+	
+	// Calculates the soil moisture profile to derive equivalent water table depth
+	if(ctrl.Rep_WaterTableDepth == 1 || ctrl.RepTs_WaterTableDepth == 1)
+	  CalcSoilMoistureProfile(atm, ctrl, theta, r,c);
+
+	// Tracking
+	if(ctrl.sw_trck)
+	  _soilmoist1->matrix[r][c] = theta; 
+	
+	nsp = fForest->getNumSpecies();
+	treeheight = 0;
+	
+	for(UINT4 s = 0; s < nsp ; s++)
+	  {
+	    p = fForest->getPropSpecies(s, r, c);
+	    if(p == 0)
+	      continue;//if no species j present, continue
+	    
+	    if(s == nsp -1){ //for bare soil, water reaching the ground is pp times its proportion of the cell
+	      LAI = 0;
+	      emis_can = 0;
+	      Temp_can = 0;
+	      za = _random_roughness->matrix[r][c] + 2;
+	      z0u = max<REAL8>(0.000005,_random_roughness->matrix[r][c] * 0.1);
+	      zdu = _random_roughness->matrix[r][c] * 0.7;
+	      z0o = 0; //no overstory
+	      zdo = 0;
+	    }
+	    else
+	      {
+		treeheight = max<REAL8>(0.01,fForest->getTreeHeight(s, r, c)); //equations only apply to 40% of the tree as per Campbell and Norman 1998
+		LAI = fForest->getLAISpecies(s, r, c);
+		BeersK = fForest->getBeersCoeff(s, r, c);
+		Temp_can = fForest->getCanopyTemp(s, r, c);
+		emis_can = fForest->getCanopyEmissivity(s, r, c);
+		za = treeheight + 2;
+		z0o = powl(treeheight,1.19)*0.057544;     //treeheight > 1 ? 0.1 : treeheight * 0.1;
+		zdo = powl(treeheight,0.98)*0.707946; //treeheight > 1 ? 0.1 : treeheight * 0.7;
+		zdu = min<double>(_random_roughness->matrix[r][c], zdo * 0.1);//min<double>(treeheight * 0.1, zdo * 0.1);
+		z0u = 0.1*zdu/0.7;
+		
+	      }
+	    
+	    
+	    ra = CalcAerodynResist(wind, za, z0u, zdu, z0o, zdo, treeheight,
+				   LAI, Ts, atm.getTemperature()->matrix[r][c], ctrl.toggle_ra,
+				   true);
+	    
+	    //rs = CalcSoilResist(_soilmoist1->matrix[r][c], r, c, ctrl.toggle_rs);
+	    rs = CalcSoilResist(theta, r, c, ctrl.toggle_rs);
+	    //rs =  1/max<double>( 0.0000000000001, ExfiltrationCapacity(theta, dt, r, c) );
+	    
+	    //theta_old = theta;
+	    
+	    SolveSurfaceEnergyBalance(atm, ctrl, trck, ra, rs, 0.0, BeersK, LAI,
+				      emis_can, Temp_can, nr, le, sens, grndh, snowh, mltht,
+				      Tsold, evap, ponding, theta, theta_lifo, Ts, Tdold, p, r, c, s);
+
+	    if(ctrl.sw_lifo)
+	      // Update here because the evapS mixing/fractionation is done for each veg type sequentially
+	      _FluxSrftoL1->matrix[r][c] = std::max<double>(0,_FluxSrftoL1->matrix[r][c]-evap*dt);
+	    
+	    _Evaporation->matrix[r][c] += evap; //evaporation at t=t+1 (weighted by p)
+	    _EvaporationS_all->matrix[r][c] += evap; //soil evaporation at t=t+1 (weighted by p)
+	    // individual component of Esoil and ET (below vegetation only, de-weighted!)
+	    if(s != nsp -1){
+	      fForest->setEsoilSpecies(s, r, c, evap/p);
+	      etc = fForest->getEvapoTransp(s, r, c);
+	      fForest->setETSpecies(s, r, c, etc + evap/p);
+	    }
+	    
+	    
+	  }//for over the species
+
+	// If tracking + LIFO and the mix has not been made (e.g., because infiltration > total evap),
+	// mix topsoil water now
+	if(ctrl.sw_trck and _FluxSrftoL1->matrix[r][c]>0 and ctrl.sw_dD)
+	  trck.InputMix(theta_lifo*d1, trck.getdDsoil1()->matrix[r][c], 
+			_FluxSrftoL1->matrix[r][c], trck.getdDlifo()->matrix[r][c]);
+	if(ctrl.sw_trck and _FluxSrftoL1->matrix[r][c]>0 and ctrl.sw_d18O)
+	  trck.InputMix(theta_lifo*d1, trck.getd18Osoil1()->matrix[r][c], 
+			_FluxSrftoL1->matrix[r][c], trck.getd18Olifo()->matrix[r][c]);
+	if(ctrl.sw_trck and _FluxSrftoL1->matrix[r][c]>0 and ctrl.sw_Age)
+	  trck.InputMix(theta_lifo*d1, trck.getAgesoil1()->matrix[r][c], 
+			_FluxSrftoL1->matrix[r][c], trck.getAgelifo()->matrix[r][c]);
+	
+	// Update soil moisture objects
+	_soilmoist1->matrix[r][c] = theta; //soil moisture at t=t+1
+	_soilmoist2->matrix[r][c] = theta2;
+	_soilmoist3->matrix[r][c] = theta3;
+	
+	_Rn->matrix[r][c] = nr;
+	_latheat->matrix[r][c] = le;
+	_sensheat->matrix[r][c] = sens;
+	_grndheat->matrix[r][c] = grndh;
+	_snwheat->matrix[r][c] = snowh;
+	_Temp_s_old->matrix[r][c] = Tsold;
+	_Temp_s->matrix[r][c] = Tsold; //
+	
+	_Temp_d->matrix[r][c] = Tdold;
+	
+	
+	dh_snow = SnowOutput(atm, ctrl, mltht, r, c);
+	
+	// Flux tracking after snowmelt
+	if(ctrl.sw_trck)
+	  trck.MixingV_snow(atm, *this, ctrl, dh_snow, r, c);
+	
+	// Update surface pool
+	_ponding->matrix[r][c] += dh_snow;
+	// Back up before routing
+	_GrndWater_old->matrix[r][c] = _GrndWater->matrix[r][c];
+	
+      }//for
+  }//end omp parallel block
+  
+  return EXIT_SUCCESS;
 }

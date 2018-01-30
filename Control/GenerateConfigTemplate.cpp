@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * GenerateConfigTemplate.cpp
@@ -193,7 +193,7 @@ try{
 
     ofOut << "#   " << endl;
     ofOut << "#Report map section " << endl;
-    ofOut << "#   " << endl;
+    ofOut << "#   " << endl << endl ;
     ofOut << "Report_Long_Rad_Down = 0 " << endl;
     ofOut << "Report_Short_Rad_Down = 0 " << endl;
     ofOut << "Report_Precip = 0 " << endl;
@@ -224,10 +224,6 @@ try{
     ofOut << "Report_Soil_Temperature = 0 " << endl;
     ofOut << "Report_Skin_Temperature = 0 " << endl << endl;
 
-    ofOut << "Report_GW_to_Channel = 0 " << endl;
-    ofOut << "Report_Surface_to_Channel = 0 " << endl;
-    //ofOut << "Report_Return_Flow_Surface = 0 " << endl << endl;
-
     ofOut << "Report_Total_ET = 1 " << endl;
     ofOut << "Report_Transpiration_sum = 0 " << endl;
     ofOut << "Report_Einterception_sum = 0 " << endl;
@@ -255,6 +251,26 @@ try{
     ofOut << "Report_Einterception = 0 " << endl;
     ofOut << "Report_Esoil = 0 " << endl << endl;
 
+    ofOut << "Report_GW_to_Channel = 0 " << endl;
+    ofOut << "Report_Surface_to_Channel = 0 " << endl;
+    ofOut << "Report_Infiltration = 0" << endl ;
+    ofOut << "Report_Return_Flow_Surface = 0" << endl ;
+    ofOut << "Report_Overland_Inflow = 0" << endl ;
+    ofOut << "Report_Stream_Inflow = 0" << endl;
+    ofOut << "Report_Groundwater_Inflow = 0 " << endl ;
+    ofOut << "Report_Overland_Outflow = 0" << endl ;
+    ofOut << "Report_Groundwater_Outflow = 0" << endl ;
+
+    ofOut << "Report_GW_to_Channel_acc = 0 " << endl;
+    ofOut << "Report_Surface_to_Channel_acc = 0 " << endl;
+    ofOut << "Report_Infiltration_acc = 0" << endl ;
+    ofOut << "Report_Return_Flow_Surface_acc = 0" << endl ;
+    ofOut << "Report_Overland_Inflow_acc = 0" << endl ;
+    ofOut << "Report_Stream_Inflow_acc = 0" << endl ;
+    ofOut << "Report_Groundwater_Inflow_acc = 0" << endl ;
+    ofOut << "Report_Overland_Outflow_acc = 0" << endl ;
+    ofOut << "Report_Groundwater_Outflow_acc = 0" << endl << endl;
+    
     ofOut << "#   " << endl;
     ofOut << "#Report time series section " << endl;
     ofOut << "#   " << endl << endl;
@@ -291,10 +307,6 @@ try{
     ofOut << "Ts_Soil_Temperature = 0 " << endl;
     ofOut << "Ts_Skin_Temperature = 0 " << endl << endl ;
 
-    ofOut << "Ts_GW_to_Channel = 1 " << endl;
-    ofOut << "Ts_Surface_to_Channel = 1 " << endl;
-    //ofOut << "Ts_Return_Flow_Surface = 0 " << endl << endl;
-
     ofOut << "Ts_Total_ET = 1 " << endl;
     ofOut << "Ts_Transpiration_sum = 1 " << endl;
     ofOut << "Ts_Einterception_sum = 1 " << endl;
@@ -322,6 +334,25 @@ try{
     ofOut << "Ts_Einterception = 0 " << endl;
     ofOut << "Ts_Esoil = 0 " << endl << endl;
 
+    ofOut << "Ts_GW_to_Channel = 1 " << endl;
+    ofOut << "Ts_Surface_to_Channel = 1 " << endl;
+    ofOut << "Ts_Infiltration = 0" << endl ;
+    ofOut << "Ts_Return_Flow_Surface = 0" << endl ;
+    ofOut << "Ts_Overland_Inflow = 0" << endl ;
+    ofOut << "Ts_Stream_Inflow = 0" << endl;
+    ofOut << "Ts_Groundwater_Inflow = 0 " << endl ;
+    ofOut << "Ts_Overland_Outflow = 0" << endl ;
+    ofOut << "Ts_Groundwater_Outflow = 0" << endl ;
+
+    ofOut << "Ts_GW_to_Channel_acc = 1 " << endl;
+    ofOut << "Ts_Surface_to_Channel_acc = 1 " << endl;
+    ofOut << "Ts_Infiltration_acc = 0" << endl ;
+    ofOut << "Ts_Return_Flow_Surface_acc = 0" << endl ;
+    ofOut << "Ts_Overland_Inflow_acc = 0" << endl ;
+    ofOut << "Ts_Stream_Inflow_acc = 0" << endl ;
+    ofOut << "Ts_Groundwater_Inflow_acc = 0" << endl ;
+    ofOut << "Ts_Overland_Outflow_acc = 0" << endl ;
+    ofOut << "Ts_Groundwater_Outflow_acc = 0" << endl;
 
 
    if (ofOut)

@@ -37,27 +37,27 @@ int Tracking::MixingV_evapT(Basin &bsn, Control &ctrl,
 {
 
   if(ctrl.sw_dD){
-    bsn.fForest->setdDtranspi(s, r, c,
+    bsn.fForest->setdDevapT(s, r, c,
 			      pTrp1*_dDsoil1->matrix[r][c]+
 			      pTrp2*_dDsoil2->matrix[r][c]+
 			      pTrp3*_dDsoil3->matrix[r][c]);
-    dDevapT_f += bsn.fForest->getdDtranspi(s)->matrix[r][c] * p ;
+    dDevapT_f += bsn.fForest->getdDevapT(s)->matrix[r][c] * p ;
   }
 
   if(ctrl.sw_d18O){
-    bsn.fForest->setd18Otranspi(s, r, c,
+    bsn.fForest->setd18OevapT(s, r, c,
 				pTrp1*_d18Osoil1->matrix[r][c]+
 				pTrp2*_d18Osoil2->matrix[r][c]+
 				pTrp3*_d18Osoil3->matrix[r][c]);
-    d18OevapT_f += bsn.fForest->getd18Otranspi(s)->matrix[r][c] * p ;
+    d18OevapT_f += bsn.fForest->getd18OevapT(s)->matrix[r][c] * p ;
   }
 
   if(ctrl.sw_Age){
-    bsn.fForest->setAgetranspi(s, r, c,
+    bsn.fForest->setAgeevapT(s, r, c,
 			       pTrp1*_Agesoil1->matrix[r][c]+
 			       pTrp2*_Agesoil2->matrix[r][c]+
 			       pTrp3*_Agesoil3->matrix[r][c]);
-    AgeevapT_f += bsn.fForest->getAgetranspi(s)->matrix[r][c] * p ;
+    AgeevapT_f += bsn.fForest->getAgeevapT(s)->matrix[r][c] * p ;
   }
 
   return EXIT_SUCCESS;

@@ -52,11 +52,11 @@ int Report2Maps(){
 	if (oControl->Rep_SWE)
 		WriteMapSeries(oBasin->getSnowWaterEquiv(), "SWE", oControl->current_ts_count);
 	if (oControl->Rep_Infilt_Cap)
-		WriteMapSeries(oBasin->getInfiltCap(), "If", oControl->current_ts_count);
+		WriteMapSeries(oBasin->getInfiltCap(), "IfCap", oControl->current_ts_count);
     if (oControl->Rep_Streamflow)
     	WriteMapSeries(oBasin->getStreamflow(), "Q", oControl->current_ts_count);
     if (oControl->Rep_Saturation_Area)
-		WriteMapSeries(oBasin->getSatArea(), "SatArea_", oControl->current_ts_count);
+      WriteMapSeries(oBasin->getSatArea(), "SatArea_", oControl->current_ts_count);
 	if (oControl->Rep_Ponding)
 		WriteMapSeries(oBasin->getPondingWater(), "Ponding_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_Average)
@@ -64,9 +64,9 @@ int Report2Maps(){
 	if (oControl->Rep_Soil_Water_Content_12)
 		WriteMapSeries(oBasin->getSoilMoist_12(), "SWCup", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_L1)
-			WriteMapSeries(oBasin->getSoilMoist1(), "SWC1_", oControl->current_ts_count);
+	  WriteMapSeries(oBasin->getSoilMoist1(), "SWC1_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_L2)
-				WriteMapSeries(oBasin->getSoilMoist2(), "SWC2_", oControl->current_ts_count);
+	  WriteMapSeries(oBasin->getSoilMoist2(), "SWC2_", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Water_Content_L3)
 				WriteMapSeries(oBasin->getSoilMoist3(), "SWC3_", oControl->current_ts_count);
 	if (oControl->Rep_WaterTableDepth)
@@ -74,9 +74,11 @@ int Report2Maps(){
 	if (oControl->Rep_Soil_Sat_Deficit)
 		WriteMapSeries(oBasin->getSaturationDeficit(), "SatDef", oControl->current_ts_count);
 	if (oControl->Rep_GWater)
-			WriteMapSeries(oBasin->getGrndWaterOld(), "GW", oControl->current_ts_count);
+			WriteMapSeries(oBasin->getGrndWater(), "GW", oControl->current_ts_count);
 	if (oControl->Rep_Soil_Net_Rad)
 		WriteMapSeries(oBasin->getNetRad(), "NRs", oControl->current_ts_count);
+	if (oControl->Rep_Net_Rad_sum)
+		WriteMapSeries(oBasin->getNetRad_sum(), "NRtot", oControl->current_ts_count);
 	if (oControl->Rep_Soil_LE)
 		WriteMapSeries(oBasin->getLatheat(), "LE", oControl->current_ts_count);
 	if (oControl->Rep_Sens_Heat)
@@ -90,12 +92,6 @@ int Report2Maps(){
 	if (oControl->Rep_Skin_Temperature)
 			WriteMapSeries(oBasin->getSkinTemp(), "Tskin", oControl->current_ts_count);
 
-	// Internal fluxes
-	if (oControl->Rep_GWtoChn)
-		WriteMapSeries(oBasin->getFluxGWtoChn(), "GWChn", oControl->current_ts_count);
-	if (oControl->Rep_SrftoChn)
-		WriteMapSeries(oBasin->getFluxSrftoChn(), "SrfChn", oControl->current_ts_count);
-
 	if (oControl->Rep_Total_ET)
 		WriteMapSeries(oBasin->getEvaporation(), "Evap", oControl->current_ts_count);
 	if (oControl->Rep_Transpiration_sum)
@@ -105,209 +101,240 @@ int Report2Maps(){
 	if (oControl->Rep_Esoil_sum)
 		WriteMapSeries(oBasin->getEvaporationS_all(), "EvapS", oControl->current_ts_count);
 
-	if (oControl->Rep_Net_Rad_sum)
-		WriteMapSeries(oBasin->getNetRad_sum(), "NRtot", oControl->current_ts_count);
+	// Some vertical- lateral fluxes
+	if (oControl->Rep_GWtoChn)
+	  WriteMapSeries(oBasin->getFluxGWtoChn(), "GWChn", oControl->current_ts_count);
+	if (oControl->Rep_SrftoChn)
+	  WriteMapSeries(oBasin->getFluxSrftoChn(), "SrfChn", oControl->current_ts_count);
+	if (oControl->Rep_Infilt)
+	  WriteMapSeries(oBasin->getFluxInfilt(), "Inf", oControl->current_ts_count);
+	if (oControl->Rep_Exfilt)
+	  WriteMapSeries(oBasin->getFluxExfilt(), "RSrf", oControl->current_ts_count);
+	if (oControl->Rep_LattoSrf)
+	  WriteMapSeries(oBasin->getFluxLattoSrf(), "LSrfi", oControl->current_ts_count);
+	if (oControl->Rep_LattoChn)
+	  WriteMapSeries(oBasin->getFluxLattoChn(), "LChni", oControl->current_ts_count);
+	if (oControl->Rep_LattoGW)
+	  WriteMapSeries(oBasin->getFluxLattoGW(), "LGWi", oControl->current_ts_count);
+	if (oControl->Rep_SrftoLat)
+	  WriteMapSeries(oBasin->getFluxSrftoLat(), "LSrfo", oControl->current_ts_count);
+	if (oControl->Rep_GWtoLat)
+	  WriteMapSeries(oBasin->getFluxGWtoLat(), "LGWo", oControl->current_ts_count);
+	// Cumulative values
+	if (oControl->Rep_GWtoChnacc)
+	  WriteMapSeries(oBasin->getAccGWtoChn(), "GWChnA", oControl->current_ts_count);
+	if (oControl->Rep_SrftoChnacc)
+	  WriteMapSeries(oBasin->getAccSrftoChn(), "SrfChnA", oControl->current_ts_count);
+	if (oControl->Rep_Infiltacc)
+	  WriteMapSeries(oBasin->getAccInfilt(), "InfA", oControl->current_ts_count);
+	if (oControl->Rep_Exfiltacc)
+	  WriteMapSeries(oBasin->getAccExfilt(), "RSrfA", oControl->current_ts_count);
+	if (oControl->Rep_LattoSrfacc)
+	  WriteMapSeries(oBasin->getAccLattoSrf(), "LSrfiA", oControl->current_ts_count);
+	if (oControl->Rep_LattoChnacc)
+	  WriteMapSeries(oBasin->getAccLattoChn(), "LChniA", oControl->current_ts_count);
+	if (oControl->Rep_LattoGWacc)
+	  WriteMapSeries(oBasin->getAccLattoGW(), "LGWiA", oControl->current_ts_count);
+	if (oControl->Rep_SrftoLatacc)
+	  WriteMapSeries(oBasin->getAccSrftoLat(), "LSrfoA", oControl->current_ts_count);
+	if (oControl->Rep_GWtoLatacc)
+	  WriteMapSeries(oBasin->getAccGWtoLat(), "LGWoA", oControl->current_ts_count);
 
 	// Tracking maps
-
-	if(oControl->sw_trck){
-	  // Some fluxes
-	  if (oControl->Rep_L1toSrf)
-	    WriteMapSeries(oBasin->getFluxL1toSrf(), "RetSrf", oControl->current_ts_count);
-	  if (oControl->Rep_LattoSrf)
-	    WriteMapSeries(oBasin->getFluxLattoSrf(), "SrfLatI", oControl->current_ts_count);
-	  if (oControl->Rep_LattoGW)
-	    WriteMapSeries(oBasin->getFluxLattoGW(), "GWLatI", oControl->current_ts_count);
-	}
-
 	if(oControl->sw_trck && oControl->sw_dD){
 		if (oControl->Rep_dDprecip)
-			WriteMapSeries(oAtmosphere->getdDprecip(), "dD_precip", oControl->current_ts_count);
+			WriteMapSeries(oAtmosphere->getdDprecip(), "dDpcp", oControl->current_ts_count);
 		if (oControl->Rep_dDsnowpack)
-			WriteMapSeries(oTracking->getdDsnowpack(), "dD_snowpack", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getdDsnowpack(), "dDsnw", oControl->current_ts_count);
 		if (oControl->Rep_dDsurface)
-			WriteMapSeries(oTracking->getdDsurface(), "dD_surface", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getdDsurface(), "dDsrf", oControl->current_ts_count);
 		if (oControl->Rep_dDsoil1)
-			WriteMapSeries(oTracking->getdDsoil1(), "dD_soilL1", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getdDsoil1(), "dDsL1", oControl->current_ts_count);
 		if (oControl->Rep_dDsoil2)
-			WriteMapSeries(oTracking->getdDsoil2(), "dD_soilL2", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getdDsoil2(), "dDsL2", oControl->current_ts_count);
+		if (oControl->Rep_dDsoilUp)
+			WriteMapSeries(oTracking->getdDsoil_12(), "dDsUp", oControl->current_ts_count);
 		if (oControl->Rep_dDsoil3)
-			WriteMapSeries(oTracking->getdDsoil3(), "dD_soilL3", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getdDsoil3(), "dDsL3", oControl->current_ts_count);
 		//	if (oControl->Rep_dDsoilAv)
 		//			WriteMapSeries(oTracking->getdDsoilAv(), "dD_soilAv", oControl->current_ts_count);
 		if (oControl->Rep_dDgroundwater)
-			WriteMapSeries(oTracking->getdDgroundwater(), "dD_groundwater", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getdDgroundwater(), "dDgw", oControl->current_ts_count);
 		if (oControl->Rep_dDevapS_sum)
-			WriteMapSeries(oTracking->getdDevapS_sum(), "dD_evapS", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getdDevapS_sum(), "dDeS", oControl->current_ts_count);
 		if (oControl->Rep_dDevapI_sum)
-			WriteMapSeries(oTracking->getdDevapI_sum(), "dD_evapI", oControl->current_ts_count);
-		if (oControl->Rep_dDtranspi_sum)
-			WriteMapSeries(oTracking->getdDtranspi_sum(), "dD_transpi", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getdDevapI_sum(), "dDeI", oControl->current_ts_count);
+		if (oControl->Rep_dDevapT_sum)
+			WriteMapSeries(oTracking->getdDevapT_sum(), "dDeT", oControl->current_ts_count);
 
 	}
 
 	if(oControl->sw_trck && oControl->sw_d18O){
 		if (oControl->Rep_d18Oprecip)
-			WriteMapSeries(oAtmosphere->getd18Oprecip(), "d18O_precip", oControl->current_ts_count);
+			WriteMapSeries(oAtmosphere->getd18Oprecip(), "dOpcp", oControl->current_ts_count);
 		if (oControl->Rep_d18Osnowpack)
-			WriteMapSeries(oTracking->getd18Osnowpack(), "d18O_snowpack", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getd18Osnowpack(), "dOsnw", oControl->current_ts_count);
 		if (oControl->Rep_d18Osurface)
-			WriteMapSeries(oTracking->getd18Osurface(), "d18O_surface", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getd18Osurface(), "dOsrf", oControl->current_ts_count);
 		if (oControl->Rep_d18Osoil1)
-			WriteMapSeries(oTracking->getd18Osoil1(), "d18O_soilL1", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getd18Osoil1(), "dOsL1", oControl->current_ts_count);
 		if (oControl->Rep_d18Osoil2)
-			WriteMapSeries(oTracking->getd18Osoil2(), "d18O_soilL2", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getd18Osoil2(), "dOsL2", oControl->current_ts_count);
+		if (oControl->Rep_d18OsoilUp)
+			WriteMapSeries(oTracking->getd18Osoil_12(), "dOsUp", oControl->current_ts_count);
 		if (oControl->Rep_d18Osoil3)
-			WriteMapSeries(oTracking->getd18Osoil3(), "d18O_soilL3", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getd18Osoil3(), "dOsL3", oControl->current_ts_count);
 		//	if (oControl->Rep_d18OsoilAv)
 		//			WriteMapSeries(oTracking->getd18OsoilAv(), "d18O_soilAv", oControl->current_ts_count);
 		if (oControl->Rep_d18Ogroundwater)
-			WriteMapSeries(oTracking->getd18Ogroundwater(), "d18O_groundwater", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getd18Ogroundwater(), "dOgw", oControl->current_ts_count);
 		if (oControl->Rep_d18OevapS_sum)
-			WriteMapSeries(oTracking->getd18OevapS_sum(), "d18O_evapS", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getd18OevapS_sum(), "dOeS", oControl->current_ts_count);
 		if (oControl->Rep_d18OevapI_sum)
-			WriteMapSeries(oTracking->getd18OevapI_sum(), "d18O_evapI", oControl->current_ts_count);
-		if (oControl->Rep_d18Otranspi_sum)
-			WriteMapSeries(oTracking->getd18Otranspi_sum(), "d18O_transpi", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getd18OevapI_sum(), "dOeI", oControl->current_ts_count);
+		if (oControl->Rep_d18OevapT_sum)
+			WriteMapSeries(oTracking->getd18OevapT_sum(), "dOeT", oControl->current_ts_count);
 	}
 	if(oControl->sw_trck && oControl->sw_Age){
 		if (oControl->Rep_Agesnowpack)
-			WriteMapSeries(oTracking->getAgesnowpack(), "Age_snowpack", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getAgesnowpack(), "Agesnw", oControl->current_ts_count);
 		if (oControl->Rep_Agesurface)
-			WriteMapSeries(oTracking->getAgesurface(), "Age_surface", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getAgesurface(), "Agesrf", oControl->current_ts_count);
 		if (oControl->Rep_Agesoil1)
-			WriteMapSeries(oTracking->getAgesoil1(), "Age_soilL1", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getAgesoil1(), "AgesL1", oControl->current_ts_count);
 		if (oControl->Rep_Agesoil2)
-			WriteMapSeries(oTracking->getAgesoil2(), "Age_soilL2", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getAgesoil2(), "AgesL2", oControl->current_ts_count);
+		if (oControl->Rep_AgesoilUp)
+			WriteMapSeries(oTracking->getAgesoil_12(), "AgesUp", oControl->current_ts_count);
 		if (oControl->Rep_Agesoil3)
-			WriteMapSeries(oTracking->getAgesoil3(), "Age_soilL3", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getAgesoil3(), "AgesL3", oControl->current_ts_count);
 		//	if (oControl->Rep_AgesoilAv)
 		//			WriteMapSeries(oTracking->getAgesoilAv(), "Age_soilAv", oControl->current_ts_count);
 		if (oControl->Rep_Agegroundwater)
-			WriteMapSeries(oTracking->getAgegroundwater(), "Age_groundwater", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getAgegroundwater(), "Agegw", oControl->current_ts_count);
 		if (oControl->Rep_AgeevapS_sum)
-			WriteMapSeries(oTracking->getAgeevapS_sum(), "Age_evapS", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getAgeevapS_sum(), "AgeeS", oControl->current_ts_count);
 		if (oControl->Rep_AgeevapI_sum)
-			WriteMapSeries(oTracking->getAgeevapI_sum(), "Age_evapI", oControl->current_ts_count);
-		if (oControl->Rep_Agetranspi_sum)
-			WriteMapSeries(oTracking->getAgetranspi_sum(), "Age_transpi", oControl->current_ts_count);
+			WriteMapSeries(oTracking->getAgeevapI_sum(), "AgeeI", oControl->current_ts_count);
+		if (oControl->Rep_AgeevapT_sum)
+			WriteMapSeries(oTracking->getAgeevapT_sum(), "AgeeT", oControl->current_ts_count);
 	}
 
 	for (int i = 0; i < oControl->NumSpecs; i++) {
 		stringstream name;
 
 		if (oControl->Rep_Veget_frac) {
-			name << "p_" << i << "_";
+			name << "p" << i << "_";
 			WriteMapSeries(oBasin->getVegetFrac(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Stem_Density) {
-			name << "ntr_" << i << "_";
+			name << "ntr" << i << "_";
 			WriteMapSeries(oBasin->getStemDensity(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Leaf_Area_Index) {
-			name << "lai_" << i << "_";
+			name << "lai" << i << "_";
 			WriteMapSeries(oBasin->getLAI(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Stand_Age) {
-			name << "age_" << i << "_";
+			name << "age" << i << "_";
 			WriteMapSeries(oBasin->getStandAge(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Canopy_Conductance) {
-			name << "gc_" << i << "_";
+			name << "gc" << i << "_";
 			WriteMapSeries(oBasin->getCanopyCond(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_GPP) {
-			name << "gpp_" << i << "_";
+			name << "gpp" << i << "_";
 			WriteMapSeries(oBasin->getGPP(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_NPP) {
-			name << "npp_" << i << "_";
+			name << "npp" << i << "_";
 			WriteMapSeries(oBasin->getNPP(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Basal_Area) {
-			name << "bas_" << i << "_";
+			name << "bas" << i << "_";
 			WriteMapSeries(oBasin->getBasalArea(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Tree_Height) {
-			name << "hgt_" << i << "_";
+			name << "hgt" << i << "_";
 			WriteMapSeries(oBasin->getTreeHeight(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Root_Mass) {
-			name << "root_" << i << "_";
+			name << "root" << i << "_";
 			WriteMapSeries(oBasin->getRootMass(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Canopy_Temp) {
-			name << "Tc_" << i << "_";
+			name << "Tc" << i << "_";
 			WriteMapSeries(oBasin->getCanopyTemp(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Canopy_NetR) {
-			name << "NRc_" << i << "_";
+			name << "NRc" << i << "_";
 			WriteMapSeries(oBasin->getCanopyNetRad(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Canopy_LE_E) {
-			name << "LEEi_" << i << "_";
+			name << "LEEi" << i << "_";
 			WriteMapSeries(oBasin->getCanopyLatHeatE(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 		if (oControl->Rep_Canopy_LE_T) {
-			name << "LETr_" << i << "_";
+			name << "LETr" << i << "_";
 			WriteMapSeries(oBasin->getCanopyLatHeatT(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Canopy_Sens_Heat) {
-			name << "Hc_" << i << "_";
+			name << "Hc" << i << "_";
 			WriteMapSeries(oBasin->getCanopySensHeat(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_Canopy_Water_Stor) {
-			name << "Cs_" << i << "_";
+			name << "Cs" << i << "_";
 			WriteMapSeries(oBasin->getCanopyWaterStor(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
 		if (oControl->Rep_ETspecies) {
-			name << "ETc_" << i << "_";
+			name << "ETc" << i << "_";
 			WriteMapSeries(oBasin->getETspecies(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 		if (oControl->Rep_Transpiration) {
-			name << "Tr_" << i << "_";
+			name << "Tr" << i << "_";
 			WriteMapSeries(oBasin->getTranspiration(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 		if (oControl->Rep_Einterception) {
-			name << "Ei_" << i << "_";
+			name << "Ei" << i << "_";
 			WriteMapSeries(oBasin->getEinterception(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 		if (oControl->Rep_Esoil) {
-			name << "Es_" << i << "_";
+			name << "Es" << i << "_";
 			WriteMapSeries(oBasin->getEsoil(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
@@ -332,53 +359,53 @@ int Report2Maps(){
 //				name.str("");
 //			}
 			if (oControl->sw_dD && oControl->Rep_dDevapI) {
-				name << "dDEvapI_" << i << "_";
+				name << "dDeI" << i << "_";
 				WriteMapSeries(oBasin->getdDevapI(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
 			if (oControl->sw_d18O && oControl->Rep_d18OevapI) {
-				name << "d18OEvapI_" << i << "_";
+				name << "dOeI" << i << "_";
 				WriteMapSeries(oBasin->getd18OevapI(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
 			if (oControl->sw_Age && oControl->Rep_AgeevapI) {
-				name << "AgeEvapI_" << i << "_";
+				name << "AgeeI" << i << "_";
 				WriteMapSeries(oBasin->getAgeevapI(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
-			if (oControl->sw_dD && oControl->Rep_dDtranspi) {
-				name << "dDTrp_" << i << "_";
-				WriteMapSeries(oBasin->getdDtranspi(i), name.str() , oControl->current_ts_count);
+			if (oControl->sw_dD && oControl->Rep_dDevapT) {
+				name << "dDeT" << i << "_";
+				WriteMapSeries(oBasin->getdDevapT(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
-			if (oControl->sw_d18O && oControl->Rep_d18Otranspi) {
-				name << "d18OTrp_" << i << "_";
-				WriteMapSeries(oBasin->getd18Otranspi(i), name.str() , oControl->current_ts_count);
+			if (oControl->sw_d18O && oControl->Rep_d18OevapT) {
+				name << "dOeT" << i << "_";
+				WriteMapSeries(oBasin->getd18OevapT(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
-			if (oControl->sw_Age && oControl->Rep_Agetranspi) {
-				name << "AgeTrp_" << i << "_";
-				WriteMapSeries(oBasin->getAgetranspi(i), name.str() , oControl->current_ts_count);
+			if (oControl->sw_Age && oControl->Rep_AgeevapT) {
+				name << "AgeeT" << i << "_";
+				WriteMapSeries(oBasin->getAgeevapT(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 			if (oControl->sw_dD && oControl->Rep_dDevapS) {
-				name << "dDEvapS_" << i << "_";
+				name << "dDeS" << i << "_";
 				WriteMapSeries(oBasin->getdDevapS(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
 			if (oControl->sw_d18O && oControl->Rep_d18OevapS) {
-				name << "d18OEvapS_" << i << "_";
+				name << "dOeS" << i << "_";
 				WriteMapSeries(oBasin->getd18OevapS(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
 			if (oControl->sw_Age && oControl->Rep_AgeevapS) {
-				name << "AgeEvapS_" << i << "_";
+				name << "AgeeS" << i << "_";
 				WriteMapSeries(oBasin->getAgeevapS(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
@@ -538,7 +565,7 @@ int Report2Ts(){
 	if (oControl->RepTs_GroundWater) {
 	  if (oControl->GetTimeStep() <= oControl->report_times)
 	    oReport->RenameFile(oControl->path_ResultsFolder + "GroundWater.tab");
-	  oReport->ReportTimeSeries(oBasin->getGrndWaterOld(),
+	  oReport->ReportTimeSeries(oBasin->getGrndWater(),
 				    oControl->path_ResultsFolder + "GroundWater.tab",
 				    oControl->current_ts_count);
 	}
@@ -549,6 +576,14 @@ int Report2Ts(){
 				    oControl->path_ResultsFolder + "NetRadS.tab",
 				    oControl->current_ts_count);
 	}
+	if (oControl->RepTs_Net_Rad_sum){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "NetRadtot.tab");
+	  oReport->ReportTimeSeries(oBasin->getNetRad_sum(),
+				    oControl->path_ResultsFolder + "NetRadtot.tab",
+				    oControl->current_ts_count);
+	}
+
 	if (oControl->RepTs_Soil_LE){
 	  if(oControl->GetTimeStep() <= oControl->report_times)
 	    oReport->RenameFile(oControl->path_ResultsFolder + "LatHeat.tab");
@@ -593,21 +628,6 @@ int Report2Ts(){
 				    oControl->current_ts_count);
 	}
 
-	// Internal fluxes
-	if (oControl->RepTs_GWtoChn){
-	  if(oControl->GetTimeStep() <= oControl->report_times)
-	    oReport->RenameFile(oControl->path_ResultsFolder + "GWtoChn.tab");
-	  oReport->ReportTimeSeries(oBasin->getFluxGWtoChn(),
-				    oControl->path_ResultsFolder + "GWtoChn.tab",
-				    oControl->current_ts_count);
-	}
-	if (oControl->RepTs_SrftoChn){
-	  if(oControl->GetTimeStep() <= oControl->report_times)
-	    oReport->RenameFile(oControl->path_ResultsFolder + "SrftoChn.tab");
-	  oReport->ReportTimeSeries(oBasin->getFluxSrftoChn(),
-				    oControl->path_ResultsFolder + "SrftoChn.tab",
-				    oControl->current_ts_count);
-	}	
 	if (oControl->RepTs_Total_ET){
 	  if(oControl->GetTimeStep() <= oControl->report_times)
 	    oReport->RenameFile(oControl->path_ResultsFolder + "Evap.tab");
@@ -636,44 +656,138 @@ int Report2Ts(){
 				    oControl->path_ResultsFolder + "EvapS.tab",
 				    oControl->current_ts_count);
 	}
-	if (oControl->RepTs_Net_Rad_sum){
+
+	// Some vertical - lateral fluxes
+	if (oControl->RepTs_GWtoChn){
 	  if(oControl->GetTimeStep() <= oControl->report_times)
-	    oReport->RenameFile(oControl->path_ResultsFolder + "NetRadtot.tab");
-	  oReport->ReportTimeSeries(oBasin->getNetRad_sum(),
-				    oControl->path_ResultsFolder + "NetRadtot.tab",
+	    oReport->RenameFile(oControl->path_ResultsFolder + "GWtoChn.tab");
+	  oReport->ReportTimeSeries(oBasin->getFluxGWtoChn(),
+				    oControl->path_ResultsFolder + "GWtoChn.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_SrftoChn){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "SrftoChn.tab");
+	  oReport->ReportTimeSeries(oBasin->getFluxSrftoChn(),
+				    oControl->path_ResultsFolder + "SrftoChn.tab",
+				    oControl->current_ts_count);
+	}	
+	if (oControl->RepTs_Infilt){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "Infilt.tab");
+	  oReport->ReportTimeSeries(oBasin->getFluxInfilt(),
+				    oControl->path_ResultsFolder + "Infilt.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_Exfilt){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "ReturnSrf.tab");
+	  oReport->ReportTimeSeries(oBasin->getFluxExfilt(),
+				    oControl->path_ResultsFolder + "ReturnSrf.tab",
+				      oControl->current_ts_count);
+	}
+	if (oControl->RepTs_LattoSrf){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "SrfLatI.tab");
+	  oReport->ReportTimeSeries(oBasin->getFluxLattoSrf(),
+				    oControl->path_ResultsFolder + "SrfLatI.tab",
+				    oControl->current_ts_count);
+	}
+       	if (oControl->RepTs_LattoChn){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	      oReport->RenameFile(oControl->path_ResultsFolder + "ChnLatI.tab");
+	  oReport->ReportTimeSeries(oBasin->getFluxLattoChn(),
+				    oControl->path_ResultsFolder + "ChnLatI.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_LattoGW){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "GWLatI.tab");
+	  oReport->ReportTimeSeries(oBasin->getFluxLattoGW(),
+				    oControl->path_ResultsFolder + "GWLatI.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_SrftoLat){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "SrfLatO.tab");
+	  oReport->ReportTimeSeries(oBasin->getFluxSrftoLat(),
+				    oControl->path_ResultsFolder + "SrfLatO.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_GWtoLat){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "GWLatO.tab");
+	  oReport->ReportTimeSeries(oBasin->getFluxGWtoLat(),
+				    oControl->path_ResultsFolder + "GWLatO.tab",
+				    oControl->current_ts_count);
+	}
+	// Cumulative fluxes
+	if (oControl->RepTs_GWtoChnacc){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "GWtoChnA.tab");
+	  oReport->ReportTimeSeries(oBasin->getAccGWtoChn(),
+				    oControl->path_ResultsFolder + "GWtoChnA.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_SrftoChnacc){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "SrftoChnA.tab");
+	  oReport->ReportTimeSeries(oBasin->getAccSrftoChn(),
+				    oControl->path_ResultsFolder + "SrftoChnA.tab",
+				    oControl->current_ts_count);
+	}	
+
+	if (oControl->RepTs_Infiltacc){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "InfiltAcc.tab");
+	  oReport->ReportTimeSeries(oBasin->getAccInfilt(),
+				    oControl->path_ResultsFolder + "InfiltAcc.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_Exfiltacc){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "ReturnSrfAcc.tab");
+	  oReport->ReportTimeSeries(oBasin->getAccExfilt(),
+				    oControl->path_ResultsFolder + "ReturnSrfAcc.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_LattoSrfacc){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "SrfLatIAcc.tab");
+	  oReport->ReportTimeSeries(oBasin->getAccLattoSrf(),
+				    oControl->path_ResultsFolder + "SrfLatIAcc.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_LattoChnacc){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "ChnLatIAcc.tab");
+	  oReport->ReportTimeSeries(oBasin->getAccLattoChn(),
+				    oControl->path_ResultsFolder + "ChnLatIAcc.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_LattoGWacc){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "GWLatIAcc.tab");
+	  oReport->ReportTimeSeries(oBasin->getAccLattoGW(),
+				    oControl->path_ResultsFolder + "GWLatIAcc.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_SrftoLatacc){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "SrfLatOAcc.tab");
+	  oReport->ReportTimeSeries(oBasin->getAccSrftoLat(),
+				    oControl->path_ResultsFolder + "SrfLatOAcc.tab",
+				    oControl->current_ts_count);
+	}
+	if (oControl->RepTs_GWtoLatacc){
+	  if(oControl->GetTimeStep() <= oControl->report_times)
+	    oReport->RenameFile(oControl->path_ResultsFolder + "GWLatOAcc.tab");
+	  oReport->ReportTimeSeries(oBasin->getAccGWtoLat(),
+				    oControl->path_ResultsFolder + "GWLatOAcc.tab",
 				    oControl->current_ts_count);
 	}
 	
 	// Tracking
-	if(oControl->sw_trck){
-	  // Some fluxes
-	  if (oControl->RepTs_L1toSrf){
-	    if(oControl->GetTimeStep() <= oControl->report_times)
-	      oReport->RenameFile(oControl->path_ResultsFolder + "ReturnSrf.tab");
-	    oReport->ReportTimeSeries(oBasin->getFluxL1toSrf(),
-				      oControl->path_ResultsFolder + "ReturnSrf.tab",
-				      oControl->current_ts_count);
-	  }
-
-	  if (oControl->RepTs_LattoSrf){
-	    if(oControl->GetTimeStep() <= oControl->report_times)
-	      oReport->RenameFile(oControl->path_ResultsFolder + "SrfLatIn.tab");
-	    oReport->ReportTimeSeries(oBasin->getFluxLattoSrf(),
-				      oControl->path_ResultsFolder + "SrfLatIn.tab",
-				      oControl->current_ts_count);
-	  }
-	  
-	  if (oControl->RepTs_LattoGW){
-	    if(oControl->GetTimeStep() <= oControl->report_times)
-	      oReport->RenameFile(oControl->path_ResultsFolder + "GWLatIn.tab");
-	    oReport->ReportTimeSeries(oBasin->getFluxLattoGW(),
-				      oControl->path_ResultsFolder + "GWLatIn.tab",
-				      oControl->current_ts_count);
-	  }
-	  
-	  
-	}
-
 	if(oControl->sw_trck && oControl->sw_dD){
 		if (oControl->RepTs_dDprecip){
 			if(oControl->GetTimeStep() <= oControl->report_times)
@@ -714,6 +828,13 @@ int Report2Ts(){
 					oControl->path_ResultsFolder + "dD_soilL2.tab",
 					oControl->current_ts_count);
 		}
+		if (oControl->RepTs_dDsoilUp){
+			if(oControl->GetTimeStep() <= oControl->report_times)
+				oReport->RenameFile(oControl->path_ResultsFolder + "dD_soilUp.tab");
+			oReport->ReportTimeSeries(oTracking->getdDsoil_12(),
+					oControl->path_ResultsFolder + "dD_soilUp.tab",
+					oControl->current_ts_count);
+		}
 
 		if (oControl->RepTs_dDsoil3){
 			if(oControl->GetTimeStep() <= oControl->report_times)
@@ -752,10 +873,10 @@ int Report2Ts(){
 					oControl->path_ResultsFolder + "dD_evapI.tab",
 					oControl->current_ts_count);
 		}
-		if (oControl->RepTs_dDtranspi_sum){
+		if (oControl->RepTs_dDevapT_sum){
 			if(oControl->GetTimeStep() <= oControl->report_times)
 				oReport->RenameFile(oControl->path_ResultsFolder + "dD_evapT.tab");
-			oReport->ReportTimeSeries(oTracking->getdDtranspi_sum(),
+			oReport->ReportTimeSeries(oTracking->getdDevapT_sum(),
 					oControl->path_ResultsFolder + "dD_evapT.tab",
 					oControl->current_ts_count);
 		}
@@ -801,6 +922,13 @@ int Report2Ts(){
 					oControl->path_ResultsFolder + "d18O_soilL2.tab",
 					oControl->current_ts_count);
 		}
+		if (oControl->RepTs_d18OsoilUp){
+			if(oControl->GetTimeStep() <= oControl->report_times)
+				oReport->RenameFile(oControl->path_ResultsFolder + "d18O_soilUp.tab");
+			oReport->ReportTimeSeries(oTracking->getd18Osoil_12(),
+					oControl->path_ResultsFolder + "d18O_soilUp.tab",
+					oControl->current_ts_count);
+		}
 
 		if (oControl->RepTs_d18Osoil3){
 			if(oControl->GetTimeStep() <= oControl->report_times)
@@ -840,10 +968,10 @@ int Report2Ts(){
 					oControl->path_ResultsFolder + "d18O_evapI.tab",
 					oControl->current_ts_count);
 		}
-		if (oControl->RepTs_d18Otranspi_sum){
+		if (oControl->RepTs_d18OevapT_sum){
 			if(oControl->GetTimeStep() <= oControl->report_times)
 				oReport->RenameFile(oControl->path_ResultsFolder + "d18O_EvapT.tab");
-			oReport->ReportTimeSeries(oTracking->getd18Otranspi_sum(),
+			oReport->ReportTimeSeries(oTracking->getd18OevapT_sum(),
 					oControl->path_ResultsFolder + "d18O_EvapT.tab",
 					oControl->current_ts_count);
 		}
@@ -879,6 +1007,14 @@ int Report2Ts(){
 				oReport->RenameFile(oControl->path_ResultsFolder + "Age_soilL2.tab");
 			oReport->ReportTimeSeries(oTracking->getAgesoil2(),
 					oControl->path_ResultsFolder + "Age_soilL2.tab",
+					oControl->current_ts_count);
+		}
+
+		if (oControl->RepTs_AgesoilUp){
+			if(oControl->GetTimeStep() <= oControl->report_times)
+				oReport->RenameFile(oControl->path_ResultsFolder + "Age_soilUp.tab");
+			oReport->ReportTimeSeries(oTracking->getAgesoil_12(),
+					oControl->path_ResultsFolder + "Age_soilUp.tab",
 					oControl->current_ts_count);
 		}
 
@@ -919,10 +1055,10 @@ int Report2Ts(){
 					oControl->path_ResultsFolder + "Age_evapI.tab",
 					oControl->current_ts_count);
 		}
-		if (oControl->RepTs_Agetranspi_sum){
+		if (oControl->RepTs_AgeevapT_sum){
 			if(oControl->GetTimeStep() <= oControl->report_times)
 				oReport->RenameFile(oControl->path_ResultsFolder + "Age_evapT.tab");
-			oReport->ReportTimeSeries(oTracking->getAgetranspi_sum(),
+			oReport->ReportTimeSeries(oTracking->getAgeevapT_sum(),
 					oControl->path_ResultsFolder + "Age_evapT.tab",
 					oControl->current_ts_count);
 		}
@@ -1127,27 +1263,27 @@ int Report2Ts(){
 					oReport->ReportTimeSeries(oBasin->getAgeevapI(i), name.str() , oControl->current_ts_count);
 					name.str("");
 				}
-				if (oControl->sw_dD && oControl->RepTs_dDtranspi) {
+				if (oControl->sw_dD && oControl->RepTs_dDevapT) {
 					name << oControl->path_ResultsFolder << "dDevapT_" << i << ".tab";
 					if(oControl->GetTimeStep() <= oControl->report_times)
 						oReport->RenameFile(name.str());
-					oReport->ReportTimeSeries(oBasin->getdDtranspi(i), name.str() , oControl->current_ts_count);
+					oReport->ReportTimeSeries(oBasin->getdDevapT(i), name.str() , oControl->current_ts_count);
 					name.str("");
 				}
 
-				if (oControl->sw_d18O && oControl->RepTs_d18Otranspi) {
+				if (oControl->sw_d18O && oControl->RepTs_d18OevapT) {
 					name << oControl->path_ResultsFolder << "d18OevapT_" << i << ".tab";
 					if(oControl->GetTimeStep() <= oControl->report_times)
 						oReport->RenameFile(name.str());
-					oReport->ReportTimeSeries(oBasin->getd18Otranspi(i), name.str() , oControl->current_ts_count);
+					oReport->ReportTimeSeries(oBasin->getd18OevapT(i), name.str() , oControl->current_ts_count);
 					name.str("");
 				}
 
-				if (oControl->sw_Age && oControl->RepTs_Agetranspi) {
+				if (oControl->sw_Age && oControl->RepTs_AgeevapT) {
 					name << oControl->path_ResultsFolder << "AgeevapT_" << i << ".tab";
 					if(oControl->GetTimeStep() <= oControl->report_times)
 						oReport->RenameFile(name.str());
-					oReport->ReportTimeSeries(oBasin->getAgetranspi(i), name.str() , oControl->current_ts_count);
+					oReport->ReportTimeSeries(oBasin->getAgeevapT(i), name.str() , oControl->current_ts_count);
 					name.str("");
 				}
 				if (oControl->sw_dD && oControl->RepTs_dDevapS) {

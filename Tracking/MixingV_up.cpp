@@ -40,7 +40,7 @@ void Tracking::MixingV_up(Basin &bsn, Control &ctrl,
   double theta2_old = bsn.getSoilMoist2()->matrix[r][c];
   double theta3_old = bsn.getSoilMoist3()->matrix[r][c];
 
-  double L1toSrf = bsn.getFluxL1toSrf()->matrix[r][c];
+  double L1toSrf = bsn.getFluxExfilt()->matrix[r][c];
   double L2toL1 = bsn.getFluxL2toL1()->matrix[r][c];
   double L3toL2 = bsn.getFluxL3toL2()->matrix[r][c];
   double GWtoL3 = bsn.getFluxGWtoL3()->matrix[r][c];

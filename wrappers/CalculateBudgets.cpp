@@ -45,7 +45,7 @@ int CalculateBudgets(){
 									oBasin->getPondingWater(),
 									oBasin->getSoilWaterDepth(),
 									oBasin->getGravityWater(),
-									oBasin->getGrndWaterOld(),
+									oBasin->getGrndWater(),
 									oBasin);
 			oBudget->TotalSaturationArea(oBasin->getSatArea(), oBasin);
 			oBudget->TotalGWtoChn(oBasin->getFluxGWtoChn(), oBasin);

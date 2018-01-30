@@ -118,8 +118,8 @@ class Basin {
 	grid *_BedrockLeakageFlux; //water flux down the bottom of the soil in m s-1
 	grid *_CanopyStorage; //current water stored in the canopy (m)
 	grid *_GravityWater; //current water stored in the soil beyond field capacity (m) (percolation or water traveling in the vadose zone)
-	grid *_PondingOld; //water stored at the surface at the beginning of the time step (0 if not channel, m)
-	grid *_GrndWaterOld; //water stored in the gw system at the beginning of the time step (m)
+	grid *_ponding_old; //water stored at the surface at the beginning of the time step (0 if not channel, m)
+	grid *_GrndWater_old; //water stored in the gw system at the beginning of the time step (m)
 	grid *_GrndWater; //water stored in the gw system at the end of the time step (m)
 	grid *_GWupstreamBC; //gw flux upstream boundary condition (m2.s-1)
 
@@ -141,26 +141,39 @@ class Basin {
 
 	grid *_bedrock_leak;
 
-	// Addition tracking
 	// ---------------------------------------------------------------------------------------
-	// A few useful (intregrated) fluxes for tracking isotopes and age
 	// Vertical (intra-cell) fluxes downwards
 	grid *_FluxUptoSnow; // canopy/sky to snowpack
-	grid *_FluxSrftoL1; // infiltration from first layer
+	grid *_FluxSrftoL1; // infiltration from first layer (changes twice during time step)
+	grid *_FluxInfilt; // timestep-summed infiltration from first layer
 	grid *_FluxL1toL2; // percolation L1 to L2
 	grid *_FluxL2toL3; // percolation L2 to L3
 	grid *_FluxL3toGW; // recharge L3 to groundwater
 	// Vertical (intra-cell) fluxes upwards
-	grid *_FluxL1toSrf; // first layer to surface (return flow)
+	grid *_FluxExfilt; // first layer to surface (return flow)
 	grid *_FluxL2toL1; // capillary + return flow, L2 to L1
 	grid *_FluxL3toL2; // capillary + return flow, L2 to L3
 	grid *_FluxGWtoL3; // discharge, groundwater to L3
+	// Other intra-cell fluxes
 	grid *_FluxGWtoChn; // discharge, groundwater to channel
 	grid *_FluxSrftoChn; // overland flow to channel
 	// Lateral (inter-cell), for report only
+	grid *_FluxLattoChn; //Channel input
 	grid *_FluxLattoSrf; //Lateral overland input
 	grid *_FluxLattoGW; //Lateral GW input 
-	// --------------------------------------------------------------------------------------
+	grid *_FluxSrftoLat; //Lateral overland output
+	grid *_FluxGWtoLat; //Lateral overland output
+	// Cumulated fluxes, for report only
+	grid *_AccInfilt; // Infiltration from surface to first layer
+	grid *_AccExfilt; // Exfiltration from first layer to surface
+	grid *_AccLattoChn; //Channel input
+	grid *_AccLattoSrf; //Lateral overland input
+	grid *_AccLattoGW; //Lateral GW input 
+	grid *_AccSrftoLat; //Lateral overland output
+	grid *_AccGWtoLat; //Lateral groundwater output
+	grid *_AccGWtoChn; //Groundwater seepage to channel
+	grid *_AccSrftoChn; //Overland to channel
+ 	// --------------------------------------------------------------------------------------
 
 	vectCells SortGridLDD();
 
@@ -173,7 +186,7 @@ class Basin {
 
 	double NetRad(Atmosphere &atm, const double &Ts, REAL8 Kbeers, REAL8 lai,
 			REAL8 ec, REAL8 Tc, int row, int col);
-	double LatHeat(Atmosphere &atm, double soilrelhumid, double ra, double rs,
+	double LatHeat(Atmosphere &atm, double beta, double ra, double rs,
 			double rc, const double &Ts, int row, int col);
 	double SensHeat(Atmosphere &atm, double ra, const double &Ts, int row,
 			int col);
@@ -202,11 +215,11 @@ class Basin {
 	void Infilt_Richards(Control &ctrl, double &f, double &F, double &theta1,
 			double &theta2, double &theta3, double &leak, double &pond, double &percolat,
 			double dt, int r, int c, int flowdir);
-	int SolveSurfaceEnergyBalance(Atmosphere &atm, Control &ctrl, REAL8 ra,
-			REAL8 rs, REAL8 rc, REAL8 Kbeers, REAL8 lai, REAL8 emis_can,
-			REAL8 Temp_can, REAL8 &nrad, REAL8 &latheat, REAL8 &sensheat,
-			REAL8 &grndheat, REAL8 &snowheat, REAL8 &meltheat, REAL8 &Tsold,
-			REAL8 &etp, REAL8 &pond, REAL8 &theta, REAL8 &Ts1, REAL8 &Tdold,
+	int SolveSurfaceEnergyBalance(Atmosphere &atm, Control &ctrl, Tracking &trck,
+				      REAL8 ra,	REAL8 rs, REAL8 rc, REAL8 Kbeers, REAL8 lai, REAL8 emis_can,
+				      REAL8 Temp_can, REAL8 &nrad, REAL8 &latheat, REAL8 &sensheat,
+				      REAL8 &grndheat, REAL8 &snowheat, REAL8 &meltheat, REAL8 &Tsold,
+				      REAL8 &etp, REAL8 &pond, REAL8 &theta, REAL8 &theta_lifo, REAL8 &Ts1, REAL8 &Tdold,
 			REAL8 p, UINT4 r, UINT4 c, UINT4 s);
 
 	//This functions updates soil moisture by solving the local soil water balance
@@ -337,13 +350,15 @@ public:
 	grid *getPondingWater() const {
 		return _ponding;
 	}
+	grid *getPonding_old() const {
+		return _ponding_old;
+	}
 	grid *getStreamflow() const {
 		return _Disch_old;
 	}
 	grid *getSatArea() const {
 		return _IsSaturated;
 	}
-
 	grid *getSoilMoist1() const {
 		return _soilmoist1;
 	}
@@ -416,43 +431,43 @@ public:
 	}
 
 	grid *getWaterTableDepth() const {
-		/* int r, c;
-		double depth, fc, eta;
-		double d1, d2, d3;
-#pragma omp parallel for\
-		default(none) private(r, c, fc, eta, depth, d1, d2, d3)
-		for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
-			r = _vSortedGrid.cells[j].row;
-			c = _vSortedGrid.cells[j].col;
-			fc = _fieldcap->matrix[r][c];
-			eta = _porosity->matrix[r][c];
-			depth = _soildepth->matrix[r][c];
-			// If the theta3 is not above field cap, then no water table within the profile
-			if(fc - _soilmoist3->matrix[r][c] > 0)
-				_WaterTableDepth->matrix[r][c] = depth;
-			else{
-				d1 = _depth_layer1->matrix[r][c];
-				d2 = _depth_layer2->matrix[r][c];
-				d3 = depth - d1 - d2;
-				// If theta3 below porosity, water table within third layer
-				if(fabs(eta - _soilmoist3->matrix[r][c]) > RNDOFFERR)
-					_WaterTableDepth->matrix[r][c] =
-							d1 + d2 + d3*(eta - _soilmoist3->matrix[r][c])/(eta - fc);
-				// If layer 3 saturated...
-				else{
-					// If theta2 below porosity, water table within third layer
-					if(fabs(eta - _soilmoist2->matrix[r][c]) > RNDOFFERR)
-						_WaterTableDepth->matrix[r][c] =
-								d1 + d2*(eta - _soilmoist2->matrix[r][c])/(eta - fc);
-					// If layer 2 saturated, water table within first layer
-					else
-						_WaterTableDepth->matrix[r][c] =
-								d1*(eta - _soilmoist1->matrix[r][c])/(eta - fc);
-				}
-			}
-		} */
-
-		return _WaterTableDepth;
+	  /*int r, c;
+	  double depth, fc, eta;
+	  double d1, d2, d3;
+#pragma omp parallel for						\
+  default(none) private(r, c, fc, eta, depth, d1, d2, d3)
+	  for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+	    r = _vSortedGrid.cells[j].row;
+	    c = _vSortedGrid.cells[j].col;
+	    fc = _fieldcap->matrix[r][c];
+	    eta = _porosity->matrix[r][c];
+	    depth = _soildepth->matrix[r][c];
+	    // If the theta3 is not above field cap, then no water table within the profile
+	    if(fc - _soilmoist3->matrix[r][c] > 0)
+	      _WaterTableDepth->matrix[r][c] = depth;
+	    else{
+	      d1 = _depth_layer1->matrix[r][c];
+	      d2 = _depth_layer2->matrix[r][c];
+	      d3 = depth - d1 - d2;
+	      // If theta3 below porosity, water table within third layer
+	      if(fabs(eta - _soilmoist3->matrix[r][c]) > RNDOFFERR)
+		_WaterTableDepth->matrix[r][c] =
+		  d1 + d2 + d3*(eta - _soilmoist3->matrix[r][c])/(eta - fc);
+	      // If layer 3 saturated...
+	      else{
+		// If theta2 below porosity, water table within third layer
+		if(fabs(eta - _soilmoist2->matrix[r][c]) > RNDOFFERR)
+		  _WaterTableDepth->matrix[r][c] =
+		    d1 + d2*(eta - _soilmoist2->matrix[r][c])/(eta - fc);
+		// If layer 2 saturated, water table within first layer
+		else
+		  _WaterTableDepth->matrix[r][c] =
+		    d1*(eta - _soilmoist1->matrix[r][c])/(eta - fc);
+	      }
+	    }
+	    }*/
+	  
+	  return _WaterTableDepth;
 	}
 
 	grid * getSaturationDeficit() const {
@@ -482,11 +497,9 @@ public:
 	grid *getInfiltCap() const {
 		return _infilt_cap;
 	}
-
 	grid *getRootFrac1() const {
 		return _rootfrac1;
 	}
-
 	grid *getRootFrac2() const {
 		return _rootfrac2;
 	}
@@ -517,6 +530,15 @@ public:
 	grid *getPorosity() const {
 		return _porosity;
 	}
+	grid *getSoilMoistR() const {
+		return _theta_r;
+	}
+	grid *getPsiAE() const {
+	  return _psi_ae;
+	}
+	grid *getBClambda() const {
+	  return _BClambda;
+	}
 
 	grid *getFieldCapacity() const {
 		return _fieldcap;
@@ -533,25 +555,77 @@ public:
 	grid *getGrndWater() const {
 		return _GrndWater;
 	}
-
-	grid *getPondingOld() const {
-		return _PondingOld;
+	grid *getGrndWater_old() const {
+		return _GrndWater_old;
 	}
-	grid *getGrndWaterOld() const {
-		return _GrndWaterOld;
+
+	// Internal fluxes
+	grid *getFluxSrftoL1() const {
+		return _FluxSrftoL1;
+	}
+	grid *getFluxInfilt() const {
+		return _FluxInfilt;
+	}
+	grid *getFluxExfilt() const {
+		return _FluxExfilt;
+	}
+	grid *getFluxLattoGW() const {
+		return _FluxLattoGW;
+	}
+	grid *getFluxLattoSrf() const {
+		return _FluxLattoSrf;
+	}
+	grid *getFluxLattoChn() const {
+		return _FluxLattoChn;
+	}
+	grid *getFluxSrftoLat() const {
+		return _FluxSrftoLat;
+	}
+	grid *getFluxGWtoLat() const {
+		return _FluxGWtoLat;
+	}
+	grid *getFluxGWtoChn() const {
+		return _FluxGWtoChn;
+	}
+	grid *getFluxSrftoChn() const {
+		return _FluxSrftoChn;
+	}
+
+	grid *getAccInfilt() const {
+		return _AccInfilt;
+	}
+	grid *getAccExfilt() const {
+		return _AccExfilt;
+	}
+	grid *getAccLattoGW() const {
+		return _AccLattoGW;
+	}
+	grid *getAccLattoSrf() const {
+		return _AccLattoSrf;
+	}
+	grid *getAccLattoChn() const {
+		return _AccLattoChn;
+	}
+	grid *getAccSrftoLat() const {
+		return _AccSrftoLat;
+	}
+	grid *getAccGWtoLat() const {
+		return _AccGWtoLat;
+	}
+	grid *getAccGWtoChn() const {
+		return _AccGWtoChn;
+	}
+	grid *getAccSrftoChn() const {
+		return _AccSrftoChn;
 	}
 
 	// Addition tracking
 	// ---------------------------------
-
 	grid *getChannelWidth() const {
 		return _channelwidth;
 	}
 	grid *getFluxUptoSnow() const {
 		return _FluxUptoSnow;
-	}
-	grid *getFluxSrftoL1() const {
-		return _FluxSrftoL1;
 	}
 	grid *getFluxL1toL2() const {
 		return _FluxL1toL2;
@@ -562,9 +636,6 @@ public:
 	grid *getFluxL3toGW() const {
 		return _FluxL3toGW;
 	}
-	grid *getFluxL1toSrf() const {
-		return _FluxL1toSrf;
-	}
 	grid *getFluxL2toL1() const {
 		return _FluxL2toL1;
 	}
@@ -574,37 +645,6 @@ public:
 	grid *getFluxGWtoL3() const {
 		return _FluxGWtoL3;
 	}
-	grid *getFluxLattoGW() const {
-		return _FluxLattoGW;
-	}
-	grid *getFluxLattoSrf() const {
-		return _FluxLattoSrf;
-	}
-	grid *getFluxGWtoChn() const {
-		return _FluxGWtoChn;
-	}
-	grid *getFluxSrftoChn() const {
-		return _FluxSrftoChn;
-	}
-
-	// -- Getters of fTracking getters
-	// dD
-	grid *getdDcanopy(UINT4 n) const ;
-	grid *getdDevapI(UINT4 n) const ;
-	grid *getdDtranspi(UINT4 n) const ;
-	grid *getdDevapS(UINT4 n) const ;
-
-	// 18O
-	grid *getd18Ocanopy(UINT4 n) const ;
-	grid *getd18OevapI(UINT4 n) const ;
-	grid *getd18Otranspi(UINT4 n) const ;
-	grid *getd18OevapS(UINT4 n) const ;
-
-	// Age
-	grid *getAgecanopy(UINT4 n) const ;
-	grid *getAgeevapI(UINT4 n) const ;
-	grid *getAgetranspi(UINT4 n) const ;
-	grid *getAgeevapS(UINT4 n) const ;
 
 	// --------------------------------------------------------------------------------------
 	// -- Getters of fForest getters
@@ -651,6 +691,26 @@ public:
 
 	grid *getLeafWaterPotential(UINT4 n) const;
 
+	// Addition tracking
+	// ---------------------------------
+	// -- Getters of fTracking getters
+	// dD
+	grid *getdDcanopy(UINT4 n) const ;
+	grid *getdDevapI(UINT4 n) const ;
+	grid *getdDevapT(UINT4 n) const ;
+	grid *getdDevapS(UINT4 n) const ;
+
+	// 18O
+	grid *getd18Ocanopy(UINT4 n) const ;
+	grid *getd18OevapI(UINT4 n) const ;
+	grid *getd18OevapT(UINT4 n) const ;
+	grid *getd18OevapS(UINT4 n) const ;
+
+	// Age
+	grid *getAgecanopy(UINT4 n) const ;
+	grid *getAgeevapI(UINT4 n) const ;
+	grid *getAgeevapT(UINT4 n) const ;
+	grid *getAgeevapS(UINT4 n) const ;
 	//setters
 
 };

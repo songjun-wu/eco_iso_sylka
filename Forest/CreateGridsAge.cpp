@@ -35,7 +35,7 @@ int Grove::CreateGridsAge(grid *base){
 	try{
 		_Agecanopy = new grid (*base);
 		_AgeevapI = new grid (*base);
-		_Agetranspi = new grid (*base);
+		_AgeevapT = new grid (*base);
 		_AgeevapS = new grid (*base);
 
 	}catch(const exception& e){

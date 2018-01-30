@@ -63,9 +63,9 @@ Grove::Grove(){
 	_dDcanopy = NULL;
 	_d18Ocanopy = NULL;
 	_Agecanopy = NULL;
-	_dDtranspi = NULL;
-	_d18Otranspi = NULL;
-	_Agetranspi = NULL;
+	_dDevapT = NULL;
+	_d18OevapT = NULL;
+	_AgeevapT = NULL;
 	_dDevapI = NULL;
 	_d18OevapI = NULL;
 	_AgeevapI = NULL;

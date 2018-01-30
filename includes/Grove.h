@@ -112,9 +112,9 @@ struct Grove {
 	grid *_d18Ocanopy; // d18O of interception water
 	grid *_Agecanopy; // Age of interception water
 
-	grid *_dDtranspi; // dD of transpirated water
-	grid *_d18Otranspi; // d18O of transpirated water
-	grid *_Agetranspi; // Age of transpirated water
+	grid *_dDevapT; // dD of transpirated water
+	grid *_d18OevapT; // d18O of transpirated water
+	grid *_AgeevapT; // Age of transpirated water
 
 	grid *_dDevapI; // dD of evaporated interception
 	grid *_d18OevapI; // d18O of evaporated interception

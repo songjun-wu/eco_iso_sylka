@@ -61,7 +61,7 @@ int Tracking::IncrementAge(Basin &bsn, Control &ctrl){
 			_Agesoil3->matrix[r][c] += dt; // Vadose layer 3
 			//_AgesoilAv->matrix[r][c] += dt; // Vadose average
 
-			if(fabs(bsn.getGrndWaterOld()->matrix[r][c])>RNDOFFERR)
+			if(fabs(bsn.getGrndWater()->matrix[r][c])>RNDOFFERR)
 				_Agegroundwater->matrix[r][c] += dt; // Groundwater
 			else
 				_Agegroundwater->matrix[r][c] = 0;
