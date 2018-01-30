@@ -149,7 +149,11 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	// Percolation if exceeding field capacity (L1 and L2), 
 	// goes to GW in L3 (and bedrock leakage if activated)
 	SoilWaterRedistribution(ctrl, accinf, theta, theta2, theta3, ponding, gw, leak, dt, r, c);
-	
+
+	// Store cumulated infitlration flux
+	_FluxInfilt->matrix[r][c] = _FluxSrftoL1->matrix[r][c];
+	_AccInfilt->matrix[r][c] += _FluxInfilt->matrix[r][c];
+
 	// Tracking
 	if(ctrl.sw_trck)
 	  trck.MixingV_down(*this, ctrl, d1, d2, d3, fc, leak, r, c, false);
@@ -260,6 +264,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	
 	_Temp_d->matrix[r][c] = Tdold;
 	
+	
 	dh_snow = SnowOutput(atm, ctrl, mltht, r, c);
 	
 	// Flux tracking after snowmelt
@@ -269,7 +274,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	// Update surface pool
 	_ponding->matrix[r][c] += dh_snow;
 	// Back up before routing
-	_GrndWaterOld->matrix[r][c] = _GrndWater->matrix[r][c];
+	_GrndWater_old->matrix[r][c] = _GrndWater->matrix[r][c];
 	
       }//for
   }//end omp parallel block

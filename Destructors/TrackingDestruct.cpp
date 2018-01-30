@@ -40,6 +40,8 @@ Tracking::~Tracking(){
 		delete _dDsnowpack;
 	if(_dDsurface)
 		delete _dDsurface;
+	if(_dDlifo)
+		delete _dDlifo;
 	if(_dDsoil1)
 		delete _dDsoil1;
 	if(_dDsoil2)
@@ -67,12 +69,14 @@ Tracking::~Tracking(){
 		delete _d18Osnowpack;
 	if(_d18Osurface)
 		delete _d18Osurface;
+	if(_d18Olifo)
+		delete _d18Olifo;
 	if(_d18Osoil1)
 		delete _d18Osoil1;
 	if(_d18Osoil2)
 		delete _d18Osoil2;
 	if(_d18Osoil_12)
-		delete _d18Osoil_12;
+	  delete _d18Osoil_12;
 	if(_d18Osoil3)
 		delete _d18Osoil3;
 	//	if(_d18OsoilAv)
@@ -92,6 +96,8 @@ Tracking::~Tracking(){
 		delete _Agesnowpack;
 	if(_Agesurface)
 		delete _Agesurface;
+	if(_Agelifo)
+		delete _Agelifo;
 	if(_Agesoil1)
 		delete _Agesoil1;
 	if(_Agesoil2)
@@ -110,4 +116,5 @@ Tracking::~Tracking(){
 		delete _AgeevapI_sum;
 	if(_AgeevapT_sum)
 		delete _AgeevapT_sum;
+
 }

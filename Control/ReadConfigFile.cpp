@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * initConf.cpp
@@ -160,7 +160,6 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 
 	Config.readInto(fn_soiltemp, "Soil_temperature");
 
-
 	Config.readInto(fn_paramtable, "Species_Parameters");
 
 	if(!ForestStateVarsInputType.compare("tables")){
@@ -205,12 +204,6 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_Soil_Temperature = Config.read<bool>("Report_Soil_Temperature");
 	Rep_Skin_Temperature = Config.read<bool>("Report_Skin_Temperature");
 
-	Rep_GWtoChn = Config.read<bool>("Report_GW_to_Channel");
-	Rep_SrftoChn = Config.read<bool>("Report_Surface_to_Channel");
-	Rep_GWtoChnacc = Config.read<bool>("Report_GW_to_Channel_acc");
-	Rep_SrftoChnacc = Config.read<bool>("Report_Surface_to_Channel_acc");
-	//Rep_L1toSrf = Config.read<bool>("Report_Return_Flow_Surface");
-
 	Rep_Transpiration_sum = Config.read<bool>("Report_Transpiration_sum");
 	Rep_Einterception_sum = Config.read<bool>("Report_Einterception_sum");
 	Rep_Esoil_sum = Config.read<bool>("Report_Esoil_sum");
@@ -236,6 +229,27 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_Transpiration = Config.read<bool>("Report_Transpiration");
 	Rep_Einterception = Config.read<bool>("Report_Einterception");
 	Rep_Esoil = Config.read<bool>("Report_Esoil");
+
+	// Internal fluxes
+	Rep_GWtoChn = Config.read<bool>("Report_GW_to_Channel");
+	Rep_SrftoChn = Config.read<bool>("Report_Surface_to_Channel");
+	Rep_Infilt = Config.read<bool>("Report_Infiltration");
+	Rep_Exfilt = Config.read<bool>("Report_Return_Flow_Surface");
+	Rep_LattoSrf = Config.read<bool>("Report_Overland_Inflow");
+	Rep_LattoChn = Config.read<bool>("Report_Stream_Inflow");
+	Rep_LattoGW = Config.read<bool>("Report_Groundwater_Inflow");
+	Rep_SrftoLat = Config.read<bool>("Report_Overland_Outflow");
+	Rep_GWtoLat = Config.read<bool>("Report_Groundwater_Outflow");
+	// Cumulative
+	Rep_GWtoChnacc = Config.read<bool>("Report_GW_to_Channel_acc");
+	Rep_SrftoChnacc = Config.read<bool>("Report_Surface_to_Channel_acc");
+	Rep_Infiltacc = Config.read<bool>("Report_Infiltration_acc");
+	Rep_Exfiltacc = Config.read<bool>("Report_Return_Flow_Surface_acc");
+	Rep_LattoSrfacc = Config.read<bool>("Report_Overland_Inflow_acc");
+	Rep_LattoChnacc = Config.read<bool>("Report_Stream_Inflow_acc");
+	Rep_LattoGWacc = Config.read<bool>("Report_Groundwater_Inflow_acc");
+	Rep_SrftoLatacc = Config.read<bool>("Report_Overland_Outflow_acc");
+	Rep_GWtoLatacc = Config.read<bool>("Report_Groundwater_Outflow_acc");
 
 	Config.readInto(fn_rep_mask, "TS_mask");
 
@@ -268,10 +282,6 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_Soil_Temperature = Config.read<bool>("Ts_Soil_Temperature");
 	RepTs_Skin_Temperature = Config.read<bool>("Ts_Skin_Temperature");
 
-	RepTs_GWtoChn = Config.read<bool>("Ts_GW_to_Channel");
-	RepTs_SrftoChn = Config.read<bool>("Ts_Surface_to_Channel");
-	//RepTs_L1toSrf = Config.read<bool>("Ts_Return_Flow_Surface");
-	
 	RepTs_Total_ET = Config.read<bool>("Ts_Total_ET");
 	RepTs_Transpiration_sum = Config.read<bool>("Ts_Transpiration_sum");
 	RepTs_Einterception_sum = Config.read<bool>("Ts_Einterception_sum");
@@ -297,6 +307,27 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_Transpiration = Config.read<bool>("Ts_Transpiration");
 	RepTs_Einterception = Config.read<bool>("Ts_Einterception");
 	RepTs_Esoil = Config.read<bool>("Ts_Esoil");
+
+	// Internal fluxes
+	RepTs_GWtoChn = Config.read<bool>("Ts_GW_to_Channel");
+	RepTs_SrftoChn = Config.read<bool>("Ts_Surface_to_Channel");
+	RepTs_Infilt = Config.read<bool>("Ts_Infiltration");
+	RepTs_Exfilt = Config.read<bool>("Ts_Return_Flow_Surface");
+	RepTs_LattoSrf = Config.read<bool>("Ts_Overland_Inflow");
+	RepTs_LattoChn = Config.read<bool>("Ts_Stream_Inflow");
+	RepTs_LattoGW = Config.read<bool>("Ts_Groundwater_Inflow");
+	RepTs_SrftoLat = Config.read<bool>("Ts_Overland_Outflow");
+	RepTs_GWtoLat = Config.read<bool>("Ts_Groundwater_Outflow");
+	// Cumulative values
+	RepTs_GWtoChnacc = Config.read<bool>("Ts_GW_to_Channel_acc");
+	RepTs_SrftoChnacc = Config.read<bool>("Ts_Surface_to_Channel_acc");
+	RepTs_Infiltacc = Config.read<bool>("Ts_Infiltration_acc");
+	RepTs_Exfiltacc = Config.read<bool>("Ts_Return_Flow_Surface_acc");
+	RepTs_LattoSrfacc = Config.read<bool>("Ts_Overland_Inflow_acc");
+	RepTs_LattoChnacc = Config.read<bool>("Ts_Stream_Inflow_acc");
+	RepTs_LattoGWacc = Config.read<bool>("Ts_Groundwater_Inflow_acc");
+	RepTs_SrftoLatacc = Config.read<bool>("Ts_Overland_Outflow_acc");
+	RepTs_GWtoLatacc = Config.read<bool>("Ts_Groundwater_Outflow_acc");
 
 	}
 	catch(ConfigFile::file_not_found &fn){

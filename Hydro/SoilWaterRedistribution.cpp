@@ -141,9 +141,7 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
 	if(theta1>thetas){
 		pond += -(thetas - theta1) * d1;
 
-		// Tracking
-		if(ctrl.sw_trck)
-			_FluxSrftoL1->matrix[r][c] -= (theta1 - thetas) * d1;
+		_FluxSrftoL1->matrix[r][c] -= (theta1 - thetas) * d1;
 
 		theta1 = thetas;
 	}

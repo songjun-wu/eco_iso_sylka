@@ -69,17 +69,17 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 	dtdx = dt / _dx;
 
+	// Reinitialize to zero the fluxes upwards modified in the previous time step
+	_FluxExfilt->reset();
 	if(ctrl.sw_trck){
-	  // Reinitialize to zero the fluxes upwards modified in the previous time step
-	  _FluxL1toSrf->reset();
 	  _FluxL2toL1->reset();
 	  _FluxL3toL2->reset();
 	  _FluxGWtoL3->reset();
-	  // Initialize others
-	  _FluxLattoSrf->reset();
-	  _FluxLattoChn->reset();
-	  _FluxLattoGW->reset();
 	}
+	// Initialize others
+	_FluxLattoSrf->reset();
+	_FluxLattoChn->reset();
+	_FluxLattoGW->reset();
 	
 	for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
 	  r = _vSortedGrid.cells[j].row;
@@ -106,6 +106,9 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  //if reinfiltration switch is on is not a channel cell or the channel switch is off
 	  if (ctrl.sw_reinfilt && !(ctrl.sw_channel && _channelwidth->matrix[r][c] > 0)){
 	    Infilt_GreenAmpt(ctrl, f, F, theta1, theta2, theta3, ponding, gw, dt, r, c);
+	    // Store time-step- and cumulated- infitlration flux (only if there is reinfiltration)
+	    _FluxInfilt->matrix[r][c] += _FluxSrftoL1->matrix[r][c];
+	    _AccInfilt->matrix[r][c] += _FluxSrftoL1->matrix[r][c];
 	    // Tracking
 	    if(ctrl.sw_trck)
 	      trck.MixingV_down(*this, ctrl, d1, d2, d3, fc, leak, r, c, true);
@@ -164,7 +167,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    
 	    // Tracking
 	    if(ctrl.sw_trck)
-	      _FluxGWtoL3->matrix[r][c] = dtdx * qj1i + hji1 + R - returnflow;
+	      _FluxGWtoL3->matrix[r][c] += dtdx * qj1i + hji1 + R - returnflow;
 	    
 	  } else if (deficit > 0 && hj1i1 >= 0){
 	    theta3 += (dtdx * qj1i + hji1 + R - returnflow
@@ -172,7 +175,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    
 	    // Tracking
 	    if(ctrl.sw_trck)
-	      _FluxGWtoL3->matrix[r][c] = dtdx * qj1i + hji1 + R - returnflow - hj1i1 * (1 + alpha * dtdx);
+	      _FluxGWtoL3->matrix[r][c] += dtdx * qj1i + hji1 + R - returnflow - hj1i1 * (1 + alpha * dtdx);
 	  }
 	  
 	  //if the new amount of water in the cell is larger than the soil storage solve for return flow
@@ -184,25 +187,23 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    // Tracking
 	    if(ctrl.sw_trck){
 	      _FluxGWtoL3->matrix[r][c] += returnflow ;
-	      _FluxL3toL2->matrix[r][c] = returnflow ;
+	      _FluxL3toL2->matrix[r][c] += returnflow ;
 	    }
 	    
 	    if (theta2 > poros) {
 	      theta1 += (theta2 - poros) * d2 / d1;
 	      // Tracking
 	      if(ctrl.sw_trck)
-		_FluxL2toL1->matrix[r][c] = (theta2 - poros) * d2 ;
+		_FluxL2toL1->matrix[r][c] += (theta2 - poros) * d2 ;
 	      theta2 = poros;
 	    }
 	    if (theta1 > poros) {
 	      ponding += (theta1 - poros) * d1;
-	      // Tracking
-	      if(ctrl.sw_trck)
-		_FluxL1toSrf->matrix[r][c] = (theta1 - poros) * d1 ;
+	      _FluxExfilt->matrix[r][c] += (theta1 - poros) * d1 ;
 	      theta1 = poros;
 	    }
 	    
-			//ponding += returnflow;
+	    //ponding += returnflow;
 	    hj1i1 = (poros - theta3) * d3;
 	  }
 	  
@@ -225,21 +226,19 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    qall = ponding * _dx / dt;
 	    
 	    KinematicWave(Qk1, Si1j1, Qij1, qall, dt, r, c);
+	    //Qk1 = ponding * _dx*_dx/dt  + Qij1 ; // oooold (before kinematic wave)
 
 	    // Not all ponding water get routed once in the channel..
-	    // what the actual amount of run-off that contributes to streanflow then?
-	    // For lack of a better solution, it is the amount of ponding that is effectively routed,
-	    // i.e., assuming contributions of GW seepage, ponding and upstream head
-	    // proportional to their input volume
-	    // asame applies for GW seepage
-	    //if(ponding + Qij1*dtdx/_dx > 0)
-	    //  _FluxSrftoChn->matrix[r][c] = (Qk1*dtdx/_dx)*(ponding - qc*dtdx)/ (ponding + Qij1*dtdx/_dx);
-	    //else
-	    //  _FluxSrftoChn->matrix[r][c] = 0;
+	    // what is the actual amount of run-off that contributes to streamflow then?
+	    // For lack of a better solution, it is the amount of ponding that is effectively routed
+	    // AFTER all groundwater and upstream streamflow has been used
+	    // (since groundwater effectively enters the stream)
 	    _FluxGWtoChn->matrix[r][c] = qc*dtdx ;	    
 	    _FluxSrftoChn->matrix[r][c] = std::max<double>(0.0,(Qk1 - (Qij1 + qc*_dx))*dtdx/_dx);
+	    // Accumulated fluxes
+	    _AccGWtoChn->matrix[r][c] += _FluxGWtoChn->matrix[r][c];
+	    _AccSrftoChn->matrix[r][c] += _FluxSrftoChn->matrix[r][c];	  
 
-	    //Qk1 = ponding * _dx*_dx/dt  + Qij1 ; // oooold (before kinematic wave)
 	    ponding = 0;
 	    
 	  }
@@ -305,27 +304,33 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  
 	  // Check there is downstream cell
 	  if(lat_ok){
-	    
 	    // Tracking lateral inputs to the downstream cell
-	    if(ctrl.sw_trck){
+	    if(ctrl.sw_trck)
 	      trck.MixingH(*this, ctrl, hj1i1, alpha, ponding, Qk1, dtdx, _dx, r, c, rr, cc);
-	      // Input water for downstream cells (additive)
-	      _FluxLattoSrf->matrix[rr][cc] += ponding ;
-	      _FluxLattoChn->matrix[rr][cc] += Qk1*dtdx/_dx;
-	      _FluxLattoGW->matrix[rr][cc] += hj1i1 * alpha * dtdx;
-	    }
+	    
+	    // Input water for downstream cells (additive)
+	    _FluxLattoSrf->matrix[rr][cc] += ponding ;
+	    _FluxLattoChn->matrix[rr][cc] += Qk1*dtdx/_dx;
+	    _FluxLattoGW->matrix[rr][cc] += hj1i1 * alpha * dtdx;
+	    // Accumulated fluxes
+	    _AccLattoSrf->matrix[rr][cc] += ponding ;
+	    _AccLattoChn->matrix[rr][cc] += Qk1*dtdx/_dx ;
+	    _AccLattoGW->matrix[rr][cc] += hj1i1 * alpha * dtdx;
+	    
 	    // Add the previously calculated *discharge* (not elevation) to the downstream cell
 	    _GWupstreamBC->matrix[rr][cc] += hj1i1 * alpha;
 	    _Disch_upstreamBC->matrix[rr][cc] += Qk1;
 	    _ponding->matrix[rr][cc] += ponding;	
 	  }
-	  // Outgoing water (outside of lat_ok because can be 0)
-	  if(ctrl.sw_trck){
-	    _FluxSrftoLat->matrix[r][c] = lat_ok != 0 ? ponding + Qk1*dtdx/_dx : 0.0;
-	    //_FluxGWtoLat->matrix[r][c] = lat_ok != 0 ? hj1i1 * alpha * dtdx : 0.0;
-	  }
 
-	  
+	  // Outgoing water (outside of lat_ok because can be 0)
+	  //if(ctrl.sw_trck){
+	  _FluxSrftoLat->matrix[r][c] = lat_ok != 0 ? ponding : 0.0;
+	  _FluxGWtoLat->matrix[r][c] = lat_ok != 0 ? hj1i1 * alpha * dtdx : 0.0;
+	  // Accumulated fluxes
+	  _AccSrftoLat->matrix[r][c] += _FluxSrftoLat->matrix[r][c];
+	  _AccGWtoLat->matrix[r][c] += _FluxGWtoLat->matrix[r][c];	  
+
 	  // Update ponding
 	  if (ctrl.sw_channel && _channelwidth->matrix[r][c] > 0)
 	    _ponding->matrix[r][c] = Si1j1 / (_dx * _dx);
@@ -337,19 +342,13 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  Qk1 = 0;
 
 	  // Accumulated fluxes
-	  _AccSrftoL1->matrix[r][c] += _FluxSrftoL1->matrix[r][c];
-	  _AccL1toSrf->matrix[r][c] += _FluxL1toSrf->matrix[r][c];
-	  _AccLattoGW->matrix[r][c] += _FluxLattoGW->matrix[r][c];
-	  _AccLattoSrf->matrix[r][c] += _FluxLattoSrf->matrix[r][c];
-	  _AccLattoChn->matrix[r][c] += _FluxLattoChn->matrix[r][c];
-	  _AccSrftoLat->matrix[r][c] += _FluxSrftoLat->matrix[r][c];	  
-	  _AccGWtoChn->matrix[r][c] += _FluxGWtoChn->matrix[r][c];
-	  _AccSrftoChn->matrix[r][c] += _FluxSrftoChn->matrix[r][c];	  
+	  _AccExfilt->matrix[r][c] += _FluxExfilt->matrix[r][c];
+
 	}
 	
 	// Save previous GW and surface state
-	*_GrndWaterOld = *_GrndWater;
-	*_PondingOld = *_ponding;
+	*_GrndWater_old = *_GrndWater;
+	*_ponding_old = *_ponding;
 	
 	return EXIT_SUCCESS;
 }

@@ -38,6 +38,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_dDcanopy = NULL;
 	_dDsnowpack = NULL;
 	_dDsurface = NULL;
+	_dDlifo = NULL;
 	_dDsoil1 = NULL;
 	_dDsoil2 = NULL;
 	_dDsoil_12 = NULL;
@@ -51,6 +52,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_d18Ocanopy = NULL;
 	_d18Osnowpack = NULL;
 	_d18Osurface = NULL;
+	_d18Olifo = NULL;
 	_d18Osoil1 = NULL;
 	_d18Osoil2 = NULL;
 	_d18Osoil_12 = NULL;
@@ -64,6 +66,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_Agecanopy = NULL;
 	_Agesnowpack = NULL;
 	_Agesurface = NULL;
+	_Agelifo = NULL;
 	_Agesoil1 = NULL;
 	_Agesoil2 = NULL;
 	_Agesoil_12 = NULL;
@@ -93,6 +96,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_dDsoil3 = new grid(ctrl.path_BasinFolder + ctrl.fn_dDsoil3, ctrl.MapType);
 			//_dDsoilAv = new grid(*bsn.getDEM(), -60);
 			_dDgroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_dDgroundwater, ctrl.MapType);
+			_dDlifo = new grid(*bsn.getDEM());
 			_dDevapS_sum = new grid(*bsn.getDEM());
 			_dDevapI_sum = new grid(*bsn.getDEM());
 			_dDevapT_sum = new grid(*bsn.getDEM());
@@ -109,6 +113,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_d18Osoil3 = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Osoil3, ctrl.MapType);
 			//_d18OsoilAv = new grid(*bsn.getDEM(), -60);
 			_d18Ogroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Ogroundwater, ctrl.MapType);
+			_d18Olifo = new grid(*bsn.getDEM());
 			_d18OevapS_sum = new grid(*bsn.getDEM());
 			_d18OevapI_sum = new grid(*bsn.getDEM());
 			_d18OevapT_sum = new grid(*bsn.getDEM());
@@ -125,6 +130,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_Agesoil3 = new grid(ctrl.path_BasinFolder + ctrl.fn_Agesoil3, ctrl.MapType);
 			//_AgesoilAv = new grid(*bsn.getDEM(), -60);
 			_Agegroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_Agegroundwater, ctrl.MapType);
+			_Agelifo = new grid(*bsn.getDEM());
 			_AgeevapS_sum = new grid(*bsn.getDEM());
 			_AgeevapI_sum = new grid(*bsn.getDEM());
 			_AgeevapT_sum = new grid(*bsn.getDEM());
@@ -143,6 +149,8 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 		delete _dDsnowpack;
 	if(_dDsurface)
 		delete _dDsurface;
+	if(_dDlifo)
+		delete _dDlifo;
 	if(_dDsoil1)
 		delete _dDsoil1;
 	if(_dDsoil2)
@@ -170,6 +178,8 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 		delete _d18Osnowpack;
 	if(_d18Osurface)
 		delete _d18Osurface;
+	if(_d18Olifo)
+		delete _d18Olifo;
 	if(_d18Osoil1)
 		delete _d18Osoil1;
 	if(_d18Osoil2)
@@ -195,6 +205,8 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 		delete _Agesnowpack;
 	if(_Agesurface)
 		delete _Agesurface;
+	if(_Agelifo)
+		delete _Agelifo;
 	if(_Agesoil1)
 		delete _Agesoil1;
 	if(_Agesoil2)

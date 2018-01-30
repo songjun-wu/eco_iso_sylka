@@ -56,33 +56,7 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 		  toggle_hs = ConfigTrck.read<bool>("Fractionation_surface_relhum");
 		  toggle_n = ConfigTrck.read<bool>("Fractionation_turbulent_factor");
 		}
-		// Put here because _FluxL1toSrf is calculated only if tracking is active
-		Rep_SrftoL1 = ConfigTrck.read<bool>("Report_Infiltration");
-		Rep_L1toSrf = ConfigTrck.read<bool>("Report_Return_Flow_Surface");
-		Rep_LattoSrf = ConfigTrck.read<bool>("Report_Overland_Inflow");
-		Rep_LattoGW = ConfigTrck.read<bool>("Report_Groundwater_Inflow");
-		Rep_SrftoLat = ConfigTrck.read<bool>("Report_Overland_Outflow");
-		Rep_LattoChn = ConfigTrck.read<bool>("Report_Stream_Inflow");
-		Rep_SrftoL1acc = ConfigTrck.read<bool>("Report_Infiltration_acc");
-		Rep_L1toSrfacc = ConfigTrck.read<bool>("Report_Return_Flow_Surface_acc");
-		Rep_LattoSrfacc = ConfigTrck.read<bool>("Report_Overland_Inflow_acc");
-		Rep_LattoGWacc = ConfigTrck.read<bool>("Report_Groundwater_Inflow_acc");
-		Rep_SrftoLatacc = ConfigTrck.read<bool>("Report_Overland_Outflow_acc");
-		Rep_LattoChnacc = ConfigTrck.read<bool>("Report_Stream_Inflow_acc");
-
-		RepTs_SrftoL1 = ConfigTrck.read<bool>("Ts_Infiltration");
-		RepTs_L1toSrf = ConfigTrck.read<bool>("Ts_Return_Flow_Surface");
-		RepTs_LattoSrf = ConfigTrck.read<bool>("Ts_Overland_Inflow");
-		RepTs_LattoGW = ConfigTrck.read<bool>("Ts_Groundwater_Inflow");
-		RepTs_SrftoLat = ConfigTrck.read<bool>("Ts_Overland_Outflow");
-		RepTs_LattoChn = ConfigTrck.read<bool>("Ts_Stream_Inflow");
-		RepTs_SrftoL1acc = ConfigTrck.read<bool>("Ts_Infiltration_acc");
-		RepTs_L1toSrfacc = ConfigTrck.read<bool>("Ts_Return_Flow_Surface_acc");
-		RepTs_LattoSrfacc = ConfigTrck.read<bool>("Ts_Overland_Inflow_acc");
-		RepTs_LattoGWacc = ConfigTrck.read<bool>("Ts_Groundwater_Inflow_acc");
-		RepTs_SrftoLatacc = ConfigTrck.read<bool>("Ts_Overland_Outflow_acc");
-		RepTs_LattoChnacc = ConfigTrck.read<bool>("Ts_Stream_Inflow_acc");
-
+		
 		if(sw_dD){
 
 			// Precipitation input

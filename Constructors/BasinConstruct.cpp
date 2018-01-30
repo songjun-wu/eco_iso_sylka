@@ -132,23 +132,39 @@ Basin::Basin(Control &ctrl)
 		_WaterTableDepth = new grid(*_DEM); //reconstructed WTD in meters
 		_SoilSatDeficit = new grid(*_DEM); //soil moisture including water below and above field capacity
 		_GravityWater = new grid(*_DEM); //soil water storage beyond
-		_PondingOld = new grid(*_DEM); //surface storage at teh beginning of the time step
-		_GrndWaterOld = new grid(*_DEM); //groundwater storage at teh beginning of the time step
+		_ponding_old = new grid(*_DEM); //surface storage at teh beginning of the time step
+		_GrndWater_old = new grid(*_DEM); //groundwater storage at teh beginning of the time step
 		_GrndWater = new grid(*_DEM); //groundwater storage at the end of the time step
 		_GWupstreamBC = new grid(*_DEM); //gw flux upstream boundary conditin (ms-1)
 		_Disch_upstreamBC = new grid(*_DEM);
 		_EvaporationS_all = new grid(*_DEM); //actual soil evaporation in m s-1
 		_EvaporationI_all = new grid(*_DEM); //actual evaporation from summed interception in m s-1
 		_Transpiration_all = new grid(*_DEM); //transpiration from summed in m s-1
-		_FluxGWtoChn = new grid(*_DEM); // groundwater to channel
-		_FluxSrftoChn = new grid(*_DEM); // ponding to channel
+
+		_FluxSrftoL1 = new grid(*_DEM); // surface to first layer
+		_FluxInfilt = new grid(*_DEM); // surface to first layer (summed-over timestep)
+		_FluxExfilt = new grid(*_DEM); // first layer to surface (return flow)
+		_FluxLattoChn = new grid(*_DEM); // channel inflow
+		_FluxLattoSrf = new grid(*_DEM); // surface run-on (excluding streamflow)
+		_FluxLattoGW = new grid(*_DEM); // groundwater lateral outflow	
+		_FluxSrftoLat = new grid(*_DEM); // surface run-off (excluding streamflow)
+		_FluxGWtoLat = new grid(*_DEM); // groundwater lateral inflow	
+		_FluxGWtoChn = new grid(*_DEM); // intra-cell groundwater to channel
+		_FluxSrftoChn = new grid(*_DEM); // intra-cell ponding to channel
+
+		// Accumulated fluxes
+		_AccInfilt = new grid(*_DEM);
+		_AccExfilt = new grid(*_DEM);
+		_AccLattoChn = new grid(*_DEM);
+		_AccLattoSrf = new grid(*_DEM);
+		_AccLattoGW = new grid(*_DEM);
+		_AccSrftoLat = new grid(*_DEM);
+		_AccGWtoLat = new grid(*_DEM);
 		_AccGWtoChn = new grid(*_DEM); // groundwater to channel (accumlated)
 		_AccSrftoChn = new grid(*_DEM); // ponding to channel (accumulated)
 
-		// Tracking
+		// Tracking fluxes specifically for isotopes
 		_FluxUptoSnow = NULL;
-		_FluxSrftoL1 = NULL;
-		_FluxL1toSrf = NULL;
 		_FluxL1toL2 = NULL;
 		_FluxL2toL1 = NULL;
 		_FluxL2toL3 = NULL;
@@ -156,40 +172,14 @@ Basin::Basin(Control &ctrl)
 		_FluxL3toGW = NULL;
 		_FluxGWtoL3 = NULL;
 		
-		_FluxLattoSrf = NULL;
-		_FluxLattoGW = NULL;
-		_FluxSrftoLat = NULL;
-		_FluxLattoChn = NULL;
-
-		_AccSrftoL1 = NULL;
-		_AccL1toSrf = NULL;
-		_AccLattoSrf = NULL;
-		_AccLattoGW = NULL;
-		_AccSrftoLat = NULL;
-		_AccLattoChn = NULL;
-		
 		if(ctrl.sw_trck){
 		  _FluxUptoSnow = new grid(*_DEM); // canopy/sky to snowpack
-		  _FluxSrftoL1 = new grid(*_DEM); // surface to first layer
-		  _FluxL1toSrf = new grid(*_DEM); // first layer to surface (return flow)
 		  _FluxL1toL2 = new grid(*_DEM); // percolation L1 to L2
 		  _FluxL2toL1 = new grid(*_DEM); // capillary + return flow, L2 to L1
 		  _FluxL2toL3 = new grid(*_DEM); // percolation L2 to L3
 		  _FluxL3toL2 = new grid(*_DEM); // capillary + return flow, L2 to L3
 		  _FluxL3toGW = new grid(*_DEM); // recharge L3 to groundwater
 		  _FluxGWtoL3 = new grid(*_DEM); // discharge, groundwater to L3
-		  
-		  _FluxLattoSrf = new grid(*_DEM);
-		  _FluxLattoGW = new grid(*_DEM); 	
-		  _FluxSrftoLat = new grid(*_DEM);
-		  _FluxLattoChn = new grid(*_DEM); 
-		  // Accumulated fluxes
-		  _AccSrftoL1 = new grid(*_DEM);
-		  _AccL1toSrf = new grid(*_DEM);
-		  _AccLattoSrf = new grid(*_DEM);
-		  _AccLattoGW = new grid(*_DEM);
-		  _AccSrftoLat = new grid(*_DEM);
-		  _AccLattoChn = new grid(*_DEM);
 		}
 
 		//Partial check of maps mainly to make sure no no data is written within the valid domain
@@ -296,10 +286,8 @@ Basin::Basin(Control &ctrl)
 		delete _catcharea;
 	if(_GravityWater)
 		delete _GravityWater;
-	if(_PondingOld)
-		delete _PondingOld;
-	if(_GrndWaterOld)
-		delete _GrndWaterOld;
+	if(_GrndWater_old)
+		delete _GrndWater_old;
 	if(_GrndWater)
 		delete _GrndWater;
 	if(_GWupstreamBC)
@@ -333,25 +321,16 @@ Basin::Basin(Control &ctrl)
 	if(fForest)
 		delete fForest;
 
-	// Tracking
+	if(_ponding_old)
+	  delete _ponding_old;
 	if(_FluxUptoSnow)
 		delete _FluxUptoSnow;
 	if(_FluxSrftoL1)
 		delete _FluxSrftoL1;
-	if(_FluxL1toL2)
-		delete _FluxL1toL2;
-	if(_FluxL2toL3)
-		delete _FluxL2toL3;
-	if(_FluxL3toGW)
-		delete _FluxL3toGW;
-	if(_FluxL1toSrf)
-		delete _FluxL1toSrf;
-	if(_FluxL2toL1)
-		delete _FluxL2toL1;
-	if(_FluxL3toL2)
-		delete _FluxL3toL2;
-	if(_FluxGWtoL3)
-		delete _FluxGWtoL3;
+	if(_FluxInfilt)
+		delete _FluxInfilt;
+	if(_FluxExfilt)
+		delete _FluxExfilt;
 	if(_FluxLattoSrf)
 		delete _FluxLattoSrf;
 	if(_FluxLattoGW)
@@ -360,14 +339,16 @@ Basin::Basin(Control &ctrl)
 		delete _FluxLattoChn;
 	if(_FluxSrftoLat)
 		delete _FluxSrftoLat;
+	if(_FluxGWtoLat)
+		delete _FluxGWtoLat;
 	if(_FluxGWtoChn)
 		delete _FluxGWtoChn;
 	if(_FluxSrftoChn)
 		delete _FluxSrftoChn;
-	if(_AccSrftoL1)
-		delete _AccSrftoL1;
-	if(_AccL1toSrf)
-		delete _AccL1toSrf;
+	if(_AccInfilt)
+		delete _AccInfilt;
+	if(_AccExfilt)
+		delete _AccExfilt;
 	if(_AccLattoGW)
 		delete _AccLattoGW;
 	if(_AccLattoSrf)
@@ -376,10 +357,27 @@ Basin::Basin(Control &ctrl)
 		delete _AccLattoChn;
 	if(_AccSrftoLat)
 		delete _AccSrftoLat;
+	if(_AccGWtoLat)
+		delete _AccGWtoLat;
 	if(_AccGWtoChn)
 		delete _AccGWtoChn;
 	if(_AccSrftoChn)
 		delete _AccSrftoChn;
+
+	// Tracking
+	if(_FluxL1toL2)
+		delete _FluxL1toL2;
+	if(_FluxL2toL3)
+		delete _FluxL2toL3;
+	if(_FluxL3toGW)
+		delete _FluxL3toGW;
+	if(_FluxL2toL1)
+		delete _FluxL2toL1;
+	if(_FluxL3toL2)
+		delete _FluxL3toL2;
+	if(_FluxGWtoL3)
+		delete _FluxGWtoL3;
+
 
 	throw;
 }

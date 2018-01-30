@@ -168,18 +168,21 @@ struct Control{
   bool Rep_GWtoChnacc;
   bool Rep_SrftoChnacc;
 
-  bool Rep_SrftoL1;
-  bool Rep_L1toSrf;
+  bool Rep_Infilt;
+  bool Rep_Exfilt;
   bool Rep_LattoSrf;
+  bool Rep_LattoChn;
   bool Rep_LattoGW;
   bool Rep_SrftoLat;
-  bool Rep_LattoChn;
-  bool Rep_SrftoL1acc;
-  bool Rep_L1toSrfacc;
+  bool Rep_GWtoLat;
+
+  bool Rep_Infiltacc;
+  bool Rep_Exfiltacc;
   bool Rep_LattoSrfacc;
+  bool Rep_LattoChnacc;
   bool Rep_LattoGWacc;
   bool Rep_SrftoLatacc;
-  bool Rep_LattoChnacc;
+  bool Rep_GWtoLatacc;
 
   bool Rep_Net_Rad_sum;
   bool Rep_Total_ET;
@@ -245,18 +248,21 @@ struct Control{
   bool RepTs_GWtoChnacc;
   bool RepTs_SrftoChnacc;
 
-  bool RepTs_SrftoL1;
-  bool RepTs_L1toSrf;
+  bool RepTs_Infilt;
+  bool RepTs_Exfilt;
   bool RepTs_LattoSrf;
+  bool RepTs_LattoChn;
   bool RepTs_LattoGW;
   bool RepTs_SrftoLat;
-  bool RepTs_LattoChn;
-  bool RepTs_SrftoL1acc;
-  bool RepTs_L1toSrfacc;
+  bool RepTs_GWtoLat;
+
+  bool RepTs_Infiltacc;
+  bool RepTs_Exfiltacc;
   bool RepTs_LattoSrfacc;
+  bool RepTs_LattoChnacc;
   bool RepTs_LattoGWacc;
   bool RepTs_SrftoLatacc;
-  bool RepTs_LattoChnacc;
+  bool RepTs_GWtoLatacc;
 
   bool RepTs_Net_Rad_sum;
   bool RepTs_Total_ET;
