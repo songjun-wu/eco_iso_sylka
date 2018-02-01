@@ -294,11 +294,11 @@ struct Control{
   // Tracking inputs
   string fn_tracking;
   bool sw_trck; //switch to turn on and off the tracking option
-  bool sw_frac; //switch to turn on and off fractionation in soil evap
-  bool sw_lifo; //switch to turn "last in last, first out" for topsoil evaporation (last = same tstep precip/melt)
   bool sw_dD; //switch to turn on and off the dD tracking option (if sw_trck = 1)
   bool sw_d18O; //switch to turn on and off the d18O tracking option (if sw_trck = 1)
   bool sw_Age; //switch to turn on and off the age tracking option (if sw_trck = 1)
+  bool sw_frac; //switch to turn on and off fractionation in soil evap
+  bool sw_lifo; //switch to turn "last in last, first out" for topsoil evaporation (last = same tstep precip/melt)
 
   // Toggle switch for fractionation
   int toggle_hs; // toggle to choose which surface relative humidity for fractionation: 0->hs=1, 1->Lee&Pielke 1992, 2->Soderberg 2012
@@ -313,7 +313,6 @@ struct Control{
   string fn_dDsoil2;
   string fn_dDsoil3;
   string fn_dDgroundwater;
-  //string fn_dDchannel;
   
   string fn_d18Oprecip; // O eighteen signature in precipitations (d18O, per mil)
   //string fn_dDcanopy;
@@ -323,7 +322,6 @@ struct Control{
   string fn_d18Osoil2;
   string fn_d18Osoil3;
   string fn_d18Ogroundwater;
-  //string fn_d18Ochannel;
   
   //string fn_Agecanopy;
   string fn_Agesnowpack;
@@ -332,7 +330,6 @@ struct Control{
   string fn_Agesoil2;
   string fn_Agesoil3;
   string fn_Agegroundwater;
-  //string fn_Agechannel;
   
   /* maps report */
   bool Rep_dDprecip;
@@ -343,7 +340,7 @@ struct Control{
   bool Rep_dDsoil2;
   bool Rep_dDsoilUp;
   bool Rep_dDsoil3;
-  //bool Rep_dDsoilAv;
+  bool Rep_dDsoilAv;
   bool Rep_dDgroundwater;
   bool Rep_dDevapS;
   bool Rep_dDevapS_sum;
@@ -360,7 +357,7 @@ struct Control{
   bool Rep_d18Osoil2;
   bool Rep_d18OsoilUp;
   bool Rep_d18Osoil3;
-  //bool Rep_d18OsoilAv;
+  bool Rep_d18OsoilAv;
   bool Rep_d18Ogroundwater;
   bool Rep_d18OevapS;
   bool Rep_d18OevapS_sum;
@@ -376,7 +373,7 @@ struct Control{
   bool Rep_Agesoil2;
   bool Rep_AgesoilUp;
   bool Rep_Agesoil3;
-  //bool Rep_AgesoilAv;
+  bool Rep_AgesoilAv;
   bool Rep_Agegroundwater;
   bool Rep_AgeevapS;
   bool Rep_AgeevapS_sum;
@@ -394,7 +391,7 @@ struct Control{
   bool RepTs_dDsoil2;
   bool RepTs_dDsoilUp;
   bool RepTs_dDsoil3;
-  //bool RepTs_dDsoilAv;
+  bool RepTs_dDsoilAv;
   bool RepTs_dDgroundwater;
   bool RepTs_dDevapS;
   bool RepTs_dDevapS_sum;
@@ -411,7 +408,7 @@ struct Control{
   bool RepTs_d18Osoil2;
   bool RepTs_d18OsoilUp;
   bool RepTs_d18Osoil3;
-  //bool RepTs_d18OsoilAv;
+  bool RepTs_d18OsoilAv;
   bool RepTs_d18Ogroundwater;
   bool RepTs_d18OevapS;
   bool RepTs_d18OevapS_sum;
@@ -427,7 +424,7 @@ struct Control{
   bool RepTs_Agesoil2;
   bool RepTs_AgesoilUp;
   bool RepTs_Agesoil3;
-  //bool RepTs_AgesoilAv;
+  bool RepTs_AgesoilAv;
   bool RepTs_Agegroundwater;
   bool RepTs_AgeevapS;
   bool RepTs_AgeevapS_sum;

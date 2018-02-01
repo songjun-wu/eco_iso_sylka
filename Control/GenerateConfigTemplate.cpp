@@ -65,7 +65,7 @@ try{
 
 
 
-	ofOut << "#ECH2O configuration file v1.6b" << std::endl << std::endl;
+	ofOut << "#ECH2O configuration file v2" << std::endl << std::endl;
 	ofOut << "# Please, check Appendix A of Documentation  " << std::endl;
 	ofOut << "# for units of parameters and variables  " << std::endl << std::endl;
 
@@ -73,8 +73,12 @@ try{
 
     ofOut << "Maps_Folder = ./Spatial" << endl;
     ofOut << "Clim_Maps_Folder = ./Climate" << endl;
-    ofOut << "Output_Folder = ./Results" << endl << endl;
+    ofOut << "Output_Folder = ./Outputs" << endl << endl;
 
+    ofOut << "#" << endl << "#Water tracking (isotopes and/or ages)" << endl;
+    ofOut << "Tracking = 1" << endl ;
+    ofOut << "TrackingConfig = ./configTrck.ini" << endl << endl; 
+    
     ofOut << "MapTypes = csf" << endl;
     ofOut << "Species_State_Variable_Input_Method = tables # maps or tables" << endl << endl;
 
@@ -96,15 +100,15 @@ try{
     ofOut << "# 1 = Passerat de Silans et al 1989 " << endl;
     ofOut << "# 2 = Thom and Oliver 1977 " << endl;
     ofOut << "# 3 = Sakaguchi and Zeng 2009 " << endl;
-    ofOut << "Soil_resistance_opt = 2 " << endl << endl;
+    ofOut << "Soil_resistance_opt = 3 " << endl << endl;
 
     ofOut << "#" << endl << "# Time variables section" << endl << "#" << endl;
     ofOut << "Simul_start = 0 # always 0" << endl;
-    ofOut << "Simul_end = 31536000 # seconds (1 year)" << endl;
-    ofOut << "Simul_tstep = 86400 # seconds" << endl;
-    ofOut << "Clim_input_tstep = 86400  " << endl;
-    ofOut << "Report_interval = 86400" << endl ;
-    ofOut << "ReportMap_interval = 86400" << endl << endl;
+    ofOut << "Simul_end = 31536000 # seconds (365 days)" << endl;
+    ofOut << "Simul_tstep = 86400 # seconds (daily)" << endl;
+    ofOut << "Clim_input_tstep = 86400 # seconds (daily)" << endl;
+    ofOut << "Report_interval = 86400 # seconds (daily)" << endl ;
+    ofOut << "ReportMap_interval = 604800 # seconds (weekly)" << endl << endl;
 
     ofOut << "#" << endl << "# Base map section" << endl << "#" << endl;
     ofOut << "DEM = DEM.map" << endl;
@@ -167,9 +171,9 @@ try{
     ofOut << "Air_entry_pressure = psi_ae.map " << endl;
     ofOut << "Brooks_Corey_lambda = BClambda.map " << endl;
     ofOut << "Residual_soil_moisture = theta_r.map " << endl;
-    ofOut << "Soil_depth = soildepth.map " << endl;
-    ofOut << "Depth_soil_layer_1 = depth_soil1.map " << endl;
-    ofOut << "Depth_soil_layer_2 = depth_soil2.map " << endl;
+    ofOut << "Soil_depth = depth_soil.map " << endl;
+    ofOut << "Depth_soil_layer_1 = depth_soilL1.map " << endl;
+    ofOut << "Depth_soil_layer_2 = depth_soilL2.map " << endl;
     ofOut << "Veget_water_use_param1 = Wc.map " << endl;
     ofOut << "Veget_water_use_param2 = Wp.map " << endl;
     //ofOut << "Fraction_roots_soil_layer_1 = rootfrac1.map " << endl;
@@ -181,7 +185,7 @@ try{
     ofOut << "#Forest Parameters and initial states " << endl;
     ofOut << "#   " << endl;
     ofOut << "Number_of_Species = 1 " << endl;
-    ofOut << "Species_Parameters = SpeciesParams.tab " << endl;
+    ofOut << "Species_Parameters = SpeciesParams.tab " << endl << endl;
     ofOut << "#Tables below are only needed if Species_State_Variable_Input_Method = tables " << endl;
     ofOut << "Species_Proportion_Table = SpecsProp.tab " << endl;
     ofOut << "Species_StemDensity_Table = SpecsStemDens.tab " << endl;
@@ -205,7 +209,7 @@ try{
 
     ofOut << "Report_SWE = 0 " << endl;
     ofOut << "Report_Infilt_Cap = 0 " << endl;
-    ofOut << "Report_Streamflow = 1 " << endl;
+    ofOut << "Report_Streamflow = 0 " << endl;
     ofOut << "Report_Saturation_Area = 0 " << endl;
     ofOut << "Report_Ponding = 0 " << endl;
     ofOut << "Report_Soil_Water_Content_Average = 1 " << endl;
@@ -224,7 +228,7 @@ try{
     ofOut << "Report_Soil_Temperature = 0 " << endl;
     ofOut << "Report_Skin_Temperature = 0 " << endl << endl;
 
-    ofOut << "Report_Total_ET = 1 " << endl;
+    ofOut << "Report_Total_ET = 0 " << endl;
     ofOut << "Report_Transpiration_sum = 0 " << endl;
     ofOut << "Report_Einterception_sum = 0 " << endl;
     ofOut << "Report_Esoil_sum = 0 " << endl;
@@ -289,7 +293,7 @@ try{
     ofOut << "Ts_MaxAir_Temperature = 0 " << endl;
     ofOut << "Ts_SWE = 1 " << endl;
     ofOut << "Ts_Infilt_Cap = 0 " << endl;
-    ofOut << "Ts_Streamflow = 1 " << endl;
+    ofOut << "Ts_Streamflow = 0 " << endl;
     ofOut << "Ts_Ponding = 0 " << endl;
     ofOut << "Ts_Soil_Water_Content_Average = 1 " << endl;
     ofOut << "Ts_Soil_Water_Content_Up = 0 " << endl;
@@ -300,7 +304,7 @@ try{
     ofOut << "Ts_Soil_Sat_Deficit = 0 " << endl;
     ofOut << "Ts_Ground_Water = 0 " << endl;
     ofOut << "Ts_Soil_Net_Rad = 0 " << endl;
-    ofOut << "Ts_Soil_LE = 1 " << endl;
+    ofOut << "Ts_Soil_LE = 0 " << endl;
     ofOut << "Ts_Sens_Heat = 0 " << endl;
     ofOut << "Ts_Grnd_Heat = 0 " << endl;
     ofOut << "Ts_Snow_Heat = 0 " << endl;
@@ -334,8 +338,8 @@ try{
     ofOut << "Ts_Einterception = 0 " << endl;
     ofOut << "Ts_Esoil = 0 " << endl << endl;
 
-    ofOut << "Ts_GW_to_Channel = 1 " << endl;
-    ofOut << "Ts_Surface_to_Channel = 1 " << endl;
+    ofOut << "Ts_GW_to_Channel = 0 " << endl;
+    ofOut << "Ts_Surface_to_Channel = 0 " << endl;
     ofOut << "Ts_Infiltration = 0" << endl ;
     ofOut << "Ts_Return_Flow_Surface = 0" << endl ;
     ofOut << "Ts_Overland_Inflow = 0" << endl ;
@@ -344,8 +348,8 @@ try{
     ofOut << "Ts_Overland_Outflow = 0" << endl ;
     ofOut << "Ts_Groundwater_Outflow = 0" << endl ;
 
-    ofOut << "Ts_GW_to_Channel_acc = 1 " << endl;
-    ofOut << "Ts_Surface_to_Channel_acc = 1 " << endl;
+    ofOut << "Ts_GW_to_Channel_acc = 0 " << endl;
+    ofOut << "Ts_Surface_to_Channel_acc = 0 " << endl;
     ofOut << "Ts_Infiltration_acc = 0" << endl ;
     ofOut << "Ts_Return_Flow_Surface_acc = 0" << endl ;
     ofOut << "Ts_Overland_Inflow_acc = 0" << endl ;

@@ -156,8 +156,8 @@ int Report2Maps(){
 			WriteMapSeries(oTracking->getdDsoil_12(), "dDsUp", oControl->current_ts_count);
 		if (oControl->Rep_dDsoil3)
 			WriteMapSeries(oTracking->getdDsoil3(), "dDsL3", oControl->current_ts_count);
-		//	if (oControl->Rep_dDsoilAv)
-		//			WriteMapSeries(oTracking->getdDsoilAv(), "dD_soilAv", oControl->current_ts_count);
+		if (oControl->Rep_dDsoilAv)
+		  WriteMapSeries(oTracking->getdDsoil_Av(), "dD_soilAv", oControl->current_ts_count);
 		if (oControl->Rep_dDgroundwater)
 			WriteMapSeries(oTracking->getdDgroundwater(), "dDgw", oControl->current_ts_count);
 		if (oControl->Rep_dDevapS_sum)
@@ -184,8 +184,8 @@ int Report2Maps(){
 			WriteMapSeries(oTracking->getd18Osoil_12(), "dOsUp", oControl->current_ts_count);
 		if (oControl->Rep_d18Osoil3)
 			WriteMapSeries(oTracking->getd18Osoil3(), "dOsL3", oControl->current_ts_count);
-		//	if (oControl->Rep_d18OsoilAv)
-		//			WriteMapSeries(oTracking->getd18OsoilAv(), "d18O_soilAv", oControl->current_ts_count);
+		if (oControl->Rep_d18OsoilAv)
+		  WriteMapSeries(oTracking->getd18Osoil_Av(), "d18O_soilAv", oControl->current_ts_count);
 		if (oControl->Rep_d18Ogroundwater)
 			WriteMapSeries(oTracking->getd18Ogroundwater(), "dOgw", oControl->current_ts_count);
 		if (oControl->Rep_d18OevapS_sum)
@@ -208,8 +208,8 @@ int Report2Maps(){
 			WriteMapSeries(oTracking->getAgesoil_12(), "AgesUp", oControl->current_ts_count);
 		if (oControl->Rep_Agesoil3)
 			WriteMapSeries(oTracking->getAgesoil3(), "AgesL3", oControl->current_ts_count);
-		//	if (oControl->Rep_AgesoilAv)
-		//			WriteMapSeries(oTracking->getAgesoilAv(), "Age_soilAv", oControl->current_ts_count);
+		if (oControl->Rep_AgesoilAv)
+		  WriteMapSeries(oTracking->getAgesoil_Av(), "Age_soilAv", oControl->current_ts_count);
 		if (oControl->Rep_Agegroundwater)
 			WriteMapSeries(oTracking->getAgegroundwater(), "Agegw", oControl->current_ts_count);
 		if (oControl->Rep_AgeevapS_sum)
@@ -844,13 +844,13 @@ int Report2Ts(){
 					oControl->current_ts_count);
 		}
 
-		//	if (oControl->RepTs_dDsoilAv){
-		//	  if(oControl->GetTimeStep() <= oControl->report_times)
-		//	    oReport->RenameFile(oControl->path_ResultsFolder + "dD_soilAv.tab");
-		//	  oReport->ReportTimeSeries(oTracking->getdDsoilAv(),
-		//				    oControl->path_ResultsFolder + "dD_soilAv.tab",
-		//				    oControl->current_ts_count);
-		//	}
+		if (oControl->RepTs_dDsoilAv){
+		  if(oControl->GetTimeStep() <= oControl->report_times)
+		    oReport->RenameFile(oControl->path_ResultsFolder + "dD_soilAv.tab");
+		  oReport->ReportTimeSeries(oTracking->getdDsoil_Av(),
+					    oControl->path_ResultsFolder + "dD_soilAv.tab",
+					    oControl->current_ts_count);
+		}
 
 		if (oControl->RepTs_dDgroundwater){
 			if(oControl->GetTimeStep() <= oControl->report_times)
@@ -937,15 +937,15 @@ int Report2Ts(){
 					oControl->path_ResultsFolder + "d18O_soilL3.tab",
 					oControl->current_ts_count);
 		}
-
-		//	if (oControl->RepTs_d18OsoilAv){
-		//	  if(oControl->GetTimeStep() <= oControl->report_times)
-		//	    oReport->RenameFile(oControl->path_ResultsFolder + "d18O_soilAv.tab");
-		//	  oReport->ReportTimeSeries(oTracking->getd18OsoilAv(),
-		//				    oControl->path_ResultsFolder + "d18O_soilAv.tab",
-		//				    oControl->current_ts_count);
-		//	}
-
+		
+		if (oControl->RepTs_d18OsoilAv){
+		  if(oControl->GetTimeStep() <= oControl->report_times)
+		    oReport->RenameFile(oControl->path_ResultsFolder + "d18O_soilAv.tab");
+		  oReport->ReportTimeSeries(oTracking->getd18Osoil_Av(),
+					    oControl->path_ResultsFolder + "d18O_soilAv.tab",
+					    oControl->current_ts_count);
+		}
+		
 		if (oControl->RepTs_d18Ogroundwater){
 			if(oControl->GetTimeStep() <= oControl->report_times)
 				oReport->RenameFile(oControl->path_ResultsFolder + "d18O_groundwater.tab");
@@ -1026,13 +1026,13 @@ int Report2Ts(){
 					oControl->current_ts_count);
 		}
 
-		//	if (oControl->RepTs_AgesoilAv){
-		//	  if(oControl->GetTimeStep() <= oControl->report_times)
-		//	    oReport->RenameFile(oControl->path_ResultsFolder + "Age_soilAv.tab");
-		//	  oReport->ReportTimeSeries(oTracking->getAgesoilAv(),
-		//				    oControl->path_ResultsFolder + "Age_soilAv.tab",
-		//				    oControl->current_ts_count);
-		//	}
+		if (oControl->RepTs_AgesoilAv){
+		  if(oControl->GetTimeStep() <= oControl->report_times)
+		    oReport->RenameFile(oControl->path_ResultsFolder + "Age_soilAv.tab");
+		  oReport->ReportTimeSeries(oTracking->getAgesoil_Av(),
+					    oControl->path_ResultsFolder + "Age_soilAv.tab",
+					    oControl->current_ts_count);
+		}
 
 		if (oControl->RepTs_Agegroundwater){
 			if(oControl->GetTimeStep() <= oControl->report_times)

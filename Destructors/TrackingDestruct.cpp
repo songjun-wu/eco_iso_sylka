@@ -50,8 +50,8 @@ Tracking::~Tracking(){
 		delete _dDsoil_12;
 	if(_dDsoil3)
 		delete _dDsoil3;
-	//	if(_dDsoilAv)
-	//		delete _dDsoilAv;
+	if(_dDsoilAv)
+	  delete _dDsoilAv;
 	if(_dDgroundwater)
 		delete _dDgroundwater;
 	if(_dDevapS_sum)
@@ -79,8 +79,8 @@ Tracking::~Tracking(){
 	  delete _d18Osoil_12;
 	if(_d18Osoil3)
 		delete _d18Osoil3;
-	//	if(_d18OsoilAv)
-	//		delete _d18OsoilAv;
+	if(_d18OsoilAv)
+	  delete _d18OsoilAv;
 	if(_d18Ogroundwater)
 		delete _d18Ogroundwater;
 	if(_d18OevapS_sum)
@@ -106,8 +106,8 @@ Tracking::~Tracking(){
 		delete _Agesoil_12;
 	if(_Agesoil3)
 		delete _Agesoil3;
-	//	if(_AgesoilAv)
-	//		delete _AgesoilAv;
+	if(_AgesoilAv)
+	  delete _AgesoilAv;
 	if(_Agegroundwater)
 		delete _Agegroundwater;
 	if(_AgeevapS_sum)
