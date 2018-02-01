@@ -33,7 +33,7 @@
 int Tracking::IncrementAge(Basin &bsn, Control &ctrl){
 
 	UINT4 r, c;
-	REAL8 dt = ctrl.dt;
+	REAL8 dt = ctrl.dt / 86400 ; // units: days
 
 #pragma omp parallel default(shared) private(r,c)
 	{

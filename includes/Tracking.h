@@ -55,7 +55,7 @@ class Tracking {
   grid *_dDsoil2,    *_d18Osoil2, *_Agesoil2; // Vadose layer 2
   grid *_dDsoil_12,    *_d18Osoil_12, *_Agesoil_12; // Weighted average L1+L2
   grid *_dDsoil3,    *_d18Osoil3, *_Agesoil3; // Vadose layer 3
-  //grid *_dDsoilAv,   *_d18OsoilAv, *_AgesoilAv; // Vadose weighted average
+  grid *_dDsoilAv,   *_d18OsoilAv, *_AgesoilAv; // Vadose weighted average
   grid *_dDgroundwater, *_d18Ogroundwater, *_Agegroundwater; // Groundwater
   // Signature of outgoing water
   grid *_dDevapS_sum, *_d18OevapS_sum, *_AgeevapS_sum;
@@ -64,7 +64,7 @@ class Tracking {
   
   //check maps mainly to make sure no nodata values are in the domain.
   void CheckMapsTrck(Control &ctrl, Basin &bsn);
-  
+
  public:
   
   //Constructors
@@ -116,6 +116,9 @@ class Tracking {
   int CalcdDsoil_12(Basin &bsn);
   int Calcd18Osoil_12(Basin &bsn);
   int CalcAgesoil_12(Basin &bsn);
+  int CalcdDsoil_Av(Basin &bsn);
+  int Calcd18Osoil_Av(Basin &bsn);
+  int CalcAgesoil_Av(Basin &bsn);
   
   //int ReadConfigTrck(Control &ctrl, string confilename = "configTrck.ini");
   
@@ -141,6 +144,9 @@ class Tracking {
   grid *getdDsoil3() const {
     return _dDsoil3;
   }
+  grid *getdDsoil_Av() const{ 
+    return _dDsoilAv;
+  }
   grid *getdDgroundwater() const {
     return _dDgroundwater;
   }
@@ -153,24 +159,6 @@ class Tracking {
   grid *getdDevapT_sum() const {
     return _dDevapT_sum;
   }
-  /*void getdDsoilAv(Basin &bsn) {  
-    double depth, d1, d2, d3;
-    int r, c;
-    #pragma omp parallel for			\
-    default(none) private(r,c,depth, d1, d2, d3)
-    for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
-    r = bsn.getSortedGrid().cells[j].row;
-    c = bsn.getSortedGrid().cells[j].col;
-    depth = bsn.getSoilDepth()->matrix[r][c];
-    d1 = bsn.getSoilDepth1()->matrix[r][c];
-    d2 = bsn.getSoilDepth1()->matrix[r][c];
-    d3 = depth - d1 - d2;
-    _dDsoilAv->matrix[r][c] = (_dDsoil1->matrix[r][c] * d1
-    + _dDsoil2->matrix[r][c] * d2
-    + _dDsoil3->matrix[r][c] * d3) / depth;
-    }
-    }*/
-  
   // -------
   
   
@@ -196,6 +184,9 @@ class Tracking {
   grid *getd18Osoil3() const {
     return _d18Osoil3;
   }
+  grid *getd18Osoil_Av() const {
+    return _d18OsoilAv;
+  }
   grid *getd18Ogroundwater() const {
     return _d18Ogroundwater;
   }
@@ -208,23 +199,6 @@ class Tracking {
   grid *getd18OevapT_sum() const {
     return _d18OevapT_sum;
   }
-  /*void Calcd18OsoilAv(Basin &bsn) const {
-    double depth, d1, d2, d3;
-    int r, c;
-    #pragma omp parallel for			\
-    default(none) private(r,c,depth, d1, d2, d3)
-    for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
-    r = bsn.getSortedGrid().cells[j].row;
-    c = bsn.getSortedGrid().cells[j].col;
-    depth = bsn.getSoilDepth()->matrix[r][c];
-    d1 = bsn.getSoilDepth1()->matrix[r][c];
-    d2 = bsn.getSoilDepth1()->matrix[r][c];
-    d3 = depth - d1 - d2;
-    _d18OsoilAv->matrix[r][c] = (_d18Osoil1->matrix[r][c] * d1
-    + _d18Osoil2->matrix[r][c] * d2
-    + _d18Osoil3->matrix[r][c] * d3) / depth;
-    }
-    }*/
   // ---
   
   
@@ -250,6 +224,9 @@ class Tracking {
   grid *getAgesoil3() const {
     return _Agesoil3;
   }
+  grid *getAgesoil_Av() const {
+    return _AgesoilAv;
+  }
   grid *getAgegroundwater() const {
     return _Agegroundwater;
   }
@@ -262,23 +239,6 @@ class Tracking {
   grid *getAgeevapT_sum() const {
     return _AgeevapT_sum;
   }
-  /*void Calcd18OsoilAv(Basin &bsn) const {
-    double depth, d1, d2, d3;
-    int r, c;
-    #pragma omp parallel for			\
-    default(none) private(r,c,depth, d1, d2, d3)
-    for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
-    r = bsn.getSortedGrid().cells[j].row;
-    c = bsn.getSortedGrid().cells[j].col;
-    depth = bsn.getSoilDepth()->matrix[r][c];
-    d1 = bsn.getSoilDepth1()->matrix[r][c];
-    d2 = bsn.getSoilDepth1()->matrix[r][c];
-    d3 = depth - d1 - d2;
-    _d18OsoilAv->matrix[r][c] = (_d18Osoil1->matrix[r][c] * d1
-    + _d18Osoil2->matrix[r][c] * d2
-    + _d18Osoil3->matrix[r][c] * d3) / depth;
-    }
-    }*/
   // ---
   
   // --- Setters

@@ -5,16 +5,19 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../Control/GenerateConfigTemplate.cpp \
+../Control/GenerateConfigTrckTemplate.cpp \
 ../Control/ReadConfigFile.cpp \
 ../Control/ReadConfigTrck.cpp 
 
 OBJS += \
 ./Control/GenerateConfigTemplate.o \
+./Control/GenerateConfigTrckTemplate.o \
 ./Control/ReadConfigFile.o \
 ./Control/ReadConfigTrck.o 
 
 CPP_DEPS += \
 ./Control/GenerateConfigTemplate.d \
+./Control/GenerateConfigTrckTemplate.d \
 ./Control/ReadConfigFile.d \
 ./Control/ReadConfigTrck.d
 

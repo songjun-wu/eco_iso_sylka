@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../Tracking/CalcTrck_L1L2.cpp \
+../Tracking/CalcTrck_SoilAv.cpp \
 ../Tracking/CheckMapsTrck.cpp \
 ../Tracking/Fractionation_Esoil.cpp \
 ../Tracking/IncrementAge.cpp \
@@ -18,6 +19,7 @@ CPP_SRCS += \
 
 OBJS += \
 ./Tracking/CalcTrck_L1L2.o \
+./Tracking/CalcTrck_SoilAv.o \
 ./Tracking/CheckMapsTrck.o\
 ./Tracking/Fractionation_Esoil.o \
 ./Tracking/IncrementAge.o \
@@ -31,6 +33,7 @@ OBJS += \
 
 CPP_DEPS += \
 ./Tracking/CalcTrck_L1L2.d \
+./Tracking/CalcTrck_SoilAv.d \
 ./Tracking/CheckMapsTrck.d \
 ./Tracking/Fractionation_Esoil.d \
 ./Tracking/IncrementAge.d \

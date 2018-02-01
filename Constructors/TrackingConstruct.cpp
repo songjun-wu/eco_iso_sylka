@@ -43,7 +43,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_dDsoil2 = NULL;
 	_dDsoil_12 = NULL;
 	_dDsoil3 = NULL;
-	//_dDsoilAv = NULL;
+	_dDsoilAv = NULL;
 	_dDgroundwater = NULL;
 	_dDevapS_sum = NULL;
 	_dDevapI_sum = NULL;
@@ -57,7 +57,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_d18Osoil2 = NULL;
 	_d18Osoil_12 = NULL;
 	_d18Osoil3 = NULL;
-	//_d18OsoilAv = NULL;
+	_d18OsoilAv = NULL;
 	_d18Ogroundwater = NULL;
 	_d18OevapS_sum = NULL;
 	_d18OevapI_sum = NULL;
@@ -71,7 +71,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_Agesoil2 = NULL;
 	_Agesoil_12 = NULL;
 	_Agesoil3 = NULL;
-	//_AgesoilAv = NULL;
+	_AgesoilAv = NULL;
 	_Agegroundwater = NULL;
 	_AgeevapS_sum = NULL;
 	_AgeevapI_sum = NULL;
@@ -94,7 +94,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_dDsoil2 = new grid(ctrl.path_BasinFolder + ctrl.fn_dDsoil2, ctrl.MapType);
 			_dDsoil_12 = new grid(*bsn.getDEM());
 			_dDsoil3 = new grid(ctrl.path_BasinFolder + ctrl.fn_dDsoil3, ctrl.MapType);
-			//_dDsoilAv = new grid(*bsn.getDEM(), -60);
+			_dDsoilAv = new grid(*bsn.getDEM());
 			_dDgroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_dDgroundwater, ctrl.MapType);
 			_dDlifo = new grid(*bsn.getDEM());
 			_dDevapS_sum = new grid(*bsn.getDEM());
@@ -111,7 +111,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_d18Osoil2 = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Osoil2, ctrl.MapType);
 			_d18Osoil_12 = new grid(*bsn.getDEM());
 			_d18Osoil3 = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Osoil3, ctrl.MapType);
-			//_d18OsoilAv = new grid(*bsn.getDEM(), -60);
+			_d18OsoilAv = new grid(*bsn.getDEM());
 			_d18Ogroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Ogroundwater, ctrl.MapType);
 			_d18Olifo = new grid(*bsn.getDEM());
 			_d18OevapS_sum = new grid(*bsn.getDEM());
@@ -128,7 +128,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 			_Agesoil2 = new grid(ctrl.path_BasinFolder + ctrl.fn_Agesoil2, ctrl.MapType);
 			_Agesoil_12 = new grid(*bsn.getDEM());
 			_Agesoil3 = new grid(ctrl.path_BasinFolder + ctrl.fn_Agesoil3, ctrl.MapType);
-			//_AgesoilAv = new grid(*bsn.getDEM(), -60);
+			_AgesoilAv = new grid(*bsn.getDEM());
 			_Agegroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_Agegroundwater, ctrl.MapType);
 			_Agelifo = new grid(*bsn.getDEM());
 			_AgeevapS_sum = new grid(*bsn.getDEM());
@@ -159,8 +159,8 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 		delete _dDsoil_12;
 	if(_dDsoil3)
 		delete _dDsoil3;
-	//	if(_dDsoilAv)
-	//		delete _dDsoilAv;
+	if(_dDsoilAv)
+	  delete _dDsoilAv;
 	if(_dDgroundwater)
 		delete _dDgroundwater;
 	if(_dDevapS_sum)
@@ -188,8 +188,8 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	  delete _d18Osoil_12;
 	if(_d18Osoil3)
 		delete _d18Osoil3;
-	//	if(_d18OsoilAv)
-	//		delete _d18OsoilAv;
+	if(_d18OsoilAv)
+	  delete _d18OsoilAv;
 	if(_d18Ogroundwater)
 		delete _d18Ogroundwater;
 	if(_d18OevapS_sum)
@@ -215,8 +215,8 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 		delete _Agesoil_12;
 	if(_Agesoil3)
 		delete _Agesoil3;
-	//	if(_AgesoilAv)
-	//		delete _AgesoilAv;
+	if(_AgesoilAv)
+	  delete _AgesoilAv;
 	if(_Agegroundwater)
 		delete _Agegroundwater;
 	if(_AgeevapS_sum)

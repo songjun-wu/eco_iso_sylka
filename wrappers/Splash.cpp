@@ -35,18 +35,44 @@ void message(){
 	cout << "USAGE: ech2o <config.ini>" << endl;
 	cout << "\twhere config.ini is a valid ech2o configuration file" << endl;
 	cout << "OR: ech2o -g <output_file>" << endl;
-	cout << "\tto write a configuration file template." << endl;
+	cout << "\tto write two configuration file templates:" << endl;
+	cout << "\t<output_file> + its tracking-specific counterpart." << endl;
 }
 
 void Splash(int argc, char* argv[]){
 
-cout << " ______________________________________________________________________________|                                                                              ||                                                                              ||    888888888888888  888888888888888   888      888        888888888888888    ||    888888888888888  888888888888888   888      888        888888888888888    ||    8888             888               888      888        888         888    ||    8888             888               888      888        888         888    ||    88888888888      888               888888888888        888         888    ||    88888888888      888               888888888888        888         888    ||    8888             888               888      888 888888 888         888    ||    8888             888               888      888    888 888         888    ||    888888888888888  888888888888888   888      888    888 888888888888888    ||    888888888888888  888888888888888   888      888  888   888888888888888    ||                                                   8888888                    ||                                                                              ||    ECHOHYDROLOGICAL MODEL (ECH2O)                                            ||    Watershed Hydrology Lab - University of Montana                           ||    " << VERSION << "                                                                 ||______________________________________________________________________________|" <<endl;
+  cout << "|______________________________________________________________________________|" << endl;
+  cout << "                                                                              ||" << endl;
+  cout << "   ---------------                    ---       ---        ---------------    ||" << endl;
+  //  cout << "    888888888888888  888888888888888   888      888        888888888888888    ||" << endl;
+  //  cout << "    888888888888888  888888888888888   888      888        888888888888888    ||" << endl;
+  //  cout << "    8888             888               888      888        888         888    ||" << endl;
+  //  cout << "    8888             888               888      888        888         888    ||" << endl;
+  //  cout << "    88888888888      888               888888888888        888         888    ||" << endl;
+  cout << "   888888888888888                    888       888        888888888888888    ||" << endl;
+  cout << "   8888                               888       888        888         888    ||" << endl;
+  cout << "   8888             ---------------   888       888        888         888    ||" << endl;
+  cout << "   88888888888      888888888888888   8888888888888        888         888    ||" << endl;
+  cout << "   88888888888      888               8888888888888        888         888    ||" << endl;
+  cout << "   8888             888               888       888 88888  888         888    ||" << endl;
+  cout << "   8888             888               888       888    888 888         888    ||" << endl;
+  cout << "   888888888888888  888888888888888   888       888   888  888888888888888    ||" << endl;
+  //  cout << "    888888888888888  888888888888888   888      888  888   888888888888888    ||" << endl;
+  cout << "   ---------------  ---------------   ---      --- 8888     ---------------   ||" << endl;
+  cout << "                                                  88888888                    ||" << endl;
+  cout << "   ECHOHYDROLOGICAL MODEL (ECH2O)                                             |" << endl;
+  cout << "   Watershed Hydrology Lab - University of Montana                            |" << endl;
+  cout << "   "<< VERSION << "                                                         " << endl;
+  cout << " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ " <<endl << endl;
 
 
      if (argc==3 && strcmp(argv[1],"-g")==0 ){
     	GenerateConfigTemplate(argv[2]);
-		cout << "Writing configuration file template in" << argv[2] << endl;
-		exit(EXIT_SUCCESS);
+	cout << "Writing configuration file template in " << argv[2] << endl;
+	// For now the name for configTrck.ini is fixed
+    	GenerateConfigTrckTemplate("configTrck.ini");
+	cout << "Writing tracking configuration file template in configTrck.ini" << endl;
+	exit(EXIT_SUCCESS);
      }
 
     if (argc!=2 || strcmp(argv[1],"-g") == 0){
