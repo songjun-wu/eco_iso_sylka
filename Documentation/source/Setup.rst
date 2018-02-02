@@ -23,7 +23,16 @@ choice of state and diagnostic variables that the user wants reported
 (written) to the drive.
 
 The list of keywords in the current version of the configuration file
-(v1.22) is shown in appendix [appendixb]
+(v1.6) is shown in appendix [appendixb]
+
+The tracking configuration file
+-------------------------------
+
+The tracking configuration file is...
+
+The list of keywords in the current version of the tracking configuration file
+(v1.0) is shown in appendix C [appendixc]
+
 
 Preparing the database
 ----------------------

@@ -1,5 +1,5 @@
-Getting started: ECH2O User Guide
-=================================
+Getting started: ECH2O-iso User Guide
+=====================================
 
 This document provides a tutorial that guides users through the process of preparing the files, running and visualizing an ech2o simulation. 
 
