@@ -268,8 +268,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'ech2o', u'ech2o Documentation',
-     author, 'ech2o', 'One line description of project.',
+    (master_doc, 'ech2o_iso', u'ech2o_iso Documentation',
+     author, 'ech2o_iso', 'One line description of project.',
      'Miscellaneous'),
 ]
 
