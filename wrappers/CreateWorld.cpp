@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * CreateWorld.cpp
@@ -54,7 +54,7 @@ int CreateWorld(char* argv[]){
 			cout << "Isotope module created ok... " << "\n";
 
 try{
-		ofSummary.open("BasinSummary.txt");
+		ofSummary.open((oControl->path_ResultsFolder + "BasinSummary.txt").c_str());
 		if(!ofSummary)
 			throw std::ios::failure("Error opening Summary.txt buffer\n");
 
@@ -76,6 +76,8 @@ try{
 		ofSummary << "Overland flow\t";
 		ofSummary << "Groundwater flow\t";
 		ofSummary << "Saturation extent\t";
+		ofSummary << "Run-off to channel\t";
+		ofSummary << "GW to channel\t";
 		ofSummary << "Mass Balance Error\n";
 
 

@@ -11,11 +11,13 @@ CPP_SRCS += \
 ../Budgets/TotalEvaporation.cpp \
 ../Budgets/TotalEvaporationS.cpp \
 ../Budgets/TotalEvaporationI.cpp \
+../Budgets/TotalGWtoChn.cpp \
 ../Budgets/TotalTranspiration.cpp \
 ../Budgets/TotalLeakage.cpp \
 ../Budgets/TotalOvlndFlow.cpp \
 ../Budgets/TotalPrecipitation.cpp \
 ../Budgets/TotalSaturationArea.cpp \
+../Budgets/TotalSrftoChn.cpp \
 ../Budgets/TotalStorage.cpp \
 ../Budgets/totalGrndFlow.cpp 
 
@@ -27,11 +29,13 @@ OBJS += \
 ./Budgets/TotalEvaporation.o \
 ./Budgets/TotalEvaporationS.o \
 ./Budgets/TotalEvaporationI.o \
+./Budgets/TotalGWtoChn.o \
 ./Budgets/TotalTranspiration.o \
 ./Budgets/TotalLeakage.o \
 ./Budgets/TotalOvlndFlow.o \
 ./Budgets/TotalPrecipitation.o \
 ./Budgets/TotalSaturationArea.o \
+./Budgets/TotalSrftoChn.o \
 ./Budgets/TotalStorage.o \
 ./Budgets/totalGrndFlow.o 
 
@@ -43,11 +47,13 @@ CPP_DEPS += \
 ./Budgets/TotalEvaporation.d \
 ./Budgets/TotalEvaporationS.d \
 ./Budgets/TotalEvaporationI.d \
+./Budgets/TotalGWtoChn.d \
 ./Budgets/TotalTranspiration.d \
 ./Budgets/TotalLeakage.d \
 ./Budgets/TotalOvlndFlow.d \
 ./Budgets/TotalPrecipitation.d \
 ./Budgets/TotalSaturationArea.d \
+./Budgets/TotalSrftoChn.d \
 ./Budgets/TotalStorage.d \
 ./Budgets/totalGrndFlow.d 
 

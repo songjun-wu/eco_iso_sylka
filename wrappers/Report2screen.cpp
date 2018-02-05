@@ -69,15 +69,12 @@ int Report2Screen(){
   	ofSummary << oBudget->evaporationS << "\t";
 
   	printf("Total Canopy Evaporation (m3): %.2f \t", oBudget->evaporationI);
-  	//cout << "Total Evapotranspiration (m3): " << oBudget->evaporation << "\n";
   	ofSummary << oBudget->evaporationI << "\t";
 
   	printf("Total Transpiration (m3): %.2f \n", oBudget->transpiration);
-  	//cout << "Total Evapotranspiration (m3): " << oBudget->evaporation << "\n";
   	ofSummary << oBudget->transpiration << "\t";
 
 	printf("Bedrock Leak (m3): %.2f \n", oBudget->leakage);
-	//cout << "Bedrock Leak (m3): " << oBudget->leakage << "\n";
 	ofSummary << oBudget->leakage << "\t";
 
 	printf("Total OvlndFlow output (m3): %.2f \t", oBudget->ovlndflow);
@@ -88,8 +85,14 @@ int Report2Screen(){
 	ofSummary << oBudget->gwtrflow << "\t";
 
 	// Saturated area (% of the catchment)
-	printf("Saturated area fraction: %.2f \t", oBudget->satarea);
+	printf("Saturated area fraction: %.2f \n", oBudget->satarea);
 	ofSummary << oBudget->satarea << "\t";
+
+	printf("Run-off to channel (m3): %.2f \t", oBudget->srftochn);
+	ofSummary << oBudget->srftochn << "\t";
+
+	printf("GW to channel (m3): %.2f \n", oBudget->gwtochn);
+	ofSummary << oBudget->gwtochn << "\t";
 
 	printf("Mass Balance Error (%): %e \n", oBudget->MBErr);
 	ofSummary << oBudget->MBErr << "\n";

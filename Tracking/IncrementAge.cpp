@@ -33,7 +33,7 @@
 int Tracking::IncrementAge(Basin &bsn, Control &ctrl){
 
 	UINT4 r, c;
-	REAL8 dt = ctrl.dt;
+	REAL8 dt = ctrl.dt / 86400 ; // units: days
 
 #pragma omp parallel default(shared) private(r,c)
 	{
@@ -61,7 +61,7 @@ int Tracking::IncrementAge(Basin &bsn, Control &ctrl){
 			_Agesoil3->matrix[r][c] += dt; // Vadose layer 3
 			//_AgesoilAv->matrix[r][c] += dt; // Vadose average
 
-			if(fabs(bsn.getGrndWaterOld()->matrix[r][c])>RNDOFFERR)
+			if(fabs(bsn.getGrndWater()->matrix[r][c])>RNDOFFERR)
 				_Agegroundwater->matrix[r][c] += dt; // Groundwater
 			else
 				_Agegroundwater->matrix[r][c] = 0;

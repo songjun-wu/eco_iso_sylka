@@ -292,14 +292,14 @@ public:
     grid *getAgeevapI(UINT4 n) const {
           return _species[n]._AgeevapI;
         }
-    grid *getdDtranspi(UINT4 n) const {
-      return _species[n]._dDtranspi;
+    grid *getdDevapT(UINT4 n) const {
+      return _species[n]._dDevapT;
     }
-    grid *getd18Otranspi(UINT4 n) const {
-          return _species[n]._d18Otranspi;
+    grid *getd18OevapT(UINT4 n) const {
+          return _species[n]._d18OevapT;
         }
-    grid *getAgetranspi(UINT4 n) const {
-          return _species[n]._Agetranspi;
+    grid *getAgeevapT(UINT4 n) const {
+          return _species[n]._AgeevapT;
         }
     grid *getdDevapS(UINT4 n) const {
       return _species[n]._dDevapS;
@@ -329,14 +329,14 @@ public:
     void setAgeevapI(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
           _species[n]._AgeevapI->matrix[row][col] = value;
     }
-    void setdDtranspi(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._dDtranspi->matrix[row][col] = value;
+    void setdDevapT(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._dDevapT->matrix[row][col] = value;
     }
-    void setd18Otranspi(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._d18Otranspi->matrix[row][col] = value;
+    void setd18OevapT(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._d18OevapT->matrix[row][col] = value;
     }
-    void setAgetranspi(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._Agetranspi->matrix[row][col] = value;
+    void setAgeevapT(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._AgeevapT->matrix[row][col] = value;
     }
     void setdDevapS(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
           _species[n]._dDevapS->matrix[row][col] = value;

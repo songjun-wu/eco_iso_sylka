@@ -139,7 +139,7 @@ extern double rlog(double u_za, double z_a, double z_d, double z_0, int option);
 
 /*Calculates parameter beta to evalute relative humidity of soil pore space used in the calcualtion of soil vapor pressure
 after Lee and Pielke, 1992 Journal of Applied Meteorology, 31(5): 480-484*/
-extern double Calculate_soil_RH(const double &theta, const double &fieldcap);
+extern double Calculate_beta(const double &theta, const double &fieldcap);
 
 /*Calculates the leaf turnover rate associated to cold stress
  * Equations from Ivanov (2008) and Arora and Boer (2005) */

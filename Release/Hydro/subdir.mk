@@ -9,6 +9,7 @@ CPP_SRCS += \
 ../Hydro/CalcInitialStreamStorage.cpp \
 ../Hydro/CalcSoilResist.cpp \
 ../Hydro/CalcRootDistrib.cpp \
+../Hydro/CalcSoilMoistureProfile.cpp \
 ../Hydro/CalculateForestGrowth.cpp \
 ../Hydro/CalculateSatArea.cpp \
 ../Hydro/CanopyInterception.cpp \
@@ -30,6 +31,7 @@ OBJS += \
 ./Hydro/CalcSoilResist.o \
 ./Hydro/CalcRootDistrib.o \
 ./Hydro/CalculateForestGrowth.o \
+./Hydro/CalcSoilMoistureProfile.o \
 ./Hydro/CalculateSatArea.o \
 ./Hydro/CanopyInterception.o \
 ./Hydro/Exfiltration.o \
@@ -49,6 +51,7 @@ CPP_DEPS += \
 ./Hydro/CalcInitialStreamStorage.d \
 ./Hydro/CalcSoilResist.d \
 ./Hydro/CalcRootDistrib.d \
+./Hydro/CalcSoilMoistureProfile.d \
 ./Hydro/CalculateForestGrowth.d \
 ./Hydro/CalculateSatArea.d \
 ./Hydro/CanopyInterception.d \

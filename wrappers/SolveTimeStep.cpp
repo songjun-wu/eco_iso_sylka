@@ -39,9 +39,23 @@ int SolveTimeStep(){
 	oBasin->DailyGWRouting(*oAtmosphere, *oControl, *oTracking);
 	oBasin->CalculateSatArea(*oAtmosphere, *oControl);
 
-	// Increment age by one time step duration
-  	if(oControl->sw_trck && oControl->sw_Age)
-	  oTracking->IncrementAge(*oBasin, *oControl);
+  	if(oControl->sw_trck){
+	  if(oControl->sw_dD){
+	    if(oControl->Rep_dDsoilUp || oControl->RepTs_dDsoilUp)
+	      oTracking->CalcdDsoil_12(*oBasin);
+	  }
+	  if(oControl->sw_d18O){
+	    if(oControl->Rep_d18OsoilUp || oControl->RepTs_d18OsoilUp)
+	      oTracking->Calcd18Osoil_12(*oBasin);
+	  }
 
+	  if(oControl->sw_Age){
+	    // Increment age by one time step duration
+	    oTracking->IncrementAge(*oBasin, *oControl);
+	    // Reported quantities
+	    if(oControl->Rep_AgesoilUp || oControl->RepTs_AgesoilUp)
+	      oTracking->CalcAgesoil_12(*oBasin);
+	  }
+	}
 		return EXIT_SUCCESS;
 }
