@@ -3,6 +3,7 @@ Configuration (main) file keywords
 
 Path definitions
 ----------------
+
 .. csv-table:: \-
    :header: "Keyword", "Type", "Description"
    :widths: "auto"
