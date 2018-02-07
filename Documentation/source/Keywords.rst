@@ -48,7 +48,7 @@ Time controls
     Clim\_input\_tstep , Integer , Seconds , Time step of climate forcing. Typically it is the same as *Simul\_tstep} but can be larger (i.e. climate inputs are daily but we are using an hourly integration time step). *Clim\_input\_tstep} cannot be smaller than *Simul\_tstep} 
     Report\_interval , Integer , Seconds , Intervals between time series outputs. *Report\_interval} cannot be smaller than *Simul\_tstep} and typically it is equal to *Simul\_tstep}
     ReportMap\_interval , Integer , Seconds , Intervals between maps outputs. *ReportMap\_interval} cannot be smaller than *Simul\_tstep}.
-    
+
 Climate information
 -------------------
 
@@ -78,7 +78,6 @@ Files must be located in ``Maps_Folder``.
 .. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
-
     local\_drain\_direc , Map file name , \- , D8 steepest descent ldd 
     channel\_width , Map file name , :math:`m`, mask with width of channel network. Pixels with no channel must be 0 or nodata. Positive numbers indicate the width of the channel in the pixel 
     channel\_gw\_transfer\_param , Map file name ,:math:`m^{-1}`, Coefficient controlling transfers of water from the subsurface system to the channel 
@@ -145,9 +144,9 @@ Files must be located in ``Maps_Folder``.
    :widths: 35, 5, 5, 55
 
    ForestPatches ,  Map file name , integers , Map identifying forest categories (patches)
-   Number\_of\_Species , Integer , -  , Number of vegetation types included in the simulation 
-   Species\_Parameters , Parameter table , - , Table containing parameter information for each simulated vegetation type 
-   
+   Number\_of\_Species , Integer , \-  , Number of vegetation types included in the simulation 
+   Species\_Parameters , Parameter table , \- , Table containing parameter information for each simulated vegetation type 
+
 Vegetation tables
 -----------------
 
@@ -157,14 +156,14 @@ Needed only if ``Species_State_Variable_Input_Method=tables``
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
    
-   Species\_Proportion\_Table , Variable table , `m^{2} m^{-2}` , Table with initial proportion of covered area (canopy cover) for each vegetation type with respect to cell area 
+   Species\_Proportion\_Table , Variable table , :math:`m^{2} m^{-2}` , Table with initial proportion of covered area (canopy cover) for each vegetation type with respect to cell area 
    Species\_StemDensity\_Table , Variable table , :math:`trees m^{-2}` , Table with initial tree density for each vegetation type 
    Species\_LAI\_Table , Variable table , :math:`m^{2} m^{-2}` , Table with initial leaf area index for each vegetation type 
    Species\_AGE\_Table , Variable table , :math:`years` , Table with initial average age each vegetation type 
    Species\_BasalArea\_Table , Variable table , :math:`m^{2}` , Table with initial total basal area per vegetation type 
    Species\_Height\_table , Variable table , :math:`m` , Table with initial effective height per vegetation type 
    Species\_RootMass\_table , Variable table , :math:`g m^{-3}` , Table with initial root mass per volume of soil for each vegetation type 
-   
+
 Map report switches
 -------------------
 
@@ -251,7 +250,7 @@ Map mask for time series locations
    :header: "Keyword", "Type", "Description"
    :widths: "auto"
   *TS\_mask* , Map file name , Map identifying cells for which state variables will be reported. Map should be zero every=where expect for target cells. which are identified with integer IDs (`\geq 1`). A maximum of 32 cells can be reported.    
-   
+
 Time series report switches
 ---------------------------
 
