@@ -3,7 +3,7 @@ Configuration (main) file keywords
 
 Path definitions
 ----------------
-.. csv-table:: -
+.. csv-table:: \-
    :header: "Keyword", "Type", "Description"
    :widths: "auto"
 
@@ -14,7 +14,7 @@ Path definitions
 Tracking switch
 ---------------
     
-.. csv-table:: -
+.. csv-table:: \-
    :header: "Keyword", "Type", "Description"
    :widths: 35, 5, 5, 55
     
