@@ -3,10 +3,9 @@ Configuration (main) file keywords
 
 Path definitions
 ----------------
-
 .. csv-table:: \-
    :header: "Keyword", "Type", "Description"
-   :widths: "auto"
+   :widths: 35, 5, 55
 
     Maps\_Folder , System Path, Path to folder with land surface information 
     Clim\_Maps\_Folder , System Path , Path to folder with Climate information 
@@ -14,7 +13,6 @@ Path definitions
 
 Tracking switch
 ---------------
-    
 .. csv-table:: \-
    :header: "Keyword", "Type", "Description"
    :widths: 35, 5, 5, 55
@@ -24,10 +22,9 @@ Tracking switch
 
 Options
 -------
-
 .. csv-table:: \-
    :header: "Keyword", "Type", "Description"
-   :widths: "auto"
+   :widths: 35, 5, 55
     
     MapTypes, option, Format of maps. In this version the format is *csf* (PCRaster)
     Species\_State\_Variable\_Input\_Method, option, Specifies the input format of the vegetation state variables. Options are *table} or *maps}
@@ -38,21 +35,19 @@ Options
 
 Time controls
 -------------
-
 .. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
    Simul\_start, Integer, Seconds, Time of simulation start. In the current version this value must be 0 
     Simul\_end, Integer, Seconds, Time when simulation ends in seconds. This value indicates the total simulated time 
     Simul\_tstep , Integer , Seconds , Size of the integration time step 
-    Clim\_input\_tstep , Integer , Seconds , Time step of climate forcing. Typically it is the same as *Simul\_tstep} but can be larger (i.e. climate inputs are daily but we are using an hourly integration time step). *Clim\_input\_tstep} cannot be smaller than *Simul\_tstep} 
-    Report\_interval , Integer , Seconds , Intervals between time series outputs. *Report\_interval} cannot be smaller than *Simul\_tstep} and typically it is equal to *Simul\_tstep}
-    ReportMap\_interval , Integer , Seconds , Intervals between maps outputs. *ReportMap\_interval} cannot be smaller than *Simul\_tstep}.
+    Clim\_input\_tstep , Integer , Seconds , Time step of climate forcing. Typically it is the same as *Simul\_tstep but can be larger (i.e. climate inputs are daily but we are using an hourly integration time step). *Clim\_input\_tstep* cannot be smaller than *Simul\_tstep*
+    Report\_interval , Integer , Seconds , Intervals between time series outputs. *Report\_interval* cannot be smaller than *Simul\_tstep* and typically it is equal to *Simul\_tstep*
+    ReportMap\_interval , Integer , Seconds , Intervals between maps outputs. *ReportMap\_interval* cannot be smaller than *Simul\_tstep*
 
 Climate information
 -------------------
-
-Maps and binary files must be placed in ``Clim\_Maps\_Folder``.
+Maps and binary files must be placed in ``Clim_Maps_Folder``.
 
 .. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
@@ -70,6 +65,7 @@ Maps and binary files must be placed in ``Clim\_Maps\_Folder``.
     IncomingLongWave, Binary climate file , :math:`Wm^{-2}`, Incoming long wave radiation
     IncomingShortWave, Binary climate file , :math:`Wm^{-2}`, Incoming solar radiation
 
+
 Drainage network
 ----------------
 
@@ -83,10 +79,11 @@ Files must be located in ``Maps_Folder``.
     channel\_gw\_transfer\_param , Map file name ,:math:`m^{-1}`, Coefficient controlling transfers of water from the subsurface system to the channel 
     mannings\_n , Map file name ,:math:`sm^{-1/3}`, Manning's n roughness coefficient for channel 
 
+
 Initial conditions for soil states
 ----------------------------------
 
-Files must be located in ```Maps\_Folder``.
+Files must be located in ```Maps_Folder``.
 
 .. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
@@ -98,6 +95,7 @@ Files must be located in ```Maps\_Folder``.
    Soil\_moisture\_2 , Map file name , :math:`m^3 m^{-3}`, Volumetric soil water content for layer 3
    Soil\_moisture\_3 , Map file name , :math:`m^3 m^{-3}`, Volumetric soil water content of bottommost layer
    Soil\_temperature , Map file name , :math:`^{\circ}C`, Soil temperature at boundary of thermal layer 
+
 
 Soil parameters
 ---------------
@@ -122,8 +120,6 @@ Files must be located in ``Maps_Folder``.
    Depth\_soil\_layer\_2 , Map file name , :math:`m`, Depth of second soil layer 
    Veget\_water\_use\_param1 , Map file name , :math:`m`, Vegetation water use parameter as per Landsberg and Waring (1997) 
    Veget\_water\_use\_param2 , Map file name , :math:`m`, Vegetation water use parameter as per Landsberg and Waring (1997) 
-..   Fraction\_roots\_soil\_layer\_1 , Map file name , - , Fraction of roots in topmost soil layer. Sum of fraction of roots in soil layer 1 and 2 must be less than 1 
-..   Fraction\_roots\_soil\_layer\_2 , Map file name , - , Fraction of roots in second soil layer. Sum of fraction of roots in soil layer 1 and 2 must be less than 1
    Root\_profile\_coeff , Map file name , :math:`m^{-1}` , Coefficient for the exponentiall-decreasing root profile. 
    Albedo , Map file name , - , Surface albedo 
    Surface\_emissivity , Map file name , - , Surface emissivity/absorptivity 
@@ -133,7 +129,8 @@ Files must be located in ``Maps_Folder``.
    Temp\_at\_damp\_depth , Map file name , :math:`^{\circ}C`, Soil temperature at damping depth 
    Snow\_Melt\_Coeff , Map file name , :math:`m^{\circ}C^{-1}`, Snowmelt coefficient factor 
    Soil\_bedrock\_leakance , Map file name , - , Factor between 0 and 1 defining the vertical hydraulic conductivity at the soil-bedrock interface (in proportion of soil Kv) 
-   
+  
+
 Forest parameters
 -----------------
 
@@ -146,6 +143,7 @@ Files must be located in ``Maps_Folder``.
    ForestPatches ,  Map file name , integers , Map identifying forest categories (patches)
    Number\_of\_Species , Integer , \-  , Number of vegetation types included in the simulation 
    Species\_Parameters , Parameter table , \- , Table containing parameter information for each simulated vegetation type 
+
 
 Vegetation tables
 -----------------
@@ -164,6 +162,7 @@ Needed only if ``Species_State_Variable_Input_Method=tables``
    Species\_Height\_table , Variable table , :math:`m` , Table with initial effective height per vegetation type 
    Species\_RootMass\_table , Variable table , :math:`g m^{-3}` , Table with initial root mass per volume of soil for each vegetation type 
 
+
 Map report switches
 -------------------
 
@@ -171,7 +170,7 @@ Written outputs files are csf maps.
 
 .. csv-table:: \-
    :header: "Keyword", "Units", "Description", "File root"
-   :widths: "auto"
+   :widths: 35, 5, 55, 35
    
    Report\_Long\_Rad\_Down, :math:`W m^{-2}`, Downwelling long wave (infrared) radiation at the top of the canopy (climate input), LDown
    Report\_Short\_Rad\_Down , :math:`W m^{-2}`, Incoming shortwave (visible) radiation at the top of canopy (climate input), Sdown 
@@ -187,13 +186,13 @@ Written outputs files are csf maps.
    Report\_Soil\_Water\_Content\_Average , :math:`m^{3}m^{-3}`, Average volumetric water content for entire soil profile, SWCav
    Report\_Soil\_Water\_Content\_Up  , :math:`m^{3}m^{-3}`, Average volumetric water content for the two upper soil layers, SWCup
    Report\_Soil\_Water\_Content\_L1  , :math:`m^{3}m^{-3}`, Volumetric water content for topmost soil layer, SWC1
-   Report\_Soil\_Water\_Content\_L2  , :math:`m^{3}m^{-3}`, SWC2, 1: Volumetric water content for second soil layer, SWC2
-   Report\_Soil\_Water\_Content\_L3  , :math:`m^{3}m^{-3}`, SWC3, 1: Volumetric water content for bottommost soil layer, SWC3
+   Report\_Soil\_Water\_Content\_L2  , :math:`m^{3}m^{-3}`, Volumetric water content for second soil layer, SWC2
+   Report\_Soil\_Water\_Content\_L3  , :math:`m^{3}m^{-3}`, Volumetric water content for bottommost soil layer, SWC3
    Report\_WaterTableDepth  , :math:`m` Depth the equivalent water table using the average soil moisture, WTD
-   Report\_Soil\_Sat\_Deficit  , :math:`m`, Meters of water needed to saturate soil. SatDef
+   Report\_Soil\_Sat\_Deficit  , :math:`m`, Meters of water needed to saturate soil, SatDef
    Report\_Ground\_Water  , :math:`m`, Meters of water above field capacity in the third hydrologic layer, GW
    Report\_Soil\_Net\_Rad  , :math:`Wm^{-2}`, Soil net radiation integrated over the grid cell, NRs 
-   Report\_Soil\_LE  , :math:`Wm^{-2}`, Latent heat for surface layer. LEs
+   Report\_Soil\_LE  , :math:`Wm^{-2}`, Latent heat for surface layer, LEs
    Report\_Sens\_Heat  , :math:`Wm^{-2}`, Sensible heat for surface layer, SensH
    Report\_Grnd\_Heat  , :math:`Wm^{-2}`, Ground heat, GrndH  
    Report\_Snow\_Heat , :math:`Wm^{-2}`, Turbulent heat exchange with snowpack, SnowH 
@@ -209,8 +208,8 @@ Written outputs files are csf maps.
    Report\_Leaf\_Area\_Index   , :math:`m^{2} m^{-2}`, Leaf area index of vegetation type *n*, lai\_*n* 
    Report\_Stand\_Age   , :math:`years`, Age of stand of vegetation type *n*, age\_*n* 
    Report\_Canopy\_Conductance  , :math:`m s^{-1}`, Canopy conductance for vegetation type *n*, gc\_*n* 
-   Report\_GPP  , :math:`gC m^{-2}`, Gross primary production for vegetation type *n* during the time step. gpp\_*n* 
-   Report\_NPP  , :math:`gC^{-1} m^{-2}`, Net primary production for vegetation type *n* during the time step. npp\_*n* 
+   Report\_GPP  , :math:`gC m^{-2}`, Gross primary production for vegetation type *n* during the time step, gpp\_*n* 
+   Report\_NPP  , :math:`gC^{-1} m^{-2}`, Net primary production for vegetation type *n* during the time step, npp\_*n* 
    Report\_Basal\_Area  , :math:`m^{2}`, Total basal area of vegetation type *n*, bas\_*n* 
    Report\_Tree\_Height  , :math:`m`, Height of stand of vegetation type *n*, hgt\_*n* 
    Report\_Root\_Mass  , :math:`g m^{-3}`, Root mass per volume of soil vegetation type *n*, root\_*n* 
@@ -243,22 +242,23 @@ Written outputs files are csf maps.
    Report\_Overland\_Outflow\_acc  , :math:`m`, Cumulated surface run-off (excluding channel outflow), LSrfoA
    Report\_Groundwater\_Outflow\_acc  , :math:`m`, Cumulated lateral groundwater outflow, LGWo
 
+
 Map mask for time series locations
 ----------------------------------
-
 .. csv-table:: \-
    :header: "Keyword", "Type", "Description"
-   :widths: "auto"
+   :widths: 35, 5, 55
+
   *TS\_mask* , Map file name , Map identifying cells for which state variables will be reported. Map should be zero every=where expect for target cells. which are identified with integer IDs (`\geq 1`). A maximum of 32 cells can be reported.    
+
 
 Time series report switches
 ---------------------------
-
 Written outputs file are time series tables, at cells identified in *TS\_mask*.
 
-.. csv-table:: \-
+..csv-table:: \-
    :header: "Keyword", "Units", "Description", "File name"
-   :widths: "auto
+   :widths: 35, 5, 55, 5
    
    Ts\_OutletDischarge , :math:`m^{3} s^{-1}`, Time series discharge at cells with *ldd* value = 5 (outlets and sinks), OutletDisch.tab 
    Ts\_Long\_Rad\_Down ,  :math:`W m^{-2}`, Time series of incoming long wave radiation to the surface layer, Ldown.tab 
