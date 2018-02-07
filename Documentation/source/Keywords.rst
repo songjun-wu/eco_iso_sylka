@@ -1,9 +1,9 @@
 Configuration (main) file keywords
 ==================================
 
-**PATH DEFINITION SECTION**
-
-.. csv-table:: 
+Path definitions
+----------------
+.. csv-table:: -
    :header: "Keyword", "Type", "Description"
    :widths: "auto"
 
@@ -11,16 +11,20 @@ Configuration (main) file keywords
     Clim\_Maps\_Folder , System Path , Path to folder with Climate information 
     Output\_Folder , System Path, Path to folder where outputs will be written 
 
-**TRACKING SECTION**
+Tracking switch
+---------------
     
-.. csv-table::
+.. csv-table:: -
    :header: "Keyword", "Type", "Description"
    :widths: 35, 5, 5, 55
     
     Tracking , option, Switch 1/0 to turn water tracking (isotopes and/or ages) on (1) or off (0)
     TrackingConfig , System Path, Location and name of the tracking configuration file.
 
-.. csv-table:: **OPTIONS**
+Options
+-------
+
+.. csv-table:: \-
    :header: "Keyword", "Type", "Description"
    :widths: "auto"
     
@@ -31,24 +35,31 @@ Configuration (main) file keywords
     Aerodyn\_resist\_opt , option, Switches between different aerodynamic resistance formulations. 0: Penman; 1: Thom and Oliver (1977) 
     Soil\_resistance\_opt , option, Switches between different soil resistance formulations. \n0: No resistance; \n1: Passerat de Silans et al (1989); \n2: Sellers et al., JGR (1992); \n3: Sakaguchi and Zeng, JGR (2009)
 
-.. csv-table:: **TIME CONTROLS**
+Time controls
+-------------
+
+.. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
-
-    Simul\_start, Integer, Seconds, Time of simulation start. In the current version this value must be 0 
+   Simul\_start, Integer, Seconds, Time of simulation start. In the current version this value must be 0 
     Simul\_end, Integer, Seconds, Time when simulation ends in seconds. This value indicates the total simulated time 
     Simul\_tstep , Integer , Seconds , Size of the integration time step 
     Clim\_input\_tstep , Integer , Seconds , Time step of climate forcing. Typically it is the same as *Simul\_tstep} but can be larger (i.e. climate inputs are daily but we are using an hourly integration time step). *Clim\_input\_tstep} cannot be smaller than *Simul\_tstep} 
     Report\_interval , Integer , Seconds , Intervals between time series outputs. *Report\_interval} cannot be smaller than *Simul\_tstep} and typically it is equal to *Simul\_tstep}
     ReportMap\_interval , Integer , Seconds , Intervals between maps outputs. *ReportMap\_interval} cannot be smaller than *Simul\_tstep}.
     
-.. csv-table:: **Climate information** (maps and binary files must be placed in` `Clim\_Maps\_Folder``)
+Climate information
+-------------------
+
+Maps and binary files must be placed in ``Clim\_Maps\_Folder``.
+
+.. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
     
     Snow\_rain\_temp\_threshold , scalar , :math:`^{\circ}C`, Air temperature threshold for snow/rain transition
     ClimateZones ,  Map file name , integers , Map identifying the climate zones
-    Isohyet\_map ,  Map file name , - , This map allows to redistribute rainfall within a climate zone. It is a map with multiplication factors for rain in a given pixel. A map containing 1 over the domain has the effect of overriding this  input (does not modify the precipitation input)
+    Isohyet\_map ,  Map file name , \- , This map allows to redistribute rainfall within a climate zone. It is a map with multiplication factors for rain in a given pixel. A map containing 1 over the domain has the effect of overriding this  input (does not modify the precipitation input)
     Precipitation , Binary climate file , :math:`ms^{-1}`, Precipitation input 
     AirTemperature , Binary climate file , :math:`^{\circ}C`, Average air temperature
     MaxAirTemp , Binary climate file , :math:`^{\circ}C`, Maximum air temperature
@@ -58,27 +69,42 @@ Configuration (main) file keywords
     IncomingLongWave, Binary climate file , :math:`Wm^{-2}`, Incoming long wave radiation
     IncomingShortWave, Binary climate file , :math:`Wm^{-2}`, Incoming solar radiation
 
-.. csv-table:: **Drainage network** (Files must be located in ``Maps_Folder``)
+Drainage network
+----------------
+
+Files must be located in ``Maps_Folder``.
+
+.. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
 
-    local\_drain\_direc , Map file name , - , D8 steepest descent ldd 
+    local\_drain\_direc , Map file name , \- , D8 steepest descent ldd 
     channel\_width , Map file name , :math:`m`, mask with width of channel network. Pixels with no channel must be 0 or nodata. Positive numbers indicate the width of the channel in the pixel 
-    channel\_gw\_transfer\_param , Map file name ,` m^{-1}`, Coefficient controlling transfers of water from the subsurface system to the channel 
-    mannings\_n , Map file name ,` sm^{-1/3}`, Manning's n roughness coefficient for channel 
+    channel\_gw\_transfer\_param , Map file name ,:math:`m^{-1}`, Coefficient controlling transfers of water from the subsurface system to the channel 
+    mannings\_n , Map file name ,:math:`sm^{-1/3}`, Manning's n roughness coefficient for channel 
 
-.. csv-table:: **Initial conditions for soil states**  (Files must be located in ```Maps\_Folder``) 
+Initial conditions for soil states
+----------------------------------
+
+Files must be located in ```Maps\_Folder``.
+
+.. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
       
-   Streamflow , Map file name , :math:`m^3s^{-1}`, Streamflow
+   Streamflow , Map file name , :math:`m^3 s^{-1}`, Streamflow
    snow\_water\_equivalent , Map file name , :math:`m`, Snow water equivalent
-   Soil\_moisture\_1 , Map file name , :math:`m^3m^{-3}`, Volumetric soil water content for topmost soil layer
-   Soil\_moisture\_2 , Map file name , :math:`m^3m^{-3}`, Volumetric soil water content for layer 3
-   Soil\_moisture\_3 , Map file name , :math:`m^3m^{-3}`, Volumetric soil water content of bottommost layer
+   Soil\_moisture\_1 , Map file name , :math:`m^3 m^{-3}`, Volumetric soil water content for topmost soil layer
+   Soil\_moisture\_2 , Map file name , :math:`m^3 m^{-3}`, Volumetric soil water content for layer 3
+   Soil\_moisture\_3 , Map file name , :math:`m^3 m^{-3}`, Volumetric soil water content of bottommost layer
    Soil\_temperature , Map file name , :math:`^{\circ}C`, Soil temperature at boundary of thermal layer 
 
-.. csv-table:: **Soil parameters** (Files must be located in ``Maps_Folder``)
+Soil parameters
+---------------
+
+Files must be located in ``Maps_Folder``.
+
+.. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
 
@@ -108,7 +134,12 @@ Configuration (main) file keywords
    Snow\_Melt\_Coeff , Map file name , :math:`m^{\circ}C^{-1}`, Snowmelt coefficient factor 
    Soil\_bedrock\_leakance , Map file name , - , Factor between 0 and 1 defining the vertical hydraulic conductivity at the soil-bedrock interface (in proportion of soil Kv) 
    
-.. csv-table:: **Forest parameters** (Files must be located in ``Maps_Folder``) 
+Forest parameters
+-----------------
+
+Files must be located in ``Maps_Folder``.
+
+.. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
 
@@ -116,7 +147,12 @@ Configuration (main) file keywords
    Number\_of\_Species , Integer , -  , Number of vegetation types included in the simulation 
    Species\_Parameters , Parameter table , - , Table containing parameter information for each simulated vegetation type 
    
-.. csv-table:: **Vegetation tables** (*needed only if* ``Species_State_Variable_Input_Method=tables``)
+Vegetation tables
+-----------------
+
+Needed only if ``Species_State_Variable_Input_Method=tables``
+
+.. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
    
@@ -128,11 +164,12 @@ Configuration (main) file keywords
    Species\_Height\_table , Variable table , :math:`m` , Table with initial effective height per vegetation type 
    Species\_RootMass\_table , Variable table , :math:`g m^{-3}` , Table with initial root mass per volume of soil for each vegetation type 
    
-**Map report switches**
+Map report switches
+-------------------
 
 Written outputs files are csf maps.
 
-.. csv-table::
+.. csv-table:: \-
    :header: "Keyword", "Units", "Description", "File root"
    :widths: "auto"
    
@@ -206,18 +243,20 @@ Written outputs files are csf maps.
    Report\_Overland\_Outflow\_acc  , :math:`m`, Cumulated surface run-off (excluding channel outflow), LSrfoA
    Report\_Groundwater\_Outflow\_acc  , :math:`m`, Cumulated lateral groundwater outflow, LGWo
 
-**Map mask for time series locations**
+Map mask for time series locations
+----------------------------------
 
-.. csv-table::
+.. csv-table:: \-
    :header: "Keyword", "Type", "Description"
    :widths: "auto"
   *TS\_mask* , Map file name , Map identifying cells for which state variables will be reported. Map should be zero every=where expect for target cells. which are identified with integer IDs (`\geq 1`). A maximum of 32 cells can be reported.    
    
-**Time series report switches**
+Time series report switches
+---------------------------
 
-Written outputs file are time series tables, at cells identified in *TS\_mask.
+Written outputs file are time series tables, at cells identified in *TS\_mask*.
 
-.. csv-table:: 
+.. csv-table:: \-
    :header: "Keyword", "Units", "Description", "File name"
    :widths: "auto
    
