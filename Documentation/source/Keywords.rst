@@ -15,7 +15,7 @@ Tracking switch
 ---------------
 .. csv-table:: \-
    :header: "Keyword", "Type", "Description"
-   :widths: 35, 5, 5, 55
+   :widths: 35, 5, 55
     
     Tracking , option, Switch 1/0 to turn water tracking (isotopes and/or ages) on (1) or off (0)
     TrackingConfig , System Path, Location and name of the tracking configuration file.
@@ -27,7 +27,7 @@ Options
    :widths: 35, 5, 55
     
     MapTypes, option, Format of maps. In this version the format is *csf* (PCRaster)
-    Species\_State\_Variable\_Input\_Method, option, Specifies the input format of the vegetation state variables. Options are *table} or *maps}
+    Species\_State\_Variable\_Input\_Method, option, Specifies the input format of the vegetation state variables. Options are *table* or *maps*
     Vegetation\_dynamics , option, Switch 1/0 to turn vegetation allocation and growth component on (1) or off (0)
     Reinfiltration , option, Switch 1/0 to turn reinfiltration on (1) or off (0)
     Aerodyn\_resist\_opt , option, Switches between different aerodynamic resistance formulations. 0: Penman; 1: Thom and Oliver (1977) 
@@ -38,10 +38,11 @@ Time controls
 .. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
+
    Simul\_start, Integer, Seconds, Time of simulation start. In the current version this value must be 0 
     Simul\_end, Integer, Seconds, Time when simulation ends in seconds. This value indicates the total simulated time 
     Simul\_tstep , Integer , Seconds , Size of the integration time step 
-    Clim\_input\_tstep , Integer , Seconds , Time step of climate forcing. Typically it is the same as *Simul\_tstep but can be larger (i.e. climate inputs are daily but we are using an hourly integration time step). *Clim\_input\_tstep* cannot be smaller than *Simul\_tstep*
+    Clim\_input\_tstep , Integer , Seconds , Time step of climate forcing. Typically it is the same as *Simul\_tstep* but can be larger (i.e. climate inputs are daily but we are using an hourly integration time step). *Clim\_input\_tstep* cannot be smaller than *Simul\_tstep*
     Report\_interval , Integer , Seconds , Intervals between time series outputs. *Report\_interval* cannot be smaller than *Simul\_tstep* and typically it is equal to *Simul\_tstep*
     ReportMap\_interval , Integer , Seconds , Intervals between maps outputs. *ReportMap\_interval* cannot be smaller than *Simul\_tstep*
 
@@ -60,7 +61,7 @@ Maps and binary files must be placed in ``Clim_Maps_Folder``.
     AirTemperature , Binary climate file , :math:`^{\circ}C`, Average air temperature
     MaxAirTemp , Binary climate file , :math:`^{\circ}C`, Maximum air temperature
     MinAirTemp, Binary climate file , :math:`^{\circ}C`, Maximum air temperature
-    RelativeHumidity, Binary climate file , :math:`kPakPa^{-1}`, Average air temperature
+    RelativeHumidity, Binary climate file , :math:`kPa kPa^{-1}`, Relative humidity of the Air
     WindSpeed, Binary climate file , :math:`ms^{-1}`, Wind speed
     IncomingLongWave, Binary climate file , :math:`Wm^{-2}`, Incoming long wave radiation
     IncomingShortWave, Binary climate file , :math:`Wm^{-2}`, Incoming solar radiation
@@ -74,6 +75,7 @@ Files must be located in ``Maps_Folder``.
 .. csv-table:: \-
    :header: "Keyword", "Type", "Units", "Description"
    :widths: 35, 5, 5, 55
+
     local\_drain\_direc , Map file name , \- , D8 steepest descent ldd 
     channel\_width , Map file name , :math:`m`, mask with width of channel network. Pixels with no channel must be 0 or nodata. Positive numbers indicate the width of the channel in the pixel 
     channel\_gw\_transfer\_param , Map file name ,:math:`m^{-1}`, Coefficient controlling transfers of water from the subsurface system to the channel 
@@ -111,9 +113,9 @@ Files must be located in ``Maps_Folder``.
    Horiz\_Hydraulic\_Conductivity , Map file name , :math:`ms^{-1}`, Effective soil hydraulic conductivity
    Vert\_Horz\_Anis\_ratio , Map file name , :math:`[-]`, Ratio of vertical to horizontal hydraulic conductivity
    Terrain\_Random\_Roughness , Map file name , :math:`m`, Local surface roughness 
-   Porosity , Map file name , - , Soil porosity 
+   Porosity , Map file name , :math:`-` , Soil porosity 
    Air\_entry\_pressure , Map file name , :math:`m`, Soil air entry pressure 
-   Brooks\_Corey\_lambda , Map file name , - , Pore size distribution 
+   Brooks\_Corey\_lambda , Map file name , :math:`-` , Pore size distribution 
    Residual\_soil\_moisture , Map file name , :math:`m^{3}m^{-3}`, Minimum allowed volumetric soil water content 
    Soil\_depth , Map file name , :math:`m`, Soil depth 
    Depth\_soil\_layer\_1 , Map file name , :math:`m`, Depth of topmost soil layer 
@@ -121,8 +123,8 @@ Files must be located in ``Maps_Folder``.
    Veget\_water\_use\_param1 , Map file name , :math:`m`, Vegetation water use parameter as per Landsberg and Waring (1997) 
    Veget\_water\_use\_param2 , Map file name , :math:`m`, Vegetation water use parameter as per Landsberg and Waring (1997) 
    Root\_profile\_coeff , Map file name , :math:`m^{-1}` , Coefficient for the exponentiall-decreasing root profile. 
-   Albedo , Map file name , - , Surface albedo 
-   Surface\_emissivity , Map file name , - , Surface emissivity/absorptivity 
+   Albedo , Map file name , :math:`-` , Surface albedo 
+   Surface\_emissivity , Map file name , :math:`-` , Surface emissivity/absorptivity 
    Dry\_Soil\_Heat\_Capacity , Map file name , :math:`Jm^{-3}K^{-1}`, Heat capacity of soil solid particles 
    Dry\_Soil\_Therm\_Cond , Map file name , :math:`Wm^{-1}K^{-1}`, Thermal conductivity of soil solid particles 
    Damping\_depth , Map file name , :math:`m`, Depth of bottom of second soil thermal layer 
@@ -155,7 +157,7 @@ Needed only if ``Species_State_Variable_Input_Method=tables``
    :widths: 35, 5, 5, 55
    
    Species\_Proportion\_Table , Variable table , :math:`m^{2} m^{-2}` , Table with initial proportion of covered area (canopy cover) for each vegetation type with respect to cell area 
-   Species\_StemDensity\_Table , Variable table , :math:`trees m^{-2}` , Table with initial tree density for each vegetation type 
+   Species\_StemDensity\_Table , Variable table , :math:`trees.m^{-2}` , Table with initial tree density for each vegetation type 
    Species\_LAI\_Table , Variable table , :math:`m^{2} m^{-2}` , Table with initial leaf area index for each vegetation type 
    Species\_AGE\_Table , Variable table , :math:`years` , Table with initial average age each vegetation type 
    Species\_BasalArea\_Table , Variable table , :math:`m^{2}` , Table with initial total basal area per vegetation type 
@@ -249,14 +251,14 @@ Map mask for time series locations
    :header: "Keyword", "Type", "Description"
    :widths: 35, 5, 55
 
-  *TS\_mask* , Map file name , Map identifying cells for which state variables will be reported. Map should be zero every=where expect for target cells. which are identified with integer IDs (`\geq 1`). A maximum of 32 cells can be reported.    
+  *TS\_mask* , Map file name , Map identifying cells for which state variables will be reported. Map should be zero every=where expect for target cells\, which are identified with integer IDs (=1). A maximum of 32 cells can be reported.    
 
 
 Time series report switches
 ---------------------------
 Written outputs file are time series tables, at cells identified in *TS\_mask*.
 
-..csv-table:: \-
+.. csv-table:: \-
    :header: "Keyword", "Units", "Description", "File name"
    :widths: 35, 5, 55, 5
    
