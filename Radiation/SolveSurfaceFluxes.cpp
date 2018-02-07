@@ -166,7 +166,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	
 	// Calculates the soil moisture profile to derive equivalent water table depth
 	if(ctrl.Rep_WaterTableDepth == 1 || ctrl.RepTs_WaterTableDepth == 1)
-	  CalcSoilMoistureProfile(atm, ctrl, theta, r,c);
+	  CalcSoilMoistureProfile(atm, ctrl, getSoilMoist_av()->matrix[r][c], r,c);
 
 	// Tracking
 	if(ctrl.sw_trck)

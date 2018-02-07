@@ -80,7 +80,7 @@ int Report2Maps(){
 	if (oControl->Rep_Net_Rad_sum)
 		WriteMapSeries(oBasin->getNetRad_sum(), "NRtot", oControl->current_ts_count);
 	if (oControl->Rep_Soil_LE)
-		WriteMapSeries(oBasin->getLatheat(), "LE", oControl->current_ts_count);
+		WriteMapSeries(oBasin->getLatheat(), "LEs", oControl->current_ts_count);
 	if (oControl->Rep_Sens_Heat)
 		WriteMapSeries(oBasin->getSensHeat(), "SensH", oControl->current_ts_count);
 	if (oControl->Rep_Grnd_Heat)

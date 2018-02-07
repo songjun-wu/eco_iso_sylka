@@ -65,9 +65,10 @@ try{
 
 
 
-	ofOut << "#ECH2O configuration file v2" << std::endl << std::endl;
-	ofOut << "# Please, check Appendix A of Documentation  " << std::endl;
-	ofOut << "# for units of parameters and variables  " << std::endl << std::endl;
+	ofOut << "#ECH2O configuration file v1.7" << std::endl << std::endl;
+	ofOut << "# Please, check Appendix A of Documentation" << std::endl;
+	ofOut << "# for units of parameters and variables  " << std::endl;
+	ofOut << "# (http://ech2o-iso.readthedocs.io/en/latest/Keywords.html)" << std::endl << std::endl;
 
     ofOut << "#" << endl << "#Folder section" << endl << "#" << endl << endl;
 
@@ -78,11 +79,11 @@ try{
     ofOut << "#" << endl << "#Water tracking (isotopes and/or ages)" << endl;
     ofOut << "Tracking = 1" << endl ;
     ofOut << "TrackingConfig = ./configTrck.ini" << endl << endl; 
+
+    ofOut << "#" << endl << "# Options section" << endl << "#" << endl << endl;
     
     ofOut << "MapTypes = csf" << endl;
     ofOut << "Species_State_Variable_Input_Method = tables # maps or tables" << endl << endl;
-
-    ofOut << "#" << endl << "# Options section" << endl << "#" << endl << endl;
 
     ofOut << "# Boolean switches" << endl;
     ofOut << "Vegetation_dynamics = 1" << endl;
@@ -96,10 +97,10 @@ try{
     ofOut << "Aerodyn_resist_opt = 0 " << endl << endl;
 
     ofOut << "# Soil resistance to vapor diffusion choices: " << endl;
-    ofOut << "# 0 = No resistance: " << endl;
-    ofOut << "# 1 = Passerat de Silans et al 1989 " << endl;
-    ofOut << "# 2 = Thom and Oliver 1977 " << endl;
-    ofOut << "# 3 = Sakaguchi and Zeng 2009 " << endl;
+    ofOut << "# 0 = No resistance" << endl;
+    ofOut << "# 1 = Passerat de Silans et al. 1989" << endl;
+    ofOut << "# 2 = Sellers et al. 1992" << endl;
+    ofOut << "# 3 = Sakaguchi and Zeng 2009 (CLM 3.5)" << endl;
     ofOut << "Soil_resistance_opt = 3 " << endl << endl;
 
     ofOut << "#" << endl << "# Time variables section" << endl << "#" << endl;
@@ -110,15 +111,11 @@ try{
     ofOut << "Report_interval = 86400 # seconds (daily)" << endl ;
     ofOut << "ReportMap_interval = 604800 # seconds (weekly)" << endl << endl;
 
-    ofOut << "#" << endl << "# Base map section" << endl << "#" << endl;
-    ofOut << "DEM = DEM.map" << endl;
-    ofOut << "ClimateZones = ClimZones.map" << endl;
-    ofOut << "ForestPatches = patches.map" << endl << endl;
-
     ofOut << "#" << endl;
     ofOut << "# Climate input information" << endl;
     ofOut << "# Maps in this section to be contained in folder pointed by Clim_Maps_Folder" << endl;
     ofOut << "#" << endl;
+    ofOut << "ClimateZones = ClimZones.map" << endl;
     ofOut << "Snow_rain_temp_threshold = 2 " << " # Snow to rain temperatures threshold in degC" << endl;
     ofOut << "Isohyet_map = isohyet.map " << " # Precipitation multiplier map"<< endl;
     ofOut << "Precipitation = Precip.bin " << " # Precip rate in meters/second"<< endl;
@@ -132,16 +129,8 @@ try{
 
     ofOut << "#" << endl;
     ofOut << "# Spatial input information" << endl;
-    ofOut << "# Maps below this lineto be contained in folder pointed by Maps_Folder" << endl;
+    ofOut << "# Maps below this line to be contained in folder pointed by Maps_Folder" << endl;
     ofOut << "#" << endl;
-
-    ofOut << "Albedo = albedo.map" << endl;
-    ofOut << "Surface_emissivity = emissivity.map" << endl;
-    ofOut << "Dry_Soil_Heat_Capacity = soilheatcap.map" << endl;
-    ofOut << "Dry_Soil_Therm_Cond = soilthermalK.map" << endl;
-    ofOut << "Damping_depth = dampdepth.map" << endl;
-    ofOut << "Temp_at_damp_depth = temp_damp.map" << endl;
-    ofOut << "Snow_Melt_Coeff = snowmeltCoeff.map" << endl << endl;
 
     ofOut << "#" << endl << "# Drainage network" << endl << "#" << endl;
     ofOut << "local_drain_direc = ldd.map" << endl;
@@ -163,6 +152,7 @@ try{
     ofOut << "#   " << endl;
     ofOut << "#Soil parameters  " << endl;
     ofOut << "#   " << endl;
+    ofOut << "DEM = DEM.map" << endl;
     ofOut << "Slope = slope.map " << endl;
     ofOut << "Horiz_Hydraulic_Conductivity = Keff.map " << endl;
     ofOut << "Vert_Horz_Anis_ratio = KvKh.map " << endl;
@@ -180,10 +170,18 @@ try{
     //ofOut << "Fraction_roots_soil_layer_2 = rootfrac2.map " << endl;
     ofOut << "Root_profile_coeff = Kroot.map " << endl;
     ofOut << "Soil_bedrock_leakance = leakance.map " << endl << endl;
+    ofOut << "Albedo = albedo.map" << endl;
+    ofOut << "Surface_emissivity = emissivity.map" << endl;
+    ofOut << "Dry_Soil_Heat_Capacity = soilheatcap.map" << endl;
+    ofOut << "Dry_Soil_Therm_Cond = soilthermalK.map" << endl;
+    ofOut << "Damping_depth = dampdepth.map" << endl;
+    ofOut << "Temp_at_damp_depth = temp_damp.map" << endl;
+    ofOut << "Snow_Melt_Coeff = snowmeltCoeff.map" << endl << endl;
 
     ofOut << "#   " << endl;
     ofOut << "#Forest Parameters and initial states " << endl;
     ofOut << "#   " << endl;
+    ofOut << "ForestPatches = patches.map" << endl;
     ofOut << "Number_of_Species = 1 " << endl;
     ofOut << "Species_Parameters = SpeciesParams.tab " << endl << endl;
     ofOut << "#Tables below are only needed if Species_State_Variable_Input_Method = tables " << endl;
@@ -278,11 +276,8 @@ try{
     ofOut << "#   " << endl;
     ofOut << "#Report time series section " << endl;
     ofOut << "#   " << endl << endl;
-
+    ofOut << "TS_mask = Tsmask.map " << endl <<"#" << endl;
     ofOut << "Ts_OutletDischarge = 1 " << endl;
-
-    ofOut << "TS_mask = Tsmask.map " << endl;
-
     ofOut << "Ts_Long_Rad_Down = 0 " << endl;
     ofOut << "Ts_Short_Rad_Down = 0 " << endl;
     ofOut << "Ts_Precip = 0 " << endl;

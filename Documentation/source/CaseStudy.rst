@@ -57,7 +57,7 @@ At this point we should have generated all the needed files.
 
 The report map section is a series of boolean switches (0-1) that turn
 on or off the reporting (writing to the results folder) of maps with the
-state variables. Turn on (=1) the variables that you like reported. Mind
+state variables. Turn on (*= 1*) the variables that you like reported. Mind
 that writing maps to the disk is an expensive processes in terms of
 computer time and space.
 
@@ -86,9 +86,7 @@ Move to the example folder provided with the package, open the file
 named with a text editor and check the metadata header with information
 on the geometry of the raster image.
 
-Within the PCRaster environment, type
-
-::
+Within the PCRaster environment, type::
 
     mapattr base.map
 
@@ -107,17 +105,13 @@ multiplying the number of rows by the resolution.
 
 Once this information is provided, press ’q’ and answer ’y’ to write the
 newly created map to the drive. Display the map to check it has the
-correct dimensions:
-
-::
+correct dimensions::
 
     aguila base.map
 
 This base map will be used to import all other maps and to ensure all
 the maps in the database have the exact same geometry. To import the
-ArcInfo DEM map into the CSF PCRaster format type
-
-::
+ArcInfo DEM map into the CSF PCRaster format, type::
 
     asc2map -a --clone base.map dem.asc DEM.map
 
@@ -126,15 +120,11 @@ the PCRaster format with name , 2) that the imported file has Arcinfo
 ascii grid format, and 3) that we are cloning the geometry of our
 base.map.
 
-Display the map to check it has been correctly imported
-
-::
+Display the map to check it has been correctly imported::
 
     aguila DEM.map
 
-To display it in 3D you can type
-
-::
+To display it in 3D you can type::
 
     aguila -3 DEM.map
 
@@ -187,9 +177,7 @@ The parameter controlling the seepage from the subsurface system to the
 channel lets us fine-tune subsurface-channel interactions. A good
 starting value for this parameter is 0.02 for the entire channel system.
 The larger the value, the more resistance to flow into the channel. We
-can produce this map using
-
-::
+can produce this map using::
 
     pcrcalc chanparam.map = chanwidth.map/chanwidth.map * 0.02;
 

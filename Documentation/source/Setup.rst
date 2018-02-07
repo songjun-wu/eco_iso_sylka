@@ -7,31 +7,24 @@ Introduction
 The CSF PCRaster format
 -----------------------
 
-Ech2o reads spatial information using the binary raster format
+EcH2O-iso reads spatial information using the binary raster format
 (cross-system format, CSF) used in the free GIS `PCRaster <http://pcraster.geo.uu.nl>`_. By using
 this format, full GIS capability for data pre-processing,
-post-processing and visualization is added to .
+post-processing and visualization is added to EcH2O-iso.
 
-The configuration file
-----------------------
+The configuration files
+-----------------------
 
-The configuration file is the main communication interface with . It is
-a plain text file with pairs of keywords and values that provides the
+The configuration files are the main communication interfaces with EcH2O-iso. They are
+plain text files with pairs of keywords and values that provides the
 information that needs to run. This includes information on the location
-of the files, simulation and time step length, module options and the
+of the inputs/outputs files, simulation and time step length, module options and the
 choice of state and diagnostic variables that the user wants reported
 (written) to the drive.
 
-The list of keywords in the current version of the configuration file
-(v1.6) is shown in appendix [appendixb]
-
-The tracking configuration file
--------------------------------
-
-The tracking configuration file is...
-
-The list of keywords in the current version of the tracking configuration file
-(v1.0) is shown in appendix C [appendixc]
+There are **two** configurations files:
+* The *main configuration file* (defaut name: config.ini), called in the execution command of EcH2O-iso.  The list of keywords in the current version of the main configuration file (v1.7) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/Keywords.html>`_.
+* The *tracking configuration file* (default name: configTrck.ini), whose location is defined in main configuration file and read *only if* water isotopes and/or age tracking is activated (keyword *Tracking* set to 1). The list of keywords in the current version of the tracking configuration file (v1.0) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/KeywordsTrck.html>`_.
 
 
 Preparing the database

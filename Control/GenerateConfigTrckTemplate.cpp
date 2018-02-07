@@ -46,6 +46,9 @@ void GenerateConfigTrckTemplate(const char *fn){
     
     ofOut << "# == EcH2O-iso tracking configuration file v1.0 ==" << endl;
     ofOut << "# ----------------                ----------------" << endl;
+    ofOut << "# further details can be found at " << endl;
+    ofOut << "# http://ech2o-iso.readthedocs.io/en/latest/Keywords.html" << endl << endl;
+
     ofOut << "# " << endl << "Units (inputs and outputs): " << endl;
     ofOut << "# - Deuterium ratios (dD):   permille" << endl;
     ofOut << "# - Oxygen 18 ratios (d18O): permille" << endl;
