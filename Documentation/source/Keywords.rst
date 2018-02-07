@@ -144,7 +144,7 @@ Written outputs files are csf maps.
    Report\_AvgAir\_Temperature , :math:`^{\circ}C`, Average air temperature (climate input), Tp  
    Report\_MinAir\_Temperature , :math:`^{\circ}C`, Minimum air temperature (climate input), TpMin
    Report\_MaxAir\_Temperature , :math:`^{\circ}C`, Maximum air temperature (climate input), TpMax
-   Report\_SWE , :math:`m` , Snow water equivalent, SWE}
+   Report\_SWE , :math:`m` , Snow water equivalent, SWE
    Report\_Infilt\_Cap , :math:`m s^{-1}`, Infiltration capacity, IfCap
    Report\_Streamflow  , :math:`m^{3}s^{-1}`, Channel discharge, Q  
    Report\_Soil\_Water\_Content\_Average , :math:`m^{3}m^{-3}`, Average volumetric water content for entire soil profile, SWCav
