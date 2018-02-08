@@ -18,8 +18,8 @@ Configuration (main) file keywords
 +--------------------+--------------+-----------------------------------------------------------+
 | Keyword            | Type         | Description                                               |
 +====================+==============+===========================================================+
-| Tracking           | option       | | Switch 1/0 to turn water tracking (isotopes and/or ages)|
-|                    |              | | on (1) or off (0)                                       |
+| Tracking           | option       | Switch 1/0 to turn water tracking (isotopes and/or ages)|
+|                    |              | on (1) or off (0)                                       |
 +--------------------+--------------+-----------------------------------------------------------+
 | TrackingConfig     | System Path  | Location and name of the tracking configuration file.     |
 +--------------------+--------------+-----------------------------------------------------------+
