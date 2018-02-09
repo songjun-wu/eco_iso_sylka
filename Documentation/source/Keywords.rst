@@ -312,11 +312,11 @@ Configuration (main) file keywords
 | Report\_Einterception\_sum            | :math:`m s^{-1}`       | | Evaporation of intercepted water integrated over  | EvapI     |
 |                                       |                        | | the grid cell using vegetation fractions          |           |
 +---------------------------------------+------------------------+-----------------------------------------------------+-----------+
-| Report\_Esoil\_sum                    | :math:`m s^{-1}`       | | Soil evaporation integrated over the grid cell    | EvapS     |
-|                                       |                        | | using vegetation (here sub-canopy) fractions      |           |
+| Report\_Esoil\_sum                    | :math:`m s^{-1}`       | | Soil evaporation integrated over subcanopy and    | EvapS     |
+|                                       |                        | | bare soil fractions                               |           |
 +---------------------------------------+------------------------+-----------------------------------------------------+-----------+
 | Report\_Net\_Rad\_sum                 | :math:`Wm^{-2}`        | | Top-of-canopy net radiation integrated over the   | NRtot     |
-|                                       |                        | | grid cell                                         |           |
+|                                       |                        | | grid cell (including bare soil fraction)          |           |
 +---------------------------------------+------------------------+-----------------------------------------------------+-----------+
 | Report\_Veget\_frac                   | :math:`m^{2} m^{-2}`   | | Fraction of cell covered by canopy of vegetation  | p\_*n*    |
 |                                       |                        | | type *n*                                          |           |
@@ -420,7 +420,7 @@ Configuration (main) file keywords
 
 **Time series report switches**
 
-Written outputs file are time series tables at cells identified in *TS\_mask*.
+Written outputs file are time series tables at cells identified in ``TS\_mask``.
 
 +-----------------------------------+------------------------+-----------------------------------------------------+--------------------------+
 | Keyword                           | Unit                   | Description                                         | File name                |
@@ -501,11 +501,11 @@ Written outputs file are time series tables at cells identified in *TS\_mask*.
 | Ts\_Einterception\_sum            | :math:`m s^{-1}`       | | Evaporation of intercepted water integrated over  | EvapI.tab                |
 |                                   |                        | | the grid cell using vegetation fractions          |                          |
 +-----------------------------------+------------------------+-----------------------------------------------------+--------------------------+
-| Ts\_Esoil\_sum                    | :math:`m s^{-1}`       | | Soil evaporation integrated over the grid cell    | EvapS.tab                |
-|                                   |                        | | using vegetation (here sub-canopy) fractions      |                          |
+| Ts\_Esoil\_sum                    | :math:`m s^{-1}`       | | Soil evaporation integrated over subcanopy and    | EvapS.tab                |
+|                                   |                        | | bare soil fractions                               |                          |
 +-----------------------------------+------------------------+-----------------------------------------------------+--------------------------+
 | Ts\_Net\_Rad\_sum                 | :math:`Wm^{-2}`        | | Top-of-canopy net radiation integrated over the   | NetRadtot.tab            |
-|                                   |                        | | grid cell                                         |                          |
+|                                   |                        | | grid cell (including bare soil fraction)          |                          |
 +-----------------------------------+------------------------+-----------------------------------------------------+--------------------------+
 | Ts\_Veget\_frac                   | :math:`m^{2} m^{-2}`   | | Fraction of cell covered by canopy of vegetation  | p\_*n*.tab               |
 |                                   |                        | | type *n*                                          |                          |
