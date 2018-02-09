@@ -109,7 +109,7 @@ try{
     ofOut << "Simul_tstep = 86400 # seconds (daily)" << endl;
     ofOut << "Clim_input_tstep = 86400 # seconds (daily)" << endl;
     ofOut << "Report_interval = 86400 # seconds (daily)" << endl ;
-    ofOut << "ReportMap_interval = 604800 # seconds (weekly)" << endl << endl;
+    ofOut << "ReportMap_interval = 86400 # seconds (daily)" << endl << endl;
 
     ofOut << "#" << endl;
     ofOut << "# Climate input information" << endl;

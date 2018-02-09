@@ -420,7 +420,7 @@ Configuration (main) file keywords
 
 **Time series report switches**
 
-Written outputs file are time series tables at cells identified in ``TS\_mask``.
+Written outputs file are time series tables at cells identified in ``TS_mask``.
 
 +-----------------------------------+------------------------+-----------------------------------------------------+--------------------------+
 | Keyword                           | Unit                   | Description                                         | File name                |
