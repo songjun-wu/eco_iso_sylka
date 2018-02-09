@@ -33,12 +33,14 @@
 REAL8 Basin::CalcSoilResist(double &theta, int row, int col, UINT4 option){
 
 
-	const double rmin = 3.8113e4; //minimum soil resistance in sm-1 PETERS-LIDARD et al 1997
-	const double Cs = 13.515; //empirical parameter, no dimensions PETERS-LIDARD et al 1997
+  // Passerat de Silans et al. (1989)
+	const double rmin = 3.8113e4; //minimum soil resistance in s.m-1
+	const double Cs = 13.515; //empirical parameter
 
-	// Values for CLM model formulation as per Sakaguchi and Zeng (2009), Effects of soil wetness, plant litter, and under-canopy atmospheric
-	// stability on ground evaporation in the Community Land Model, JGR
-	const double Do = 2.2e-5; //Molecular Diffusion coefficient of water vapor in the air (m2s-1), Sakaguchi and Zeng 2009, JGR
+	// Values for CLM model formulation as per Sakaguchi and Zeng (2009):
+	//"Effects of soil wetness, plant litter, and under-canopy atmospheric
+	// stability on ground evaporation in the Community Land Model", JGR
+	const double Do = 2.2e-5; //Molecular Diffusion coefficient of water vapor in the air (m2s-1)
 	const double w = 5; //empirical shape parameter
 	const double e = 2.718; //empirical shape parameter
 	double D = 0;
@@ -58,10 +60,13 @@ REAL8 Basin::CalcSoilResist(double &theta, int row, int col, UINT4 option){
 
 	if (option == 0)
 		return 0;
+	// Passerat de Silans et al. (1989)
 	if (option == 1)
 		return rmin * expl(-Cs*(S));
+	// Sellers et al. (1992)
 	else if (option == 2)
 		return ( expl(8.206-4.255*S) );
+	// Sakaguchi and Zeng (2009)
 	else if (option == 3){
 		 d1 = _depth_layer1->matrix[row][col];
 		 L = d1 * ( ( expl(powl(1 - (theta/thetas),w) ) - 1 ) / (e - 1) );

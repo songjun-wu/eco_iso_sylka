@@ -80,7 +80,7 @@ int Report2Maps(){
 	if (oControl->Rep_Net_Rad_sum)
 		WriteMapSeries(oBasin->getNetRad_sum(), "NRtot", oControl->current_ts_count);
 	if (oControl->Rep_Soil_LE)
-		WriteMapSeries(oBasin->getLatheat(), "LE", oControl->current_ts_count);
+		WriteMapSeries(oBasin->getLatheat(), "LEs", oControl->current_ts_count);
 	if (oControl->Rep_Sens_Heat)
 		WriteMapSeries(oBasin->getSensHeat(), "SensH", oControl->current_ts_count);
 	if (oControl->Rep_Grnd_Heat)
@@ -157,7 +157,7 @@ int Report2Maps(){
 		if (oControl->Rep_dDsoil3)
 			WriteMapSeries(oTracking->getdDsoil3(), "dDsL3", oControl->current_ts_count);
 		if (oControl->Rep_dDsoilAv)
-		  WriteMapSeries(oTracking->getdDsoil_Av(), "dD_soilAv", oControl->current_ts_count);
+		  WriteMapSeries(oTracking->getdDsoil_Av(), "dDsAv", oControl->current_ts_count);
 		if (oControl->Rep_dDgroundwater)
 			WriteMapSeries(oTracking->getdDgroundwater(), "dDgw", oControl->current_ts_count);
 		if (oControl->Rep_dDevapS_sum)
@@ -185,7 +185,7 @@ int Report2Maps(){
 		if (oControl->Rep_d18Osoil3)
 			WriteMapSeries(oTracking->getd18Osoil3(), "dOsL3", oControl->current_ts_count);
 		if (oControl->Rep_d18OsoilAv)
-		  WriteMapSeries(oTracking->getd18Osoil_Av(), "d18O_soilAv", oControl->current_ts_count);
+		  WriteMapSeries(oTracking->getd18Osoil_Av(), "d18OsAv", oControl->current_ts_count);
 		if (oControl->Rep_d18Ogroundwater)
 			WriteMapSeries(oTracking->getd18Ogroundwater(), "dOgw", oControl->current_ts_count);
 		if (oControl->Rep_d18OevapS_sum)
@@ -209,7 +209,7 @@ int Report2Maps(){
 		if (oControl->Rep_Agesoil3)
 			WriteMapSeries(oTracking->getAgesoil3(), "AgesL3", oControl->current_ts_count);
 		if (oControl->Rep_AgesoilAv)
-		  WriteMapSeries(oTracking->getAgesoil_Av(), "Age_soilAv", oControl->current_ts_count);
+		  WriteMapSeries(oTracking->getAgesoil_Av(), "AgesAv", oControl->current_ts_count);
 		if (oControl->Rep_Agegroundwater)
 			WriteMapSeries(oTracking->getAgegroundwater(), "Agegw", oControl->current_ts_count);
 		if (oControl->Rep_AgeevapS_sum)

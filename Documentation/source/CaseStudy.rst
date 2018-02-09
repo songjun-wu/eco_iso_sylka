@@ -9,36 +9,44 @@ assist us in the construction of the database. It is a good idea to have
 the PCRaster documentation open in a browser tab and peruse it to learn
 more about the commands we will be using in these examples.
 
-Configuration file
-------------------
+Configuration files
+-------------------
 
-The configuration file presents the main communication interface with
-the model. The configuration file is a plain text file with pairs of
+The configuration files present the main communication interface with
+the model. They are plain text files with pairs of
 keys and values. The values indicate options, paths to folders, or name
-of files that contain information needed by . The easiest way to set the
-configuration file is to generate a template that can subsequently be
+of files that contain information needed by EcH2O-iso. 
+There are two configuration files:
+
+* The *main configuration file* (defaut name: config.ini), called in the execution command of EcH2O-iso.  The list of keywords in the current version of the main configuration file (v1.7) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/Keywords.html>`_.
+* The *tracking configuration file* (default name: configTrck.ini), whose location is defined in main configuration file and read *only if* water isotopes and/or age tracking is activated (keyword ``Tracking`` set to 1). The list of keywords in the current version of the tracking configuration file (v1.0) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/KeywordsTrck.html>`_.
+  
+The easiest way to set the configuration files is to generate templates that can subsequently be
 edited. To generate a configuration file template, navigate to the
-*CaseStudy* folder and use the following command:
+``CaseStudy`` folder and use the following command:
 
 ::
 
     ech2o -g config.ini
 
-Where the ’’ option indicates that we wish to generate a configuration
-file with the name . In the configuration file we provide information
-about the location of the database, the names of the files and also
+where the ``-g`` option indicates that we wish to generate a main configuration
+file with the name ``config.ini``. 
+A tracking configuration file with the default name ``configTrck.ini``
+is also generated.
+
+In the configuration files we provide information about the location of the database, the names of the files and also
 control the length of the run, the size of the time step, the outputs we
 want the model to produce and select a number of options.
 
-Open the file with any text editor. In the *Folder* section of the file
-make sure the paths to the *Spatial* and *Climate* folders of the case
+Open the file with any text editor. In the ``Folder`` section of the file
+make sure the paths to the ``Spatial`` and ``Climate`` folders of the case
 study are correct. In these files we will be storing spatial and climate
-information. Also make sure the folder where Ech2o will write the
-results (*Results* folder) exists and the path is correct.
+information. Also make sure the folder where EcH2O-iso will write the
+results (``Results`` folder) exists and the path is correct.
 
-The maps to be read by will be in the PCRaster cross-system format so
-make sure . Also we will be using tables to initialize the vegetation
-state variables so make sure .
+The maps to be read by EcH2O-iso will be in the PCRaster cross-system format so
+make sure ``MapTypes = csf``. Also we will be using tables to initialize the vegetation
+state variables so make sure ``Species_State_Variable_Input_Method = tables``.
 
 Turn on the reinfiltration and channel switches (1). We will use the
 aerodynamic resistance option as used in the Penman-Monteith equation
@@ -47,8 +55,8 @@ aerodynamic resistance option as used in the Penman-Monteith equation
 We will simulate 1 year using daily time steps. We have to provide that
 information in seconds. The simulation will start at second 0 and will
 end at second 31536000. The simulation time step will be 86400. The
-Climate input time step and the report interval will be the same as the
-simulation time step (86400).
+climate input time step and the report intervals will be the same as the
+simulation time step (86400 seconds, i.e., daily).
 
 The next few sections is where the maps in the database are associated
 with parameters in the model. Give the appropriate file name for each
@@ -57,7 +65,7 @@ At this point we should have generated all the needed files.
 
 The report map section is a series of boolean switches (0-1) that turn
 on or off the reporting (writing to the results folder) of maps with the
-state variables. Turn on (=1) the variables that you like reported. Mind
+state variables. Turn on (*= 1*) the variables that you like reported. Mind
 that writing maps to the disk is an expensive processes in terms of
 computer time and space.
 
@@ -68,7 +76,7 @@ Creating a base map and importing the elevation model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 First we will create the spatial section of the database. Open the
-command line and navigate to the *Spatial* folder of the case study. The
+command line and navigate to the ``Spatial`` folder of the case study. The
 maps created in this section should be placed in this folder.
 
 The first recommended step in the preparation of the database to run is
@@ -86,13 +94,11 @@ Move to the example folder provided with the package, open the file
 named with a text editor and check the metadata header with information
 on the geometry of the raster image.
 
-Within the PCRaster environment, type
-
-::
+Within the PCRaster environment, type::
 
     mapattr base.map
 
-to start the interface and crate a new blank base map named . Introduce
+to start the interface and crate a new blank base map named ``base.map``. Introduce
 the number of rows and columns as indicated in the metadata of the ascii
 raster image. Choose the *’scalar’* datatype and the *’small real’* cell
 representation. If the projection is UTM you may want to indicate a *’y
@@ -107,34 +113,26 @@ multiplying the number of rows by the resolution.
 
 Once this information is provided, press ’q’ and answer ’y’ to write the
 newly created map to the drive. Display the map to check it has the
-correct dimensions:
-
-::
+correct dimensions::
 
     aguila base.map
 
 This base map will be used to import all other maps and to ensure all
 the maps in the database have the exact same geometry. To import the
-ArcInfo DEM map into the CSF PCRaster format type
-
-::
+ArcInfo DEM map into the CSF PCRaster format, type::
 
     asc2map -a --clone base.map dem.asc DEM.map
 
-This command indicates 1) that we are importing an ascii file named into
-the PCRaster format with name , 2) that the imported file has Arcinfo
+This command indicates 1) that we are importing an ascii file named ``dem.asc`` into
+the PCRaster format with name ``DEM.map``, 2) that the imported file has Arcinfo
 ascii grid format, and 3) that we are cloning the geometry of our
 base.map.
 
-Display the map to check it has been correctly imported
-
-::
+Display the map to check it has been correctly imported::
 
     aguila DEM.map
 
-To display it in 3D you can type
-
-::
+To display it in 3D you can type::
 
     aguila -3 DEM.map
 
@@ -152,13 +150,13 @@ environment type the command::
 
 .. attention:: NOTE TO LINUX USERS
      Please, note that if you are following this tutorial in a linux computer
-     you need to place the arguments to *pcrcalc* between quotes like
+     you need to place the arguments to ``pcrcalc`` between quotes like
 
       $ pcrcalc ’ldd.map = lddcreate(DEM.map, 1e9,1e9,1e9,1e9)’
 
 This command instructs PCRaster to calculate the local drainage
-direction (ldd) for each cell using the dem () and save the drainage
-network on a map called . The large numbers included as the final four
+direction (ldd) for each cell using the dem (``DEM.map``) and save the drainage
+network on a map called ``ldd.map``. The large numbers included as the final four
 arguments to the *lddcreate* function are options to remove pits and
 core areas (see PCRaster documentation on lddcreate for more details).
 Display the results with aguila to visually inspect the drainage
@@ -173,7 +171,7 @@ to errors in the DEM that to some extent can be corrected with some of
 the functions in PCRaster (see PCRaster documentation for this).
 
 A map of the channels and the width of the channel is provided in the
-folder (). Inspect it using aguila and observe that cells with a channel
+folder ``Spatial``. Inspect it using aguila and observe that cells with a channel
 have a positive number indicating the width of the channel in meters and
 cells without a channel have attribute 0 or nodata.
 
@@ -181,15 +179,13 @@ The resistance presented by the channel to flow is given by Manning’s
 :math:`n` coefficient. Values for Manning’s :math:`n` coefficient needs
 ot be provided for each cell where the channel width is larger than 0. A
 map of Manning’s :math:`n` values in :math:`sm^{-\frac{1}{3}}` for the
-example channel network is provided ()
+example channel network is provided (``chanmannningn.map``).
 
 The parameter controlling the seepage from the subsurface system to the
 channel lets us fine-tune subsurface-channel interactions. A good
 starting value for this parameter is 0.02 for the entire channel system.
 The larger the value, the more resistance to flow into the channel. We
-can produce this map using
-
-::
+can produce this map using::
 
     pcrcalc chanparam.map = chanwidth.map/chanwidth.map * 0.02;
 
@@ -268,7 +264,7 @@ near the water divide.
 
 This expression uses the function *accuflux* to accumulate the area of
 the cells (10,000 :math:`m^{2}`) following the drainage direction and
-divides it by the map of slopes () that we created earlier. The function
+divides it by the map of slopes that we created earlier. The function
 *ln* takes the logarithm of the result of the quotient to equalize the
 distribution of values, which is highly skewed due to the exponential
 distribution of the accumulated areas.
@@ -280,9 +276,9 @@ properties:
 
 ::
 
-    pcrcalc soildepth.map = topind.map 
+    pcrcalc depth_soil.map = topind.map 
     	/areaaverage(topind.map,nominal(unit.map))
-    pcrcalc Keff.map = 1 / (soildepth.map * 36000)
+    pcrcalc Keff.map = 1 / (depth_soil.map * 36000)
     pcrcalc poros.map = 1 / (1 + exp(0.01 * topind.map))
 
 We will set initial conditions for the soil assuming the basin starts
@@ -323,10 +319,10 @@ Defining vegetation parameters
 
 For the sake of simplicity we will assume that there is only one type of
 forest homogeneously covering 60% of the basin (proportion of area
-covered in each forest patch is specified in file *SpecsProp.tab*).
+covered in each forest patch is specified in file ``SpecsProp.tab``).
 
 The parameters that define the vegetation in the forest is provided in
-table [tab:exspecpars]
+Table 1.
 
 .. csv-table:: **Sample parameter configuration file for one tree species**
    :header: "Parameter", "Species ID"
@@ -334,7 +330,7 @@ table [tab:exspecpars]
 
    SpeciesID , 1
    NPP/GPPRatio , 0.47
-   gsmax(ms-1) , 0.09
+   gsmax(ms-1) , 0.009
    CanopyQuantumEffic(gCJ-1) , 0.0000018
    MaxForestAge(yrs) , 290
    OptimalTemp(C) , 18
@@ -346,7 +342,7 @@ table [tab:exspecpars]
    StemAllocCoef\_b , 6.00E-07
    gs\_light\_coeff , 300
    gs\_vpd\_coeff , 0.0019
-   gs_psi\_d , 0.2
+   gs_psi\_d , 5
    gs_psi\_c , 2
    WiltingPnt , 0.05
    SpecificLeafArea(m2g-1) , 0.003
@@ -375,9 +371,9 @@ table [tab:exspecpars]
 The parameters are listed in the order they should appear in the
 vegetation configuration file. Make sure you include in the first line
 of the header the number of species in the file and the number of
-information items per species (2 43). For convenience, the information
-in Table [tab:exspecpars] is properly formatted in a parameter file
-named , which is is provided in the folder of the case study.
+information items per species (2 39). For convenience, the information
+in Table 1 is properly formatted in a parameter file
+named ``SpeciesParams.tab``, which is is provided in the folder of the case study.
 
 The next step is providing information about the variables for
 vegetation. There are two ways to provide this information, through
@@ -391,7 +387,7 @@ using tables we need to provide a map with the spatial distribution of
 the types of forest or *patches*. This spatial distribution is done
 using integer ID numbers for each patch. In this example we will assume
 that only one type of forest exist covering the entire area with ID 1.
-We can create the patch map using the unit.map:
+We can create the patch map using the *unit.map*:
 
 ::
 
@@ -422,8 +418,8 @@ proportion of bare soil is calculated internally from this information.
 The information for each species must be entered in the same order that
 was provided in the table of vegetation parameters including 0.0 if
 there is no coverage of a specific species or vegetation type in a given
-patch. A file () with this information is included for convenience in
-the *example/Spatial* folder.
+patch. A file (``SpecsProp.tab``) with this information is included for convenience in
+the ``CaseStudy/Spatial`` folder.
 
 The same data structure is used in the files containing information for
 the other mandatory vegetation variables, for which files are
@@ -433,7 +429,7 @@ stand basal area, effective height and root density.
 Climate inputs
 ~~~~~~~~~~~~~~
 
-Navigate to the *Climate* folder of the case study. The maps generated
+Navigate to the ``Climate`` folder of the case study. The maps generated
 in this section need to be placed in this folder. A climate zones map
 provides the information to spatially distribute the climate time series
 and should be created first. In this example we will partition our basin
@@ -478,8 +474,8 @@ spatially uniform. You can import the files to a spreadsheet program
 like MSExcel and plot them to inspect the type of climate we are
 simulating.
 
-In order to make these files usable for Ech2o we need to import them
-into binary format with the utility provided with Ech2o. This utility
+In order to make these files usable for EcH2O-iso we need to import them
+into binary format with the utility provided with EcH2O-iso. This utility
 takes two arguments: the name of the properly formatted ascii file with
 the climate information and the desired name for the binary file to be
 written.
@@ -499,7 +495,14 @@ but with a *.bin* extension.
     asc2c RH.txt RH.bin
     asc2c windspeed.txt windspeed.bin
 
-We will introduce some random variability in the precipitation field
+If the tracking of deuterium and/or oxygen 18 is activated, the corresponding binary files must be generated
+
+::
+
+    asc2c d2H.txt d2H.bin
+    asc2c d18O.txt d18O.bin
+
+Besides, we will introduce some random variability in the precipitation field
 using the isohyet map assuming no autocorrelation structure or
 directionality of the field. The random fluctuations are produced using
 a uniform distribution ranging with a range 0.5-1.5 to simulate
@@ -540,9 +543,9 @@ contained in into a map using
 Running the program
 -------------------
 
-FIRST, MAKE SURE THE FOLDER WHERE ECH2O IS TOLD TO WRITE THE RESULTS
-EXISTS. ECH2O WILL NOT CREATE THE FOLDER IF IT DOES NOT EXIST AND WILL
-TERMINATE THE RUN WHEN IT ATTEMPTS TO WRITE TO THE NON-EXISTING FOLDER.
+**FIRST, MAKE SURE THE FOLDER WHERE ECH2O-iso IS TOLD TO WRITE THE RESULTS
+EXISTS. ECH2O-iso WILL NOT CREATE THE FOLDER IF IT DOES NOT EXIST AND WILL
+TERMINATE THE RUN WHEN IT ATTEMPTS TO WRITE TO THE NON-EXISTING FOLDER.**
 
 Open the configuration file in a text editor and replace the default
 input file names for the soil moisture keys with the correct filenames
@@ -554,16 +557,16 @@ input file names for the soil moisture keys with the correct filenames
     Soil_moisture_3 = Soil_moisture_3.map 
 
 Once the database is complete and the configuration file correctly set
-we are ready to run Ech2o. This is simply done by navigating to the
-folder containing the ech2o configuration file and running the following
+we are ready to run EcH2O-iso. This is simply done by navigating to the
+folder containing the EcH2O-iso configuration files and running the following
 command:
 
 ::
 
-    ech2o config.iniv
+    ech2o config.ini
 
-Where stands for the name of the configuration file, typically , but
-this file can be named in any other way to differentiate different
+Where ``config.ini`` stands for the name of the configuration file. Note that this
+file and ``configTrck.ini`` can be named in any other way to differentiate different
 projects or runs.
 
 After hitting enter you will see the splash screen with the version
@@ -624,7 +627,7 @@ Probably the simplest way is to create a batch file that will run the
 model multiple times using the state-variables from the previous run as
 initial conditions for the following run. The first step is configure an
 initial run as explained in the previous example, using tables to
-initialize the vegetation parameters () and make sure the required state
+initialize the vegetation parameters (``Species_State_Variable_Input_Method = table``) and make sure the required state
 variables needed to initialize the model will be reported:
 
 -  Report\_Leaf\_Area\_Index = 1
@@ -649,30 +652,30 @@ variables needed to initialize the model will be reported:
 
 The next step is tell the model that next time the model starts, the
 vegetation parameters will not be read from a table but that the
-parameters will be given as maps. For this set .
+parameters will be given as maps. For this set ``Species_State_Variable_Input_Method = maps``.
 
-When this variables is set to , the model expects to find a set of maps
+When this variable is set to ``maps``, the model expects to find a set of maps
 in the spatial information folder with the following names. There has to
 be one map per species:
 
--  lai[*n*].map
+-  lai\_n.map
 
--  p[*n*].map
+-  p\_n.map
 
--  ntr[*n*].map
+-  ntr\_n.map
 
--  age[*n*].map
+-  age\_n.map
 
--  root[*n*].map
+-  root_n.map
 
--  hgt[*n*].map
+-  hgt_n.map
 
--  bas[*n*].map
+-  bas_n.map
 
 To initiate leaf area index, species proportion in each cell, tree
 density, age of stands, root mass, tree height and basal area,
-respectively. The value for inside the square brackets is the species id
-, where is the number of species being simulated.
+respectively. The value for *n* is the species id within [0, ``NumSpecies`` -1], 
+where ``NumSpecies`` is the number of species being simulated.
 
 To run the model in a loop we create a batch file that runs the model,
 takes the final state of the basin (as per the reported state
@@ -680,7 +683,7 @@ variables), copies them with the right name in the spatial folder for
 initialization and runs the model again. Assuming you have set up the
 model as in the example of the next section, create a batch file with
 the name in the same folder where is located. Type the following
-contents into the file:
+contents into a new file ``spinup.bat``:
 
 ::
 
@@ -697,32 +700,34 @@ contents into the file:
 
     echo finishing and copying files after iteration %COUNT%
 
-    copy /Y .\Results\root[0]0.365 .\Spatial\root[0].map
-    copy /Y .\Results\p[0]0000.365 .\Spatial\p[0].map
-    copy /Y .\Results\ntr[0]00.365 .\Spatial\ntr[0].map
-    copy /Y .\Results\lai[0]00.365 .\Spatial\lai[0].map
-    copy /Y .\Results\hgt[0]00.365 .\Spatial\hgt[0].map
-    copy /Y .\Results\bas[0]00.365 .\Spatial\bas[0].map
-    copy /Y .\Results\age[0]00.365 .\Spatial\age[0].map
+    copy /Y .\Results/root0_00.365 .\Spatial/root_0.map
+    copy /Y .\Results/p0_00000.365 .\Spatial/p_0.map
+    copy /Y .\Results/ntr0_000.365 .\Spatial/ntr_0.map
+    copy /Y .\Results/lai0_000.365 .\Spatial/lai_0.map
+    copy /Y .\Results/hgt0_000.365 .\Spatial/hgt_0.map
+    copy /Y .\Results/bas0_000.365 .\Spatial/bas_0.map
+    copy /Y .\Results/age0_000.365 .\Spatial/age_0.map
 
-    copy /Y .\Results\SWE00000.365 .\Spatial\SWE.map
-    copy /Y .\Results\SWC1_000.365 .\Spatial\Soil_moisture_1.map
-    copy /Y .\Results\SWC2_000.365 .\Spatial\Soil_moisture_2.map
-    copy /Y .\Results\SWC3_000.365 .\Spatial\Soil_moisture_3.map
-    copy /Y .\Results\Ts000000.365 .\Spatial\soiltemp.map
-    copy /Y .\Results\Q0000000.365 .\Spatial\streamflow.map
+    copy /Y .\Results/SWE00000.365 .\Spatial/SWE.map
+    copy /Y .\Results/SWC1_000.365 .\Spatial/Soil_moisture_1.map
+    copy /Y .\Results/SWC2_000.365 .\Spatial/Soil_moisture_2.map
+    copy /Y .\Results/SWC3_000.365 .\Spatial/Soil_moisture_3.map
+    copy /Y .\Results/Ts000000.365 .\Spatial/soiltemp.map
+    copy /Y .\Results/Q0000000.365 .\Spatial/streamflow.map
 
-    type .\Results\lai[0].tab >> .\Results\laiacum.txt
-    type .\Results\NPP[0].tab >> .\Results\NPPacum.txt
-    type .\Results\SoilMoistureAv.tab >> .\Results\SWCacum.txt
-
-
+    type .\Results\lai_0.tab >> .\Results\laiaccum.txt
+    type .\Results\NPP_0.tab >> .\Results\NPPaccum.txt
+    type .\Results\SoilMoistureAv.tab >> .\Results\SWCaccum.txt
+    
     set /A COUNT=%COUNT%+1
 
     goto loop 
+  
 
-Run the batch file by typing . This file will spinup the model until you
+Run the batch file by typing ``spinup.bat``. This file will spinup the model until you
 stop it pressing . Let the model spin for a period of 5 or 10 years.
+
+For convenience, a linux version of this routine is also given in the file ``spinup.sh``
 
 If you are reporting time series of leaf area index, net primary
 production and soil moisture, the batch file will append the results in
