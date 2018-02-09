@@ -41,12 +41,12 @@ want the model to produce and select a number of options.
 Open the file with any text editor. In the ``Folder`` section of the file
 make sure the paths to the ``Spatial`` and ``Climate`` folders of the case
 study are correct. In these files we will be storing spatial and climate
-information. Also make sure the folder where Ech2o will write the
+information. Also make sure the folder where EcH2O-iso will write the
 results (``Results`` folder) exists and the path is correct.
 
-The maps to be read by will be in the PCRaster cross-system format so
-make sure . Also we will be using tables to initialize the vegetation
-state variables so make sure .
+The maps to be read by EcH2O-iso will be in the PCRaster cross-system format so
+make sure ``MapTypes = csf``. Also we will be using tables to initialize the vegetation
+state variables so make sure ``Species_State_Variable_Input_Method = tables``.
 
 Turn on the reinfiltration and channel switches (1). We will use the
 aerodynamic resistance option as used in the Penman-Monteith equation
@@ -98,7 +98,7 @@ Within the PCRaster environment, type::
 
     mapattr base.map
 
-to start the interface and crate a new blank base map named . Introduce
+to start the interface and crate a new blank base map named ``base.map``. Introduce
 the number of rows and columns as indicated in the metadata of the ascii
 raster image. Choose the *’scalar’* datatype and the *’small real’* cell
 representation. If the projection is UTM you may want to indicate a *’y
@@ -123,8 +123,8 @@ ArcInfo DEM map into the CSF PCRaster format, type::
 
     asc2map -a --clone base.map dem.asc DEM.map
 
-This command indicates 1) that we are importing an ascii file named into
-the PCRaster format with name , 2) that the imported file has Arcinfo
+This command indicates 1) that we are importing an ascii file named ``dem.asc`` into
+the PCRaster format with name ``DEM.map``, 2) that the imported file has Arcinfo
 ascii grid format, and 3) that we are cloning the geometry of our
 base.map.
 
@@ -156,7 +156,7 @@ environment type the command::
 
 This command instructs PCRaster to calculate the local drainage
 direction (ldd) for each cell using the dem (``DEM.map``) and save the drainage
-network on a map called . The large numbers included as the final four
+network on a map called ``ldd.map``. The large numbers included as the final four
 arguments to the *lddcreate* function are options to remove pits and
 core areas (see PCRaster documentation on lddcreate for more details).
 Display the results with aguila to visually inspect the drainage
@@ -474,8 +474,8 @@ spatially uniform. You can import the files to a spreadsheet program
 like MSExcel and plot them to inspect the type of climate we are
 simulating.
 
-In order to make these files usable for Ech2o we need to import them
-into binary format with the utility provided with Ech2o. This utility
+In order to make these files usable for EcH2O-iso we need to import them
+into binary format with the utility provided with EcH2O-iso. This utility
 takes two arguments: the name of the properly formatted ascii file with
 the climate information and the desired name for the binary file to be
 written.
@@ -495,7 +495,14 @@ but with a *.bin* extension.
     asc2c RH.txt RH.bin
     asc2c windspeed.txt windspeed.bin
 
-We will introduce some random variability in the precipitation field
+If the tracking of deuterium and/or oxygen 18 is activated, the corresponding binary files must be generated
+
+::
+
+    asc2c d2H.txt d2H.bin
+    asc2c d18O.txt d18O.bin
+
+Besides, we will introduce some random variability in the precipitation field
 using the isohyet map assuming no autocorrelation structure or
 directionality of the field. The random fluctuations are produced using
 a uniform distribution ranging with a range 0.5-1.5 to simulate
@@ -536,8 +543,8 @@ contained in into a map using
 Running the program
 -------------------
 
-**FIRST, MAKE SURE THE FOLDER WHERE ECH2O IS TOLD TO WRITE THE RESULTS
-EXISTS. ECH2O WILL NOT CREATE THE FOLDER IF IT DOES NOT EXIST AND WILL
+**FIRST, MAKE SURE THE FOLDER WHERE ECH2O-iso IS TOLD TO WRITE THE RESULTS
+EXISTS. ECH2O-iso WILL NOT CREATE THE FOLDER IF IT DOES NOT EXIST AND WILL
 TERMINATE THE RUN WHEN IT ATTEMPTS TO WRITE TO THE NON-EXISTING FOLDER.**
 
 Open the configuration file in a text editor and replace the default
@@ -550,16 +557,16 @@ input file names for the soil moisture keys with the correct filenames
     Soil_moisture_3 = Soil_moisture_3.map 
 
 Once the database is complete and the configuration file correctly set
-we are ready to run Ech2o. This is simply done by navigating to the
-folder containing the ech2o configuration file and running the following
+we are ready to run EcH2O-iso. This is simply done by navigating to the
+folder containing the EcH2O-iso configuration files and running the following
 command:
 
 ::
 
-    ./ech2o config.ini
+    ech2o config.ini
 
-Where stands for the name of the configuration file, typically , but
-this file can be named in any other way to differentiate different
+Where ``config.ini`` stands for the name of the configuration file. Note that this
+file and ``configTrck.ini`` can be named in any other way to differentiate different
 projects or runs.
 
 After hitting enter you will see the splash screen with the version
@@ -676,46 +683,51 @@ variables), copies them with the right name in the spatial folder for
 initialization and runs the model again. Assuming you have set up the
 model as in the example of the next section, create a batch file with
 the name in the same folder where is located. Type the following
-contents into a new file ``spinup.sh``:
+contents into a new file ``spinup.bat``:
 
 ::
 
-    #!/bin/bash
+    @echo off
+    set count = 1
 
-    COUNT=1
-    NITER=11
+    :loop
 
-    while [ $COUNT -lt $NITER ]
-    do
-        echo "Running iteration ${COUNT}"
-        xterm -e ech2o config.ini
+    echo Running iteration %COUNT%
+
+    start /w ech2o config.ini
+
+    ping -w 1000 1.1.1.1 
+
+    echo finishing and copying files after iteration %COUNT%
+
+    copy /Y .\Results/root0_00.365 .\Spatial/root_0.map
+    copy /Y .\Results/p0_00000.365 .\Spatial/p_0.map
+    copy /Y .\Results/ntr0_000.365 .\Spatial/ntr_0.map
+    copy /Y .\Results/lai0_000.365 .\Spatial/lai_0.map
+    copy /Y .\Results/hgt0_000.365 .\Spatial/hgt_0.map
+    copy /Y .\Results/bas0_000.365 .\Spatial/bas_0.map
+    copy /Y .\Results/age0_000.365 .\Spatial/age_0.map
+
+    copy /Y .\Results/SWE00000.365 .\Spatial/SWE.map
+    copy /Y .\Results/SWC1_000.365 .\Spatial/Soil_moisture_1.map
+    copy /Y .\Results/SWC2_000.365 .\Spatial/Soil_moisture_2.map
+    copy /Y .\Results/SWC3_000.365 .\Spatial/Soil_moisture_3.map
+    copy /Y .\Results/Ts000000.365 .\Spatial/soiltemp.map
+    copy /Y .\Results/Q0000000.365 .\Spatial/streamflow.map
+
+    type .\Results\lai_0.tab >> .\Results\laiaccum.txt
+    type .\Results\NPP_0.tab >> .\Results\NPPaccum.txt
+    type .\Results\SoilMoistureAv.tab >> .\Results\SWCaccum.txt
+    
+    set /A COUNT=%COUNT%+1
+
+    goto loop 
   
-        echo "finished run, copying files"
-        cp -f ./Results/root0_00.365 ./Spatial/root_0.map
-        cp -f ./Results/p0_00000.365 ./Spatial/p_0.map
-        cp -f ./Results/ntr0_000.365 ./Spatial/ntr_0.map
-        cp -f ./Results/lai0_000.365 ./Spatial/lai_0.map
-        cp -f ./Results/hgt0_000.365 ./Spatial/hgt_0.map
-        cp -f ./Results/bas0_000.365 ./Spatial/bas_0.map
-        cp -f ./Results/age0_000.365 ./Spatial/age_0.map
 
-        cp -f ./Results/SWE00000.365 ./Spatial/SWE.map
-        cp -f ./Results/SWC1_000.365 ./Spatial/Soil_moisture_1.map
-        cp -f ./Results/SWC2_000.365 ./Spatial/Soil_moisture_2.map
-        cp -f ./Results/SWC3_000.365 ./Spatial/Soil_moisture_3.map
-        cp -f ./Results/Ts000000.365 ./Spatial/soiltemp.map
-        cp -f ./Results/Q0000000.365 ./Spatial/streamflow.map
-
-        cat ./Results/lai_0.tab >> ./Results/laiacum.txt
-        cat ./Results/NPP_0.tab >> ./Results/NPPacum.txt
-        cat ./Results/SoilMoistureAv.tab >> ./Results/SWCaccum.txt
-
-        let "COUNT++"
-    done
-  
-
-Run the batch file by typing ``./spinup.sh``. This file will spinup the model until you
+Run the batch file by typing ``spinup.bat``. This file will spinup the model until you
 stop it pressing . Let the model spin for a period of 5 or 10 years.
+
+For convenience, a linux version of this routine is also given in the file ``spinup.sh``
 
 If you are reporting time series of leaf area index, net primary
 production and soil moisture, the batch file will append the results in
