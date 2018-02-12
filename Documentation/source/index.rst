@@ -1,24 +1,15 @@
-Getting started: ECH2O-iso User Guide
-=====================================
+.. |ech2o| replace:: EcH\ :sub:`2`\ O
 
-This document provides a tutorial that guides users through the process of preparing the files, running and visualizing an ech2o simulation. 
+Getting started: |ech2o|-iso user Guide
+=======================================
 
+This document provides a tutorial that guides users through the process of compiling |ech2o|-iso, preparing the files, and running and visualizing an |ech2o|-iso simulation. 
 
-Installation
-============
-
-Download the installation package `here <https://bitbucket.org/sylka/ech2o_iso/downloads>` and follow the instructions for your operating system.
-The installation package includes the sample dataset used in this tutorial.   
- 
-To pre-process inputs and to visualize model results you will need to instal PCRASTER, which can be downloaded for free from http://pcraster.geo.uu.nl 
-
-
-Tutorial
-=========
 
 .. toctree::
    :maxdepth: 3
 
+   Install
    Setup
    CaseStudy
    Keywords

@@ -1,57 +1,45 @@
-ECH2O, a physically-based ecohydrologic model
-==============================================
+.. |ech2o| replace:: EcH\ :sub:`2`\ O
 
-What is it?
------------
+|ech2o|-iso
+===========
 
-  ECH2O is a physically-based, spatially distributed ecohydrologic model developed in C++ in the Regional Hydrology Lab at the University of Montana. 
+|ech2o|-iso builds on the **physically-based, spatially distributed ecohydrologic model EcH**\ :sub:`2`\ **O** developed in C++ in the Regional Hydrology Lab at the University of Montana (Maneta and Silverman, 2013) (`link <http://hs.umt.edu/RegionalHydrologyLab/software/default.php>`_).
 
-Why it exists?
---------------
+The specifity of |ech2o|-iso is the implementation of stable water isotopes (:sup:`2`\ H and :sup:`18`\ O) and age tracking.
+It is mostly based on an immediate, complete implicit scheme for mixing water transiting between compartments within time steps (Fig. 1).
+Evaporative fractionation of isotopes is also included.
 
-  ECH2O was developed to fill a gap in the features offered by similar existing models in the public domain.  Some of these models strictly conserved water and energy but did not have a dynamic vegetation component, while other models models had a sophisticated vegetation component but did not conserve energy. Other models implemented vegetation dynamics and a rigorous water and energy conservation at each computational scale but did not have a lateral water routing component (subsurface or surface). 
+.. figure:: ECH2O-iso_Model.png
+   :align: center
+   :alt: Brooke and Corey soil parameters for different texstures. From Dingman, L(2002). Physical Hydrology, 2nd Ed.Prentice Hall, 646p .
 
-  ECH2O was designed to reach a balance between the need to implement rigorous physics for scholar research while maintaining a relatively parsimonious parameterization. The model has three major components: a vertical energy balance scheme that simulates soil-vegetation-atmosphere energy dynamics based on flux-gradient similarity approach; a hydrologic component based on the kinematic wave that provides lateral water transfer and ensures the hydrologic articulation of the landscape; and a forest growth component that includes carbon uptake, carbon allocation, leaf and root turnover and tree growth based on allometric relationships. The models are tightly coupled to ensure they capture the main feedbacks between vegetation, hydrology and climate.  
-
+   **Figure 1.** Water compartments (black rectangles) and fluxes (coloured arrows) as represented in |ech2o| and used for isotope and age tracking in |ech2o|-iso, with the numbers between brackets reflecting the sequence of calculation within a time step. Note that water routing (steps [8] to [13]) differs between cells where a stream is present (◦) or not (∗). 
 
 The Latest Version
 ------------------
 
-  Details of the latest version (source and binaries) can be found on the ECH2O software page under http://hs.umt.edu/RegionalHydrologyLab/software/default.php.
-   
-Data Preprocessing
-------------------
-
-  ECH2O uses the PCRASTER map format (aka cross-system format) for data pre- and post-processing, and for visulalization. PCRASTER can be downloaded free of charge from 
-
+The latest stable version can be found in the *master_ns* branch of the source repository. 
 
 Documentation
 -------------
 
-  The documentation available as of the date of this release is
-  included in pdf format in the Documentation directory.  The most
-  up-to-date documentation can be found at
-  http://hs.umt.edu/RegionalHydrologyLab/software/documentation-ech2o.php.
+The documentation for installing an runnnig |ech2o|-iso, available as of the date of this release, can be found on its `ReadTheDocs webpage <http://ech2o-iso.readthedocs.io/en/latest/>`_.
   
 Third-party dependencies
 ------------------------
 
-  ECH2O depends on the following third-party libraries with the following licenses
+|ech2o|-iso depends on the following third-party libraries with the following licenses:
   
-  - armadillo (Mozilla Public License 2.0) and dependencies therein 
-  - libcsf (BSD License)
+- armadillo (Mozilla Public License 2.0) and dependencies therein 
+- libcsf (BSD License)
   
-  For convenience a precompiled version of the libcsf for Linux and Windows 64 bit architectures is distributed with the source code   
+For convenience, precompiled versions of the libcsf librairies for Linux, Windows 64 bit, and Mac architectures are distributed with the source code   
 
-Installation of Binary Distributions
-------------------------------------
+Data Preprocessing
+------------------
 
-  Please see the file called INSTALL.rst.
-  
-Compilation of source code
---------------------------
-  
-  Please see the file called INSTALL.rst.
+|ech2o|-iso uses the PCRASTER map format (a cross-system format) for data pre- and post-processing, and for visulalization. 
+PCRASTER can be downloaded free of charge from http://pcraster.geo.uu.nl/downloads
 
 Licensing
 ---------
@@ -61,19 +49,21 @@ Licensing
 Bugs
 ____
 
-  Should you encounter any bug, please file a ticket in https://bitbucket.org/maneta/ech2o/issues
-
-Known Issues
-------------
-
-  Known issues can be found in https://bitbucket.org/maneta/ech2o/issues
+  Should you encounter any bug, please file a ticket `here <https://bitbucket.org/sylka/ech2o_iso/issues>`_.
+  Known issues can be found there, as well as on the `main EcH2O page <https://bitbucket.org/maneta/ech2o/issues>`_.
 
 How to Cite
 -----------
 
-Please, acknowledge the use ECH2O citing the original description of the model: 
+The corresponding publication has yet to be published.
+Please, acknowledge the use of ECH2O by citing the original description of the model: 
 
-Maneta, M and Silverman, N (2013). A spatially-distributed model to simulate water, energy and vegetation dynamics using information from regional climate models. Earth Interactions, 17, 1-44.
+- Maneta, M and Silverman, N (2013). A spatially-distributed model to simulate water, energy and vegetation dynamics using information from regional climate models. Earth Interactions, 17, 1-44.
+
+Further references:
+
+- Lozano-Parra, J., Maneta, M. P., and Schnabel, S. (2014). Climate and topographic controls on simulated pasture production in a semiarid Mediterranean watershed with scattered tree cover. Hydrology and Earth System Sciences, 18, 1439.
+- Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (2018). What can we learn from multi-data calibration of a process-based ecohydrological model?. Environmental Modelling & Software, 101, 301–316.
 
 Contacts
 --------
