@@ -1,3 +1,5 @@
+.. |ech2o| replace:: EcH\ :sub:`2`\ O
+
 Case study
 ==========
 
@@ -15,10 +17,10 @@ Configuration files
 The configuration files present the main communication interface with
 the model. They are plain text files with pairs of
 keys and values. The values indicate options, paths to folders, or name
-of files that contain information needed by EcH2O-iso. 
+of files that contain information needed by |ech2o|-iso. 
 There are two configuration files:
 
-* The *main configuration file* (defaut name: config.ini), called in the execution command of EcH2O-iso.  The list of keywords in the current version of the main configuration file (v1.7) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/Keywords.html>`_.
+* The *main configuration file* (defaut name: config.ini), called in the execution command of |ech2o|-iso.  The list of keywords in the current version of the main configuration file (v1.7) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/Keywords.html>`_.
 * The *tracking configuration file* (default name: configTrck.ini), whose location is defined in main configuration file and read *only if* water isotopes and/or age tracking is activated (keyword ``Tracking`` set to 1). The list of keywords in the current version of the tracking configuration file (v1.0) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/KeywordsTrck.html>`_.
   
 The easiest way to set the configuration files is to generate templates that can subsequently be
@@ -41,10 +43,10 @@ want the model to produce and select a number of options.
 Open the file with any text editor. In the ``Folder`` section of the file
 make sure the paths to the ``Spatial`` and ``Climate`` folders of the case
 study are correct. In these files we will be storing spatial and climate
-information. Also make sure the folder where EcH2O-iso will write the
+information. Also make sure the folder where |ech2o|-iso will write the
 results (``Results`` folder) exists and the path is correct.
 
-The maps to be read by EcH2O-iso will be in the PCRaster cross-system format so
+The maps to be read by |ech2o|-iso will be in the PCRaster cross-system format so
 make sure ``MapTypes = csf``. Also we will be using tables to initialize the vegetation
 state variables so make sure ``Species_State_Variable_Input_Method = tables``.
 
@@ -474,8 +476,8 @@ spatially uniform. You can import the files to a spreadsheet program
 like MSExcel and plot them to inspect the type of climate we are
 simulating.
 
-In order to make these files usable for EcH2O-iso we need to import them
-into binary format with the utility provided with EcH2O-iso. This utility
+In order to make these files usable for |ech2o|-iso we need to import them
+into binary format with the utility provided with |ech2o|-iso. This utility
 takes two arguments: the name of the properly formatted ascii file with
 the climate information and the desired name for the binary file to be
 written.
@@ -557,8 +559,8 @@ input file names for the soil moisture keys with the correct filenames
     Soil_moisture_3 = Soil_moisture_3.map 
 
 Once the database is complete and the configuration file correctly set
-we are ready to run EcH2O-iso. This is simply done by navigating to the
-folder containing the EcH2O-iso configuration files and running the following
+we are ready to run |ech2o|-iso. This is simply done by navigating to the
+folder containing the |ech2o|-iso configuration files and running the following
 command:
 
 ::

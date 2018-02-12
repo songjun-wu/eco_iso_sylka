@@ -7,15 +7,15 @@ Introduction
 The CSF PCRaster format
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-EcH2O-iso reads spatial information using the binary raster format
+|ech2o|-iso reads spatial information using the binary raster format
 (cross-system format, CSF) used in the free GIS `PCRaster <http://pcraster.geo.uu.nl>`_. By using
 this format, full GIS capability for data pre-processing,
-post-processing and visualization is added to EcH2O-iso.
+post-processing and visualization is added to |ech2o|-iso.
 
 The configuration files
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The configuration files are the main communication interface with EcH2O-iso. They are
+The configuration files are the main communication interface with |ech2o|-iso. They are
 plain text files with pairs of keywords and values that provides the
 information that needs to run. This includes information on the location
 of the inputs/outputs files, simulation and time step length, module options and the
@@ -24,7 +24,7 @@ choice of state and diagnostic variables that the user wants reported
 
 There are **two** configurations files:
 
-* The *main configuration file* (defaut name: config.ini), called in the execution command of EcH2O-iso.  The list of keywords in the current version of the main configuration file (v1.7) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/Keywords.html>`_.
+* The *main configuration file* (defaut name: config.ini), called in the execution command of |ech2o|-iso.  The list of keywords in the current version of the main configuration file (v1.7) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/Keywords.html>`_.
 * The *tracking configuration file* (default name: configTrck.ini), whose location is defined in main configuration file and read *only if* water isotopes and/or age tracking is activated (keyword *Tracking* set to 1). The list of keywords in the current version of the tracking configuration file (v1.0) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/KeywordsTrck.html>`_.
 
 
@@ -172,7 +172,7 @@ surveys, external databases such as SSURGO, CONUS-SOIL, etc  (e.g. http://www.so
 | Veg wat use par 2              | :math:`-`              |
 +--------------------------------+------------------------+
 
-**Table 1.** Soil/surface properties and corresponding units needed to run EcH2O-iso.
+**Table 1.** Soil/surface properties and corresponding units needed to run |ech2o|-iso.
 
 The :math:`\lambda` parameter in the Brooks and Corey model is the
 inverse of the pore size distribution index. Typical values for the
@@ -302,7 +302,7 @@ corresponding units in which the data must be provided.
 If water isotope tracking is activated, the corresponding climate inputs must be provided (Table 2).
 
 
-**Table 2.** Variables and associated units of climate forcings used by EcH2O-iso.
+**Table 2.** Variables and associated units of climate forcings used by |ech2o|-iso.
 
 +------------------------------+------------------------+---------------------------------------------+
 | Variable                     | Unit                   | Comment                                     |
@@ -532,7 +532,7 @@ Initialization using tables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Initialization of the state variables for vegetation using tables is
-often easier during the first model run. Ech2o can be initialized with tables
+often easier during the first model run. |ech2o|-iso can be initialized with tables
 by setting ``Species_State_Variable_Input_Method`` = tables in the
 configuration file.
 
