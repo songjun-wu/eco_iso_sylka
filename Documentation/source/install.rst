@@ -68,12 +68,9 @@ and compile from source. Then replace the old libcsf64 library in the ``lib`` di
 4. Contact
 ----------
 
-If you need assistance compiling the source, contact:
+If you need assistance compiling the source, contact marco.maneta@umontana.edu, or sylvain.kuppel@abdn.ac.uk.
 
-- marco [dot] maneta [at] umontana [dot] edu, or 
-- sylvain [dot] kuppel [at] abdn [dot] ac [dot] uk
-
-If you find this documentation to be incomplete, please file a ticket in the appropriate issue tracker"
+If you find this documentation to be incomplete, please file a ticket in the appropriate issue tracker:
 
 * ech2o compilation issues:  https://bitbucket.org/sylka/ech2o_iso/issues
 * asc2c compilation issues:  https://bitbucket.org/maneta/asc2c/issues
