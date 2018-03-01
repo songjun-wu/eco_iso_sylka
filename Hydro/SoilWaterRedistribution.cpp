@@ -109,8 +109,8 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
 			x[2] = thetafc * d3;
 
 		// Tracking
-		if(ctrl.sw_trck)
-			_FluxL3toGW->matrix[r][c] -= max<REAL8>(0,L3 - x[2]);
+		// if(ctrl.sw_trck)
+		//	_FluxL3toGW->matrix[r][c] -= max<REAL8>(0,L3 - x[2]);
 	}
 
 	theta1 = x[0]/d1;
