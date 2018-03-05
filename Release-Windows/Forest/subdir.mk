@@ -6,6 +6,9 @@
 CPP_SRCS += \
 ../Forest/CalculateCanopyConduct.cpp \
 ../Forest/CreateGrids.cpp \
+../Forest/CreateGridsdD.cpp \
+../Forest/CreateGridsd18O.cpp \
+../Forest/CreateGridsAge.cpp \
 ../Forest/GrowForest.cpp \
 ../Forest/GrowGrass.cpp \
 ../Forest/GrowGrassLAI.cpp \
@@ -25,6 +28,9 @@ CPP_SRCS += \
 OBJS += \
 ./Forest/CalculateCanopyConduct.o \
 ./Forest/CreateGrids.o \
+./Forest/CreateGridsdD.o \
+./Forest/CreateGridsd18O.o \
+./Forest/CreateGridsAge.o \
 ./Forest/GrowForest.o \
 ./Forest/GrowGrass.o \
 ./Forest/GrowGrassLAI.o \
@@ -44,6 +50,9 @@ OBJS += \
 CPP_DEPS += \
 ./Forest/CalculateCanopyConduct.d \
 ./Forest/CreateGrids.d \
+./Forest/CreateGridsdD.d \
+./Forest/CreateGridsd18O.d \
+./Forest/CreateGridsAge.d \
 ./Forest/GrowForest.d \
 ./Forest/GrowGrass.d \
 ./Forest/GrowGrassLAI.d \
@@ -65,7 +74,7 @@ CPP_DEPS += \
 Forest/%.o: ../Forest/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
-	x86_64-w64-mingw32-g++ -DCPU_LITTLE_ENDIAN -I"/home/marco/workspace/ech2o/includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	x86_64-w64-mingw32-gcc -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

@@ -5,22 +5,28 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../Control/GenerateConfigTemplate.cpp \
-../Control/ReadConfigFile.cpp 
+../Control/GenerateConfigTrckTemplate.cpp \
+../Control/ReadConfigFile.cpp \
+../Control/ReadConfigTrck.cpp 
 
 OBJS += \
 ./Control/GenerateConfigTemplate.o \
-./Control/ReadConfigFile.o 
+./Control/GenerateConfigTrckTemplate.o \
+./Control/ReadConfigFile.o \
+./Control/ReadConfigTrck.o 
 
 CPP_DEPS += \
 ./Control/GenerateConfigTemplate.d \
-./Control/ReadConfigFile.d 
+./Control/GenerateConfigTrckTemplate.d \
+./Control/ReadConfigFile.d \
+./Control/ReadConfigTrck.d
 
 
 # Each subdirectory must supply rules for building sources it contributes
 Control/%.o: ../Control/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
-	x86_64-w64-mingw32-g++ -DCPU_LITTLE_ENDIAN -I"/home/marco/workspace/ech2o/includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	x86_64-w64-mingw32-gcc -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

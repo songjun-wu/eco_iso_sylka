@@ -109,8 +109,8 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
 			x[2] = thetafc * d3;
 
 		// Tracking
-		if(ctrl.sw_trck)
-			_FluxL3toGW->matrix[r][c] -= max<REAL8>(0,L3 - x[2]);
+		//if(ctrl.sw_trck)
+		//	_FluxL3toGW->matrix[r][c] -= max<REAL8>(0,L3 - x[2]);
 	}
 
 	theta1 = x[0]/d1;
@@ -121,7 +121,7 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
 	if(theta3>thetas){
 		theta2 += (theta3 - thetas) * d3/d2;
 
-		// Tracking
+		// Tracking : both equal because anyway theta3 = thetas > fc -> fluxes affect GW
 		if(ctrl.sw_trck){
 			_FluxL2toL3->matrix[r][c] -= (theta3 - thetas) * d3;
 			_FluxL3toGW->matrix[r][c] -= (theta3 - thetas) * d3;

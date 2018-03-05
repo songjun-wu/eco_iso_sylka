@@ -8,7 +8,10 @@ CPP_SRCS += \
 ../Hydro/CalcFieldCapacity.cpp \
 ../Hydro/CalcInitialStreamStorage.cpp \
 ../Hydro/CalcSoilResist.cpp \
+../Hydro/CalcRootDistrib.cpp \
+../Hydro/CalcSoilMoistureProfile.cpp \
 ../Hydro/CalculateForestGrowth.cpp \
+../Hydro/CalculateSatArea.cpp \
 ../Hydro/CanopyInterception.cpp \
 ../Hydro/Exfiltration.cpp \
 ../Hydro/GWrouting.cpp \
@@ -26,7 +29,10 @@ OBJS += \
 ./Hydro/CalcFieldCapacity.o \
 ./Hydro/CalcInitialStreamStorage.o \
 ./Hydro/CalcSoilResist.o \
+./Hydro/CalcRootDistrib.o \
 ./Hydro/CalculateForestGrowth.o \
+./Hydro/CalcSoilMoistureProfile.o \
+./Hydro/CalculateSatArea.o \
 ./Hydro/CanopyInterception.o \
 ./Hydro/Exfiltration.o \
 ./Hydro/GWrouting.o \
@@ -44,7 +50,10 @@ CPP_DEPS += \
 ./Hydro/CalcFieldCapacity.d \
 ./Hydro/CalcInitialStreamStorage.d \
 ./Hydro/CalcSoilResist.d \
+./Hydro/CalcRootDistrib.d \
+./Hydro/CalcSoilMoistureProfile.d \
 ./Hydro/CalculateForestGrowth.d \
+./Hydro/CalculateSatArea.d \
 ./Hydro/CanopyInterception.d \
 ./Hydro/Exfiltration.d \
 ./Hydro/GWrouting.d \
@@ -62,7 +71,7 @@ CPP_DEPS += \
 Hydro/%.o: ../Hydro/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
-	x86_64-w64-mingw32-g++ -DCPU_LITTLE_ENDIAN -I"/home/marco/workspace/ech2o/includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	x86_64-w64-mingw32-gcc -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
