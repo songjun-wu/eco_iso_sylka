@@ -10,6 +10,7 @@ CPP_SRCS += \
 ../Constructors/ForestConstruct.cpp \
 ../Constructors/GroveConstruct.cpp \
 ../Constructors/ReportConstruct.cpp \
+../Constructors/TrackingConstruct.cpp \
 ../Constructors/checkForestDatabase.cpp 
 
 OBJS += \
@@ -19,6 +20,7 @@ OBJS += \
 ./Constructors/ForestConstruct.o \
 ./Constructors/GroveConstruct.o \
 ./Constructors/ReportConstruct.o \
+./Constructors/TrackingConstruct.o \
 ./Constructors/checkForestDatabase.o 
 
 CPP_DEPS += \
@@ -28,6 +30,7 @@ CPP_DEPS += \
 ./Constructors/ForestConstruct.d \
 ./Constructors/GroveConstruct.d \
 ./Constructors/ReportConstruct.d \
+./Constructors/TrackingConstruct.d \
 ./Constructors/checkForestDatabase.d 
 
 
@@ -35,7 +38,7 @@ CPP_DEPS += \
 Constructors/%.o: ../Constructors/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
-	x86_64-w64-mingw32-g++ -DCPU_LITTLE_ENDIAN -I"/home/marco/workspace/ech2o/includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	x86_64-w64-mingw32-g++ -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
