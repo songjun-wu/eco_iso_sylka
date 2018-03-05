@@ -9,16 +9,16 @@ CPP_SRCS += \
 ../Budgets/AccountStorages.cpp \
 ../Budgets/MassBalanceError.cpp \
 ../Budgets/TotalEvaporation.cpp \
-../Budgets/TotalEvaporationS.cpp \
 ../Budgets/TotalEvaporationI.cpp \
+../Budgets/TotalEvaporationS.cpp \
 ../Budgets/TotalGWtoChn.cpp \
-../Budgets/TotalTranspiration.cpp \
 ../Budgets/TotalLeakage.cpp \
 ../Budgets/TotalOvlndFlow.cpp \
 ../Budgets/TotalPrecipitation.cpp \
 ../Budgets/TotalSaturationArea.cpp \
 ../Budgets/TotalSrftoChn.cpp \
 ../Budgets/TotalStorage.cpp \
+../Budgets/TotalTranspiration.cpp \
 ../Budgets/totalGrndFlow.cpp 
 
 OBJS += \
@@ -27,16 +27,16 @@ OBJS += \
 ./Budgets/AccountStorages.o \
 ./Budgets/MassBalanceError.o \
 ./Budgets/TotalEvaporation.o \
-./Budgets/TotalEvaporationS.o \
 ./Budgets/TotalEvaporationI.o \
+./Budgets/TotalEvaporationS.o \
 ./Budgets/TotalGWtoChn.o \
-./Budgets/TotalTranspiration.o \
 ./Budgets/TotalLeakage.o \
 ./Budgets/TotalOvlndFlow.o \
 ./Budgets/TotalPrecipitation.o \
 ./Budgets/TotalSaturationArea.o \
 ./Budgets/TotalSrftoChn.o \
 ./Budgets/TotalStorage.o \
+./Budgets/TotalTranspiration.o \
 ./Budgets/totalGrndFlow.o 
 
 CPP_DEPS += \
@@ -45,16 +45,16 @@ CPP_DEPS += \
 ./Budgets/AccountStorages.d \
 ./Budgets/MassBalanceError.d \
 ./Budgets/TotalEvaporation.d \
-./Budgets/TotalEvaporationS.d \
 ./Budgets/TotalEvaporationI.d \
+./Budgets/TotalEvaporationS.d \
 ./Budgets/TotalGWtoChn.d \
-./Budgets/TotalTranspiration.d \
 ./Budgets/TotalLeakage.d \
 ./Budgets/TotalOvlndFlow.d \
 ./Budgets/TotalPrecipitation.d \
 ./Budgets/TotalSaturationArea.d \
 ./Budgets/TotalSrftoChn.d \
 ./Budgets/TotalStorage.d \
+./Budgets/TotalTranspiration.d \
 ./Budgets/totalGrndFlow.d 
 
 
@@ -62,7 +62,7 @@ CPP_DEPS += \
 Budgets/%.o: ../Budgets/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross G++ Compiler'
-	x86_64-w64-mingw32-gcc -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	x86_64-w64-mingw32-g++ -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
