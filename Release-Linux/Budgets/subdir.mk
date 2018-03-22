@@ -19,7 +19,7 @@ CPP_SRCS += \
 ../Budgets/TotalSaturationArea.cpp \
 ../Budgets/TotalSrftoChn.cpp \
 ../Budgets/TotalStorage.cpp \
-../Budgets/totalGrndFlow.cpp 
+../Budgets/totalGrndFlow.cpp \
 
 OBJS += \
 ./Budgets/AccountFluxes.o \
@@ -37,7 +37,7 @@ OBJS += \
 ./Budgets/TotalSaturationArea.o \
 ./Budgets/TotalSrftoChn.o \
 ./Budgets/TotalStorage.o \
-./Budgets/totalGrndFlow.o 
+./Budgets/totalGrndFlow.o \
 
 CPP_DEPS += \
 ./Budgets/AccountFluxes.d \
@@ -55,7 +55,7 @@ CPP_DEPS += \
 ./Budgets/TotalSaturationArea.d \
 ./Budgets/TotalSrftoChn.d \
 ./Budgets/TotalStorage.d \
-./Budgets/totalGrndFlow.d 
+./Budgets/totalGrndFlow.d \
 
 
 # Each subdirectory must supply rules for building sources it contributes
