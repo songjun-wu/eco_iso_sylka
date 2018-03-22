@@ -19,19 +19,19 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * sativa.h
  *
  *  Created on: Jul 30, 2010
- *      Author: Marco.Maneta
+ *      Author: Marco Maneta, Sylvain Kuppel
  */
 
 #ifndef SATIVA_H_
 #define SATIVA_H_
 
-#define VERSION "V 5.4.0ns_trck"
+#define VERSION "V 1.0"
 
 #include "Basin.h"
 #include "Atmosphere.h"

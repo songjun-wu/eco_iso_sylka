@@ -1,10 +1,11 @@
-Tracking/MixingV_evapT.o Tracking/MixingV_evapT.o: \
- ../Tracking/MixingV_evapT.cpp ../includes/Basin.h \
+ech2o.o: ../ech2o.cpp ../includes/Sativa.h ../includes/Basin.h \
  ../includes/Atmosphere.h ../includes/Grid.h ../includes/csf.h \
  ../includes/csftypes.h ../includes/csfattr.h ../includes/InitConf.h \
  ../includes/ParsingFunctions.h ../includes/SortGrid.h \
  ../includes/ConstAndFuncs.h ../includes/Forest.h ../includes/Grove.h \
- ../includes/Basin.h ../includes/Tracking.h
+ ../includes/Tracking.h ../includes/Budget.h ../includes/Report.h
+
+../includes/Sativa.h:
 
 ../includes/Basin.h:
 
@@ -30,6 +31,8 @@ Tracking/MixingV_evapT.o Tracking/MixingV_evapT.o: \
 
 ../includes/Grove.h:
 
-../includes/Basin.h:
-
 ../includes/Tracking.h:
+
+../includes/Budget.h:
+
+../includes/Report.h:
