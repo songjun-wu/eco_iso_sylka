@@ -18,7 +18,7 @@ Evaporative fractionation of isotopes is also included.
 The Latest Version
 ------------------
 
-The latest stable version can be found in the *master_ns* branch of the source repository. 
+The latest stable version can be found in the *master* branch of the source repository. 
 
 Documentation
 -------------
