@@ -50,13 +50,13 @@ void Tracking::MixingV_evapS(Atmosphere &atm, Basin &bsn, Control &ctrl,
   // -- 2H ----------------------------------------------------------------------------
   if(ctrl.sw_2H){
     
-    // If fractionation and no lifo, fractio acts over the whole L1
+    // If fractionation, fractio acts over the whole L1
     // Safeguard with minimum E value: avoids diverging d2H_evap values
     if(ctrl.sw_frac and evapS > 1e-6)
       Frac_Esoil(atm, bsn, ctrl, V_old, V_new, beta, 
 		 _d2Hsoil1->matrix[r][c], d2H_new, d2H_evap, Ts, r, c, 0);
     else {
-      // If no fractionation (or negligible E) and no lifo, all from L1
+      // If no fractionation (or negligible E), all from L1
       d2H_new = _d2Hsoil1->matrix[r][c];
       d2H_evap = evapS > RNDOFFERR ? _d2Hsoil1->matrix[r][c] : -1000;
     }
@@ -70,13 +70,13 @@ void Tracking::MixingV_evapS(Atmosphere &atm, Basin &bsn, Control &ctrl,
   // -- 18O ---------------------------------------------------------------------------
   if(ctrl.sw_18O){
     
-    // If fractionation and no lifo, fractio acts over the whole L1
+    // If fractionation, fractio acts over the whole L1
     // Safeguard with minimum E value: avoids diverging d18O_E values
     if(ctrl.sw_frac and evapS > 1e-6){
       Frac_Esoil(atm, bsn, ctrl, V_old, V_new, beta, 
 		 _d18Osoil1->matrix[r][c], d18O_new, d18O_evap, Ts, r, c, 1);
     } else {
-      // If no fractionation (or negligible E) and no lifo, all from L1
+      // If no fractionation (or negligible E), all from L1
       d18O_new = _d18Osoil1->matrix[r][c];
       d18O_evap = evapS > RNDOFFERR ? _d18Osoil1->matrix[r][c] : -1000;
     }    
