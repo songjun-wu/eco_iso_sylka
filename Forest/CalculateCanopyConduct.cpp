@@ -73,7 +73,8 @@ int Forest::CalculateCanopyConduct(const Basin &bas, const Atmosphere &atm,
 	f_light = Calculate_gs_light(sw_rad, f_light_coeff); //TODO: implement light extinction factor when other species in the same cell is taller and has large LAI
 	f_temp = Calculate_ft(airTemp, maxTemp, minTemp, optTemp);
 	// Commented out because it is redundant: vpd limitation is already taken into account in LET calculation
-	f_vpd = 1;//Calculate_gs_vpd(vpd, f_vpd_coeff);
+	// EDIT: it is left here but the parameter value can be set very small to have effectively no dependence...outside the main code
+	f_vpd = Calculate_gs_vpd(vpd, f_vpd_coeff);
 	f_psi = Calculate_gs_lwp(lwp, f_lwp_high, f_lwp_low);
 
 	gs = gsmax * lai * shelter_factor * f_light * f_temp * f_vpd * f_psi;
