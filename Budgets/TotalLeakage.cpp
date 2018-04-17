@@ -19,13 +19,13 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * TotalLeakage.cpp
  *
  *  Created on: Mar 23, 2015
- *      Author: marco
+ *      Author: marco maneta, sylvain kuppel
  */
 
 #include "Budget.h"
@@ -35,4 +35,22 @@ void Budget::TotalBedrockLeakage(const grid* map, const Basin *b)
 	leakage += AccountFluxes(map, b);
 }
 
+void Budget::TotalBedrockLeakage_d2H(const grid* map1, const grid* map2, const Basin *b)
+{
+  //leakage_d2H += AccountTrckFluxes(map1, map2, b);
+  leakage_d2H = AccountTrckFluxes(map1, map2, b);
+}
+
+void Budget::TotalBedrockLeakage_d18O(const grid* map1, const grid* map2, const Basin *b)
+{
+  //leakage_d18O += AccountTrckFluxes(map1, map2, b);
+  leakage_d18O = AccountTrckFluxes(map1, map2, b);
+}
+
+// the water that already left is kept in the balance and "aging" as well
+void Budget::TotalBedrockLeakage_Age(const grid* map1, const grid* map2, const Basin *b)
+{
+  //leakage_Age += leakage * dt / 86400 + AccountTrckFluxes(map1, map2, b);
+  leakage_Age = AccountTrckFluxes(map1, map2, b);
+}
 

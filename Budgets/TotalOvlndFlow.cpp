@@ -19,13 +19,13 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * TotalOvlndFlow.cpp
  *
  *  Created on: Jul 29, 2010
- *      Author: Marco.Maneta
+ *      Author: Marco Maneta, Sylvain Kuppel
  */
 
 #include "Budget.h"
@@ -33,4 +33,23 @@
 void Budget::TotalOvlndFlow(const vectCells *timeseries, const Basin *b)
 {
 	ovlndflow += AccountFluxes(timeseries, b);
+}
+
+void Budget::TotalOvlndFlow_d2H(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  //ovlndflow_d2H += AccountTrckFluxes(timeseries1, timeseries2);
+  ovlndflow_d2H = AccountTrckFluxes(timeseries1, timeseries2);
+}
+
+void Budget::TotalOvlndFlow_d18O(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  //ovlndflow_d18O += AccountTrckFluxes(timeseries1, timeseries2);
+  ovlndflow_d18O = AccountTrckFluxes(timeseries1, timeseries2);
+}
+
+// the water that already left is kept in the balance and "aging" as well
+void Budget::TotalOvlndFlow_Age(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  //ovlndflow_Age += ovlndflow * dt / 86400 + AccountTrckFluxes(timeseries1, timeseries2);
+  ovlndflow_Age = AccountTrckFluxes(timeseries1, timeseries2);
 }

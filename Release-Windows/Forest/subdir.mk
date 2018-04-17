@@ -7,8 +7,8 @@ CPP_SRCS += \
 ../Forest/CalculateCanopyConduct.cpp \
 ../Forest/CreateGrids.cpp \
 ../Forest/CreateGridsAge.cpp \
-../Forest/CreateGridsd18O.cpp \
-../Forest/CreateGridsdD.cpp \
+../Forest/CreateGrids18O.cpp \
+../Forest/CreateGrids2H.cpp \
 ../Forest/GrowForest.cpp \
 ../Forest/GrowGrass.cpp \
 ../Forest/GrowGrassLAI.cpp \
@@ -29,8 +29,8 @@ OBJS += \
 ./Forest/CalculateCanopyConduct.o \
 ./Forest/CreateGrids.o \
 ./Forest/CreateGridsAge.o \
-./Forest/CreateGridsd18O.o \
-./Forest/CreateGridsdD.o \
+./Forest/CreateGrids18O.o \
+./Forest/CreateGrids2H.o \
 ./Forest/GrowForest.o \
 ./Forest/GrowGrass.o \
 ./Forest/GrowGrassLAI.o \
@@ -51,8 +51,8 @@ CPP_DEPS += \
 ./Forest/CalculateCanopyConduct.d \
 ./Forest/CreateGrids.d \
 ./Forest/CreateGridsAge.d \
-./Forest/CreateGridsd18O.d \
-./Forest/CreateGridsdD.d \
+./Forest/CreateGrids18O.d \
+./Forest/CreateGrids2H.d \
 ./Forest/GrowForest.d \
 ./Forest/GrowGrass.d \
 ./Forest/GrowGrassLAI.d \

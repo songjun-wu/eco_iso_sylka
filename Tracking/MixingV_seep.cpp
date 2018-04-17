@@ -36,11 +36,11 @@ void Tracking::MixingV_seep(Basin &bsn, Control &ctrl,
 
   REAL8 dtdx = ctrl.dt / bsn.getCellSize();
 
-  if(ctrl.sw_dD)
-    _dDsurface->matrix[r][c] = InputMix(ponding, _dDsurface->matrix[r][c],
-					qc*dtdx, _dDgroundwater->matrix[r][c]);
+  if(ctrl.sw_2H)
+    _d2Hsurface->matrix[r][c] = InputMix(ponding, _d2Hsurface->matrix[r][c],
+					qc*dtdx, _d2Hgroundwater->matrix[r][c]);
 
-  if(ctrl.sw_d18O)
+  if(ctrl.sw_18O)
     _d18Osurface->matrix[r][c] = InputMix(ponding, _d18Osurface->matrix[r][c],
 					qc*dtdx, _d18Ogroundwater->matrix[r][c]);
 

@@ -40,7 +40,7 @@ int Grove::CreateGridsd18O(grid *base){
 
 	}catch(const exception& e){
 
-		cerr << "Failed allocate memory for Grove grid (d18O) object \n" << e.what() << endl;
+		cerr << "Failed allocate memory for Grove grid (18O) object \n" << e.what() << endl;
 		exit(EXIT_FAILURE);
 	}
 

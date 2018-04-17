@@ -41,178 +41,176 @@ using namespace std;
 int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 {
 
-	struct stat info; //needed to check the status of the folders
-
-	try{
-		ConfigFile ConfigTrck(confilename);
-
-		sw_dD = ConfigTrck.read<bool>("water_dD");
-		sw_d18O = ConfigTrck.read<bool>("water_d18O");
-		sw_Age = ConfigTrck.read<bool>("water_Age");
-		sw_frac = ConfigTrck.read<bool>("water_frac");
-		sw_lifo = ConfigTrck.read<bool>("water_lifo");
+  try{
+    ConfigFile ConfigTrck(confilename);
+    
+    sw_2H = ConfigTrck.read<bool>("water_2H");
+    sw_18O = ConfigTrck.read<bool>("water_18O");
+    sw_Age = ConfigTrck.read<bool>("water_Age");
+    sw_frac = ConfigTrck.read<bool>("water_frac");
+    
+    if(sw_frac){
+      toggle_hs = ConfigTrck.read<bool>("Fractionation_surface_relhum");
+      toggle_n = ConfigTrck.read<bool>("Fractionation_turbulent_factor");
+      toggle_ek = ConfigTrck.read<bool>("Fractionation_kinetic_diffusion");
+    }
 		
-		if(sw_frac){
-		  toggle_hs = ConfigTrck.read<bool>("Fractionation_surface_relhum");
-		  toggle_n = ConfigTrck.read<bool>("Fractionation_turbulent_factor");
-		}
-		
-		if(sw_dD){
-
-			// Precipitation input
-			ConfigTrck.readInto(fn_dDprecip, "dD_precip");
+    if(sw_2H){
+      
+      // Precipitation input
+      ConfigTrck.readInto(fn_d2Hprecip, "d2H_precip");
 			// Initial values
-			//ConfigTrck.readInto(fn_dDcanopy, "init_dD_canopy");
-			ConfigTrck.readInto(fn_dDsnowpack, "init_dD_snowpack");
-			ConfigTrck.readInto(fn_dDsurface, "init_dD_surface");
-			ConfigTrck.readInto(fn_dDsoil1, "init_dD_soil1");
-			ConfigTrck.readInto(fn_dDsoil2, "init_dD_soil2");
-			ConfigTrck.readInto(fn_dDsoil3, "init_dD_soil3");
-			ConfigTrck.readInto(fn_dDgroundwater, "init_dD_groundwater");
-			//			ConfigTrck.readInto(fn_dDchannel, "init_dD_channel");
-			// Report maps
-			Rep_dDprecip = ConfigTrck.read<bool>("Rep_dDprecip");
-			//Rep_dDcanopy = ConfigTrck.read<bool>("Rep_dDcanopy");
-			Rep_dDsnowpack = ConfigTrck.read<bool>("Rep_dDsnowpack");
-			Rep_dDsurface = ConfigTrck.read<bool>("Rep_dDsurface");
-			Rep_dDsoil1 = ConfigTrck.read<bool>("Rep_dDsoil1");
-			Rep_dDsoil2 = ConfigTrck.read<bool>("Rep_dDsoil2");
-			Rep_dDsoilUp = ConfigTrck.read<bool>("Rep_dDsoilUp");
-			Rep_dDsoil3 = ConfigTrck.read<bool>("Rep_dDsoil3");
-			Rep_dDsoilAv = ConfigTrck.read<bool>("Rep_dDsoilAv");
-			Rep_dDgroundwater = ConfigTrck.read<bool>("Rep_dDgroundwater");
-			Rep_dDevapS = ConfigTrck.read<bool>("Rep_dDevapS");
-			Rep_dDevapS_sum = ConfigTrck.read<bool>("Rep_dDevapS_sum");
-			Rep_dDevapI = ConfigTrck.read<bool>("Rep_dDevapI");
-			Rep_dDevapI_sum = ConfigTrck.read<bool>("Rep_dDevapI_sum");
-			Rep_dDevapT = ConfigTrck.read<bool>("Rep_dDevapT");
-			Rep_dDevapT_sum = ConfigTrck.read<bool>("Rep_dDevapT_sum");
-			// Report time series
-			RepTs_dDprecip = ConfigTrck.read<bool>("Ts_dDprecip");
-			//RepTs_dDcanopy = ConfigTrck.read<bool>("Ts_dDcanopy");
-			RepTs_dDsnowpack = ConfigTrck.read<bool>("Ts_dDsnowpack");
-			RepTs_dDsurface = ConfigTrck.read<bool>("Ts_dDsurface");
-			RepTs_dDsoil1 = ConfigTrck.read<bool>("Ts_dDsoil1");
-			RepTs_dDsoil2 = ConfigTrck.read<bool>("Ts_dDsoil2");
-			RepTs_dDsoilUp = ConfigTrck.read<bool>("Ts_dDsoilUp");
-			RepTs_dDsoil3 = ConfigTrck.read<bool>("Ts_dDsoil3");
-			RepTs_dDsoilAv = ConfigTrck.read<bool>("Ts_dDsoilAv");
-			RepTs_dDgroundwater = ConfigTrck.read<bool>("Ts_dDgroundwater");
-			RepTs_dDevapS = ConfigTrck.read<bool>("Ts_dDevapS");
-			RepTs_dDevapS_sum = ConfigTrck.read<bool>("Ts_dDevapS_sum");
-			RepTs_dDevapI = ConfigTrck.read<bool>("Ts_dDevapI");
-			RepTs_dDevapI_sum = ConfigTrck.read<bool>("Ts_dDevapI_sum");
-			RepTs_dDevapT = ConfigTrck.read<bool>("Ts_dDevapT");
-			RepTs_dDevapT_sum = ConfigTrck.read<bool>("Ts_dDevapT_sum");
-		}
+			//ConfigTrck.readInto(fn_d2Hcanopy, "init_d2H_canopy");
+      ConfigTrck.readInto(fn_d2Hsnowpack, "init_d2H_snowpack");
+      ConfigTrck.readInto(fn_d2Hsurface, "init_d2H_surface");
+      ConfigTrck.readInto(fn_d2Hsoil1, "init_d2H_soil1");
+      ConfigTrck.readInto(fn_d2Hsoil2, "init_d2H_soil2");
+      ConfigTrck.readInto(fn_d2Hsoil3, "init_d2H_soil3");
+      ConfigTrck.readInto(fn_d2Hgroundwater, "init_d2H_groundwater");
+      //ConfigTrck.readInto(fn_d2Hchannel, "init_d2H_channel");
+      // Report maps
+      Rep_d2Hprecip = ConfigTrck.read<bool>("Rep_d2Hprecip");
+      //Rep_d2Hcanopy = ConfigTrck.read<bool>("Rep_d2Hcanopy");
+      Rep_d2Hsnowpack = ConfigTrck.read<bool>("Rep_d2Hsnowpack");
+      Rep_d2Hsurface = ConfigTrck.read<bool>("Rep_d2Hsurface");
+      Rep_d2Hsoil1 = ConfigTrck.read<bool>("Rep_d2Hsoil1");
+      Rep_d2Hsoil2 = ConfigTrck.read<bool>("Rep_d2Hsoil2");
+      Rep_d2HsoilUp = ConfigTrck.read<bool>("Rep_d2HsoilUp");
+      Rep_d2Hsoil3 = ConfigTrck.read<bool>("Rep_d2Hsoil3");
+      Rep_d2HsoilAv = ConfigTrck.read<bool>("Rep_d2HsoilAv");
+      Rep_d2Hgroundwater = ConfigTrck.read<bool>("Rep_d2Hgroundwater");
+      Rep_d2HevapS = ConfigTrck.read<bool>("Rep_d2HevapS");
+      Rep_d2HevapS_sum = ConfigTrck.read<bool>("Rep_d2HevapS_sum");
+      Rep_d2HevapI = ConfigTrck.read<bool>("Rep_d2HevapI");
+      Rep_d2HevapI_sum = ConfigTrck.read<bool>("Rep_d2HevapI_sum");
+      Rep_d2HevapT = ConfigTrck.read<bool>("Rep_d2HevapT");
+      Rep_d2HevapT_sum = ConfigTrck.read<bool>("Rep_d2HevapT_sum");
+      // Report time series
+      RepTs_d2Hprecip = ConfigTrck.read<bool>("Ts_d2Hprecip");
+      //RepTs_d2Hcanopy = ConfigTrck.read<bool>("Ts_d2Hcanopy");
+      RepTs_d2Hsnowpack = ConfigTrck.read<bool>("Ts_d2Hsnowpack");
+      RepTs_d2Hsurface = ConfigTrck.read<bool>("Ts_d2Hsurface");
+      RepTs_d2Hsoil1 = ConfigTrck.read<bool>("Ts_d2Hsoil1");
+      RepTs_d2Hsoil2 = ConfigTrck.read<bool>("Ts_d2Hsoil2");
+      RepTs_d2HsoilUp = ConfigTrck.read<bool>("Ts_d2HsoilUp");
+      RepTs_d2Hsoil3 = ConfigTrck.read<bool>("Ts_d2Hsoil3");
+      RepTs_d2HsoilAv = ConfigTrck.read<bool>("Ts_d2HsoilAv");
+      RepTs_d2Hgroundwater = ConfigTrck.read<bool>("Ts_d2Hgroundwater");
+      RepTs_d2HevapS = ConfigTrck.read<bool>("Ts_d2HevapS");
+      RepTs_d2HevapS_sum = ConfigTrck.read<bool>("Ts_d2HevapS_sum");
+      RepTs_d2HevapI = ConfigTrck.read<bool>("Ts_d2HevapI");
+      RepTs_d2HevapI_sum = ConfigTrck.read<bool>("Ts_d2HevapI_sum");
+      RepTs_d2HevapT = ConfigTrck.read<bool>("Ts_d2HevapT");
+      RepTs_d2HevapT_sum = ConfigTrck.read<bool>("Ts_d2HevapT_sum");
+    }
+    
+    if(sw_18O){
+      // Precipitation input
+      ConfigTrck.readInto(fn_d18Oprecip, "d18O_precip");
+      // Initial values
+      //ConfigTrck.readInto(fn_d18Ocanopy, "init_d18O_canopy");
+      ConfigTrck.readInto(fn_d18Osnowpack, "init_d18O_snowpack");
+      ConfigTrck.readInto(fn_d18Osurface, "init_d18O_surface");
+      ConfigTrck.readInto(fn_d18Osoil1, "init_d18O_soil1");
+      ConfigTrck.readInto(fn_d18Osoil2, "init_d18O_soil2");
+      ConfigTrck.readInto(fn_d18Osoil3, "init_d18O_soil3");
+      ConfigTrck.readInto(fn_d18Ogroundwater, "init_d18O_groundwater");
+      //ConfigTrck.readInto(fn_d18Ochannel, "init_d18O_channel");
+      // Report maps
+      Rep_d18Oprecip = ConfigTrck.read<bool>("Rep_d18Oprecip");
+      //Rep_d18Ocanopy = ConfigTrck.read<bool>("Rep_d18Ocanopy");
+      Rep_d18Osnowpack = ConfigTrck.read<bool>("Rep_d18Osnowpack");
+      Rep_d18Osurface = ConfigTrck.read<bool>("Rep_d18Osurface");
+      Rep_d18Osoil1 = ConfigTrck.read<bool>("Rep_d18Osoil1");
+      Rep_d18Osoil2 = ConfigTrck.read<bool>("Rep_d18Osoil2");
+      Rep_d18OsoilUp = ConfigTrck.read<bool>("Rep_d18OsoilUp");
+      Rep_d18Osoil3 = ConfigTrck.read<bool>("Rep_d18Osoil3");
+      Rep_d18OsoilAv = ConfigTrck.read<bool>("Rep_d18OsoilAv");
+      Rep_d18Ogroundwater = ConfigTrck.read<bool>("Rep_d18Ogroundwater");
+      Rep_d18OevapS = ConfigTrck.read<bool>("Rep_d18OevapS");
+      Rep_d18OevapS_sum = ConfigTrck.read<bool>("Rep_d18OevapS_sum");
+      Rep_d18OevapI = ConfigTrck.read<bool>("Rep_d18OevapI");
+      Rep_d18OevapI_sum = ConfigTrck.read<bool>("Rep_d18OevapI_sum");
+      Rep_d18OevapT = ConfigTrck.read<bool>("Rep_d18OevapT");
+      Rep_d18OevapT_sum = ConfigTrck.read<bool>("Rep_d18OevapT_sum");
+      // Report time series
+      RepTs_d18Oprecip = ConfigTrck.read<bool>("Ts_d18Oprecip");
+      //RepTs_d18Ocanopy = ConfigTrck.read<bool>("Ts_d18Ocanopy");
+      RepTs_d18Osnowpack = ConfigTrck.read<bool>("Ts_d18Osnowpack");
+      RepTs_d18Osurface = ConfigTrck.read<bool>("Ts_d18Osurface");
+      RepTs_d18Osoil1 = ConfigTrck.read<bool>("Ts_d18Osoil1");
+      RepTs_d18Osoil2 = ConfigTrck.read<bool>("Ts_d18Osoil2");
+      RepTs_d18OsoilUp = ConfigTrck.read<bool>("Ts_d18OsoilUp");
+      RepTs_d18Osoil3 = ConfigTrck.read<bool>("Ts_d18Osoil3");
+      RepTs_d18OsoilAv = ConfigTrck.read<bool>("Ts_d18OsoilAv");
+      RepTs_d18Ogroundwater = ConfigTrck.read<bool>("Ts_d18Ogroundwater");
+      RepTs_d18OevapS = ConfigTrck.read<bool>("Ts_d18OevapS");
+      RepTs_d18OevapS_sum = ConfigTrck.read<bool>("Ts_d18OevapS_sum");
+      RepTs_d18OevapI = ConfigTrck.read<bool>("Ts_d18OevapI");
+      RepTs_d18OevapI_sum = ConfigTrck.read<bool>("Ts_d18OevapI_sum");
+      RepTs_d18OevapT = ConfigTrck.read<bool>("Ts_d18OevapT");
+      RepTs_d18OevapT_sum = ConfigTrck.read<bool>("Ts_d18OevapT_sum");
+    }
 
-		if(sw_d18O){
-			// Precipitation input
-			ConfigTrck.readInto(fn_d18Oprecip, "d18O_precip");
-			// Initial values
-			//ConfigTrck.readInto(fn_d18Ocanopy, "init_d18O_canopy");
-			ConfigTrck.readInto(fn_d18Osnowpack, "init_d18O_snowpack");
-			ConfigTrck.readInto(fn_d18Osurface, "init_d18O_surface");
-			ConfigTrck.readInto(fn_d18Osoil1, "init_d18O_soil1");
-			ConfigTrck.readInto(fn_d18Osoil2, "init_d18O_soil2");
-			ConfigTrck.readInto(fn_d18Osoil3, "init_d18O_soil3");
-			ConfigTrck.readInto(fn_d18Ogroundwater, "init_d18O_groundwater");
-			//			ConfigTrck.readInto(fn_d18Ochannel, "init_d18O_channel");
-			// Report maps
-			Rep_d18Oprecip = ConfigTrck.read<bool>("Rep_d18Oprecip");
-			//Rep_d18Ocanopy = ConfigTrck.read<bool>("Rep_d18Ocanopy");
-			Rep_d18Osnowpack = ConfigTrck.read<bool>("Rep_d18Osnowpack");
-			Rep_d18Osurface = ConfigTrck.read<bool>("Rep_d18Osurface");
-			Rep_d18Osoil1 = ConfigTrck.read<bool>("Rep_d18Osoil1");
-			Rep_d18Osoil2 = ConfigTrck.read<bool>("Rep_d18Osoil2");
-			Rep_d18OsoilUp = ConfigTrck.read<bool>("Rep_d18OsoilUp");
-			Rep_d18Osoil3 = ConfigTrck.read<bool>("Rep_d18Osoil3");
-			Rep_d18OsoilAv = ConfigTrck.read<bool>("Rep_d18OsoilAv");
-			Rep_d18Ogroundwater = ConfigTrck.read<bool>("Rep_d18Ogroundwater");
-			Rep_d18OevapS = ConfigTrck.read<bool>("Rep_d18OevapS");
-			Rep_d18OevapS_sum = ConfigTrck.read<bool>("Rep_d18OevapS_sum");
-			Rep_d18OevapI = ConfigTrck.read<bool>("Rep_d18OevapI");
-			Rep_d18OevapI_sum = ConfigTrck.read<bool>("Rep_d18OevapI_sum");
-			Rep_d18OevapT = ConfigTrck.read<bool>("Rep_d18OevapT");
-			Rep_d18OevapT_sum = ConfigTrck.read<bool>("Rep_d18OevapT_sum");
-			// Report time series
-			RepTs_d18Oprecip = ConfigTrck.read<bool>("Ts_d18Oprecip");
-			//RepTs_d18Ocanopy = ConfigTrck.read<bool>("Ts_d18Ocanopy");
-			RepTs_d18Osnowpack = ConfigTrck.read<bool>("Ts_d18Osnowpack");
-			RepTs_d18Osurface = ConfigTrck.read<bool>("Ts_d18Osurface");
-			RepTs_d18Osoil1 = ConfigTrck.read<bool>("Ts_d18Osoil1");
-			RepTs_d18Osoil2 = ConfigTrck.read<bool>("Ts_d18Osoil2");
-			RepTs_d18OsoilUp = ConfigTrck.read<bool>("Ts_d18OsoilUp");
-			RepTs_d18Osoil3 = ConfigTrck.read<bool>("Ts_d18Osoil3");
-			RepTs_d18OsoilAv = ConfigTrck.read<bool>("Ts_d18OsoilAv");
-			RepTs_d18Ogroundwater = ConfigTrck.read<bool>("Ts_d18Ogroundwater");
-			RepTs_d18OevapS = ConfigTrck.read<bool>("Ts_d18OevapS");
-			RepTs_d18OevapS_sum = ConfigTrck.read<bool>("Ts_d18OevapS_sum");
-			RepTs_d18OevapI = ConfigTrck.read<bool>("Ts_d18OevapI");
-			RepTs_d18OevapI_sum = ConfigTrck.read<bool>("Ts_d18OevapI_sum");
-			RepTs_d18OevapT = ConfigTrck.read<bool>("Ts_d18OevapT");
-			RepTs_d18OevapT_sum = ConfigTrck.read<bool>("Ts_d18OevapT_sum");
-		}
+    if(sw_Age){
 
-		if(sw_Age){
-
-			// Initial values
-			//ConfigTrck.readInto(fn_Agecanopy, "init_Age_canopy");
-			ConfigTrck.readInto(fn_Agesnowpack, "init_Age_snowpack");
-			ConfigTrck.readInto(fn_Agesurface, "init_Age_surface");
-			ConfigTrck.readInto(fn_Agesoil1, "init_Age_soil1");
-			ConfigTrck.readInto(fn_Agesoil2, "init_Age_soil2");
-			ConfigTrck.readInto(fn_Agesoil3, "init_Age_soil3");
-			ConfigTrck.readInto(fn_Agegroundwater, "init_Age_groundwater");
-			//ConfigTrck.readInto(fn_Agechannel, "init_Age_channel");
-			// Report maps
-			//Rep_Agecanopy = ConfigTrck.read<bool>("Rep_Agecanopy");
-			Rep_Agesnowpack = ConfigTrck.read<bool>("Rep_Agesnowpack");
-			Rep_Agesurface = ConfigTrck.read<bool>("Rep_Agesurface");
-			Rep_Agesoil1 = ConfigTrck.read<bool>("Rep_Agesoil1");
-			Rep_Agesoil2 = ConfigTrck.read<bool>("Rep_Agesoil2");
-			Rep_AgesoilUp = ConfigTrck.read<bool>("Rep_AgesoilUp");
-			Rep_Agesoil3 = ConfigTrck.read<bool>("Rep_Agesoil3");
-			Rep_AgesoilAv = ConfigTrck.read<bool>("Rep_AgesoilAv");
-			Rep_Agegroundwater = ConfigTrck.read<bool>("Rep_Agegroundwater");
-			Rep_AgeevapS = ConfigTrck.read<bool>("Rep_AgeevapS");
-			Rep_AgeevapS_sum = ConfigTrck.read<bool>("Rep_AgeevapS_sum");
-			Rep_AgeevapI = ConfigTrck.read<bool>("Rep_AgeevapI");
-			Rep_AgeevapI_sum = ConfigTrck.read<bool>("Rep_AgeevapI_sum");
-			Rep_AgeevapT = ConfigTrck.read<bool>("Rep_AgeevapT");
-			Rep_AgeevapT_sum = ConfigTrck.read<bool>("Rep_AgeevapT_sum");
-			// Report time series
-			//RepTs_Agecanopy = ConfigTrck.read<bool>("Ts_Agecanopy");
-			RepTs_Agesnowpack = ConfigTrck.read<bool>("Ts_Agesnowpack");
-			RepTs_Agesurface = ConfigTrck.read<bool>("Ts_Agesurface");
-			RepTs_Agesoil1 = ConfigTrck.read<bool>("Ts_Agesoil1");
-			RepTs_Agesoil2 = ConfigTrck.read<bool>("Ts_Agesoil2");
-			RepTs_AgesoilUp = ConfigTrck.read<bool>("Ts_AgesoilUp");
-			RepTs_Agesoil3 = ConfigTrck.read<bool>("Ts_Agesoil3");
-			RepTs_AgesoilAv = ConfigTrck.read<bool>("Ts_AgesoilAv");
-			RepTs_Agegroundwater = ConfigTrck.read<bool>("Ts_Agegroundwater");
-			RepTs_AgeevapS = ConfigTrck.read<bool>("Ts_AgeevapS");
-			RepTs_AgeevapS_sum = ConfigTrck.read<bool>("Ts_AgeevapS_sum");
-			RepTs_AgeevapI = ConfigTrck.read<bool>("Ts_AgeevapI");
-			RepTs_AgeevapI_sum = ConfigTrck.read<bool>("Ts_AgeevapI_sum");
-			RepTs_AgeevapT = ConfigTrck.read<bool>("Ts_AgeevapT");
-			RepTs_AgeevapT_sum = ConfigTrck.read<bool>("Ts_AgeevapT_sum");
-		}
-	}
-	catch(ConfigFile::file_not_found &fn){
-		cout << "Tracking file " << fn.filename << " not found\n";
-		exit(EXIT_SUCCESS);
-	}
-	catch(ConfigFile::key_not_found &fn){
-		cout << "Tracking key " << fn.key << " not found\n";
-		exit(EXIT_SUCCESS);
-	}
-	catch(std::exception &e){
-		cout << e.what();
-		exit(EXIT_SUCCESS);
-	}
+      // Initial values
+      //ConfigTrck.readInto(fn_Agecanopy, "init_Age_canopy");
+      ConfigTrck.readInto(fn_Agesnowpack, "init_Age_snowpack");
+      ConfigTrck.readInto(fn_Agesurface, "init_Age_surface");
+      ConfigTrck.readInto(fn_Agesoil1, "init_Age_soil1");
+      ConfigTrck.readInto(fn_Agesoil2, "init_Age_soil2");
+      ConfigTrck.readInto(fn_Agesoil3, "init_Age_soil3");
+      ConfigTrck.readInto(fn_Agegroundwater, "init_Age_groundwater");
+      //ConfigTrck.readInto(fn_Agechannel, "init_Age_channel");
+      // Report maps
+      //Rep_Agecanopy = ConfigTrck.read<bool>("Rep_Agecanopy");
+      Rep_Agesnowpack = ConfigTrck.read<bool>("Rep_Agesnowpack");
+      Rep_Agesurface = ConfigTrck.read<bool>("Rep_Agesurface");
+      Rep_Agesoil1 = ConfigTrck.read<bool>("Rep_Agesoil1");
+      Rep_Agesoil2 = ConfigTrck.read<bool>("Rep_Agesoil2");
+      Rep_AgesoilUp = ConfigTrck.read<bool>("Rep_AgesoilUp");
+      Rep_Agesoil3 = ConfigTrck.read<bool>("Rep_Agesoil3");
+      Rep_AgesoilAv = ConfigTrck.read<bool>("Rep_AgesoilAv");
+      Rep_Agegroundwater = ConfigTrck.read<bool>("Rep_Agegroundwater");
+      Rep_AgeevapS = ConfigTrck.read<bool>("Rep_AgeevapS");
+      Rep_AgeevapS_sum = ConfigTrck.read<bool>("Rep_AgeevapS_sum");
+      Rep_AgeevapI = ConfigTrck.read<bool>("Rep_AgeevapI");
+      Rep_AgeevapI_sum = ConfigTrck.read<bool>("Rep_AgeevapI_sum");
+      Rep_AgeevapT = ConfigTrck.read<bool>("Rep_AgeevapT");
+      Rep_AgeevapT_sum = ConfigTrck.read<bool>("Rep_AgeevapT_sum");
+      // Report time series
+      //RepTs_Agecanopy = ConfigTrck.read<bool>("Ts_Agecanopy");
+      RepTs_Agesnowpack = ConfigTrck.read<bool>("Ts_Agesnowpack");
+      RepTs_Agesurface = ConfigTrck.read<bool>("Ts_Agesurface");
+      RepTs_Agesoil1 = ConfigTrck.read<bool>("Ts_Agesoil1");
+      RepTs_Agesoil2 = ConfigTrck.read<bool>("Ts_Agesoil2");
+      RepTs_AgesoilUp = ConfigTrck.read<bool>("Ts_AgesoilUp");
+      RepTs_Agesoil3 = ConfigTrck.read<bool>("Ts_Agesoil3");
+      RepTs_AgesoilAv = ConfigTrck.read<bool>("Ts_AgesoilAv");
+      RepTs_Agegroundwater = ConfigTrck.read<bool>("Ts_Agegroundwater");
+      RepTs_AgeevapS = ConfigTrck.read<bool>("Ts_AgeevapS");
+      RepTs_AgeevapS_sum = ConfigTrck.read<bool>("Ts_AgeevapS_sum");
+      RepTs_AgeevapI = ConfigTrck.read<bool>("Ts_AgeevapI");
+      RepTs_AgeevapI_sum = ConfigTrck.read<bool>("Ts_AgeevapI_sum");
+      RepTs_AgeevapT = ConfigTrck.read<bool>("Ts_AgeevapT");
+      RepTs_AgeevapT_sum = ConfigTrck.read<bool>("Ts_AgeevapT_sum");
+    }
+  }
+  catch(ConfigFile::file_not_found &fn){
+    cout << "Tracking file " << fn.filename << " not found\n";
+    exit(EXIT_SUCCESS);
+  }
+  catch(ConfigFile::key_not_found &fn){
+    cout << "Tracking key " << fn.key << " not found\n";
+    exit(EXIT_SUCCESS);
+  }
+  catch(std::exception &e){
+    cout << e.what();
+    exit(EXIT_SUCCESS);
+  }
 
 
 
-	return 1;
+  return 1;
 }

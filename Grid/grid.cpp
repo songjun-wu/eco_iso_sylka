@@ -34,7 +34,6 @@
 #include <fstream>
 #include "Grid.h"
 
-
 int Grass2Grid(std::string fname, grid *pnt);
 int CSF2Grid(std::string fname, grid *pnt);
 int Table2Grid(std::string fname, grid *pnt);
@@ -100,6 +99,7 @@ grid::grid(const grid &m)
         dx = m.dx;
 
 }
+
 
 void grid::reset(){
 

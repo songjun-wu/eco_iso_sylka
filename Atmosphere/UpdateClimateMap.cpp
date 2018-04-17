@@ -29,6 +29,7 @@
  */
 
 #include "Atmosphere.h"
+#include "ConstAndFuncs.h"
 
 int Atmosphere::UpdateClimateMap(ifstream &ifHandle, grid &ClimMap){
 
@@ -50,8 +51,8 @@ int Atmosphere::UpdateClimateMap(ifstream &ifHandle, grid &ClimMap){
 						r = _vSortedGrid[i].cells[j].row;
 						c = _vSortedGrid[i].cells[j].col;
 
-							ClimMap.matrix[r][c] = data[_zoneId[i]];
-							data_written++;
+						ClimMap.matrix[r][c] = data[_zoneId[i]];
+						data_written++;
 					}
 		//		}
 

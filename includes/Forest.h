@@ -79,7 +79,7 @@ class Forest {
 public:
 
 	Forest();
-	Forest(Control & ctrl);
+	Forest(Control &ctrl);
     ~Forest();
 
    int CalculateCanopyConduct(const Basin &bas, const Atmosphere &atm, const Control &ctrl, const double &lwp, double &dgsdlwp, UINT4 j, UINT4 r, UINT4 c);
@@ -91,6 +91,9 @@ public:
    int CanopyInterception(Atmosphere &atm, Control &ctrl, REAL8 &DelCanStor, REAL8 &D, UINT4 s, UINT4 r, UINT4 c);
    int GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl);
 
+
+   // Convert grid from isotopic ratios to isotopic deltas
+   void Ratio2DeltaGrid(const Basin &bas, const grid &m, grid &mO, int iso);   
 
     //getters
     UINT4 getNumSpecies() const {
@@ -143,12 +146,17 @@ public:
     }
 
     REAL8 getIntercWater(UINT4 n, UINT4 row, UINT4 col) const {
-           	Grove *spe = &_species[n]; //ACHTUNG ACHTUNG! MEMORY LEAK??!?!?!
-           	return spe->_WaterStorage->matrix[row][col];
+      //Grove *spe = &_species[n]; //ACHTUNG ACHTUNG! MEMORY LEAK??!?!?!
+      //return spe->_WaterStorage->matrix[row][col];
+      return _species[n]._WaterStorage->matrix[row][col];
     }
 
     REAL8 getBeersCoeff(UINT4 n, UINT4 row, UINT4 col) const {
 			return _species[n].KBeers;
+    }
+    
+    REAL8 getKRoot(UINT4 n) const {
+      return _species[n].Kroot;
     }
 
     REAL8 getSperry_d(UINT4 n, UINT4 row, UINT4 col) const {
@@ -182,6 +190,12 @@ public:
     }
     REAL8 getLeafWaterPotential(UINT4 n, UINT4 row, UINT4 col) const {
     	return _species[n]._LeafWatPot->matrix[row][col];
+    }
+    grid *getRootFrac1(UINT4 n) const {
+    	return _species[n]._rootfrac1;
+    }
+    grid *getRootFrac2(UINT4 n) const {
+    	return _species[n]._rootfrac2;
     }
 
 
@@ -271,81 +285,92 @@ public:
    void setETSpecies(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
              _species[n]._ET->matrix[row][col] = value;
     }
+   void setRootFrac1Species(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+     _species[n]._rootfrac1->matrix[row][col] = value;
+    }
+   void setRootFrac2Species(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+     _species[n]._rootfrac2->matrix[row][col] = value;
+    }
 
     // -- Tracking
     // getters
-    grid *getdDcanopy(UINT4 n) const {
-      return _species[n]._dDcanopy;
+    grid *getd2Hcanopy(UINT4 n) const {
+      return _species[n]._d2Hcanopy;
     }
+    grid *getd2HevapT(UINT4 n) const {
+      return _species[n]._d2HevapT;
+    }
+    grid *getd2HevapI(UINT4 n) const {
+      return _species[n]._d2HevapI;
+    }
+    grid *getd2HevapS(UINT4 n) const {
+      return _species[n]._d2HevapS;
+    }
+
     grid *getd18Ocanopy(UINT4 n) const {
-          return _species[n]._d18Ocanopy;
-        }
-    grid *getAgecanopy(UINT4 n) const {
-          return _species[n]._Agecanopy;
-        }
-    grid *getdDevapI(UINT4 n) const {
-      return _species[n]._dDevapI;
-    }
-    grid *getd18OevapI(UINT4 n) const {
-          return _species[n]._d18OevapI;
-        }
-    grid *getAgeevapI(UINT4 n) const {
-          return _species[n]._AgeevapI;
-        }
-    grid *getdDevapT(UINT4 n) const {
-      return _species[n]._dDevapT;
+      return _species[n]._d18Ocanopy;
     }
     grid *getd18OevapT(UINT4 n) const {
-          return _species[n]._d18OevapT;
-        }
-    grid *getAgeevapT(UINT4 n) const {
-          return _species[n]._AgeevapT;
-        }
-    grid *getdDevapS(UINT4 n) const {
-      return _species[n]._dDevapS;
+      return _species[n]._d18OevapT;
+    }
+    grid *getd18OevapI(UINT4 n) const {
+      return _species[n]._d18OevapI;
     }
     grid *getd18OevapS(UINT4 n) const {
-          return _species[n]._d18OevapS;
+      return _species[n]._d18OevapS;
         }
-    grid *getAgeevapS(UINT4 n) const {
-          return _species[n]._AgeevapS;
-        }
-    // setters
-    void setdDcanopy(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._dDcanopy->matrix[row][col] = value;
+    
+    grid *getAgecanopy(UINT4 n) const {
+      return _species[n]._Agecanopy;
     }
+    grid *getAgeevapS(UINT4 n) const {
+      return _species[n]._AgeevapS;
+    }
+    grid *getAgeevapI(UINT4 n) const {
+      return _species[n]._AgeevapI;
+    }
+    grid *getAgeevapT(UINT4 n) const {
+      return _species[n]._AgeevapT;
+    }
+
+    // setters
+    void setd2Hcanopy(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._d2Hcanopy->matrix[row][col] = value;
+    }
+    void setd2HevapS(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._d2HevapS->matrix[row][col] = value;
+    }
+    void setd2HevapI(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._d2HevapI->matrix[row][col] = value;
+    }
+    void setd2HevapT(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._d2HevapT->matrix[row][col] = value;
+    }
+
     void setd18Ocanopy(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
           _species[n]._d18Ocanopy->matrix[row][col] = value;
-    }
-    void setAgecanopy(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._Agecanopy->matrix[row][col] = value;
-    }
-    void setdDevapI(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._dDevapI->matrix[row][col] = value;
-    }
-    void setd18OevapI(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._d18OevapI->matrix[row][col] = value;
-    }
-    void setAgeevapI(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._AgeevapI->matrix[row][col] = value;
-    }
-    void setdDevapT(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._dDevapT->matrix[row][col] = value;
-    }
-    void setd18OevapT(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._d18OevapT->matrix[row][col] = value;
-    }
-    void setAgeevapT(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._AgeevapT->matrix[row][col] = value;
-    }
-    void setdDevapS(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
-          _species[n]._dDevapS->matrix[row][col] = value;
     }
     void setd18OevapS(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
           _species[n]._d18OevapS->matrix[row][col] = value;
     }
+    void setd18OevapI(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._d18OevapI->matrix[row][col] = value;
+    } 
+    void setd18OevapT(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._d18OevapT->matrix[row][col] = value;
+    }
+
+    void setAgecanopy(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._Agecanopy->matrix[row][col] = value;
+    }
     void setAgeevapS(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
           _species[n]._AgeevapS->matrix[row][col] = value;
+    }
+    void setAgeevapI(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._AgeevapI->matrix[row][col] = value;
+    }
+    void setAgeevapT(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+          _species[n]._AgeevapT->matrix[row][col] = value;
     }
   /*  //setters
     void setEvapoTransp(REAL8 ET, UINT4 n, UINT4 row, UINT4 col){

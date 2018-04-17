@@ -32,87 +32,87 @@
 
 void Tracking::CheckMapsTrck(Control &ctrl, Basin &bsn) {
 
-	UINT4 r, c;
-	UINT4 j = 0;
-	bool excep_thrown = false; //  poor man way to rethrow exception outside omp pragma
-	UINT4 length = bsn.getSortedGrid().cells.size();
-#pragma omp parallel for\
-		default(shared) private(r,c,j)
-	for (j = 0; j < length; j++) {
-		r = bsn.getSortedGrid().cells[j].row;
-		c = bsn.getSortedGrid().cells[j].col;
-		try {
+  UINT4 r, c;
+  UINT4 j = 0;
+  bool excep_thrown = false; //  poor man way to rethrow exception outside omp pragma
+  UINT4 length = bsn.getSortedGrid().cells.size();
+#pragma omp parallel for			\
+  default(shared) private(r,c,j)
+  for (j = 0; j < length; j++) {
+    r = bsn.getSortedGrid().cells[j].row;
+    c = bsn.getSortedGrid().cells[j].col;
+    try {
 
-			if(ctrl.sw_trck && ctrl.sw_dD){
-				if (getdDsnowpack()->matrix[r][c] == getdDsnowpack()->nodata) {
-					string e("Initial dD map in snowpack contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getdDsurface()->matrix[r][c] == getdDsurface()->nodata) {
-					string e("Initial dD map in channel contains no data values inside the valid channel domain...\n");
-					throw e;}
-				if (getdDsoil1()->matrix[r][c] ==getdDsoil1()->nodata) {
-					string e("Initial dD map in layer 1 contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getdDsoil2()->matrix[r][c] ==getdDsoil2()->nodata) {
-					string e("Initial dD map in layer 2 contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getdDsoil3()->matrix[r][c] == getdDsoil3()->nodata) {
-					string e("Initial dD map in layer 3 contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getdDgroundwater()->matrix[r][c] == getdDgroundwater()->nodata) {
-					string e("Initial dD map in groundwater contains no data values inside the valid domain...\n");
-					throw e;}
-			}
+      if(ctrl.sw_trck && ctrl.sw_2H){
+	if (getd2Hsnowpack()->matrix[r][c] == getd2Hsnowpack()->nodata) {
+	  string e("Initial d2H map in snowpack contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getd2Hsurface()->matrix[r][c] == getd2Hsurface()->nodata) {
+	  string e("Initial d2H map in channel contains no data values inside the valid channel domain...\n");
+	  throw e;}
+	if (getd2Hsoil1()->matrix[r][c] ==getd2Hsoil1()->nodata) {
+	  string e("Initial d2H map in layer 1 contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getd2Hsoil2()->matrix[r][c] ==getd2Hsoil2()->nodata) {
+	  string e("Initial d2H map in layer 2 contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getd2Hsoil3()->matrix[r][c] == getd2Hsoil3()->nodata) {
+	  string e("Initial d2H map in layer 3 contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getd2Hgroundwater()->matrix[r][c] == getd2Hgroundwater()->nodata) {
+	  string e("Initial d2H map in groundwater contains no data values inside the valid domain...\n");
+	  throw e;}
+      }
 
-			if(ctrl.sw_trck && ctrl.sw_d18O){
-				if (getd18Osnowpack()->matrix[r][c] == getd18Osnowpack()->nodata) {
-					string e("Initial d18O map in snowpack contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getd18Osurface()->matrix[r][c] == getd18Osurface()->nodata) {
-					string e("Initial d18O map in channel contains no data values inside the valid channel domain...\n");
-					throw e;}
-				if (getd18Osoil1()->matrix[r][c] == getd18Osoil1()->nodata) {
-					string e("Initial d18O map in layer 1 contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getd18Osoil2()->matrix[r][c] == getd18Osoil2()->nodata) {
-					string e("Initial d18O map in layer 2 contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getd18Osoil3()->matrix[r][c] == getd18Osoil3()->nodata) {
-					string e("Initial d18O map in layer 3 contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getd18Ogroundwater()->matrix[r][c] == getd18Ogroundwater()->nodata) {
-					string e("Initial d18O map in groundwater contains no data values inside the valid domain...\n");
-					throw e;}
-			}
+      if(ctrl.sw_trck && ctrl.sw_18O){
+	if (getd18Osnowpack()->matrix[r][c] == getd18Osnowpack()->nodata) {
+	  string e("Initial d18O map in snowpack contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getd18Osurface()->matrix[r][c] == getd18Osurface()->nodata) {
+	  string e("Initial d18O map in channel contains no data values inside the valid channel domain...\n");
+	  throw e;}
+	if (getd18Osoil1()->matrix[r][c] == getd18Osoil1()->nodata) {
+	  string e("Initial d18O map in layer 1 contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getd18Osoil2()->matrix[r][c] == getd18Osoil2()->nodata) {
+	  string e("Initial d18O map in layer 2 contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getd18Osoil3()->matrix[r][c] == getd18Osoil3()->nodata) {
+	  string e("Initial d18O map in layer 3 contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getd18Ogroundwater()->matrix[r][c] == getd18Ogroundwater()->nodata) {
+	  string e("Initial d18O map in groundwater contains no data values inside the valid domain...\n");
+	  throw e;}
+      }
 
-			if(ctrl.sw_trck && ctrl.sw_Age){
-				if (getAgesnowpack()->matrix[r][c] == getAgesnowpack()->nodata) {
-					string e("Initial Age map in snowpack contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getAgesurface()->matrix[r][c] == getAgesurface()->nodata) {
-					string e("Initial Age map in channel contains no data values inside the valid channel domain...\n");
-					throw e;}
-				if (getAgesoil1()->matrix[r][c] == getAgesoil1()->nodata) {
-					string e("Initial Age map in layer 1 contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getAgesoil2()->matrix[r][c] == getAgesoil2()->nodata) {
-					string e("Initial Age map in layer 2 contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getAgesoil3()->matrix[r][c] == getAgesoil3()->nodata) {
-					string e("Initial Age map in layer 3 contains no data values inside the valid domain...\n");
-					throw e;}
-				if (getAgegroundwater()->matrix[r][c] == getAgegroundwater()->nodata) {
-					string e("Initial Age map in groundwater contains no data values inside the valid domain...\n");
-					throw e;}
-			}
+      if(ctrl.sw_trck && ctrl.sw_Age){
+	if (getAgesnowpack()->matrix[r][c] == getAgesnowpack()->nodata) {
+	  string e("Initial Age map in snowpack contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getAgesurface()->matrix[r][c] == getAgesurface()->nodata) {
+	  string e("Initial Age map in channel contains no data values inside the valid channel domain...\n");
+	  throw e;}
+	if (getAgesoil1()->matrix[r][c] == getAgesoil1()->nodata) {
+	  string e("Initial Age map in layer 1 contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getAgesoil2()->matrix[r][c] == getAgesoil2()->nodata) {
+	  string e("Initial Age map in layer 2 contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getAgesoil3()->matrix[r][c] == getAgesoil3()->nodata) {
+	  string e("Initial Age map in layer 3 contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getAgegroundwater()->matrix[r][c] == getAgegroundwater()->nodata) {
+	  string e("Initial Age map in groundwater contains no data values inside the valid domain...\n");
+	  throw e;}
+      }
 
-		} catch (string &e) {
-			cout << e;
-			cout << "In row " << r << " col " << c << endl;
-		}
+    } catch (string &e) {
+      cout << e;
+      cout << "In row " << r << " col " << c << endl;
+    }
 
-	}
+  }
 
-	if (excep_thrown)
-		throw;
+  if (excep_thrown)
+    throw;
 }

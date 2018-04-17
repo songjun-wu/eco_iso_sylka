@@ -29,10 +29,10 @@
  */
 
 #include "Tracking.h"
+#include "Grid.h"
 
 // Calculates isotopes / age weighted average over the top two soil layers
-
-int Tracking::CalcdDsoil_12(Basin &bsn){
+int Tracking::Calcd2Hsoil_12(Basin &bsn){
   
   double d1, d2;
   int r, c;
@@ -44,8 +44,8 @@ int Tracking::CalcdDsoil_12(Basin &bsn){
       c = bsn.getSortedGrid().cells[j].col;
       d1 = bsn.getSoilDepth1()->matrix[r][c];
     d2 = bsn.getSoilDepth2()->matrix[r][c];
-    _dDsoil_12->matrix[r][c] = (_dDsoil1->matrix[r][c] * d1
-				+ _dDsoil2->matrix[r][c] * d2) / (d1+d2);
+    _d2Hsoil_12->matrix[r][c] = (_d2Hsoil1->matrix[r][c] * d1
+				+ _d2Hsoil2->matrix[r][c] * d2) / (d1+d2);
     }
   }
   return EXIT_SUCCESS;
@@ -68,7 +68,7 @@ int Tracking::Calcd18Osoil_12(Basin &bsn){
     }
   }
   return EXIT_SUCCESS;
-}
+  }
 
 int Tracking::CalcAgesoil_12(Basin &bsn){
   

@@ -72,7 +72,15 @@ extern double AirEmissivity(const double &AirTemperature);
 /*calculates the vapor pressure for a given temperature.
 T in C and returns vapor pressure in kPa*/
 extern double SatVaporPressure(const double &T);
-inline double PsychrometricConst(const double &P, const double &z){ //psychrometric constant air pressure P in Pa
+
+// Converts isotopic deltas to ratios
+extern double Delta2Ratio(const double &di, int iso);
+
+// Converts isotopic ratios to deltas
+extern double Ratio2Delta(const double &Ri, int iso);
+
+//psychrometric constant air pressure P in Pa
+inline double PsychrometricConst(const double &P, const double &z){
 	//adjust P for elevation as per Allen FAO
 	double Pz = P * powl( ( 293-0.0065*z )/293, 5.26 );
 	return spec_heat_air * Pz / (lat_heat_vap * 0.622); // P in Pa and psychrometric constant in Pa C-1

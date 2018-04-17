@@ -6,7 +6,7 @@
 CPP_SRCS += \
 ../Forest/CalculateCanopyConduct.cpp \
 ../Forest/CreateGrids.cpp \
-../Forest/CreateGridsdD.cpp \
+../Forest/CreateGridsd2H.cpp \
 ../Forest/CreateGridsd18O.cpp \
 ../Forest/CreateGridsAge.cpp \
 ../Forest/GrowForest.cpp \
@@ -28,7 +28,7 @@ CPP_SRCS += \
 OBJS += \
 ./Forest/CalculateCanopyConduct.o \
 ./Forest/CreateGrids.o \
-./Forest/CreateGridsdD.o \
+./Forest/CreateGridsd2H.o \
 ./Forest/CreateGridsd18O.o \
 ./Forest/CreateGridsAge.o \
 ./Forest/GrowForest.o \
@@ -50,7 +50,7 @@ OBJS += \
 CPP_DEPS += \
 ./Forest/CalculateCanopyConduct.d \
 ./Forest/CreateGrids.d \
-./Forest/CreateGridsdD.d \
+./Forest/CreateGridsd2H.d \
 ./Forest/CreateGridsd18O.d \
 ./Forest/CreateGridsAge.d \
 ./Forest/GrowForest.d \
@@ -74,7 +74,7 @@ CPP_DEPS += \
 Forest/%.o: ../Forest/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	g++ -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

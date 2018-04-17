@@ -28,7 +28,7 @@
  *      Author: Marco.Maneta
  *
  *      This function derives a soil moisture profile from the average soil moisture assuming the soil is at hydrostatic equilibrium (except when it is raining).
- *      Hydrolstatic equilibrium depends on soil characteristics as per the Brooks and Corey Formula. Average soil moisture is calculated by integrating the hydrostatic
+ *      Hydrostatic equilibrium depends on soil characteristics as per the Brooks and Corey Formula. Average soil moisture is calculated by integrating the hydrostatic
  *      moisture profile and solving for the equivalent depth to saturation (H) that corresponds to the calculated average soil moisture content
  *
  *      Returns by reference the equivalent depth to saturation

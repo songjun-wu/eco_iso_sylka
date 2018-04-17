@@ -35,119 +35,125 @@
 //using namespace arma;
 
 void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &theta1,
-		double &theta2, double &theta3, double &pond, double &gw, double &leak,  double dt,
-		int r, int c) {
+				    double &theta2, double &theta3, double &pond, double &gw, double &leak,  double dt,
+				    int r, int c) {
 
 
-	//double K1, K12, K2, K23, K3;
-	double thetar = _theta_r->matrix[r][c];
-	double thetafc = _fieldcap->matrix[r][c];
-	double thetas = _porosity->matrix[r][c];
-	double KvKh = _KvKs->matrix[r][c];
-	double Ks = _Ksat->matrix[r][c] * KvKh;
-	double L = _bedrock_leak->matrix[r][c];
-	double fc = _fieldcap->matrix[r][c];
+  //double K1, K12, K2, K23, K3;
+  double thetar = _theta_r->matrix[r][c];
+  double thetafc = _fieldcap->matrix[r][c];
+  double thetas = _porosity->matrix[r][c];
+  double KvKh = _KvKs->matrix[r][c];
+  double Ks = _Ksat->matrix[r][c] * KvKh;
+  double L = _bedrock_leak->matrix[r][c];
 
-	//depth of soil layers
-	double depth = _soildepth->matrix[r][c];
-	double d1 = _depth_layer1->matrix[r][c];
-	double d2 = _depth_layer2->matrix[r][c];
-	double d3 = depth - d1 - d2;
+  //depth of soil layers
+  double depth = _soildepth->matrix[r][c];
+  double d1 = _depth_layer1->matrix[r][c];
+  double d2 = _depth_layer2->matrix[r][c];
+  double d3 = depth - d1 - d2;
 
-	double  x[3] = {};
+  double  x[3] = {};
 
-	double L1 = theta1*d1;
-	double L2 = theta2*d2;
-	double L3 = theta3*d3;
+  double L1 = theta1*d1;
+  double L2 = theta2*d2;
+  double L3 = theta3*d3;
 
-	x[0] = L1;
-	x[1] = L2;
-	x[2] = L3;
+  x[0] = L1;
+  x[1] = L2;
+  x[2] = L3;
 
-	double a = dt*Ks/(thetas-thetar);
+  double a = dt*Ks/(thetas-thetar);
 
-	if(x[0]/d1>thetafc){
-		x[0] =( L1 + a* thetar) / (1 + a/d1);
-		//check if too much drainage
-		if(x[0]/d1 < thetafc)
-			x[0] = thetafc * d1;
+  // == Gravitational drainage -------------------------------------------------
 
-		L2 += L1 - x[0];
+  // -- First layer 1 + updating the layer below
+  if(x[0]/d1>thetafc){
+    x[0] =( L1 + a* thetar) / (1 + a/d1);
+    //check if too much drainage
+    if(x[0]/d1 < thetafc)
+      x[0] = thetafc * d1;
 
-		// Tracking
-		if(ctrl.sw_trck)
-			_FluxL1toL2->matrix[r][c] += max<REAL8>(0,L1 - x[0]);
+    L2 += L1 - x[0];
+    x[1]=L2;
 
-		x[1]=L2;
-	}
+    // Tracking
+    if(ctrl.sw_trck)
+      _FluxL1toL2->matrix[r][c] += max<REAL8>(0,L1 - x[0]);
 
-	if(L2/d2>thetafc){
-		x[1] =(L2 + a* thetar) / (1 + a/d2);
-		//check if too much drainage
-		if(x[1]/d2 < thetafc)
-			x[1] = thetafc * d2;
+  }
 
-		L3 += L2 - x[1];
+  // -- Second layer + updating the layer below
+  if(L2/d2>thetafc){
+    x[1] =(L2 + a* thetar) / (1 + a/d2);
+    //check if too much drainage
+    if(x[1]/d2 < thetafc)
+      x[1] = thetafc * d2;
 
-		// Tracking
-		if(ctrl.sw_trck){
-			_FluxL2toL3->matrix[r][c] += max<REAL8>(0,L2 - x[1]);
-			// Check if adding to GW
-			if(x[2]/d3 >= fc)
-				_FluxL3toGW->matrix[r][c] += max<REAL8>(0,L2 - x[1]);
-			else
-				_FluxL3toGW->matrix[r][c] += max<REAL8>(0,L2 - x[1] - (fc*d3 - x[2]));
-		}
+    L3 += L2 - x[1];
 
-		x[2]=L3;
-	}
+    // Tracking
+    if(ctrl.sw_trck){
+      // Partition between percolation to unsaturated (L3) and recharge (GW)
+      if(L3/d3 >= thetafc)
+	_FluxL2toGW->matrix[r][c] += max<REAL8>(0,L2 - x[1]);
+      else {
+	_FluxL2toL3->matrix[r][c] += min<REAL8>(L2 - x[1], thetafc*d3 - x[2]);
+	_FluxL2toGW->matrix[r][c] += max<REAL8>(0,L2 - x[1] - (thetafc*d3 - x[2]));
+      }
+    }
 
-	if(L3/d3>thetafc){
-		x[2] =(L3 + L*a* thetar) / (1 +L* a/d3);
-		//check if too much drainage
-		if(x[2]/d3 < thetafc)
-			x[2] = thetafc * d3;
+    x[2]=L3;
+  }
 
-		// Tracking
-		//if(ctrl.sw_trck)
-		//	_FluxL3toGW->matrix[r][c] -= max<REAL8>(0,L3 - x[2]);
-	}
+  // -- Third layer 
+  if(L3/d3>thetafc){
+    x[2] =(L3 + L*a* thetar) / (1 +L* a/d3);
+    //check if too much drainage
+    if(x[2]/d3 < thetafc)
+      x[2] = thetafc * d3;
 
-	theta1 = x[0]/d1;
-	theta2 = x[1]/d2;
-	theta3 = x[2]/d3;
+    // Tracking
+    //if(ctrl.sw_trck)
+    //	_FluxL2toGW->matrix[r][c] -= max<REAL8>(0,L3 - x[2]);
+  }
 
-	//pond -=F;
-	if(theta3>thetas){
-		theta2 += (theta3 - thetas) * d3/d2;
+  theta1 = x[0]/d1;
+  theta2 = x[1]/d2;
+  theta3 = x[2]/d3;
 
-		// Tracking : both equal because anyway theta3 = thetas > fc -> fluxes affect GW
-		if(ctrl.sw_trck){
-			_FluxL2toL3->matrix[r][c] -= (theta3 - thetas) * d3;
-			_FluxL3toGW->matrix[r][c] -= (theta3 - thetas) * d3;
-		}
+  // -- Check if it creates over-filling -> cascading adjustment
+  //pond -=F;
+  // -- L3
+  if(theta3>thetas){
+    theta2 += (theta3 - thetas) * d3/d2;
 
-		theta3 = thetas;
-	}
-	if(theta2>thetas){
-		theta1 += (theta2 - thetas) * d2/d1;
+    // Tracking : remove the excess from groundwater (since in that case L2toL3 had not been
+    // incremented anyway)
+    if(ctrl.sw_trck)
+      _FluxL2toGW->matrix[r][c] -= (theta3 - thetas) * d3 ;
 
-		// Tracking
-		if(ctrl.sw_trck)
-			_FluxL1toL2->matrix[r][c] -= (theta2 - thetas) * d2;
+    theta3 = thetas;
+  }
+  // -- L2
+  if(theta2>thetas){
+    theta1 += (theta2 - thetas) * d2/d1;
+    // Tracking
+    if(ctrl.sw_trck)
+      _FluxL1toL2->matrix[r][c] -= (theta2 - thetas) * d2;
+    theta2 = thetas;
+  }
+  // -- L1
+  if(theta1>thetas){
+    pond += -(thetas - theta1) * d1;
+    _FluxSrftoL1->matrix[r][c] -= (theta1 - thetas) * d1;
+    theta1 = thetas;
+  }
 
-		theta2 = thetas;
-	}
-	if(theta1>thetas){
-		pond += -(thetas - theta1) * d1;
-
-		_FluxSrftoL1->matrix[r][c] -= (theta1 - thetas) * d1;
-
-		theta1 = thetas;
-	}
-
-	gw = max<double>(0,(theta3 - fc) * d3);
-	leak = std::max<double>(0,(L3 - x[2])/dt);
+  // -- Gravitational water (L3) and bedrock leakage
+  // (matrices are updated in SolveSurfaceFluxes.cpp)
+  gw = max<double>(0,(theta3 - thetafc) * d3);
+  leak = std::max<double>(0,(L3 - x[2])/dt);
 
 }
 

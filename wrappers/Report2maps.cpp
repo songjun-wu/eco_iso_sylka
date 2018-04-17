@@ -141,37 +141,36 @@ int Report2Maps(){
 	  WriteMapSeries(oBasin->getAccGWtoLat(), "LGWoA", oControl->current_ts_count);
 
 	// Tracking maps
-	if(oControl->sw_trck && oControl->sw_dD){
-		if (oControl->Rep_dDprecip)
-			WriteMapSeries(oAtmosphere->getdDprecip(), "dDpcp", oControl->current_ts_count);
-		if (oControl->Rep_dDsnowpack)
-			WriteMapSeries(oTracking->getdDsnowpack(), "dDsnw", oControl->current_ts_count);
-		if (oControl->Rep_dDsurface)
-			WriteMapSeries(oTracking->getdDsurface(), "dDsrf", oControl->current_ts_count);
-		if (oControl->Rep_dDsoil1)
-			WriteMapSeries(oTracking->getdDsoil1(), "dDsL1", oControl->current_ts_count);
-		if (oControl->Rep_dDsoil2)
-			WriteMapSeries(oTracking->getdDsoil2(), "dDsL2", oControl->current_ts_count);
-		if (oControl->Rep_dDsoilUp)
-			WriteMapSeries(oTracking->getdDsoil_12(), "dDsUp", oControl->current_ts_count);
-		if (oControl->Rep_dDsoil3)
-			WriteMapSeries(oTracking->getdDsoil3(), "dDsL3", oControl->current_ts_count);
-		if (oControl->Rep_dDsoilAv)
-		  WriteMapSeries(oTracking->getdDsoil_Av(), "dDsAv", oControl->current_ts_count);
-		if (oControl->Rep_dDgroundwater)
-			WriteMapSeries(oTracking->getdDgroundwater(), "dDgw", oControl->current_ts_count);
-		if (oControl->Rep_dDevapS_sum)
-			WriteMapSeries(oTracking->getdDevapS_sum(), "dDeS", oControl->current_ts_count);
-		if (oControl->Rep_dDevapI_sum)
-			WriteMapSeries(oTracking->getdDevapI_sum(), "dDeI", oControl->current_ts_count);
-		if (oControl->Rep_dDevapT_sum)
-			WriteMapSeries(oTracking->getdDevapT_sum(), "dDeT", oControl->current_ts_count);
-
+	if(oControl->sw_trck && oControl->sw_2H){
+		if (oControl->Rep_d2Hprecip)
+		  WriteMapSeries(oAtmosphere->getd2Hprecip(), "dHpcp", oControl->current_ts_count);
+		if (oControl->Rep_d2Hsnowpack)
+			WriteMapSeries(oTracking->getd2Hsnowpack(), "dHsnw", oControl->current_ts_count);
+		if (oControl->Rep_d2Hsurface)
+			WriteMapSeries(oTracking->getd2Hsurface(), "dHsrf", oControl->current_ts_count);
+		if (oControl->Rep_d2Hsoil1)
+			WriteMapSeries(oTracking->getd2Hsoil1(), "dHsL1", oControl->current_ts_count);
+		if (oControl->Rep_d2Hsoil2)
+		  WriteMapSeries(oTracking->getd2Hsoil2(), "dHsL2", oControl->current_ts_count);
+		if (oControl->Rep_d2HsoilUp)
+			WriteMapSeries(oTracking->getd2Hsoil_12(), "dHsUp", oControl->current_ts_count);
+		if (oControl->Rep_d2Hsoil3)
+			WriteMapSeries(oTracking->getd2Hsoil3(), "dHsL3", oControl->current_ts_count);
+		if (oControl->Rep_d2HsoilAv)
+		  WriteMapSeries(oTracking->getd2Hsoil_Av(), "dHsAv", oControl->current_ts_count);
+		if (oControl->Rep_d2Hgroundwater)
+			WriteMapSeries(oTracking->getd2Hgroundwater(), "dHgw", oControl->current_ts_count);
+		if (oControl->Rep_d2HevapS_sum)
+			WriteMapSeries(oTracking->getd2HevapS_sum(), "dHeS", oControl->current_ts_count);
+		if (oControl->Rep_d2HevapI_sum)
+			WriteMapSeries(oTracking->getd2HevapI_sum(), "dHeI", oControl->current_ts_count);
+		if (oControl->Rep_d2HevapT_sum)
+			WriteMapSeries(oTracking->getd2HevapT_sum(), "dHeT", oControl->current_ts_count);
 	}
 
-	if(oControl->sw_trck && oControl->sw_d18O){
+	if(oControl->sw_trck && oControl->sw_18O){
 		if (oControl->Rep_d18Oprecip)
-			WriteMapSeries(oAtmosphere->getd18Oprecip(), "dOpcp", oControl->current_ts_count);
+		  WriteMapSeries(oAtmosphere->getd18Oprecip(), "dOpcp", oControl->current_ts_count);
 		if (oControl->Rep_d18Osnowpack)
 			WriteMapSeries(oTracking->getd18Osnowpack(), "dOsnw", oControl->current_ts_count);
 		if (oControl->Rep_d18Osurface)
@@ -185,7 +184,7 @@ int Report2Maps(){
 		if (oControl->Rep_d18Osoil3)
 			WriteMapSeries(oTracking->getd18Osoil3(), "dOsL3", oControl->current_ts_count);
 		if (oControl->Rep_d18OsoilAv)
-		  WriteMapSeries(oTracking->getd18Osoil_Av(), "d18OsAv", oControl->current_ts_count);
+		  WriteMapSeries(oTracking->getd18Osoil_Av(), "dOsAv", oControl->current_ts_count);
 		if (oControl->Rep_d18Ogroundwater)
 			WriteMapSeries(oTracking->getd18Ogroundwater(), "dOgw", oControl->current_ts_count);
 		if (oControl->Rep_d18OevapS_sum)
@@ -218,6 +217,7 @@ int Report2Maps(){
 			WriteMapSeries(oTracking->getAgeevapI_sum(), "AgeeI", oControl->current_ts_count);
 		if (oControl->Rep_AgeevapT_sum)
 			WriteMapSeries(oTracking->getAgeevapT_sum(), "AgeeT", oControl->current_ts_count);
+
 	}
 
 	for (int i = 0; i < oControl->NumSpecs; i++) {
@@ -232,6 +232,17 @@ int Report2Maps(){
 		if (oControl->Rep_Stem_Density) {
 			name << "ntr" << i << "_";
 			WriteMapSeries(oBasin->getStemDensity(i), name.str() , oControl->current_ts_count);
+			name.str("");
+		}
+
+		if (oControl->Rep_RootFrac1Species) {
+			name << "L1Ro" << i << "_";
+			WriteMapSeries(oBasin->getRootFrac1(i), name.str() , oControl->current_ts_count);
+			name.str("");
+		}
+		if (oControl->Rep_RootFrac2Species) {
+			name << "L2Ro" << i << "_";
+			WriteMapSeries(oBasin->getRootFrac2(i), name.str() , oControl->current_ts_count);
 			name.str("");
 		}
 
@@ -341,14 +352,14 @@ int Report2Maps(){
 
 		// Tracking
 		if(oControl->sw_trck){
-//			if (oControl->sw_dD && oControl->Rep_dDcanopy) {
-//				name << "dDCnp_" << i << "_";
-//				WriteMapSeries(oBasin->getdDcanopy(i), name.str() , oControl->current_ts_count);
+//			if (oControl->sw_2H && oControl->Rep_d2Hcanopy) {
+//				name << "2HCnp_" << i << "_";
+//				WriteMapSeries(oBasin->getd2Hcanopy(i), name.str() , oControl->current_ts_count);
 //				name.str("");
 //			}
 //
-//			if (oControl->sw_d18O && oControl->Rep_d18Ocanopy) {
-//				name << "d18OCnp_" << i << "_";
+//			if (oControl->sw_18O && oControl->Rep_d18Ocanopy) {
+//				name << "18OCnp_" << i << "_";
 //				WriteMapSeries(oBasin->getd18Ocanopy(i), name.str() , oControl->current_ts_count);
 //				name.str("");
 //			}
@@ -358,13 +369,13 @@ int Report2Maps(){
 //				WriteMapSeries(oBasin->getAgecanopy(i), name.str() , oControl->current_ts_count);
 //				name.str("");
 //			}
-			if (oControl->sw_dD && oControl->Rep_dDevapI) {
-				name << "dDeI" << i << "_";
-				WriteMapSeries(oBasin->getdDevapI(i), name.str() , oControl->current_ts_count);
+			if (oControl->sw_2H && oControl->Rep_d2HevapI) {
+				name << "dHeI" << i << "_";
+				WriteMapSeries(oBasin->getd2HevapI(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
-			if (oControl->sw_d18O && oControl->Rep_d18OevapI) {
+			if (oControl->sw_18O && oControl->Rep_d18OevapI) {
 				name << "dOeI" << i << "_";
 				WriteMapSeries(oBasin->getd18OevapI(i), name.str() , oControl->current_ts_count);
 				name.str("");
@@ -375,13 +386,13 @@ int Report2Maps(){
 				WriteMapSeries(oBasin->getAgeevapI(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
-			if (oControl->sw_dD && oControl->Rep_dDevapT) {
-				name << "dDeT" << i << "_";
-				WriteMapSeries(oBasin->getdDevapT(i), name.str() , oControl->current_ts_count);
+			if (oControl->sw_2H && oControl->Rep_d2HevapT) {
+				name << "dHeT" << i << "_";
+				WriteMapSeries(oBasin->getd2HevapT(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
-			if (oControl->sw_d18O && oControl->Rep_d18OevapT) {
+			if (oControl->sw_18O && oControl->Rep_d18OevapT) {
 				name << "dOeT" << i << "_";
 				WriteMapSeries(oBasin->getd18OevapT(i), name.str() , oControl->current_ts_count);
 				name.str("");
@@ -392,13 +403,13 @@ int Report2Maps(){
 				WriteMapSeries(oBasin->getAgeevapT(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
-			if (oControl->sw_dD && oControl->Rep_dDevapS) {
-				name << "dDeS" << i << "_";
-				WriteMapSeries(oBasin->getdDevapS(i), name.str() , oControl->current_ts_count);
+			if (oControl->sw_2H && oControl->Rep_d2HevapS) {
+				name << "dHeS" << i << "_";
+				WriteMapSeries(oBasin->getd2HevapS(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 
-			if (oControl->sw_d18O && oControl->Rep_d18OevapS) {
+			if (oControl->sw_18O && oControl->Rep_d18OevapS) {
 				name << "dOeS" << i << "_";
 				WriteMapSeries(oBasin->getd18OevapS(i), name.str() , oControl->current_ts_count);
 				name.str("");
@@ -786,103 +797,104 @@ int Report2Ts(){
 				    oControl->path_ResultsFolder + "GWLatOAcc.tab",
 				    oControl->current_ts_count);
 	}
-	
+
 	// Tracking
-	if(oControl->sw_trck && oControl->sw_dD){
-		if (oControl->RepTs_dDprecip){
+	if(oControl->sw_trck && oControl->sw_2H){
+		if (oControl->RepTs_d2Hprecip){
 			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "dD_precip.tab");
-			oReport->ReportTimeSeries(oAtmosphere->getdDprecip(),
-					oControl->path_ResultsFolder + "dD_precip.tab",
+				oReport->RenameFile(oControl->path_ResultsFolder + "d2H_precip.tab");
+			oReport->ReportTimeSeries(oAtmosphere->getd2Hprecip(),
+					oControl->path_ResultsFolder + "d2H_precip.tab",
 					oControl->current_ts_count);
 		}
 
-		if (oControl->RepTs_dDsnowpack){
+		if (oControl->RepTs_d2Hsnowpack){
 			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "dD_snowpack.tab");
-			oReport->ReportTimeSeries(oTracking->getdDsnowpack(),
-					oControl->path_ResultsFolder + "dD_snowpack.tab",
+				oReport->RenameFile(oControl->path_ResultsFolder + "d2H_snowpack.tab");
+			oReport->ReportTimeSeries(oTracking->getd2Hsnowpack(),
+					oControl->path_ResultsFolder + "d2H_snowpack.tab",
 					oControl->current_ts_count);
 		}
 
-		if (oControl->RepTs_dDsurface){
+		if (oControl->RepTs_d2Hsurface){
 			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "dD_surface.tab");
-			oReport->ReportTimeSeries(oTracking->getdDsurface(),
-					oControl->path_ResultsFolder + "dD_surface.tab",
+				oReport->RenameFile(oControl->path_ResultsFolder + "d2H_surface.tab");
+			oReport->ReportTimeSeries(oTracking->getd2Hsurface(),
+					oControl->path_ResultsFolder + "d2H_surface.tab",
 					oControl->current_ts_count);
 		}
 
-		if (oControl->RepTs_dDsoil1){
+		if (oControl->RepTs_d2Hsoil1){
 			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "dD_soilL1.tab");
-			oReport->ReportTimeSeries(oTracking->getdDsoil1(),
-					oControl->path_ResultsFolder + "dD_soilL1.tab",
+				oReport->RenameFile(oControl->path_ResultsFolder + "d2H_soilL1.tab");
+			oReport->ReportTimeSeries(oTracking->getd2Hsoil1(),
+					oControl->path_ResultsFolder + "d2H_soilL1.tab",
 					oControl->current_ts_count);
 		}
 
-		if (oControl->RepTs_dDsoil2){
+		if (oControl->RepTs_d2Hsoil2){
 			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "dD_soilL2.tab");
-			oReport->ReportTimeSeries(oTracking->getdDsoil2(),
-					oControl->path_ResultsFolder + "dD_soilL2.tab",
+				oReport->RenameFile(oControl->path_ResultsFolder + "d2H_soilL2.tab");
+			oReport->ReportTimeSeries(oTracking->getd2Hsoil2(),
+					oControl->path_ResultsFolder + "d2H_soilL2.tab",
 					oControl->current_ts_count);
 		}
-		if (oControl->RepTs_dDsoilUp){
+		if (oControl->RepTs_d2HsoilUp){
 			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "dD_soilUp.tab");
-			oReport->ReportTimeSeries(oTracking->getdDsoil_12(),
-					oControl->path_ResultsFolder + "dD_soilUp.tab",
-					oControl->current_ts_count);
-		}
-
-		if (oControl->RepTs_dDsoil3){
-			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "dD_soilL3.tab");
-			oReport->ReportTimeSeries(oTracking->getdDsoil3(),
-					oControl->path_ResultsFolder + "dD_soilL3.tab",
+				oReport->RenameFile(oControl->path_ResultsFolder + "d2H_soilUp.tab");
+			oReport->ReportTimeSeries(oTracking->getd2Hsoil_12(),
+					oControl->path_ResultsFolder + "d2H_soilUp.tab",
 					oControl->current_ts_count);
 		}
 
-		if (oControl->RepTs_dDsoilAv){
+		if (oControl->RepTs_d2Hsoil3){
+			if(oControl->GetTimeStep() <= oControl->report_times)
+				oReport->RenameFile(oControl->path_ResultsFolder + "d2H_soilL3.tab");
+			oReport->ReportTimeSeries(oTracking->getd2Hsoil3(),
+					oControl->path_ResultsFolder + "d2H_soilL3.tab",
+					oControl->current_ts_count);
+		}
+
+		if (oControl->RepTs_d2HsoilAv){
 		  if(oControl->GetTimeStep() <= oControl->report_times)
-		    oReport->RenameFile(oControl->path_ResultsFolder + "dD_soilAv.tab");
-		  oReport->ReportTimeSeries(oTracking->getdDsoil_Av(),
-					    oControl->path_ResultsFolder + "dD_soilAv.tab",
+		    oReport->RenameFile(oControl->path_ResultsFolder + "d2H_soilAv.tab");
+		  oReport->ReportTimeSeries(oTracking->getd2Hsoil_Av(),
+					    oControl->path_ResultsFolder + "d2H_soilAv.tab",
 					    oControl->current_ts_count);
 		}
 
-		if (oControl->RepTs_dDgroundwater){
+		if (oControl->RepTs_d2Hgroundwater){
 			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "dD_groundwater.tab");
-			oReport->ReportTimeSeries(oTracking->getdDgroundwater(),
-					oControl->path_ResultsFolder + "dD_groundwater.tab",
+				oReport->RenameFile(oControl->path_ResultsFolder + "d2H_groundwater.tab");
+			oReport->ReportTimeSeries(oTracking->getd2Hgroundwater(),
+					oControl->path_ResultsFolder + "d2H_groundwater.tab",
 					oControl->current_ts_count);
 		}
-		if (oControl->RepTs_dDevapS_sum){
+		if (oControl->RepTs_d2HevapS_sum){
 			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "dD_evapS.tab");
-			oReport->ReportTimeSeries(oTracking->getdDevapS_sum(),
-					oControl->path_ResultsFolder + "dD_evapS.tab",
+				oReport->RenameFile(oControl->path_ResultsFolder + "d2H_evapS.tab");
+			oReport->ReportTimeSeries(oTracking->getd2HevapS_sum(),
+					oControl->path_ResultsFolder + "d2H_evapS.tab",
 					oControl->current_ts_count);
 		}
-		if (oControl->RepTs_dDevapI_sum){
+		if (oControl->RepTs_d2HevapI_sum){
 			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "dD_evapI.tab");
-			oReport->ReportTimeSeries(oTracking->getdDevapI_sum(),
-					oControl->path_ResultsFolder + "dD_evapI.tab",
+				oReport->RenameFile(oControl->path_ResultsFolder + "d2H_evapI.tab");
+			oReport->ReportTimeSeries(oTracking->getd2HevapI_sum(),
+					oControl->path_ResultsFolder + "d2H_evapI.tab",
 					oControl->current_ts_count);
 		}
-		if (oControl->RepTs_dDevapT_sum){
+		if (oControl->RepTs_d2HevapT_sum){
 			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "dD_evapT.tab");
-			oReport->ReportTimeSeries(oTracking->getdDevapT_sum(),
-					oControl->path_ResultsFolder + "dD_evapT.tab",
+				oReport->RenameFile(oControl->path_ResultsFolder + "d2H_evapT.tab");
+			oReport->ReportTimeSeries(oTracking->getd2HevapT_sum(),
+					oControl->path_ResultsFolder + "d2H_evapT.tab",
 					oControl->current_ts_count);
 		}
+
 	}
 
-	if(oControl->sw_trck && oControl->sw_d18O){
+	if(oControl->sw_trck && oControl->sw_18O){
 		if (oControl->RepTs_d18Oprecip){
 			if(oControl->GetTimeStep() <= oControl->report_times)
 				oReport->RenameFile(oControl->path_ResultsFolder + "d18O_precip.tab");
@@ -1083,6 +1095,21 @@ int Report2Ts(){
 				name.str("");
 			}
 
+			if (oControl->RepTs_RootFrac1Species) {
+				name << oControl->path_ResultsFolder << "RootFrac.L1_" << i << ".tab";
+				if(oControl->GetTimeStep() <= oControl->report_times)
+					oReport->RenameFile(name.str());
+				oReport->ReportTimeSeries(oBasin->getRootFrac1(i), name.str() , oControl->current_ts_count);
+				name.str("");
+			}
+			if (oControl->RepTs_RootFrac2Species) {
+				name << oControl->path_ResultsFolder << "RootFrac.L2_" << i << ".tab";
+				if(oControl->GetTimeStep() <= oControl->report_times)
+					oReport->RenameFile(name.str());
+				oReport->ReportTimeSeries(oBasin->getRootFrac2(i), name.str() , oControl->current_ts_count);
+				name.str("");
+			}
+
 			if (oControl->RepTs_Leaf_Area_Index) {
 				name << oControl->path_ResultsFolder << "lai_" << i << ".tab";
 				if(oControl->GetTimeStep() <= oControl->report_times)
@@ -1217,16 +1244,16 @@ int Report2Ts(){
 
 		// Tracking
 			if(oControl->sw_trck){
-			//			if (oControl->sw_dD && oControl->RepTs_dDcanopy) {
-			//				name << oControl->path_ResultsFolder << "dDcanopy_" << i << ".tab";
+			//			if (oControl->sw_2H && oControl->RepTs_d2Hcanopy) {
+			//				name << oControl->path_ResultsFolder << "2Hcanopy_" << i << ".tab";
 			//				if(oControl->GetTimeStep() <= oControl->report_times)
 			//					oReport->RenameFile(name.str());
-			//				oReport->ReportTimeSeries(oBasin->getdDcanopy(i), name.str() , oControl->current_ts_count);
+			//				oReport->ReportTimeSeries(oBasin->getd2Hcanopy(i), name.str() , oControl->current_ts_count);
 			//				name.str("");
 			//			}
 			//
-			//			if (oControl->sw_d18O && oControl->RepTs_d18Ocanopy) {
-			//				name << oControl->path_ResultsFolder << "d18Ocanopy_" << i << ".tab";
+			//			if (oControl->sw_18O && oControl->RepTs_d18Ocanopy) {
+			//				name << oControl->path_ResultsFolder << "18Ocanopy_" << i << ".tab";
 			//				if(oControl->GetTimeStep() <= oControl->report_times)
 			//					oReport->RenameFile(name.str());
 			//				oReport->ReportTimeSeries(oBasin->getd18Ocanopy(i), name.str() , oControl->current_ts_count);
@@ -1240,15 +1267,15 @@ int Report2Ts(){
 			//				oReport->ReportTimeSeries(oBasin->getAgecanopy(i), name.str() , oControl->current_ts_count);
 			//				name.str("");
 			//			}
-				if (oControl->sw_dD && oControl->RepTs_dDevapI) {
-					name << oControl->path_ResultsFolder << "dDevapI_" << i << ".tab";
+				if (oControl->sw_2H && oControl->RepTs_d2HevapI) {
+					name << oControl->path_ResultsFolder << "d2HevapI_" << i << ".tab";
 					if(oControl->GetTimeStep() <= oControl->report_times)
 						oReport->RenameFile(name.str());
-					oReport->ReportTimeSeries(oBasin->getdDevapI(i), name.str() , oControl->current_ts_count);
+					oReport->ReportTimeSeries(oBasin->getd2HevapI(i), name.str() , oControl->current_ts_count);
 					name.str("");
 				}
 
-				if (oControl->sw_d18O && oControl->RepTs_d18OevapI) {
+				if (oControl->sw_18O && oControl->RepTs_d18OevapI) {
 					name << oControl->path_ResultsFolder << "d18OevapI_" << i << ".tab";
 					if(oControl->GetTimeStep() <= oControl->report_times)
 						oReport->RenameFile(name.str());
@@ -1263,15 +1290,15 @@ int Report2Ts(){
 					oReport->ReportTimeSeries(oBasin->getAgeevapI(i), name.str() , oControl->current_ts_count);
 					name.str("");
 				}
-				if (oControl->sw_dD && oControl->RepTs_dDevapT) {
-					name << oControl->path_ResultsFolder << "dDevapT_" << i << ".tab";
+				if (oControl->sw_2H && oControl->RepTs_d2HevapT) {
+					name << oControl->path_ResultsFolder << "d2HevapT_" << i << ".tab";
 					if(oControl->GetTimeStep() <= oControl->report_times)
 						oReport->RenameFile(name.str());
-					oReport->ReportTimeSeries(oBasin->getdDevapT(i), name.str() , oControl->current_ts_count);
+					oReport->ReportTimeSeries(oBasin->getd2HevapT(i), name.str() , oControl->current_ts_count);
 					name.str("");
 				}
 
-				if (oControl->sw_d18O && oControl->RepTs_d18OevapT) {
+				if (oControl->sw_18O && oControl->RepTs_d18OevapT) {
 					name << oControl->path_ResultsFolder << "d18OevapT_" << i << ".tab";
 					if(oControl->GetTimeStep() <= oControl->report_times)
 						oReport->RenameFile(name.str());
@@ -1286,15 +1313,15 @@ int Report2Ts(){
 					oReport->ReportTimeSeries(oBasin->getAgeevapT(i), name.str() , oControl->current_ts_count);
 					name.str("");
 				}
-				if (oControl->sw_dD && oControl->RepTs_dDevapS) {
-					name << oControl->path_ResultsFolder << "dDevapS_" << i << ".tab";
+				if (oControl->sw_2H && oControl->RepTs_d2HevapS) {
+					name << oControl->path_ResultsFolder << "d2HevapS_" << i << ".tab";
 					if(oControl->GetTimeStep() <= oControl->report_times)
 						oReport->RenameFile(name.str());
-					oReport->ReportTimeSeries(oBasin->getdDevapS(i), name.str() , oControl->current_ts_count);
+					oReport->ReportTimeSeries(oBasin->getd2HevapS(i), name.str() , oControl->current_ts_count);
 					name.str("");
 				}
 
-				if (oControl->sw_d18O && oControl->RepTs_d18OevapS) {
+				if (oControl->sw_18O && oControl->RepTs_d18OevapS) {
 					name << oControl->path_ResultsFolder << "d18OevapS_" << i << ".tab";
 					if(oControl->GetTimeStep() <= oControl->report_times)
 						oReport->RenameFile(name.str());
@@ -1311,13 +1338,6 @@ int Report2Ts(){
 				}
 			}
 		}
-
-		/*			if (oControl->RepTs_dDcanopy) {
-				name << oControl->path_ResultsFolder << "dDcanopy_" << i << ".tab";
-				if(oControl->GetTimeStep() <= oControl->report_times)
-					oReport->RenameFile(name.str());
-				oReport->ReportTimeSeries(oTracking->getdDcanopy(i), name.str() , oControl->current_ts_count);
-				name.str("");*/
 
 		return EXIT_SUCCESS;
 }

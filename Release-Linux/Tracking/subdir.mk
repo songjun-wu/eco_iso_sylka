@@ -15,7 +15,8 @@ CPP_SRCS += \
 ../Tracking/MixingV_seep.cpp \
 ../Tracking/MixingV_snow.cpp \
 ../Tracking/MixingV_through.cpp \
-../Tracking/MixingV_up.cpp 
+../Tracking/MixingV_up.cpp \
+../Tracking/OutletVals.cpp 
 
 OBJS += \
 ./Tracking/CalcTrck_L1L2.o \
@@ -29,7 +30,8 @@ OBJS += \
 ./Tracking/MixingV_seep.o \
 ./Tracking/MixingV_snow.o \
 ./Tracking/MixingV_through.o \
-./Tracking/MixingV_up.o 
+./Tracking/MixingV_up.o \
+./Tracking/OutletVals.o
 
 CPP_DEPS += \
 ./Tracking/CalcTrck_L1L2.d \
@@ -43,13 +45,14 @@ CPP_DEPS += \
 ./Tracking/MixingV_seep.d \
 ./Tracking/MixingV_snow.d \
 ./Tracking/MixingV_through.d \
-./Tracking/MixingV_up.d 
+./Tracking/MixingV_up.d  \
+./Tracking/OutletVals.d
 
 # Each subdirectory must supply rules for building sources it contributes
 Tracking/%.o: ../Tracking/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	g++ -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

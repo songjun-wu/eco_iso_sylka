@@ -36,20 +36,20 @@ void Tracking::MixingH(Basin &bsn, Control &ctrl,
 {
 
   // Deuterium
-  if(ctrl.sw_dD){
-    _dDgroundwater->matrix[rr][cc] = InputMix(bsn.getGrndWater()->matrix[rr][cc], 
-					      _dDgroundwater->matrix[rr][cc], 
+  if(ctrl.sw_2H){
+    _d2Hgroundwater->matrix[rr][cc] = InputMix(bsn.getGrndWater()->matrix[rr][cc], 
+					      _d2Hgroundwater->matrix[rr][cc], 
 					      hj1i1 * alpha * dtdx, 
-					      _dDgroundwater->matrix[r][c]);
+					      _d2Hgroundwater->matrix[r][c]);
 
-    _dDsurface->matrix[rr][cc] = InputMix(bsn.getPondingWater()->matrix[rr][cc], 
-					  _dDsurface->matrix[rr][cc],
+    _d2Hsurface->matrix[rr][cc] = InputMix(bsn.getPondingWater()->matrix[rr][cc], 
+					  _d2Hsurface->matrix[rr][cc],
 					  ponding + Qk1 * dtdx / dx,
-					  _dDsurface->matrix[r][c]);
+					  _d2Hsurface->matrix[r][c]);
   }
 
   // Oxygen 18
-  if(ctrl.sw_d18O){
+  if(ctrl.sw_18O){
     _d18Ogroundwater->matrix[rr][cc] = InputMix(bsn.getGrndWater()->matrix[rr][cc], 
 						_d18Ogroundwater->matrix[rr][cc],
 						hj1i1 * alpha * dtdx, 

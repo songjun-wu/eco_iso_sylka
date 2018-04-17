@@ -41,126 +41,127 @@ using namespace std;
 
 class Atmosphere{
 
-		UINT4 _NRows;
-		UINT4 _NCols;
-		REAL8 _dx;
-		grid *_zones; //map with the zone extents and identifiers
-		UINT4 _nzones; // number of zones in map
-		UINT4 _NZns; //number of zones in binary data time series
-		UINT4 *_zoneId; // array with zone identifiers from the climate dataset
-		vector<vectCells> _vSortedGrid;
-		grid *_isohyet; //map with rainfall multipliers to spatially distribute precipitation
-		UINT4 _vSsortedGridTotalCellNumber;
-
-		REAL8 _rain_snow_temp; //scalar with air temperature threshold for rain-snow partition
-
-		grid *_Ldown; //longwave downward radiation Wm-2
-		grid *_Sdown; //shortwave downward radiation Wm-2
-		grid *_Tp; //Average air temperature C
-		grid *_MaxTp; //Maximum air temperature C
-		grid *_MinTp; //Minimum air temperature C
-		grid *_Precip; // Precipitation intensity ms-1
-		grid *_Rel_humid; //relative humidity of air [0-1]
-		grid *_Wind_speed; //windspeed in ms-1
-		grid *_dDprecip; //Isotopic signature of precipitation (dD per mil)
-		grid *_d18Oprecip; //Isotopic signature of precipitation (d18O per mil)
-
-		void CountNumZones();
-		vectCells SortGrid(int zoneId);
-		UINT4 InitiateClimateMap(ifstream & ifHandle, grid & ClimMap);
-		int UpdateClimateMap(ifstream & ifHandle, grid & ClimMap);// internal function that updates a climate map
-		int AdjustPrecip();
-
-		//climate data file handles
-		ifstream ifLdown;
-		ifstream ifSdown;
-		ifstream ifTp;
-		ifstream ifMaxTp;
-		ifstream ifMinTp;
-		ifstream ifPrecip;
-		ifstream ifRelHumid;
-		ifstream ifWindSpeed;
-		ifstream ifdDprecip;
-		ifstream ifd18Oprecip;
-
-
-
-public:
-
-	Atmosphere();
-    Atmosphere(Control &ctrl);
-    ~Atmosphere();
-
-
-    int AdvanceClimateMaps(Control &ctrl); //external interface that updates all climate maps by calling UpdateClimateMap
-
-
-
-    /*Getters and setters*/
-    //get methods (inline)
-
-	REAL8 getCellSize() const {
-			return _dx;
-	}
-
-	const vector<vectCells> &getSortedGrid() const {
-		return _vSortedGrid;
-	}
-
-	REAL8 getRainSnowTempThreshold() const{
-    	return _rain_snow_temp;
-    }
-	grid *getIncomingLongWave() const
-    {
-        return _Ldown;
-    }
-
-    grid *getIncomingShortWave() const
-    {
-        return _Sdown;
-    }
-
-    grid *getTemperature() const
-    {
-        return _Tp;
-    }
-    grid *getMaxTemperature() const
-	{
-		return _MaxTp;
-	}
-    grid *getMinTemperature() const
-	{
-		return _MinTp;
-	}
-    grid *getPrecipitation() const
-    {
-        return _Precip;
-    }
-
-    grid *getRelativeHumidty() const
-    {
-        return _Rel_humid;
-    }
-
-    grid *getWindSpeed() const
-    {
-            return _Wind_speed;
-    }
-
-    // Isotope tracking
-    grid *getdDprecip() const
-    {
-        return _dDprecip;
-    }
-    grid *getd18Oprecip() const
-    {
-        return _d18Oprecip;
-    }
-
-    //setter
-    void setPrecip(UINT4 row, UINT4 col, REAL8 value)
-    {
-           this->_Precip->matrix[row][col] = value;
-    }
+  UINT4 _NRows;
+  UINT4 _NCols;
+  REAL8 _dx;
+  grid *_zones; //map with the zone extents and identifiers
+  UINT4 _nzones; // number of zones in map
+  UINT4 _NZns; //number of zones in binary data time series
+  UINT4 *_zoneId; // array with zone identifiers from the climate dataset
+  vector<vectCells> _vSortedGrid;
+  grid *_isohyet; //map with rainfall multipliers to spatially distribute precipitation
+  UINT4 _vSsortedGridTotalCellNumber;
+  
+  REAL8 _rain_snow_temp; //scalar with air temperature threshold for rain-snow partition
+  
+  grid *_Ldown; //longwave downward radiation Wm-2
+  grid *_Sdown; //shortwave downward radiation Wm-2
+  grid *_Tp; //Average air temperature C
+  grid *_MaxTp; //Maximum air temperature C
+  grid *_MinTp; //Minimum air temperature C
+  grid *_Precip; // Precipitation intensity ms-1
+  grid *_Rel_humid; //relative humidity of air [0-1]
+  grid *_Wind_speed; //windspeed in ms-1
+  grid *_d2Hprecip; //Isotopic signature of precipitation (2H per mil)
+  grid *_d18Oprecip; //Isotopic signature of precipitation (18O per mil)
+  
+  void CountNumZones();
+  vectCells SortGrid(int zoneId);
+  UINT4 InitiateClimateMap(ifstream & ifHandle, grid & ClimMap);
+  // internal function that updates a climate map
+  int UpdateClimateMap(ifstream & ifHandle, grid & ClimMap);
+  int AdjustPrecip();
+  
+  //climate data file handles
+  ifstream ifLdown;
+  ifstream ifSdown;
+  ifstream ifTp;
+  ifstream ifMaxTp;
+  ifstream ifMinTp;
+  ifstream ifPrecip;
+  ifstream ifRelHumid;
+  ifstream ifWindSpeed;
+  ifstream ifd2Hprecip;
+  ifstream ifd18Oprecip;
+  
+  
+  
+ public:
+  
+  Atmosphere();
+  Atmosphere(Control &ctrl);
+  ~Atmosphere();
+  
+  
+  int AdvanceClimateMaps(Control &ctrl); //external interface that updates all climate maps by calling UpdateClimateMap
+  
+  
+  
+  /*Getters and setters*/
+  //get methods (inline)
+  
+  REAL8 getCellSize() const {
+    return _dx;
+  }
+  
+  const vector<vectCells> &getSortedGrid() const {
+    return _vSortedGrid;
+  }
+  
+  REAL8 getRainSnowTempThreshold() const{
+    return _rain_snow_temp;
+  }
+  grid *getIncomingLongWave() const
+  {
+    return _Ldown;
+  }
+  
+  grid *getIncomingShortWave() const
+  {
+    return _Sdown;
+  }
+  
+  grid *getTemperature() const
+  {
+    return _Tp;
+  }
+  grid *getMaxTemperature() const
+  {
+    return _MaxTp;
+  }
+  grid *getMinTemperature() const
+  {
+    return _MinTp;
+  }
+  grid *getPrecipitation() const
+  {
+    return _Precip;
+  }
+  
+  grid *getRelativeHumidty() const
+  {
+    return _Rel_humid;
+  }
+  
+  grid *getWindSpeed() const
+  {
+    return _Wind_speed;
+  }
+  
+  // Isotope tracking
+  grid *getd2Hprecip() const
+  {
+    return _d2Hprecip;
+  }
+  grid *getd18Oprecip() const
+  {
+    return _d18Oprecip;
+  }
+  
+  //setter
+  void setPrecip(UINT4 row, UINT4 col, REAL8 value)
+  {
+    this->_Precip->matrix[row][col] = value;
+  }
 };
 #endif /* ATMOSPHERE_H_ */

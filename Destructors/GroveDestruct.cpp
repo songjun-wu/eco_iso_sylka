@@ -84,31 +84,35 @@ Grove::~Grove(){
 			delete _Esoil;
 	if(_LeafWatPot)
 		delete _LeafWatPot;
+	if(_rootfrac1)
+		delete _rootfrac1;
+	if(_rootfrac2)
+		delete _rootfrac2;
 
 	// Tracking
-	if(_dDcanopy)
-		delete _dDcanopy;
+	if(_d2Hcanopy)
+		delete _d2Hcanopy;
 	if(_d18Ocanopy)
 		delete _d18Ocanopy;
 	if(_Agecanopy)
 		delete _Agecanopy;
 
-	if(_dDevapT)
-		delete _dDevapT;
+	if(_d2HevapT)
+		delete _d2HevapT;
 	if(_d18OevapT)
 		delete _d18OevapT;
 	if(_AgeevapT)
 		delete _AgeevapT;
 
-	if(_dDevapI)
-		delete _dDevapI;
+	if(_d2HevapI)
+		delete _d2HevapI;
 	if(_d18OevapI)
 		delete _d18OevapI;
 	if(_AgeevapI)
 		delete _AgeevapI;
 
-	if(_dDevapS)
-		delete _dDevapS;
+	if(_d2HevapS)
+		delete _d2HevapS;
 	if(_d18OevapS)
 		delete _d18OevapS;
 	if(_AgeevapS)

@@ -50,7 +50,6 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 				     REAL8 &etp,
 				     REAL8 &pond,
 				     REAL8 &theta,
-				     REAL8 &theta_lifo,
 				     REAL8 &Ts1,
 				     REAL8 &Tdold,
 				     REAL8 p,
@@ -92,7 +91,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
   REAL8 lambda = Ts1 < 0 ?  lat_heat_vap + lat_heat_fus : lat_heat_vap;
   REAL8 d1; // depth of the first layer
 
-  double dDevap, d18Oevap, Ageevap;
+  double d2H_evap, d18O_evap, Age_evap;
 
   z = _DEM->matrix[r][c];
   gamma =PsychrometricConst(101325, z);
@@ -208,20 +207,20 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
   SoilEvapotranspiration(-LE*p, Ts1, lambda, p*rs, etp, theta, dt, r, c);
 
 
- // Flux tracking after evap
+  // Flux tracking after evap
   if(ctrl.sw_trck){
 
     // Convert Ts to Kelvins for fractionation  
-    trck.MixingV_evapS(atm, *this, ctrl, d1, theta_lifo, theta, Ts+273.15, etp, beta,
-		       dDevap, d18Oevap, Ageevap, r, c);   
+    trck.MixingV_evapS(atm, *this, ctrl, d1, theta, Ts+273.15, etp, beta,
+		       d2H_evap, d18O_evap, Age_evap, r, c);   
 
     // Vegetation-dependent values are assigned here because fForest is private (to be fixed?)
-    if(ctrl.sw_dD)
-	fForest->setdDevapS(s,r,c, dDevap);
-    if(ctrl.sw_d18O)
-	fForest->setd18OevapS(s,r,c, d18Oevap);
+    if(ctrl.sw_2H)
+      fForest->setd2HevapS(s,r,c, d2H_evap);
+    if(ctrl.sw_18O)
+      fForest->setd18OevapS(s,r,c, d18O_evap);
     if(ctrl.sw_Age)
-	fForest->setAgeevapS(s,r,c, Ageevap);
+      fForest->setAgeevapS(s,r,c, Age_evap);
 
   }
   return EXIT_SUCCESS;

@@ -55,6 +55,47 @@ double SatVaporPressure(const double &T){ // T in C and e in Pa
 //	return spec_heat_air * Pz / (lat_heat_vap * 0.622); // P in Pa and psychrometric constant in Pa C-1
 //}
 
+// Convert isotopic delta to particle ratio, using VSMOW
+double Delta2Ratio(const double &di, int iso)
+{
+  double VSMOW_D = 0.00015576;
+  double VSMOW_18O = 0.0020052;
+  double Ro = 0;
+
+  // Deuterium
+  if (iso == 0)
+    Ro = VSMOW_D* (di/1000 + 1);
+  // Oxygen 18
+  if (iso == 1)
+    Ro = VSMOW_18O* (di/1000 + 1);
+  // Else(e.g. age)
+  if(iso > 1)
+    Ro = di;
+
+  return Ro;
+}
+
+// Convert isotopic delta to particle ratio, using VSMOW
+double Ratio2Delta(const double &Ri, int iso)
+{
+  double VSMOW_D = 0.00015576;
+  double VSMOW_18O = 0.0020052;
+  double d = 0;
+
+  // Deuterium
+  if (iso == 0)
+    d = (Ri/VSMOW_D - 1)* 1000;
+  // Oxygen 18
+  if (iso == 1)
+    d = (Ri/VSMOW_18O - 1)* 1000;
+  // Else(e.g. age)
+  if(iso > 1)
+    d = Ri;
+
+  return d;
+}
+
+
 extern double SoilHeatCapacity(const double &DrySoilHeatCap, const double &Porosity, const double &Theta, const double &SoilTemp){// Dry soil heat capacity in Joules m-3 C-1
 	return (1 - Porosity) * DrySoilHeatCap
 			+ (Theta) * spec_heat_water * rho_w

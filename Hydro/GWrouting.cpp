@@ -73,7 +73,8 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	_FluxExfilt->reset();
 	if(ctrl.sw_trck){
 	  _FluxL2toL1->reset();
-	  _FluxL3toL2->reset();
+	  //_FluxL3toL2->reset();
+	  _FluxGWtoL2->reset();
 	  _FluxGWtoL3->reset();
 	}
 	// Initialize others
@@ -186,8 +187,8 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    
 	    // Tracking
 	    if(ctrl.sw_trck){
-	      _FluxGWtoL3->matrix[r][c] += returnflow ;
-	      _FluxL3toL2->matrix[r][c] += returnflow ;
+	      _FluxGWtoL2->matrix[r][c] += returnflow ;
+	      //_FluxL3toL2->matrix[r][c] += returnflow ;
 	    }
 	    
 	    if (theta2 > poros) {
@@ -273,11 +274,16 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	      cc = c-1;
 	      lat_ok = 1;
 	      break;
-	    case 5:
+	    case 5: //if it is an outlet store the outflow m3s-1
 	      _dailyGwtrOutput.cells.push_back(cell(r, c, (alpha * hj1i1 * _dx)));
-	      _dailyOvlndOutput.cells.push_back(cell(r, c, Qk1+ponding * _dx *_dx / dt)); //second term needed to account for outer at outlets with no channel
-	      //_dailyOvlndOutput.cells.push_back(cell(r, c, ponding * _dx *_dx / dt));
-	      break; //if it is an outlet store the outflow m3s-1
+	      _dailyOvlndOutput.cells.push_back(cell(r, c, Qk1+ponding * _dx *_dx / dt)); 
+	      //second term needed to account for outer at outlets with no channel
+	      
+	      // Tracking
+	      if(ctrl.sw_trck)
+		trck.OutletVals(ctrl, 1, r, c);
+	      
+	      break;
 	    case 6:
 	      rr = r;
 	      cc = c+1;

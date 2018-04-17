@@ -32,7 +32,7 @@
 
 int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
 			 REAL8 V_old, REAL8 V_new, REAL8 &beta,
-			 REAL8 &di_old, REAL8 &di_new, REAL8 &dievap,
+			 REAL8 &di_old, REAL8 &di_new, REAL8 &di_evap,
 			 REAL8 &Ts, int r, int c, int iso){
   
   REAL8 Ta = atm.getTemperature()->matrix[r][c] + 273.15 ; // Air temperature (K)
@@ -53,7 +53,7 @@ int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
   REAL8 n; // Parameter translating dominant water transport mode (-)
   REAL8 th_r, th_s, psiae, bclambda;
   REAL8 d1 = bsn.getSoilDepth1()->matrix[r][c];
-
+  
   // Corrected relative humidity at the surface
   ha_p = ha*ea_s/es_s;
   
@@ -90,7 +90,7 @@ int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
   
   // (Gat, 1995) + (Gibson and Reid, 2014)
   if(iso == 0) // deuterium
-    di_atm = (atm.getdDprecip()->matrix[r][c] - eps_p)/ alpha_p;
+    di_atm = (atm.getd2Hprecip()->matrix[r][c] - eps_p)/ alpha_p;
   else if(iso ==1) // oxygen 18
     di_atm = (atm.getd18Oprecip()->matrix[r][c] - eps_p)/ alpha_p;
 
@@ -107,11 +107,28 @@ int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
   }
   
   // Kinetic fractionation factor epsilon_k
-  // Value of Di/D from Vogt (1976)
-  if(iso==0) // deuterium
-    eps_k = (hs-ha_p)*(1-0.9877)*1000*n; 
-  else if(iso==1) // oxygen 18
-    eps_k = (hs-ha_p)*(1-0.9859)*1000*n; 
+  if(ctrl.toggle_ek == 0) {
+    // Value of Di/D from Merlivat (1978)
+    if(iso==0) 
+      eps_k = (hs-ha_p)*(1-0.9757)*1000*n;
+    else if(iso==1) 
+      eps_k = (hs-ha_p)*(1-0.9727)*1000*n;
+
+  } else if (ctrl.toggle_ek == 1) {
+    // Value of Di/D from Vogt (1976)
+    if(iso==0) // deuterium
+      eps_k = (hs-ha_p)*(1-0.9877)*1000*n; 
+    else if(iso==1) // oxygen 18
+      eps_k = (hs-ha_p)*(1-0.9859)*1000*n; 
+
+  } else if (ctrl.toggle_ek == 2) {
+    REAL8 u = atm.getWindSpeed()->matrix[r][c]; // wind speed (m.s-1)
+    // From Merlivat and Jouzel (1979) adapted by Haese et al. (2013)
+    if(iso==0) // deuterium
+      eps_k = u > 7.0 ? (hs-ha_p)*0.88*(0.285*u+0.82) : (hs-ha_p)*0.88*6;
+    else if (iso==1) // oxygen 18
+      eps_k = u > 7.0 ? (hs-ha_p)*(0.285*u+0.82) : (hs-ha_p)*6;
+  }
 
   // --- Generalized following Good et al. (2014) -------------
   // Gibson and Reid (2010)
@@ -129,12 +146,13 @@ int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
   // New isotopic signature in topsoil
   di_new = di_s - (di_s - di_old) * powl(f,m);
   
-  //if(abs(di_new)>1e3)
-  //  cout << r << " " << c << " : disoil_new ->" << di_new << " diold ->" << di_old <<
-  //    " distar ->" << di_s << " f ->" << f <<" m ->" << m << endl;
-
   // Isotopic signature of evaporated water
-  dievap = (hs*alpha_p*di_new - ha_p*di_atm - eps)/ (hs - ha_p + eps_k/1000);
+  di_evap = std::max<double>(-1000,(hs*alpha_p*di_new - ha_p*di_atm - eps)/ (hs - ha_p + eps_k/1000));
+
+  if(abs(di_new)>1e3 or abs(di_evap)>1e3)
+    cout << r << " " << c << "| iso:" << iso << "| evapS:" << V_old-V_new << "| disoil_new:" << di_new << "|di_old:" << di_old <<
+      "| di_star:" << di_s << "| di_evap:" << di_evap << 
+      "| f:" << f <<"| m:" << m << endl;
   
   return EXIT_SUCCESS;
   

@@ -58,19 +58,30 @@ Grove::Grove(){
 	_Transpiration = NULL;
 	_Esoil = NULL;
 	_LeafWatPot = NULL;
+	_rootfrac1 = NULL;
+	_rootfrac2 = NULL;
 
 	// Tracking
-	_dDcanopy = NULL;
+	_d2Hcanopy = NULL;
 	_d18Ocanopy = NULL;
 	_Agecanopy = NULL;
-	_dDevapT = NULL;
+	_d2HevapT = NULL;
 	_d18OevapT = NULL;
 	_AgeevapT = NULL;
-	_dDevapI = NULL;
+	_d2HevapI = NULL;
 	_d18OevapI = NULL;
 	_AgeevapI = NULL;
-	_dDevapS = NULL;
+	_d2HevapS = NULL;
 	_d18OevapS = NULL;
 	_AgeevapS = NULL;
+
+	_d2Hcanopy = NULL;
+	_d18Ocanopy = NULL;
+	_d2HevapS = NULL;
+	_d18OevapS = NULL;
+	_d2HevapT = NULL;
+	_d18OevapT = NULL;
+	_d2HevapI = NULL;
+	_d18OevapI = NULL;
 
 }

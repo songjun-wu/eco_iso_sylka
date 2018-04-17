@@ -7,6 +7,7 @@ CPP_SRCS += \
 ../Budgets/AccountFluxes.cpp \
 ../Budgets/AccountRelArea.cpp \
 ../Budgets/AccountStorages.cpp \
+../Budgets/AccountTrckStorages.cpp \
 ../Budgets/MassBalanceError.cpp \
 ../Budgets/TotalEvaporation.cpp \
 ../Budgets/TotalEvaporationS.cpp \
@@ -20,6 +21,7 @@ CPP_SRCS += \
 ../Budgets/TotalSrftoChn.cpp \
 ../Budgets/TotalStorage.cpp \
 ../Budgets/totalGrndFlow.cpp \
+../Budgets/TrckBalanceError.cpp
 
 OBJS += \
 ./Budgets/AccountFluxes.o \
@@ -38,6 +40,7 @@ OBJS += \
 ./Budgets/TotalSrftoChn.o \
 ./Budgets/TotalStorage.o \
 ./Budgets/totalGrndFlow.o \
+./Budgets/TrckBalanceError.o
 
 CPP_DEPS += \
 ./Budgets/AccountFluxes.d \
@@ -56,13 +59,14 @@ CPP_DEPS += \
 ./Budgets/TotalSrftoChn.d \
 ./Budgets/TotalStorage.d \
 ./Budgets/totalGrndFlow.d \
+./Budgets/TrckBalanceError.d
 
 
 # Each subdirectory must supply rules for building sources it contributes
 Budgets/%.o: ../Budgets/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	g++ -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

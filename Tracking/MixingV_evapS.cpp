@@ -31,169 +31,65 @@
 #include "Basin.h"
 
 void Tracking::MixingV_evapS(Atmosphere &atm, Basin &bsn, Control &ctrl, 
-			     double &d1, double &theta_lifo, double &theta_new,
+			     double &d1, double &theta_new,
 			     double Ts, double &etp, double &beta,
-			     double &dDevap, double &d18Oevap, double &Ageevap,
+			     double &d2H_evap, double &d18O_evap, double &Age_evap,
 			     int r, int c)
 {
 
   double evapS   = etp > RNDOFFERR ? etp * ctrl.dt : 0.0 ;
   double etotS   = bsn.getEvaporationS_all()->matrix[r][c] * ctrl.dt; //vegetation-summed Es (until this p)
-  double SrftoL1 = bsn.getFluxSrftoL1()->matrix[r][c];
-
-  double V_old, V_new;
-  double dD_new, d18O_new, Age_new;
+  //double SrftoL1 = bsn.getFluxSrftoL1()->matrix[r][c];
 
   // useful effective volume
-  if(ctrl.sw_lifo){
-    // If Evap < Infiltration: then only non-mixed rain evap/fractio, then mixes
-    if(evapS <= SrftoL1){
-      V_old = SrftoL1 > RNDOFFERR ? SrftoL1 : theta_lifo*d1 ;
-      V_new = V_old - evapS;
-    }
+  double V_new = theta_new*d1;
+  double V_old = V_new + evapS;
+
+  double d2H_new, d18O_new;//, Age_new;
+  
+  // -- 2H ----------------------------------------------------------------------------
+  if(ctrl.sw_2H){
+    
+    // If fractionation and no lifo, fractio acts over the whole L1
+    // Safeguard with minimum E value: avoids diverging d2H_evap values
+    if(ctrl.sw_frac and evapS > 1e-6)
+      Frac_Esoil(atm, bsn, ctrl, V_old, V_new, beta, 
+		 _d2Hsoil1->matrix[r][c], d2H_new, d2H_evap, Ts, r, c, 0);
     else {
-      V_old = theta_lifo*d1;
-      V_new = V_old - (evapS - SrftoL1);
-    }
-  } else {
-    V_new = theta_new*d1;
-    V_old = V_new + evapS;
-  }
-
-  // -- dD ----------------------------------------------------------------------------
-  if(ctrl.sw_dD){
-    
-    // LIFO: last in first out -------------------------
-    if(ctrl.sw_lifo and SrftoL1>RNDOFFERR){
-      // If Evap < Infiltration: then only non-mixed rain evap/fractionationes
-      if(evapS <= SrftoL1){
-
-	// Fractionation: check if there is evaporation!
-	if(ctrl.sw_frac and evapS > RNDOFFERR)
-	  Frac_Esoil(atm, bsn, ctrl, V_old, V_new, beta, 
-		   _dDsurface->matrix[r][c], dD_new, dDevap, 
-		     Ts, r, c, 0);
-	else {
-	  dD_new = _dDsurface->matrix[r][c];
-	  dDevap = evapS > RNDOFFERR ? _dDsurface->matrix[r][c] : 0;
-	}
-
-	// Update 
-	_dDlifo->matrix[r][c] = dD_new;
-	_dDevapS_sum->matrix[r][c] = InputMix(etotS, _dDevapS_sum->matrix[r][c],
-					      evapS, dDevap);
-
-      } else {
-
-	// If Evap > Infilt: whole infiltr evaporates and soil fractionates
-	// with evap - infilt, dDevap is a weighted average
-	if(ctrl.sw_frac)
-	  Frac_Esoil(atm, bsn, ctrl, V_old, V_new, beta,
-		   _dDsoil1->matrix[r][c], dD_new, dDevap, 
-		     Ts, r, c, 0);
-	else {
-	  // ...all infiltr evap + part of evap takes L1 water
-	  dD_new = _dDsoil1->matrix[r][c];
-	  dDevap = InputMix(SrftoL1, _dDsurface->matrix[r][c],  evapS - SrftoL1, dD_new);
-	}
-	// Update: now only the topsoil is left
-	_dDsoil1->matrix[r][c] = InputMix(theta_lifo*d1, _dDsoil1->matrix[r][c], V_new, dD_new);
-	_dDevapS_sum->matrix[r][c] = InputMix(etotS, _dDevapS_sum->matrix[r][c], evapS, dDevap);
-      }
-      
-      // No LIFO ------------------------------------
-    } else {
-
-      // If fractionation and no lifo, fractio acts over the whole L1
-      // Safeguard with minimum E value: avoids diverging dD_E values
-      if(ctrl.sw_frac and V_new/V_old<0.999)
-	Frac_Esoil(atm, bsn, ctrl, V_old, V_new, beta,
-		 _dDsoil1->matrix[r][c], dD_new, dDevap, 
-		   Ts, r, c, 0);
       // If no fractionation (or negligible E) and no lifo, all from L1
-      else {
-	dD_new = _dDsoil1->matrix[r][c];
-	dDevap = evapS > RNDOFFERR ? _dDsoil1->matrix[r][c] : 0;
-      }
-      // Finally, update
-      _dDsoil1->matrix[r][c] = dD_new;
-      _dDevapS_sum->matrix[r][c] = InputMix(etotS, _dDevapS_sum->matrix[r][c], evapS, dDevap);
+      d2H_new = _d2Hsoil1->matrix[r][c];
+      d2H_evap = evapS > RNDOFFERR ? _d2Hsoil1->matrix[r][c] : -1000;
     }
-  }
-  // -----------------------------------------------------------------------------------
-
-  // -- d18O ---------------------------------------------------------------------------
-  if(ctrl.sw_d18O){
-    
-    // LIFO: last in first out -------------------------
-    if(ctrl.sw_lifo and SrftoL1>RNDOFFERR){
-      // If Evap < Infiltration: then only non-mixed rain evap/fractionationes
-      if(evapS <= SrftoL1){
-	// Fractionation: check if there is evaporation!
-	if(ctrl.sw_frac and evapS > RNDOFFERR){
-	  Frac_Esoil(atm, bsn, ctrl, V_old, V_new, beta,
-		     _d18Olifo->matrix[r][c], d18O_new, d18Oevap, 
-		     Ts, r, c, 1);
-	  _d18Olifo->matrix[r][c] = d18O_new;
-	} else
-	  d18Oevap = evapS > RNDOFFERR ? _d18Olifo->matrix[r][c] : 0;
-	
-      } else {
-	// If Evap > Infilt: whole infiltr evaporates and soil fractionates
-	// with evap - infilt, dDevap is a weighted average
-	if(ctrl.sw_frac){
-	  Frac_Esoil(atm, bsn, ctrl, V_old, V_new, beta,
-		     _d18Osoil1->matrix[r][c], d18O_new, d18Oevap, 
-		     Ts, r, c, 1);
-	  _d18Osoil1->matrix[r][c] = d18O_new;
-	} else
-	  // ...all infiltr evap + part of evap takes L1 water
-	  d18Oevap = InputMix(SrftoL1, _d18Olifo->matrix[r][c],  
-			      evapS - SrftoL1, _d18Osoil1->matrix[r][c]);
-      }
-    
-      // No LIFO ------------------------------------
-    } else {
-      // If fractionation and no lifo, fractio acts over the whole L1
-      // Safeguard with minimum E value: avoids diverging d18O_E values
-      if(ctrl.sw_frac and V_new/V_old<0.999){
-	Frac_Esoil(atm, bsn, ctrl, V_old, V_new, beta,
-		   _d18Osoil1->matrix[r][c], d18O_new, d18Oevap, 
-		   Ts, r, c, 1);
-	_d18Osoil1->matrix[r][c] = d18O_new;
-      } else 
-	// If no fractionation (or negligible E) and no lifo, all from L1
-	d18Oevap = evapS > 0 ? _d18Osoil1->matrix[r][c] : 0;
-    }
-    
     // Finally, update
-    _d18OevapS_sum->matrix[r][c] = InputMix(etotS, _d18OevapS_sum->matrix[r][c], evapS, d18Oevap);
+    _d2Hsoil1->matrix[r][c] = d2H_new;
+    _d2HevapS_sum->matrix[r][c] = InputMix(etotS, _d2HevapS_sum->matrix[r][c], evapS, d2H_evap);
+  }
+
+  // -----------------------------------------------------------------------------------
+  
+  // -- 18O ---------------------------------------------------------------------------
+  if(ctrl.sw_18O){
+    
+    // If fractionation and no lifo, fractio acts over the whole L1
+    // Safeguard with minimum E value: avoids diverging d18O_E values
+    if(ctrl.sw_frac and evapS > 1e-6){
+      Frac_Esoil(atm, bsn, ctrl, V_old, V_new, beta, 
+		 _d18Osoil1->matrix[r][c], d18O_new, d18O_evap, Ts, r, c, 1);
+    } else {
+      // If no fractionation (or negligible E) and no lifo, all from L1
+      d18O_new = _d18Osoil1->matrix[r][c];
+      d18O_evap = evapS > RNDOFFERR ? _d18Osoil1->matrix[r][c] : -1000;
+    }    
+    // Finally, update
+    _d18Osoil1->matrix[r][c] = d18O_new;
+    _d18OevapS_sum->matrix[r][c] = InputMix(etotS, _d18OevapS_sum->matrix[r][c], evapS, d18O_evap);
   }
   // ----------------------------------------------------------------------------------
   
   // -- Water age ----------------------------------------------------------------------
   if(ctrl.sw_Age){
-
-    // Last in first out: depends on how evap compares to infitlration
-    if(ctrl.sw_lifo and SrftoL1>RNDOFFERR){
-      if(evapS <= SrftoL1) {
-	// ...the remainder of infiltration mixes now
-	_Agelifo->matrix[r][c] = _Agesurface->matrix[r][c];
-	Ageevap = evapS > RNDOFFERR ? _Agesurface->matrix[r][c] : 0;
-      } else {
-	// ...all infiltr evap + part of evap takes L1 water
-	Ageevap = InputMix(SrftoL1, _Agesurface->matrix[r][c], 
-			   evapS-SrftoL1, _Agesoil1->matrix[r][c]);
-	
-      }
-      _AgeevapS_sum->matrix[r][c] = InputMix(etotS, _AgeevapS_sum->matrix[r][c], evapS, Ageevap);
-
-      // No LIFO ------------------------------------
-    } else {
-      // All from L1: ages don't change from earlier mixing
-      Ageevap = evapS > RNDOFFERR ? _Agesoil1->matrix[r][c] : 0 ;
-      _AgeevapS_sum->matrix[r][c] = Ageevap;
-    }
+    // All from L1: ages don't change from earlier mixing
+    _AgeevapS_sum->matrix[r][c] = evapS > RNDOFFERR ? _Agesoil1->matrix[r][c] : 0 ;
   }
   // -----------------------------------------------------------------------------------
   

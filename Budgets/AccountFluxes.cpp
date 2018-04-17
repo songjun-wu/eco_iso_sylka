@@ -90,3 +90,92 @@ double Budget::AccountFluxes(const vectCells *timeseries, const Basin *b) {
 
 	return result;
 }
+
+// --- Tracking : uses two maps (or vectors) to multiply -----------------------------------
+
+double Budget::AccountTrckFluxes(const grid *map1, const grid *map2, const Basin *b) {
+  
+  UINT4 length = b->getSortedGrid().cells.size();
+  UINT4 r, c;
+  REAL8 result = 0;
+  REAL8 dx = b->getCellSize();
+  
+#pragma omp parallel for		     \
+  default(shared) private(r,c)		     \
+  reduction (+:result)
+  
+  for (UINT4 i = 0; i < length; i++) {
+    
+    r = b->getSortedGrid().cells[i].row;
+    c = b->getSortedGrid().cells[i].col;
+    
+    result +=  (map1->matrix[r][c] * map2->matrix[r][c] *dx*dx*dt);
+    
+  }
+  
+  return result;
+}
+
+// Precip isotopes
+double Budget::AccountTrckFluxes(const grid *map1, const grid *map2, const Atmosphere *a) {
+  
+  UINT4 zones = a->getSortedGrid().size();
+  UINT4 r, c;
+  REAL8 result = 0;
+  REAL8 dx = a->getCellSize();
+  
+#pragma omp parallel for		     \
+  default(shared) private(r,c)		     \
+  reduction (+:result)
+  
+  for (UINT4 i = 0; i < zones; i++)
+    for (UINT4 j = 0; j < a->getSortedGrid()[i].cells.size(); j++) {
+      
+      r = a->getSortedGrid()[i].cells[j].row;
+      c = a->getSortedGrid()[i].cells[j].col;
+      
+      result += (map1->matrix[r][c] * map2->matrix[r][c] * dx * dx * dt);
+    }
+  
+  return result;
+}
+
+// Precip age: it's 0 at entry, but the budgets must account for aging previously-input precip!
+double Budget::AccountTrckFluxes(const grid *map, const Atmosphere *a){
+  
+  UINT4 zones = a->getSortedGrid().size();
+  UINT4 r, c;
+  REAL8 result = 0;
+  REAL8 dx = a->getCellSize();
+  
+#pragma omp parallel for		     \
+  default(shared) private(r,c)		     \
+  reduction (+:result)
+  
+  for (UINT4 i = 0; i < zones; i++)
+    for (UINT4 j = 0; j < a->getSortedGrid()[i].cells.size(); j++) {
+      
+      r = a->getSortedGrid()[i].cells[j].row;
+      c = a->getSortedGrid()[i].cells[j].col;
+      
+      result += map->matrix[r][c] * dx * dx * dt * dt / 86400; 
+    }
+  
+  return result;
+}
+
+double Budget::AccountTrckFluxes(const vectCells *timeseries1, const vectCells *timeseries2) {
+  
+  UINT4 length = timeseries1->cells.size(); //b->getSortedGrid().cells.size();
+  REAL8 result = 0;
+  
+#pragma omp parallel for			\
+  reduction (+:result)
+  
+  for (UINT4 i = 0; i < length; i++)
+      result +=  (timeseries1->cells[i].val * timeseries2->cells[i].val * dt);
+  
+  return result;
+}
+
+// ---------------------------------------------------------------------------------------------

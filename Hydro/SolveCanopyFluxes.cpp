@@ -93,11 +93,12 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	UINT4 s;
 	int  thre=0;
 
-	// Tracking: contribution of each layer to transpiration
+	// Tracking
 	REAL8 pTrp1, pTrp2, pTrp3;
-	REAL8 dDevapT_f, d18OevapT_f, AgeevapT_f;
-	REAL8 dDevapI_f, d18OevapI_f, AgeevapI_f;
-	//REAL8 dDnew, d18Onew, Agenew;
+	REAL8 d2HevapT_f, d18OevapT_f, AgeevapT_f;
+	REAL8 d2HevapI_f, d18OevapI_f, AgeevapI_f;
+	REAL8 d2Hcanopy_f, d18Ocanopy_f, Agecanopy_f;
+	//REAL8 2Hnew, 18Onew, Agenew;
 
 	// Initialize to zero
 	_Rn_sum->reset();
@@ -111,8 +112,8 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	   Tp, maxTp, minTp, snow, rain, sno_rain_thres, evap,		\
 	   transp, netR, evap_f, transp_f, D, DelCanStor, theta, theta2, theta3, theta_available, ra, \
 	   poros, psi_ae, Keff, bclambda, rootdepth, froot1, froot2, froot3, d1, d2, d3, thetar, fc, \
-	   pTrp1, pTrp2, pTrp3, veg_p, dDevapT_f, d18OevapT_f, AgeevapT_f, \
-	   dDevapI_f, d18OevapI_f, AgeevapI_f)				\
+	   pTrp1, pTrp2, pTrp3, veg_p, d2HevapT_f, d18OevapT_f, AgeevapT_f, \
+	   d2HevapI_f, d18OevapI_f, AgeevapI_f, d2Hcanopy_f, d18Ocanopy_f, Agecanopy_f) \
   shared(nsp, atm, ctrl, trck, dt, thre)
 	
 	{
@@ -144,18 +145,22 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  psi_ae = _psi_ae->matrix[r][c];
 	  bclambda = _BClambda->matrix[r][c];
 	  
-	  // Tracking: initialize summed values
-	  dDevapT_f = 0;
-	  d18OevapT_f = 0;
-	  AgeevapT_f = 0;
-	  dDevapI_f = 0;
-	  d18OevapI_f = 0;
-	  AgeevapI_f = 0;
-	  
 	  d1 = _depth_layer1->matrix[r][c];
 	  d2 = _depth_layer2->matrix[r][c];
 	  d3 = _soildepth->matrix[r][c] - d1 - d2;
-	  
+
+	  // Tracking: initialize summed values
+	  d2HevapT_f = 0;
+	  d18OevapT_f = 0;
+	  AgeevapT_f = 0;
+	  d2HevapI_f = 0;
+	  d18OevapI_f = 0;
+	  AgeevapI_f = 0;
+	  d2Hcanopy_f = 0;
+	  d18Ocanopy_f = 0;
+	  Agecanopy_f = 0;
+  
+	  // --- LOOP ON SPECIES --------------------------------------
 	  for (s = 0; s < nsp; s++) {
 	    p = fForest->getPropSpecies(s, r, c);
 	    if (p == 0)
@@ -186,8 +191,10 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	      theta = _soilmoist1->matrix[r][c]; //soil moisture at time t
 	      theta2 = _soilmoist2->matrix[r][c];
 	      theta3 = _soilmoist3->matrix[r][c];
-	      froot1 = _rootfrac1->matrix[r][c];
-	      froot2 = _rootfrac2->matrix[r][c];
+	      froot1 = fForest->getRootFrac1(s)->matrix[r][c];
+	      froot2 = fForest->getRootFrac2(s)->matrix[r][c];
+	      //froot1 = _rootfrac1->matrix[r][c];
+	      //froot2 = _rootfrac2->matrix[r][c];
 	      froot3 = 1 - froot1 - froot2;
 	      theta_available = (theta-thetar) * froot1 + (theta2-thetar) * froot2 + (theta3-thetar) * froot3;
 	      //root depth is the depth of layers that contain 95% of roots
@@ -205,20 +212,76 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 				     false);
 	      
 	      fForest->CanopyInterception(atm, ctrl, DelCanStor, D, s, r, c); //calculates canopy interception and trascolation
-	      
+
+	      // Tracking: canopy storage
+	      if (ctrl.sw_trck and DelCanStor > RNDOFFERR){
+		if(ctrl.sw_2H)
+		  fForest->setd2Hcanopy(s, r, c, 
+				       trck.InputMix(fForest->getIntercWater(s, r, c) - DelCanStor,
+						     fForest->getd2Hcanopy(s)->matrix[r][c],
+						     DelCanStor, 
+						     atm.getd2Hprecip()->matrix[r][c]));
+				       
+		if(ctrl.sw_18O)
+		  fForest->setd18Ocanopy(s, r, c, 
+					 trck.InputMix(fForest->getIntercWater(s, r, c) - DelCanStor,
+						       fForest->getd18Ocanopy(s)->matrix[r][c],
+						       DelCanStor, 
+						       atm.getd18Oprecip()->matrix[r][c]));
+					 
+		if(ctrl.sw_Age)
+		  fForest->setAgecanopy(s, r, c, 
+				       trck.InputMix(fForest->getIntercWater(s, r, c) - DelCanStor,
+						     fForest->getAgecanopy(s)->matrix[r][c],
+						     DelCanStor,0));
+
+	      }
+
+	      if(ctrl.sw_trck){
+		if(ctrl.sw_2H)
+		  d2Hcanopy_f += fForest->getd2Hcanopy(s)->matrix[r][c] * p ;
+		if(ctrl.sw_18O)
+		  d18Ocanopy_f += fForest->getd18Ocanopy(s)->matrix[r][c] * p ;
+		if(ctrl.sw_Age)
+		  Agecanopy_f += fForest->getAgecanopy(s)->matrix[r][c] * p ;
+	      } // ---------------------------
+	
+	      // TODO : Implement fractionation in canopy interception in SolveCanopyEnergyBalance
 	      fForest->SolveCanopyEnergyBalance(*this, atm, ctrl, theta_available+thetar,
 						thetar, poros, rootdepth, Keff, psi_ae, bclambda, ra, DelCanStor, evap, transp, netR,
 						s, r, c);
 	      
+	      // Canopy evap-related update etc.
 	      _CanopyStorage->matrix[r][c] += DelCanStor * p;
 	      
 	      _Rn_sum->matrix[r][c] += netR * p ;
 	      
 	      if (_CanopyStorage->matrix[r][c] < RNDOFFERR)
 		_CanopyStorage->matrix[r][c] = 0.0;
-	      
-	      transp_f += transp * p;
+
 	      evap_f += evap * p; //evaporation at t=t+1
+
+	      // Tracking (evapI)
+	      if(ctrl.sw_trck){
+		if(ctrl.sw_2H){
+		  fForest->setd2HevapI(s, r, c, 
+				      evap>RNDOFFERR ? fForest->getd2Hcanopy(s)->matrix[r][c] : 0) ;
+		  d2HevapI_f += fForest->getd2HevapI(s)->matrix[r][c] * p * evap ;
+		}
+		if(ctrl.sw_18O){
+		  fForest->setd18OevapI(s, r, c, 
+				       evap>RNDOFFERR ? fForest->getd18Ocanopy(s)->matrix[r][c] : 0) ;
+		  d18OevapI_f += fForest->getd18OevapI(s)->matrix[r][c] * p * evap ;
+		}
+		if(ctrl.sw_Age){
+		  fForest->setAgeevapI(s, r, c, 
+				       evap>RNDOFFERR ? fForest->getAgecanopy(s)->matrix[r][c] : 0) ;
+		  AgeevapI_f += fForest->getAgeevapI(s)->matrix[r][c] * p * evap ;
+		}
+	      }
+	      
+	      // Transpiration-related update etc.
+	      transp_f += transp * p;
 	      
 	      pTrp1 = ((theta-thetar)*froot1) / theta_available;
 	      pTrp2 = ((theta2-thetar)*froot2) / theta_available;
@@ -227,17 +290,17 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	      theta  -= transp * p * dt * pTrp1 /d1; //soil moisture at t=t+1
 	      theta2 -= transp * p * dt * pTrp2 /d2; //soil moisture at t=t+1
 	      theta3 -= transp * p * dt * pTrp3 /d3; //soil moisture at t=t+1
-	      
-	      // Transpiration tracking: assumes total mixing of the water pulled from each soil layer
+
+	      // Tracking (evapT): assumes total mixing of the water pulled from each soil layer
 	      if(ctrl.sw_trck){
-		if(ctrl.sw_dD){
-		  fForest->setdDevapT(s, r, c,
-					pTrp1*trck.getdDsoil1()->matrix[r][c]+
-					pTrp2*trck.getdDsoil2()->matrix[r][c]+
-					pTrp3*trck.getdDsoil3()->matrix[r][c]);
-		  dDevapT_f += fForest->getdDevapT(s)->matrix[r][c] * p * transp ;
+		if(ctrl.sw_2H){
+		  fForest->setd2HevapT(s, r, c,
+					pTrp1*trck.getd2Hsoil1()->matrix[r][c]+
+					pTrp2*trck.getd2Hsoil2()->matrix[r][c]+
+					pTrp3*trck.getd2Hsoil3()->matrix[r][c]);
+		  d2HevapT_f += fForest->getd2HevapT(s)->matrix[r][c] * p * transp ;
 		}
-		if(ctrl.sw_d18O){
+		if(ctrl.sw_18O){
 		  fForest->setd18OevapT(s, r, c,
 					  pTrp1*trck.getd18Osoil1()->matrix[r][c]+
 					  pTrp2*trck.getd18Osoil2()->matrix[r][c]+
@@ -259,7 +322,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	      _soilmoist3->matrix[r][c] = theta3;
 
 	      //trck.MixingV_evapT(*this, ctrl, pTrp1, pTrp2, pTrp3, 
-	      //		 dDevapT_f, d18OevapT_f, AgeevapT_f, p, s, r, c);
+	      // d2HevapT_f, 18OevapT_f, AgeevapT_f, p, s, r, c);
 	      
 	    } // end if bare / veg
 	    
@@ -300,14 +363,23 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  _Transpiration_all->matrix[r][c]  = transp_f ;
 	  _EvaporationI_all->matrix[r][c] = evap_f ;
 	  // applies for tracking as well
-	  // summed evapT dD, d18O and Age weighted by flux magnitude and cover ONLY over vegetated fraction
+	  // summed evapT 2H, 18O and Age weighted by flux magnitude and cover ONLY over vegetated fraction
 	  // (otherwise results makes no sense whre bare frac is significant)
-	  if(ctrl.sw_trck && ctrl.sw_dD)
-	    trck.setdDevapT_sum(r ,c, dDevapT_f / (transp_f * veg_p)); 
-	  if(ctrl.sw_trck && ctrl.sw_d18O)
-	    trck.setd18OevapT_sum(r ,c, d18OevapT_f / (transp_f * veg_p));
-	  if(ctrl.sw_trck && ctrl.sw_Age)
-	    trck.setAgeevapT_sum(r ,c, AgeevapT_f / (transp_f * veg_p));
+	  if(ctrl.sw_trck && ctrl.sw_2H){
+	    trck.setd2HevapT_sum(r ,c, transp_f > RNDOFFERR ? d2HevapT_f / transp_f : -1000); 
+	    trck.setd2HevapI_sum(r ,c, evap_f > RNDOFFERR ? d2HevapI_f / evap_f : -1000); 
+ 	    trck.setd2Hcanopy_sum(r ,c, veg_p > RNDOFFERR ? d2Hcanopy_f / veg_p : -1000); 
+	  }
+	  if(ctrl.sw_trck && ctrl.sw_18O){
+	    trck.setd18OevapT_sum(r ,c, transp_f > RNDOFFERR ? d18OevapT_f / transp_f : -1000);
+ 	    trck.setd18OevapI_sum(r ,c, evap_f > RNDOFFERR ? d18OevapI_f / evap_f : -1000); 
+ 	    trck.setd18Ocanopy_sum(r ,c, veg_p > RNDOFFERR ? d18Ocanopy_f / veg_p : -1000); 
+	  }
+	  if(ctrl.sw_trck && ctrl.sw_Age){
+	    trck.setAgeevapT_sum(r ,c, transp_f > RNDOFFERR ? AgeevapT_f / transp_f : 0);
+ 	    trck.setAgeevapI_sum(r ,c, evap_f > RNDOFFERR ? AgeevapI_f / evap_f : 0); 
+ 	    trck.setAgecanopy_sum(r ,c, veg_p > RNDOFFERR ? Agecanopy_f / veg_p : 0); 
+	  }
 	  
 	}//end for
  }//end omp parallel

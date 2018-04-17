@@ -72,9 +72,9 @@ class Basin {
 	grid *_soildepth; //soil depth m
 	grid *_depth_layer1; //depth of layer 1. 0.1 m by default
 	grid *_depth_layer2; //depth of layer 2. Depth of layer 3 is calculated form depth
-	grid *_Kroot; // exponential root profile shape (m-1)
-	grid *_rootfrac1; //fraction of roots in soil layer 1
-	grid *_rootfrac2; //fraction of roots in soil layer 2. For layer three it is calculated from layer 1 and 2
+	//grid *_Kroot; // exponential root profile shape (m-1)
+	//grid *_rootfrac1; //fraction of roots in soil layer 1
+	//grid *_rootfrac2; //fraction of roots in soil layer 2. For layer three it is calculated from layer 1 and 2
 	grid *_fieldcap; //field capacity volumetric
 	grid *_paramWc; //empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
 	grid *_paramWp; ////empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
@@ -107,6 +107,9 @@ class Basin {
 	grid *_soilmoist_12; //average volumetric soil moisture of the two upper layers
 	grid *_soilmoist_av; //average volumetric soil moisture of the entire soil profile
 	grid *_SoilWaterDepth; //soil moisture depth (m) for entire soil profile
+	grid *_SoilWaterDepthL1; //soil moisture depth (m) for the first layer
+	grid *_SoilWaterDepthL2; //soil moisture depth (m) for the second layer
+	grid *_SoilWaterDepthL3; //soil moisture depth (m) non-gravitational in the third layer
 	grid *_WaterTableDepth; //reconstructed WTD (ignoring perched aquifers)
 	grid *_SoilSatDeficit; //soil saturation deficit (1 full deficit - 0 saturation)
 	grid *_AccumInfilt; //Accumulated infiltration m
@@ -142,18 +145,20 @@ class Basin {
 	grid *_bedrock_leak;
 
 	// ---------------------------------------------------------------------------------------
+	// Tracking
 	// Vertical (intra-cell) fluxes downwards
 	grid *_FluxUptoSnow; // canopy/sky to snowpack
 	grid *_FluxSrftoL1; // infiltration from first layer (changes twice during time step)
 	grid *_FluxInfilt; // timestep-summed infiltration from first layer
 	grid *_FluxL1toL2; // percolation L1 to L2
 	grid *_FluxL2toL3; // percolation L2 to L3
-	grid *_FluxL3toGW; // recharge L3 to groundwater
+	grid *_FluxL2toGW; // recharge L3 to groundwater
 	// Vertical (intra-cell) fluxes upwards
 	grid *_FluxExfilt; // first layer to surface (return flow)
 	grid *_FluxL2toL1; // capillary + return flow, L2 to L1
 	grid *_FluxL3toL2; // capillary + return flow, L2 to L3
-	grid *_FluxGWtoL3; // discharge, groundwater to L3
+	grid *_FluxGWtoL2; // return flow, groundwater to L2
+	grid *_FluxGWtoL3; // discharge, groundwater to L2 unsaturated
 	// Other intra-cell fluxes
 	grid *_FluxGWtoChn; // discharge, groundwater to channel
 	grid *_FluxSrftoChn; // overland flow to channel
@@ -183,6 +188,7 @@ class Basin {
 	int CalcFieldCapacity();
 	int CalcInitialStreamStorage();
 	int CalcRootDistrib();
+	int CalcFSDMoisture();
 
 	double NetRad(Atmosphere &atm, const double &Ts, REAL8 Kbeers, REAL8 lai,
 			REAL8 ec, REAL8 Tc, int row, int col);
@@ -219,7 +225,7 @@ class Basin {
 				      REAL8 ra,	REAL8 rs, REAL8 rc, REAL8 Kbeers, REAL8 lai, REAL8 emis_can,
 				      REAL8 Temp_can, REAL8 &nrad, REAL8 &latheat, REAL8 &sensheat,
 				      REAL8 &grndheat, REAL8 &snowheat, REAL8 &meltheat, REAL8 &Tsold,
-				      REAL8 &etp, REAL8 &pond, REAL8 &theta, REAL8 &theta_lifo, REAL8 &Ts1, REAL8 &Tdold,
+				      REAL8 &etp, REAL8 &pond, REAL8 &theta, REAL8 &Ts1, REAL8 &Tdold,
 			REAL8 p, UINT4 r, UINT4 c, UINT4 s);
 
 	//This functions updates soil moisture by solving the local soil water balance
@@ -430,6 +436,61 @@ public:
 		return _SoilWaterDepth;
 	}
 
+	grid *getSoilWaterDepthL1() const {
+	  int r, c;
+#pragma omp parallel for			\
+  default(none) private(r,c)
+	  for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+	    r = _vSortedGrid.cells[j].row;
+	    c = _vSortedGrid.cells[j].col;
+	    _SoilWaterDepthL1->matrix[r][c] = _soilmoist1->matrix[r][c] * _depth_layer1->matrix[r][c];
+	  }	  
+	  return _SoilWaterDepthL1;
+	}
+
+	grid *getSoilWaterDepthL2() const {
+	  int r, c;
+#pragma omp parallel for			\
+  default(none) private(r,c)
+	  for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+	    r = _vSortedGrid.cells[j].row;
+	    c = _vSortedGrid.cells[j].col;
+	    _SoilWaterDepthL2->matrix[r][c] = _soilmoist2->matrix[r][c] * _depth_layer2->matrix[r][c];
+	  }	  
+	  return _SoilWaterDepthL2;
+	}
+
+	// Non-gravitational water depth in third layer
+	grid *getSoilWaterDepthL3() const {
+	  int r, c;
+	  double fc, d3;
+#pragma omp parallel for			\
+  default(none) private(r,c, fc, d3)
+	  for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+	    r = _vSortedGrid.cells[j].row;
+	    c = _vSortedGrid.cells[j].col;
+	    fc = _fieldcap->matrix[r][c];
+	    d3 = _soildepth->matrix[r][c]-_depth_layer1->matrix[r][c]-_depth_layer2->matrix[r][c];
+	    _SoilWaterDepthL3->matrix[r][c] = min<double>(_soilmoist3->matrix[r][c],fc) * d3;
+	  }	  
+	  return _SoilWaterDepthL3;
+	}
+
+	grid *getInitGroundwater() const {
+	  int r, c;
+	  double fc, d3;
+#pragma omp parallel for			\
+  default(none) private(r,c, fc, d3)
+	  for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+	    r = _vSortedGrid.cells[j].row;
+	    c = _vSortedGrid.cells[j].col;
+	    fc = _fieldcap->matrix[r][c];
+	    d3 = _soildepth->matrix[r][c]-_depth_layer1->matrix[r][c]-_depth_layer2->matrix[r][c];
+	    _GrndWater->matrix[r][c] = max<double>(0,_soilmoist3->matrix[r][c] - fc) * d3;
+	  }	  
+	  return _GrndWater;
+	}
+
 	grid *getWaterTableDepth() const {
 	  /*int r, c;
 	  double depth, fc, eta;
@@ -497,12 +558,14 @@ public:
 	grid *getInfiltCap() const {
 		return _infilt_cap;
 	}
+	/*
 	grid *getRootFrac1() const {
 		return _rootfrac1;
 	}
 	grid *getRootFrac2() const {
 		return _rootfrac2;
 	}
+	*/
 	grid *getEvaporation() const {
 		return _Evaporation;
 	}
@@ -633,14 +696,17 @@ public:
 	grid *getFluxL2toL3() const {
 		return _FluxL2toL3;
 	}
-	grid *getFluxL3toGW() const {
-		return _FluxL3toGW;
+	grid *getFluxL2toGW() const {
+		return _FluxL2toGW;
 	}
 	grid *getFluxL2toL1() const {
 		return _FluxL2toL1;
 	}
-	grid *getFluxL3toL2() const {
-		return _FluxL3toL2;
+	/* grid *getFluxL3toL2() const { */
+	/* 	return _FluxL3toL2; */
+	/* } */
+	grid *getFluxGWtoL2() const {
+		return _FluxGWtoL2;
 	}
 	grid *getFluxGWtoL3() const {
 		return _FluxGWtoL3;
@@ -691,14 +757,17 @@ public:
 
 	grid *getLeafWaterPotential(UINT4 n) const;
 
+	grid *getRootFrac1(UINT4 n) const;
+	grid *getRootFrac2(UINT4 n) const;
+
 	// Addition tracking
 	// ---------------------------------
 	// -- Getters of fTracking getters
-	// dD
-	grid *getdDcanopy(UINT4 n) const ;
-	grid *getdDevapI(UINT4 n) const ;
-	grid *getdDevapT(UINT4 n) const ;
-	grid *getdDevapS(UINT4 n) const ;
+	// 
+	grid *getd2Hcanopy(UINT4 n) const ;
+	grid *getd2HevapI(UINT4 n) const ;
+	grid *getd2HevapT(UINT4 n) const ;
+	grid *getd2HevapS(UINT4 n) const ;
 
 	// 18O
 	grid *getd18Ocanopy(UINT4 n) const ;

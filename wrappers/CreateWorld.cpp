@@ -43,9 +43,6 @@ int CreateWorld(char* argv[]){
 		oAtmosphere = new Atmosphere(*oControl);
 		cout << "Atmosphere created ok... " << "\n";
 
-		oBudget = new Budget(oBasin, oControl);
-		cout << "Budget created ok... " << "\n";
-
 		oReport = new Report(*oControl);
 		cout << "Report created ok... " << "\n";
 
@@ -53,33 +50,42 @@ int CreateWorld(char* argv[]){
 		if(oControl->sw_trck)
 			cout << "Isotope module created ok... " << "\n";
 
-try{
-		ofSummary.open((oControl->path_ResultsFolder + "BasinSummary.txt").c_str());
-		if(!ofSummary)
-			throw std::ios::failure("Error opening Summary.txt buffer\n");
+		oBudget = new Budget(oBasin, oControl, oTracking);
+		cout << "Budget created ok... " << "\n";
+		
+		try{
+		  ofSummary.open((oControl->path_ResultsFolder + "BasinSummary.txt").c_str());
+		  if(!ofSummary)
+		    throw std::ios::failure("Error opening Summary.txt buffer\n");
 
 }catch(const std::exception &e){
 	cout << e.what() << endl;
 	throw;
 }
-		ofSummary << "Precipitation\t";
+		ofSummary << "Precip\t";
 		ofSummary << "SWE\t";
-		ofSummary << "Canopy storage\t";
+		ofSummary << "Intercep\t";
 		ofSummary << "Ponding\t";
-		ofSummary << "Soil water\t";
-		ofSummary << "Groundwater\t";
-		ofSummary << "Evapotranspiration\t";
-		ofSummary << "Soil evaporation\t";
-		ofSummary << "Canopy evaporation\t";
-		ofSummary << "Transpiration\t";
-		ofSummary << "Bedrock leakage\t";
-		ofSummary << "Overland flow\t";
-		ofSummary << "Groundwater flow\t";
-		ofSummary << "Saturation extent\t";
-		ofSummary << "Run-off to channel\t";
-		ofSummary << "GW to channel\t";
-		ofSummary << "Mass Balance Error\n";
-
+		ofSummary << "SoilWater\t";
+		ofSummary << "GW\t";
+		ofSummary << "ETtot\t";
+		ofSummary << "EvapS\t";
+		ofSummary << "EvapI\t";
+		ofSummary << "EvapT\t";
+		ofSummary << "Leakage\t";
+		ofSummary << "OvlndFlow\t";
+		ofSummary << "GWFlow\t";
+		ofSummary << "SatExtent\t";
+		ofSummary << "Run-off2Stream\t";
+		ofSummary << "GW2channel\t";
+		ofSummary << "MassBalError";
+		if(oControl->sw_trck and oControl->sw_2H)
+		  ofSummary << "\td2H_MassBalError";
+		if(oControl->sw_trck and oControl->sw_18O)
+		  ofSummary << "\td18O_MassBalError";
+		if(oControl->sw_trck and oControl->sw_Age)
+		  ofSummary << "\tAge_MassBalError";
+		ofSummary << "\n";
 
 		return EXIT_SUCCESS;
 }

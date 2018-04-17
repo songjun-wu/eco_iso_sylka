@@ -112,33 +112,39 @@ grid *Basin::getEsoil(UINT4 n) const {
 grid *Basin::getLeafWaterPotential(UINT4 n) const {
 	return fForest->getLeafWaterPotSpeciesMap(n);
 }
+grid *Basin::getRootFrac1(UINT4 n) const {
+  return fForest->getRootFrac1(n);
+}
+grid *Basin::getRootFrac2(UINT4 n) const {
+  return fForest->getRootFrac2(n);
+}
 
 // -- Tracking: calls tracking data contained in forest class
-// dD
-grid *Basin::getdDcanopy(UINT4 n) const {
-	return fForest->getdDcanopy(n);
+// 2H
+grid *Basin::getd2Hcanopy(UINT4 n) const {
+  return fForest->getd2Hcanopy(n);
 }
-grid *Basin::getdDevapI(UINT4 n) const {
-	return fForest->getdDevapI(n);
+grid *Basin::getd2HevapI(UINT4 n) const {
+  return fForest->getd2HevapI(n);
 }
-grid *Basin::getdDevapT(UINT4 n) const {
-	return fForest->getdDevapT(n);
+grid *Basin::getd2HevapT(UINT4 n) const {
+  return fForest->getd2HevapT(n);
 }
-grid *Basin::getdDevapS(UINT4 n) const {
-	return fForest->getdDevapS(n);
+grid *Basin::getd2HevapS(UINT4 n) const {
+  return fForest->getd2HevapS(n);
 }
-// d18O
+// 18O
 grid *Basin::getd18Ocanopy(UINT4 n) const {
-	return fForest->getd18Ocanopy(n);
+  return fForest->getd18Ocanopy(n);
 }
 grid *Basin::getd18OevapI(UINT4 n) const {
-	return fForest->getd18OevapI(n);
+  return fForest->getd18OevapI(n);
 }
 grid *Basin::getd18OevapT(UINT4 n) const {
-	return fForest->getd18OevapT(n);
+  return fForest->getd18OevapT(n);
 }
 grid *Basin::getd18OevapS(UINT4 n) const {
-	return fForest->getd18OevapS(n);
+  return fForest->getd18OevapS(n);
 }
 // Age
 grid *Basin::getAgecanopy(UINT4 n) const {

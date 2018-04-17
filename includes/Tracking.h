@@ -46,21 +46,29 @@ using namespace std;
 class Basin;
 class Tracking {
 
-  //Spatial distribution of tracked signatures (dD, d18O, age) in the compartments
-  grid *_dDcanopy, *_d18Ocanopy, *_Agecanopy; // Snowpack
-  grid *_dDsnowpack, *_d18Osnowpack, *_Agesnowpack; // Snowpack
-  grid *_dDsurface,  *_d18Osurface, *_Agesurface; // Ponding
-  grid *_dDlifo,    *_d18Olifo, *_Agelifo; // Vadose layer 1
-  grid *_dDsoil1,    *_d18Osoil1, *_Agesoil1; // Vadose layer 1
-  grid *_dDsoil2,    *_d18Osoil2, *_Agesoil2; // Vadose layer 2
-  grid *_dDsoil_12,    *_d18Osoil_12, *_Agesoil_12; // Weighted average L1+L2
-  grid *_dDsoil3,    *_d18Osoil3, *_Agesoil3; // Vadose layer 3
-  grid *_dDsoilAv,   *_d18OsoilAv, *_AgesoilAv; // Vadose weighted average
-  grid *_dDgroundwater, *_d18Ogroundwater, *_Agegroundwater; // Groundwater
+  //Spatial distribution of tracked signatures (d2H, d18O, age) in the compartments
+  grid *_d2Hprecip, *_d18Oprecip;
+  grid *_d2Hcanopy_sum, *_d18Ocanopy_sum, *_Agecanopy_sum; // Canopy (avg over veg fractions)
+  grid *_d2Hsnowpack, *_d18Osnowpack, *_Agesnowpack; // Snowpack
+  grid *_d2Hsurface,  *_d18Osurface, *_Agesurface; // Ponding
+  grid *_d2Hsoil1,    *_d18Osoil1, *_Agesoil1; // Vadose layer 1
+  grid *_d2Hsoil2,    *_d18Osoil2, *_Agesoil2; // Vadose layer 2
+  grid *_d2Hsoil_12,  *_d18Osoil_12, *_Agesoil_12; // Weighted average L1+L2
+  grid *_d2Hsoil3,    *_d18Osoil3, *_Agesoil3; // Vadose layer 3
+  grid *_d2HsoilAv,   *_d18OsoilAv, *_AgesoilAv; // Vadose weighted average
+  grid *_d2Hgroundwater, *_d18Ogroundwater, *_Agegroundwater; // Groundwater
   // Signature of outgoing water
-  grid *_dDevapS_sum, *_d18OevapS_sum, *_AgeevapS_sum;
-  grid *_dDevapI_sum, *_d18OevapI_sum, *_AgeevapI_sum;
-  grid *_dDevapT_sum, *_d18OevapT_sum, *_AgeevapT_sum;
+  grid *_d2HevapS_sum, *_d18OevapS_sum, *_AgeevapS_sum;
+  grid *_d2HevapI_sum, *_d18OevapI_sum, *_AgeevapI_sum;
+  grid *_d2HevapT_sum, *_d18OevapT_sum, *_AgeevapT_sum;
+  grid *_d2Hleakage, *_d18Oleakage, *_Ageleakage; // Groundwater
+
+  //vectors containing signature of water output for each cell with no drainage (ldd value of 5). 
+  // The vectCell structure contains the row and col  
+  //of that cell with no output and the area draining to that cell
+  vectCells _d2HOvlndOutput, _d18OOvlndOutput, _AgeOvlndOutput; // surface output
+  vectCells _d2HGwtrOutput, _d18OGwtrOutput, _AgeGwtrOutput; // groundwater output
+
   
   //check maps mainly to make sure no nodata values are in the domain.
   void CheckMapsTrck(Control &ctrl, Basin &bsn);
@@ -76,7 +84,7 @@ class Tracking {
   
   /*int MixingV_evapT(Basin &bsn, Control &ctrl,
     REAL8 &pTrp1, REAL8 &pTrp2, REAL8 &pTrp3,
-    REAL8 &dDevapT_f, REAL8 &d18OevapT_f, REAL8 &AgeevapT_f, 
+    REAL8 &2HevapT_f, REAL8 &18OevapT_f, REAL8 &AgeevapT_f, 
     REAL8 &p, int s, int r, int c);*/
   
   void MixingV_down(Basin &bsn, Control &ctrl, 
@@ -88,9 +96,9 @@ class Tracking {
 		  int r, int c);
   
   void MixingV_evapS(Atmosphere &atm, Basin &bsn, Control &ctrl, 
-		     double &d1, double &theta_lifo, double &theta_new,
+		     double &d1, double &theta_new,
 		     double Ts, double &etp, double &beta,
-		     double &dDevap, double &d18Oevap, double &Agevap,
+		     double &d2Hevap, double &d18Oevap, double &Agevap,
 		     int r, int c);
   
   void MixingV_seep(Basin &bsn, Control &ctrl, double &ponding, double &qc, int r, int c);
@@ -102,75 +110,98 @@ class Tracking {
   void MixingH(Basin &bsn, Control &ctrl, 
 	       double &hj1i1, double &alpha, double &ponding, double &Qk1,
 	       double &dtdx, double &dx, int r, int c, int rr, int cc);
-  
+
+  // Outlet lateral fluxes' signatures
+  void OutletVals(Control &ctrl, int mode, int r, int c);
+
   // Generic function for both isotopes, using the 'iso' toggle: 0=deuterium, 1=oxygen18
   int Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
 		 REAL8 V_old, REAL8 V_new, REAL8 &theta,
-		 REAL8 &di_old, REAL8 &di_new, REAL8 &dievap,
+		 REAL8 &di_old, REAL8 &di_new, REAL8 &di_evap,
 		 REAL8 &Ts, int r, int c, int iso);
   
   // Age increment at end of tiem step
   int IncrementAge(Basin &bsn, Control &ctrl);
   
   // Soil averaged quantities
-  int CalcdDsoil_12(Basin &bsn);
+  int Calcd2Hsoil_12(Basin &bsn);
   int Calcd18Osoil_12(Basin &bsn);
   int CalcAgesoil_12(Basin &bsn);
-  int CalcdDsoil_Av(Basin &bsn);
+  int Calcd2Hsoil_Av(Basin &bsn);
   int Calcd18Osoil_Av(Basin &bsn);
   int CalcAgesoil_Av(Basin &bsn);
-  
+
+  // Convert grid from isotopic ratios to isotopic deltas
+  void Ratio2DeltaGrid(const Basin &bsn, const grid &m, grid &mO, int iso);
+  void Ratio2DeltaGrid_L1L2(const Basin &bsn, const grid &mL1, const grid &mL2, grid &mO, int iso);
+  void Ratio2DeltaGrid_SoilAv(const Basin &bsn, const grid &mL1, const grid &mL2,
+			      const grid &mL3, const grid &mGW, grid &mO, int iso);
   //int ReadConfigTrck(Control &ctrl, string confilename = "configTrck.ini");
   
-  //Getters
-  grid *getdDsnowpack() const {
-    return _dDsnowpack;
+  //Getters 2H (ratios)
+  grid *getd2Hprecip() const {
+    return _d2Hprecip;
   }
-  grid *getdDsurface() const {
-    return _dDsurface;
+  grid *getd2Hcanopy_sum() const {
+    return _d2Hcanopy_sum;
   }
-  grid *getdDlifo() const {
-    return _dDlifo;
+  grid *getd2Hsnowpack() const {
+    return _d2Hsnowpack;
   }
-  grid *getdDsoil1() const {
-    return _dDsoil1;
+  grid *getd2Hsurface() const {
+    return _d2Hsurface;
   }
-  grid *getdDsoil2() const {
-    return _dDsoil2;
+  grid *getd2Hsoil1() const {
+    return _d2Hsoil1;
   }
-  grid *getdDsoil_12() const {
-    return _dDsoil_12;
+  grid *getd2Hsoil2() const {
+    return _d2Hsoil2;
   }
-  grid *getdDsoil3() const {
-    return _dDsoil3;
+  grid *getd2Hsoil_12() const {
+    return _d2Hsoil_12;
   }
-  grid *getdDsoil_Av() const{ 
-    return _dDsoilAv;
+  grid *getd2Hsoil3() const {
+    return _d2Hsoil3;
   }
-  grid *getdDgroundwater() const {
-    return _dDgroundwater;
+  grid *getd2Hsoil_Av() {
+    return _d2HsoilAv;
   }
-  grid *getdDevapS_sum() const {
-    return _dDevapS_sum;
+  grid *getd2Hgroundwater() const {
+    return _d2Hgroundwater;
   }
-  grid *getdDevapI_sum() const {
-    return _dDevapI_sum;
+  grid *getd2HevapS_sum() const {
+    return _d2HevapS_sum;
   }
-  grid *getdDevapT_sum() const {
-    return _dDevapT_sum;
+  grid *getd2HevapI_sum() const {
+    return _d2HevapI_sum;
+  }
+  grid *getd2HevapT_sum() const {
+    return _d2HevapT_sum;
+  }
+  grid *getd2Hleakage() const {
+    return _d2Hleakage;
+  }
+  const vectCells *getd2HOvlndOutput() const {
+    return &_d2HOvlndOutput;
+  }  
+  const vectCells *getd2HGwtrOutput() const {
+    return &_d2HGwtrOutput;
   }
   // -------
   
   
   // 18O
+  grid *getd18Oprecip() const {
+    return _d18Oprecip;
+  }
+  grid *getd18Ocanopy_sum() const {
+    return _d18Ocanopy_sum;
+  }
   grid *getd18Osnowpack() const {
     return _d18Osnowpack;
   }
   grid *getd18Osurface() const {
     return _d18Osurface;
-  }
-  grid *getd18Olifo() const {
-    return _d18Olifo;
   }
   grid *getd18Osoil1() const {
     return _d18Osoil1;
@@ -199,18 +230,26 @@ class Tracking {
   grid *getd18OevapT_sum() const {
     return _d18OevapT_sum;
   }
-  // ---
-  
-  
+  grid *getd18Oleakage() const {
+    return _d18Oleakage;
+  }
+  const vectCells *getd18OOvlndOutput() const {
+    return &_d18OOvlndOutput;
+  }  
+  const vectCells *getd18OGwtrOutput() const {
+    return &_d18OGwtrOutput;
+  }
+  // -------
+    
   // Age
+  grid *getAgecanopy_sum() const {
+    return _Agecanopy_sum;
+  }
   grid *getAgesnowpack() const {
     return _Agesnowpack;
   }
   grid *getAgesurface() const {
     return _Agesurface;
-  }
-  grid *getAgelifo() const {
-    return _Agelifo;
   }
   grid *getAgesoil1() const {
     return _Agesoil1;
@@ -239,37 +278,54 @@ class Tracking {
   grid *getAgeevapT_sum() const {
     return _AgeevapT_sum;
   }
+  grid *getAgeleakage() const {
+    return _Ageleakage;
+  }
+  const vectCells *getAgeOvlndOutput() const {
+    return &_AgeOvlndOutput;
+  }  
+  const vectCells *getAgeGwtrOutput() const {
+    return &_AgeGwtrOutput;
+  }
   // ---
   
   // --- Setters
-  void setdDsnowpack(UINT4 row, UINT4 col, REAL8 value) {
-    _dDsnowpack->matrix[row][col] = value;
+  // - 2H
+  void setd2Hcanopy_sum(UINT4 row, UINT4 col, REAL8 value) {
+    _d2Hcanopy_sum->matrix[row][col] = value;
   }
-  void setdDsurface(UINT4 row, UINT4 col, REAL8 value) {
-    _dDsurface->matrix[row][col] = value;
+  void setd2Hsnowpack(UINT4 row, UINT4 col, REAL8 value) {
+    _d2Hsnowpack->matrix[row][col] = value;
   }
-  void setdDsoil1(UINT4 row, UINT4 col, REAL8 value) {
-    _dDsoil1->matrix[row][col] = value;
+  void setd2Hsurface(UINT4 row, UINT4 col, REAL8 value) {
+    _d2Hsurface->matrix[row][col] = value;
   }
-  void setdDsoil2(UINT4 row, UINT4 col, REAL8 value) {
-    _dDsoil2->matrix[row][col] = value;
+  void setd2Hsoil1(UINT4 row, UINT4 col, REAL8 value) {
+    _d2Hsoil1->matrix[row][col] = value;
   }
-  void setdDsoil3(UINT4 row, UINT4 col, REAL8 value) {
-    _dDsoil3->matrix[row][col] = value;
+  void setd2Hsoil2(UINT4 row, UINT4 col, REAL8 value) {
+    _d2Hsoil2->matrix[row][col] = value;
   }
-  void setdDgroundwater(UINT4 row, UINT4 col, REAL8 value) {
-    _dDgroundwater->matrix[row][col] = value;
+  void setd2Hsoil3(UINT4 row, UINT4 col, REAL8 value) {
+    _d2Hsoil3->matrix[row][col] = value;
   }
-  void setdDevapS_sum(UINT4 row, UINT4 col, REAL8 value) {
-    _dDevapS_sum->matrix[row][col] = value;
+  void setd2Hgroundwater(UINT4 row, UINT4 col, REAL8 value) {
+    _d2Hgroundwater->matrix[row][col] = value;
   }
-  void setdDevapI_sum(UINT4 row, UINT4 col, REAL8 value) {
-    _dDevapI_sum->matrix[row][col] = value;
+  void setd2HevapS_sum(UINT4 row, UINT4 col, REAL8 value) {
+    _d2HevapS_sum->matrix[row][col] = value;
   }
-  void setdDevapT_sum(UINT4 row, UINT4 col, REAL8 value) {
-    _dDevapT_sum->matrix[row][col] = value;
+  void setd2HevapI_sum(UINT4 row, UINT4 col, REAL8 value) {
+    _d2HevapI_sum->matrix[row][col] = value;
   }
-  
+  void setd2HevapT_sum(UINT4 row, UINT4 col, REAL8 value) {
+    _d2HevapT_sum->matrix[row][col] = value;
+  }
+
+  // - 18O
+  void setd18Ocanopy_sum(UINT4 row, UINT4 col, REAL8 value) {
+    _d18Ocanopy_sum->matrix[row][col] = value;
+  }  
   void setd18Osnowpack(UINT4 row, UINT4 col, REAL8 value) {
     _d18Osnowpack->matrix[row][col] = value;
   }
@@ -297,7 +353,11 @@ class Tracking {
   void setd18OevapT_sum(UINT4 row, UINT4 col, REAL8 value) {
     _d18OevapT_sum->matrix[row][col] = value;
   }
-  
+
+  // - Age
+  void setAgecanopy_sum(UINT4 row, UINT4 col, REAL8 value) {
+    _Agecanopy_sum->matrix[row][col] = value;
+  }    
   void setAgesnowpack(UINT4 row, UINT4 col, REAL8 value) {
     _Agesnowpack->matrix[row][col] = value;
   }
@@ -330,7 +390,7 @@ class Tracking {
   double InputMix(double hold, double iold, double qin, double iin){
     double inew;
     // Assign fluxes
-    if(hold + qin > 0)
+    if(hold + qin > RNDOFFERR)
       inew = (iold*hold + iin*qin)/ (hold + qin);
     else
       inew = iold;
@@ -341,7 +401,7 @@ class Tracking {
   double InOutMix(double hold, double iold, double qin, double iin, double qout){
     double inew;
     // Assign fluxes: implicit ??
-    if(hold + qin > 0)
+    if(hold + qin > RNDOFFERR)
       inew = (iold*hold + iin*qin)/ (hold + qin);// + qout);
     else
       inew = iold;

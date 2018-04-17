@@ -47,15 +47,15 @@ void Tracking::MixingV_snow(Atmosphere &atm, Basin &bsn, Control &ctrl,
 
     V_new = snow_in - dh_snow;
 
-    if(ctrl.sw_dD){
+    if(ctrl.sw_2H){
       // Snowpack: last (same timestep) in, first melt
-      _dDsnowpack->matrix[r][c] = InputMix(snow_old, _dDsnowpack->matrix[r][c],
-					   V_new, atm.getdDprecip()->matrix[r][c]);
+      _d2Hsnowpack->matrix[r][c] = InputMix(snow_old, _d2Hsnowpack->matrix[r][c],
+					   V_new, atm.getd2Hprecip()->matrix[r][c]);
       // Surface: snowfall (=rain) signature
-      _dDsurface->matrix[r][c] = InputMix(pond_old, _dDsurface->matrix[r][c],
-					  dh_snow, atm.getdDprecip()->matrix[r][c]);
+      _d2Hsurface->matrix[r][c] = InputMix(pond_old, _d2Hsurface->matrix[r][c],
+					  dh_snow, atm.getd2Hprecip()->matrix[r][c]);
     }
-    if(ctrl.sw_d18O){
+    if(ctrl.sw_18O){
       // Snowpack: last (same timestep) in, first melt
       _d18Osnowpack->matrix[r][c] = InputMix(snow_old, _d18Osnowpack->matrix[r][c],
 					     V_new, atm.getd18Oprecip()->matrix[r][c]);
@@ -77,15 +77,15 @@ void Tracking::MixingV_snow(Atmosphere &atm, Basin &bsn, Control &ctrl,
     // Case where there is more snowmelt than snowfall: no mixing in snowpack, snowmelt has mixed signature
     V_new = dh_snow - snow_in;
 
-    if(ctrl.sw_dD){
+    if(ctrl.sw_2H){
       // Snowpack: no change (all recent snow has melted)
       // Surface: weighted snowfall (=rain) signature and previous snowpack
-      _dDsurface->matrix[r][c] = InputMix(pond_old, _dDsurface->matrix[r][c], dh_snow,
+      _d2Hsurface->matrix[r][c] = InputMix(pond_old, _d2Hsurface->matrix[r][c], dh_snow,
 					  // Ugly and "convoluted", but no waste of temp variables
-					  InputMix(V_new, _dDsnowpack->matrix[r][c],
-						   snow_in, atm.getdDprecip()->matrix[r][c]));
+					  InputMix(V_new, _d2Hsnowpack->matrix[r][c],
+						   snow_in, atm.getd2Hprecip()->matrix[r][c]));
     }
-    if(ctrl.sw_d18O){
+    if(ctrl.sw_18O){
       // Snowpack: no change (all recent snow has melted)
       // Surface: weighted snowfall (=rain) signature and previous snowpack
       _d18Osurface->matrix[r][c] = InputMix(pond_old, _d18Osurface->matrix[r][c], dh_snow,

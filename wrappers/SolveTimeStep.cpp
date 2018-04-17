@@ -38,16 +38,16 @@ int SolveTimeStep(){
 	oBasin->CalculateGrowForest(*oAtmosphere, *oControl);
 	oBasin->DailyGWRouting(*oAtmosphere, *oControl, *oTracking);
 	oBasin->CalculateSatArea(*oAtmosphere, *oControl);
-
+	/*
   	if(oControl->sw_trck){
-	  if(oControl->sw_dD){
-	    if(oControl->Rep_dDsoilUp || oControl->RepTs_dDsoilUp)
-	      oTracking->CalcdDsoil_12(*oBasin);
+	  if(oControl->sw_2H){
+	    if(oControl->Rep_d2HsoilUp || oControl->RepTs_d2HsoilUp)
+	      oTracking->Calc2Hsoil_12(*oBasin);
 	  }
-	  if(oControl->sw_d18O){
+	  if(oControl->sw_18O){
 	    if(oControl->Rep_d18OsoilUp || oControl->RepTs_d18OsoilUp)
-	      oTracking->Calcd18Osoil_12(*oBasin);
-	  }
+	      oTracking->Calc18Osoil_12(*oBasin);
+	      }
 
 	  if(oControl->sw_Age){
 	    // Increment age by one time step duration
@@ -56,6 +56,6 @@ int SolveTimeStep(){
 	    if(oControl->Rep_AgesoilUp || oControl->RepTs_AgesoilUp)
 	      oTracking->CalcAgesoil_12(*oBasin);
 	  }
-	}
+	}*/
 		return EXIT_SUCCESS;
 }

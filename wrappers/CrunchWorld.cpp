@@ -34,14 +34,19 @@ int CrunchWorld(){
 
 	if(oControl)
 		delete oControl;
+
 	if(oBasin)
 		delete oBasin;
+
 	if(oAtmosphere)
 		delete oAtmosphere;
+
 	if(oBudget)
 		delete oBudget;
+
 	if(oReport)
 		delete oReport;
+
 	if(oTracking)
 		delete oTracking;
 

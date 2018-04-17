@@ -42,12 +42,12 @@ void Tracking::MixingV_through(Atmosphere &atm, Basin &bsn, Control &ctrl,
   // from previously stored intercepted water
   
   // Deuterium
-  if(ctrl.sw_dD)
-    _dDsurface->matrix[r][c] = InputMix(pond_old, _dDsurface->matrix[r][c],
-					rain*p*dt,atm.getdDprecip()->matrix[r][c]);
+  if(ctrl.sw_2H)
+    _d2Hsurface->matrix[r][c] = InputMix(pond_old, _d2Hsurface->matrix[r][c],
+					rain*p*dt,atm.getd2Hprecip()->matrix[r][c]);
   
   // Oxygen 18
-  if(ctrl.sw_d18O)
+  if(ctrl.sw_18O)
     _d18Osurface->matrix[r][c] = InputMix(pond_old, _d18Osurface->matrix[r][c],
 					  rain*p*dt,atm.getd18Oprecip()->matrix[r][c]);
   

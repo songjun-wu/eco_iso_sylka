@@ -44,98 +44,67 @@ void Tracking::MixingV_down(Basin &bsn, Control &ctrl,
   double SrftoL1 = bsn.getFluxSrftoL1()->matrix[r][c];
   double L1toL2 = bsn.getFluxL1toL2()->matrix[r][c];
   double L2toL3 = bsn.getFluxL2toL3()->matrix[r][c];
-  double L3toGW = bsn.getFluxL3toGW()->matrix[r][c];
+  double L2toGW = bsn.getFluxL2toGW()->matrix[r][c];
   
-  if(ctrl.sw_lifo and ctrl.sw_dD)
-    _dDlifo->reset();
-  if(ctrl.sw_lifo and ctrl.sw_d18O)
-    _d18Olifo->reset();
-  if(ctrl.sw_lifo and ctrl.sw_Age)
-    _Agelifo->reset();
+  // == 2H ------------------------------------------------------------------------------------------
+  if(ctrl.sw_2H){
+      // Update layer 1
+      _d2Hsoil1->matrix[r][c] = InOutMix(theta1_old*d1, _d2Hsoil1->matrix[r][c],
+					 SrftoL1, _d2Hsurface->matrix[r][c], L1toL2);
+      // Update layer 2
+      _d2Hsoil2->matrix[r][c] = InOutMix(theta2_old*d2, _d2Hsoil2->matrix[r][c],
+					 L1toL2, _d2Hsoil1->matrix[r][c], L2toL3+L2toGW);
+      // Update layer 3 (vadose)
+      _d2Hsoil3->matrix[r][c] = InputMix(NS3_old, _d2Hsoil3->matrix[r][c],
+					 L2toL3, _d2Hsoil2->matrix[r][c]);
 
-  // == dD ------------------------------------------------------------------------------------------
-  if(ctrl.sw_dD){
-    // Update layer 1
+      // Groundwater (layer 3)
+      _d2Hgroundwater->matrix[r][c] = GW_old + L2toGW > RNDOFFERR ?
+	InputMix(GW_old, _d2Hgroundwater->matrix[r][c], L2toGW, _d2Hsoil2->matrix[r][c]) : -1000;
 
-    if(!ctrl.sw_lifo || reinf)
-      // If LIFO activated, no mixing in L1 before soil evap,
-      // L2 sees signature from previous timestep
-      _dDsoil1->matrix[r][c] = InOutMix(theta1_old*d1, _dDsoil1->matrix[r][c],
-					SrftoL1, _dDsurface->matrix[r][c], L1toL2);
-    // Update layer 2: if LIFO use unmixed in L1 except if L1toL2 > theta1_old*d1
-    // in which case the "percolation excess" (L1toL2t-theta1_old) has surface signature
-    if(ctrl.sw_lifo && L1toL2 > theta1_old*d1) 
-      _dDsoil2->matrix[r][c] = InOutMix(theta2_old*d2, _dDsoil2->matrix[r][c],
-					L1toL2, 
-					InputMix(theta1_old*d1, _dDsoil1->matrix[r][c],
-						 L1toL2-theta1_old*d1, _dDsurface->matrix[r][c]),
-					L2toL3);
-    else
-      _dDsoil2->matrix[r][c] = InOutMix(theta2_old*d2, _dDsoil2->matrix[r][c],
-					L1toL2, _dDsoil1->matrix[r][c], L2toL3);
-    // Update layer 3 (vadose)
-    _dDsoil3->matrix[r][c] = InOutMix(NS3_old, _dDsoil3->matrix[r][c],
-				      L2toL3, _dDsoil2->matrix[r][c], L3toGW+leak);
-    // Update layer 3 (gw)
-    _dDgroundwater->matrix[r][c] = InputMix(GW_old, _dDgroundwater->matrix[r][c],
-					    L3toGW,	_dDsoil3->matrix[r][c]);
+      // Leakage: in all cases, groundwater signature
+      _d2Hleakage->matrix[r][c] = _d2Hgroundwater->matrix[r][c];
+
   }
-
-  // == d18O -----------------------------------------------------------------------------------------
-  if(ctrl.sw_d18O){
-    // Update layer 1
-
-    if(!ctrl.sw_lifo || reinf)
-      // Mixing only if no LIFO or reinfiltration, otherwise soil evap later,
-      // so that L2 sees signature from previous timestep
+  // == 18O -----------------------------------------------------------------------------------------
+  if(ctrl.sw_18O){
+      // Update layer 1
       _d18Osoil1->matrix[r][c] = InOutMix(theta1_old*d1, _d18Osoil1->matrix[r][c],
-					  SrftoL1, _d18Osurface->matrix[r][c], L1toL2);
-
-    // Update layer 2: if LIFO use unmixed in L1 except if L1toL2 > theta1_old*d1
-    // in which case the "percolation excess" (L1toL2t-theta1_old) has surface signature
-    if(ctrl.sw_lifo && L1toL2 > theta1_old*d1) 
+					 SrftoL1, _d18Osurface->matrix[r][c], L1toL2);
+      // Update layer 2
       _d18Osoil2->matrix[r][c] = InOutMix(theta2_old*d2, _d18Osoil2->matrix[r][c],
-					  L1toL2, 
-					  InputMix(theta1_old*d1, _d18Osoil1->matrix[r][c],
-						   L1toL2-theta1_old*d1, _d18Osurface->matrix[r][c]),
-					  L2toL3);
-    else
-      _d18Osoil2->matrix[r][c] = InOutMix(theta2_old*d2, _d18Osoil2->matrix[r][c],
-					  L1toL2, _d18Osoil1->matrix[r][c],L2toL3);
+					 L1toL2, _d18Osoil1->matrix[r][c], L2toL3+L2toGW);
+      // Update layer 3 (vadose)
+      _d18Osoil3->matrix[r][c] = InputMix(NS3_old, _d18Osoil3->matrix[r][c],
+					 L2toL3, _d18Osoil2->matrix[r][c]);
 
-    // Update layer 3 (vadose)
-    _d18Osoil3->matrix[r][c] = InOutMix(NS3_old, _d18Osoil3->matrix[r][c],
-					L2toL3, _d18Osoil2->matrix[r][c], L3toGW+leak);
-    // Update layer 3 (gw)
-    _d18Ogroundwater->matrix[r][c] = InputMix(GW_old, _d18Ogroundwater->matrix[r][c],
-					      L3toGW, _d18Osoil3->matrix[r][c]);
+      // Groundwater (layer 3)
+      _d18Ogroundwater->matrix[r][c] = GW_old + L2toGW > RNDOFFERR ?
+	InputMix(GW_old, _d18Ogroundwater->matrix[r][c], L2toGW, _d18Osoil2->matrix[r][c]) : -1000;
+
+      // Leakage: in all cases, groundwater signature
+      _d18Oleakage->matrix[r][c] = _d18Ogroundwater->matrix[r][c];
+
   }
 
   // == Age -----------------------------------------------------------------------------------------
   if(ctrl.sw_Age){
-    // Update layer 1
-    if(!ctrl.sw_lifo || reinf)
-      // If LIFO activated, no mixing in L1 before soil evap,
-      // L2 sees signature from previous timestep
+      // Update layer 1
       _Agesoil1->matrix[r][c] = InOutMix(theta1_old*d1, _Agesoil1->matrix[r][c],
 					 SrftoL1, _Agesurface->matrix[r][c], L1toL2);
-    // Update layer 2: if LIFO use unmixed in L1 except if L1toL2 > theta1_old*d1
-    // in which case the "percolation excess" (L1toL2t-theta1_old) has surface signature
-    if(ctrl.sw_lifo && L1toL2 > theta1_old*d1) 
+      // Update layer 2
       _Agesoil2->matrix[r][c] = InOutMix(theta2_old*d2, _Agesoil2->matrix[r][c],
-					 L1toL2, 
-					 InputMix(theta1_old*d1, _Agesoil1->matrix[r][c],
-						  L1toL2-theta1_old*d1, _Agesurface->matrix[r][c]),
-					 L2toL3);
-    else
-      _Agesoil2->matrix[r][c] = InOutMix(theta2_old*d2, _Agesoil2->matrix[r][c],
-				       L1toL2, _Agesoil1->matrix[r][c], L2toL3);
-    // Update layer 3 (vadose)
-    _Agesoil3->matrix[r][c] = InOutMix(NS3_old, _Agesoil3->matrix[r][c],
-				       L2toL3, _Agesoil2->matrix[r][c], L3toGW+leak);
-    // Update layer 3 (gw)
-    _Agegroundwater->matrix[r][c] = InputMix(GW_old, _Agegroundwater->matrix[r][c],
-					     L3toGW, _Agesoil3->matrix[r][c]);
+					 L1toL2, _Agesoil1->matrix[r][c], L2toL3+L2toGW);
+      // Update layer 3 (vadose)
+      _Agesoil3->matrix[r][c] = InputMix(NS3_old, _Agesoil3->matrix[r][c],
+					 L2toL3, _Agesoil2->matrix[r][c]);
+
+      // Groundwater (layer 3)
+      _Agegroundwater->matrix[r][c] = GW_old + L2toGW > RNDOFFERR ?
+	InputMix(GW_old, _Agegroundwater->matrix[r][c], L2toGW, _Agesoil2->matrix[r][c]) : 0;
+      
+      // Leakage: in all cases, groundwater signature
+    _Ageleakage->matrix[r][c] = _Agegroundwater->matrix[r][c];
   }
 }
 

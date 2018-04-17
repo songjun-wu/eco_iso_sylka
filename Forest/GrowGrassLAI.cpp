@@ -36,8 +36,8 @@ int Forest::GrowGrassLAI(UINT4 spec, UINT4 row, UINT4 col, REAL8 dt){
 
 	REAL8 DryLeafTurnoverRate = _species[spec].Fprn;
 	REAL8 DryLeafTurnoverRateAdjustmentParam = _species[spec].Fpra;
-	REAL8 DryDecayAdjustment = min<REAL8>(_species[spec]._Temp_c->matrix[row][col] / DryLeafTurnoverRateAdjustmentParam, 1);
-
+	//REAL8 DryDecayAdjustment = min<REAL8>(_species[spec]._Temp_c->matrix[row][col] / DryLeafTurnoverRateAdjustmentParam, 1);
+	REAL8 DryDecayAdjustment = min<REAL8>(max<REAL8>(_species[spec]._Temp_c->matrix[row][col] / DryLeafTurnoverRateAdjustmentParam,0), 1);
 	REAL8 GreenLaiDecay;
 	REAL8 DryLaiDecay;
 

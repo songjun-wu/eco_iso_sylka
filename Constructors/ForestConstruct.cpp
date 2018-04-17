@@ -50,9 +50,9 @@ Forest::Forest(Control &ctrl)
 		for (UINT4 i = 0; i < _Nsp; i++){ //initializes the grids in each Grove object
 			_species[i].CreateGrids(_patches);
 			// Tracking: vegetation-dependent maps
-			if(ctrl.sw_trck && ctrl.sw_dD)
-				_species[i].CreateGridsdD(_patches);
-			if(ctrl.sw_trck && ctrl.sw_d18O)
+			if(ctrl.sw_trck && ctrl.sw_2H)
+				_species[i].CreateGridsd2H(_patches);
+			if(ctrl.sw_trck && ctrl.sw_18O)
 				_species[i].CreateGridsd18O(_patches);
 			if(ctrl.sw_trck && ctrl.sw_Age)
 				_species[i].CreateGridsAge(_patches);
@@ -69,10 +69,9 @@ Forest::Forest(Control &ctrl)
 			throw;
 		}
 
+
 		//SetSpeciesParameters(ctrl);
-
         checkForestDatabase(); //check the sanity of the database
-
 
 	}catch (std::bad_alloc &)
 	  { cerr << "Cleaning up the forest..." << "\n";

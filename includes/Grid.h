@@ -59,6 +59,9 @@ struct grid{
     //copy ctor
     grid(const grid &m);
 
+    // generate isotope delta from isotope ratio map
+    grid(const grid &m, const grid &o);
+
     //reset array to zero
     void reset();
 

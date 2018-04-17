@@ -79,8 +79,6 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
   UINT4 nsp;
   REAL8 p;//fraction of species s
 
-  REAL8 theta_lifo = 0;
-  
   //needed in the water routing routines
   _dailyOvlndOutput.cells.clear();
   _dailyGwtrOutput.cells.clear();
@@ -94,12 +92,12 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
   _FluxSrftoL1->reset(); //
   _FluxL1toL2->reset(); //
   _FluxL2toL3->reset(); //
-  _FluxL3toGW->reset(); //
+  _FluxL2toGW->reset(); //
   }*/
   
 #pragma omp parallel default(shared) private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can, \
 					     evap, infcap, accinf, theta, theta2, theta3, ponding,leak,  gw, za, z0u, zdu, z0o, zdo, wind, treeheight, \
-					     nr, le, sens, grndh, snowh, mltht, dh_snow, p, theta_lifo, etc, \
+					     nr, le, sens, grndh, snowh, mltht, dh_snow, p, etc, \
 					     d1, d2, d3, fc)
   {
     //thre = omp_get_num_threads();
@@ -136,11 +134,6 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	Tsold = 0;
 	Tdold = 0;
 	dh_snow = 0;
-	
-	// Tracking: initialize summed values
-	if(ctrl.sw_trck && ctrl.sw_lifo)
-	  // With lifo, save theta before infiltration for post-evap mixing equations
-	  theta_lifo = theta;
 	
 	// Infiltration + percolation if exceeds porosity
 	Infilt_GreenAmpt(ctrl, infcap, accinf, theta, theta2, theta3, ponding, gw,
@@ -219,11 +212,8 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    
 	    SolveSurfaceEnergyBalance(atm, ctrl, trck, ra, rs, 0.0, BeersK, LAI,
 				      emis_can, Temp_can, nr, le, sens, grndh, snowh, mltht,
-				      Tsold, evap, ponding, theta, theta_lifo, Ts, Tdold, p, r, c, s);
+				      Tsold, evap, ponding, theta, Ts, Tdold, p, r, c, s);
 
-	    if(ctrl.sw_lifo)
-	      // Update here because the evapS mixing/fractionation is done for each veg type sequentially
-	      _FluxSrftoL1->matrix[r][c] = std::max<double>(0,_FluxSrftoL1->matrix[r][c]-evap*dt);
 	    
 	    _Evaporation->matrix[r][c] += evap; //evaporation at t=t+1 (weighted by p)
 	    _EvaporationS_all->matrix[r][c] += evap; //soil evaporation at t=t+1 (weighted by p)
@@ -237,18 +227,6 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    
 	  }//for over the species
 
-	// If tracking + LIFO and the mix has not been made (e.g., because infiltration > total evap),
-	// mix topsoil water now
-	if(ctrl.sw_trck and _FluxSrftoL1->matrix[r][c]>0 and ctrl.sw_dD)
-	  trck.InputMix(theta_lifo*d1, trck.getdDsoil1()->matrix[r][c], 
-			_FluxSrftoL1->matrix[r][c], trck.getdDlifo()->matrix[r][c]);
-	if(ctrl.sw_trck and _FluxSrftoL1->matrix[r][c]>0 and ctrl.sw_d18O)
-	  trck.InputMix(theta_lifo*d1, trck.getd18Osoil1()->matrix[r][c], 
-			_FluxSrftoL1->matrix[r][c], trck.getd18Olifo()->matrix[r][c]);
-	if(ctrl.sw_trck and _FluxSrftoL1->matrix[r][c]>0 and ctrl.sw_Age)
-	  trck.InputMix(theta_lifo*d1, trck.getAgesoil1()->matrix[r][c], 
-			_FluxSrftoL1->matrix[r][c], trck.getAgelifo()->matrix[r][c]);
-	
 	// Update soil moisture objects
 	_soilmoist1->matrix[r][c] = theta; //soil moisture at t=t+1
 	_soilmoist2->matrix[r][c] = theta2;
@@ -263,7 +241,6 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	_Temp_s->matrix[r][c] = Tsold; //
 	
 	_Temp_d->matrix[r][c] = Tdold;
-	
 	
 	dh_snow = SnowOutput(atm, ctrl, mltht, r, c);
 	

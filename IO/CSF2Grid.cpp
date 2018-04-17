@@ -31,6 +31,7 @@
 #include <fstream>
 #include <cmath>
 #include "Grid.h"
+#include "ConstAndFuncs.h"
 
 int CSF2Grid(std::string fname, grid *pnt){
 

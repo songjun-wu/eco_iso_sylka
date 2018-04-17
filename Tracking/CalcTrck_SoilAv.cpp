@@ -32,7 +32,7 @@
 
 // Calculates isotopes / age weighted average over the soil layers
 
-int Tracking::CalcdDsoil_Av(Basin &bsn){
+int Tracking::Calcd2Hsoil_Av(Basin &bsn){
   
   double depth, d1, d2, d3;
   double fc, theta1, theta2, theta3;
@@ -53,10 +53,10 @@ int Tracking::CalcdDsoil_Av(Basin &bsn){
       theta2 = bsn.getSoilMoist2()->matrix[r][c];
       theta3 = bsn.getSoilMoist3()->matrix[r][c];
       
-      _dDsoilAv->matrix[r][c] = (_dDsoil1->matrix[r][c] * d1 * theta1
-				 + _dDsoil2->matrix[r][c] * d2 * theta2
-				 + _dDsoil3->matrix[r][c] * d3 * std::min<double>(fc,theta3)
-				 + _dDgroundwater->matrix[r][c] * d3 * std::max<double>(0.0,theta3-fc)) / (d1*theta1+d2*theta2+d3*theta3);
+      _d2HsoilAv->matrix[r][c] = (_d2Hsoil1->matrix[r][c] * d1 * theta1
+				 + _d2Hsoil2->matrix[r][c] * d2 * theta2
+				 + _d2Hsoil3->matrix[r][c] * d3 * std::min<double>(fc,theta3)
+				 + _d2Hgroundwater->matrix[r][c] * d3 * std::max<double>(0.0,theta3-fc)) / (d1*theta1+d2*theta2+d3*theta3);
     }
   }
   return EXIT_SUCCESS;
