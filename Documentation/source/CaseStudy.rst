@@ -29,7 +29,7 @@ edited. To generate a configuration file template, navigate to the
 
 ::
 
-    ech2o -g config.ini
+    ech2o_iso -g config.ini
 
 where the ``-g`` option indicates that we wish to generate a main configuration
 file with the name ``config.ini``. 
@@ -565,7 +565,7 @@ command:
 
 ::
 
-    ech2o config.ini
+    ech2o_iso config.ini
 
 Where ``config.ini`` stands for the name of the configuration file. Note that this
 file and ``configTrck.ini`` can be named in any other way to differentiate different
@@ -696,7 +696,7 @@ contents into a new file ``spinup.bat``:
 
     echo Running iteration %COUNT%
 
-    start /w ech2o config.ini
+    start /w ech2o_iso config.ini
 
     ping -w 1000 1.1.1.1 
 

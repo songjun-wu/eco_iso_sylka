@@ -40,8 +40,8 @@ or download from
 and compile from source. Then replace the old libcsf64 library in the ``lib`` directory with the newly compiled library. Make sure you change the name of the new library so it has the same name as the old one. 
    
 
-2. Making ``ech2o``
-^^^^^^^^^^^^^^^^^^^^
+2. Making ``ech2o_iso``
+^^^^^^^^^^^^^^^^^^^^^^^
 
 *  Change to the ``Release`` folder within the source folder
 
