@@ -33,7 +33,8 @@ Third-party dependencies
 - armadillo (Mozilla Public License 2.0) and dependencies therein 
 - libcsf (BSD License)
   
-For convenience, precompiled versions of the libcsf librairies for Linux, Windows 64 bit, and Mac architectures are distributed with the source code   
+For convenience, precompiled versions of the libcsf librairies for Linux, Windows 64 bit, and Mac architectures are distributed with the source code.   
+
 Compilation of source code
 --------------------------
 
