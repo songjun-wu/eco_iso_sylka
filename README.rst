@@ -9,7 +9,7 @@ The specifity of |ech2o|-iso is the implementation of stable water isotopes (:su
 It is mostly based on an immediate, complete implicit scheme for mixing water transiting between compartments within time steps (Fig. 1).
 Evaporative fractionation of isotopes is also included.
 
-.. figure:: ECH2O-iso_Model.png
+.. figure:: ./ECH2O-iso_Model.png
    :align: center
    :alt: Brooke and Corey soil parameters for different texstures. From Dingman, L(2002). Physical Hydrology, 2nd Ed.Prentice Hall, 646p .
 
@@ -18,7 +18,7 @@ Evaporative fractionation of isotopes is also included.
 The Latest Version
 ------------------
 
-The latest stable version can be found in the *master_ns* branch of the source repository. 
+The latest stable version can be found in the *master* branch of the source repository. 
 
 Documentation
 -------------
@@ -33,7 +33,12 @@ Third-party dependencies
 - armadillo (Mozilla Public License 2.0) and dependencies therein 
 - libcsf (BSD License)
   
-For convenience, precompiled versions of the libcsf librairies for Linux, Windows 64 bit, and Mac architectures are distributed with the source code   
+For convenience, precompiled versions of the libcsf librairies for Linux, Windows 64 bit, and Mac architectures are distributed with the source code.   
+
+Compilation of source code
+--------------------------
+
+Please see the fille called INSTALL.rst
 
 Data Preprocessing
 ------------------
@@ -64,7 +69,7 @@ Further references:
 
 - Lozano-Parra, J., Maneta, M. P., and Schnabel, S. (2014). Climate and topographic controls on simulated pasture production in a semiarid Mediterranean watershed with scattered tree cover. Hydrology and Earth System Sciences, 18, 1439.
 - Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (2018). What can we learn from multi-data calibration of a process-based ecohydrological model?. Environmental Modelling & Software, 101, 301–316.
-
+- Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (in review). EcH2O-iso 1.0: Water isotopes and age tracking in a process-based, distributed ecohydrological model. Geoscientific Model Development Discussions, 25.
 Contacts
 --------
 
