@@ -9,7 +9,7 @@ The specifity of |ech2o|-iso is the implementation of stable water isotopes (:su
 It is mostly based on an immediate, complete implicit scheme for mixing water transiting between compartments within time steps (Fig. 1).
 Evaporative fractionation of isotopes is also included.
 
-.. figure:: ./ECH2O-iso_Model.png
+.. figure:: ./EcH2O-iso_Model.png
    :align: center
    :alt: Brooke and Corey soil parameters for different texstures. From Dingman, L(2002). Physical Hydrology, 2nd Ed.Prentice Hall, 646p .
 
@@ -18,7 +18,7 @@ Evaporative fractionation of isotopes is also included.
 The Latest Version
 ------------------
 
-The latest stable version can be found in the *master* branch of the source repository. 
+The latest stable version can be found in the *master_1.0* branch of the `source repository <https://bitbucket.org/sylka/master_1.0/>`_. 
 
 Documentation
 -------------
