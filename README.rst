@@ -60,16 +60,15 @@ Known issues can be found there, as well as on the `main EcH2O page <https://bit
 How to Cite
 -----------
 
-The corresponding publication has yet to be published.
-Please, acknowledge the use of ECH2O by citing the original description of the model: 
+Please, acknowledge the use of |ech2o|-iso by citing:
 
-- Maneta, M and Silverman, N (2013). A spatially-distributed model to simulate water, energy and vegetation dynamics using information from regional climate models. Earth Interactions, 17, 1-44.
-
-Further references:
-
-- Lozano-Parra, J., Maneta, M. P., and Schnabel, S. (2014). Climate and topographic controls on simulated pasture production in a semiarid Mediterranean watershed with scattered tree cover. Hydrology and Earth System Sciences, 18, 1439.
-- Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (2018). What can we learn from multi-data calibration of a process-based ecohydrological model?. Environmental Modelling & Software, 101, 301–316.
 - Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (in review). EcH2O-iso 1.0: Water isotopes and age tracking in a process-based, distributed ecohydrological model. Geoscientific Model Development Discussions, 25.
+
+Further references (and useful reads!):
+- Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (2018). What can we learn from multi-data calibration of a process-based ecohydrological model?. Environmental Modelling & Software, 101, 301–316.
+- Maneta, M and Silverman, N (2013). A spatially-distributed model to simulate water, energy and vegetation dynamics using information from regional climate models. Earth Interactions, 17, 1-44.
+- Lozano-Parra, J., Maneta, M. P., and Schnabel, S. (2014). Climate and topographic controls on simulated pasture production in a semiarid Mediterranean watershed with scattered tree cover. Hydrology and Earth System Sciences, 18, 1439.
+  
 Contacts
 --------
 
