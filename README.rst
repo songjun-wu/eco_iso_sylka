@@ -61,9 +61,11 @@ How to Cite
 -----------
 
 Please, acknowledge the use of |ech2o|-iso by citing:
+
 - Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (2018). |ech2o|-iso 1.0: Water isotopes and age tracking in a process-based, distributed ecohydrological model, Geosci. Model Dev. Discuss., `<https://doi.org/10.5194/gmd-2018-25>`_, *in review for Geosci. Model Dev.*.
 
 Further references (and useful reads!):
+
 - Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (2018). What can we learn from multi-data calibration of a process-based ecohydrological model?. Environmental Modelling & Software, 101, 301–316.
 - Maneta, M and Silverman, N (2013). A spatially-distributed model to simulate water, energy and vegetation dynamics using information from regional climate models. Earth Interactions, 17, 1-44.
 - Lozano-Parra, J., Maneta, M. P., and Schnabel, S. (2014). Climate and topographic controls on simulated pasture production in a semiarid Mediterranean watershed with scattered tree cover. Hydrology and Earth System Sciences, 18, 1439.
