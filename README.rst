@@ -61,8 +61,7 @@ How to Cite
 -----------
 
 Please, acknowledge the use of |ech2o|-iso by citing:
-
-- Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (in review). EcH2O-iso 1.0: Water isotopes and age tracking in a process-based, distributed ecohydrological model. Geoscientific Model Development Discussions, 25.
+- Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (2018). |ech2o|-iso 1.0: Water isotopes and age tracking in a process-based, distributed ecohydrological model, Geosci. Model Dev. Discuss., `<https://doi.org/10.5194/gmd-2018-25>`_, *in review for Geosci. Model Dev.*.
 
 Further references (and useful reads!):
 - Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (2018). What can we learn from multi-data calibration of a process-based ecohydrological model?. Environmental Modelling & Software, 101, 301–316.
