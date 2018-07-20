@@ -153,7 +153,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_depth_layer2, "Depth_soil_layer_2");
 	//Config.readInto(fn_root_fraction_lay1, "Fraction_roots_soil_layer_1");
 	//Config.readInto(fn_root_fraction_lay2, "Fraction_roots_soil_layer_2");
-	//Config.readInto(fn_Kroot, "Root_profile_coeff");
+	Config.readInto(fn_Kroot, "Root_profile_coeff");
 	Config.readInto(fn_soilmoist2, "Soil_moisture_2");
 	Config.readInto(fn_soilmoist3, "Soil_moisture_3");
 	Config.readInto(fn_bedrock_leak, "Soil_bedrock_leakance");

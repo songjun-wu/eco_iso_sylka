@@ -94,13 +94,12 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
 
     // Tracking
     if(ctrl.sw_trck){
+      _FluxL2toL3->matrix[r][c] += max<REAL8>(0,L2 - x[1]);
       // Partition between percolation to unsaturated (L3) and recharge (GW)
-      if(L3/d3 >= thetafc)
-	_FluxL2toGW->matrix[r][c] += max<REAL8>(0,L2 - x[1]);
-      else {
-	_FluxL2toL3->matrix[r][c] += min<REAL8>(L2 - x[1], thetafc*d3 - x[2]);
-	_FluxL2toGW->matrix[r][c] += max<REAL8>(0,L2 - x[1] - (thetafc*d3 - x[2]));
-      }
+      if(x[2]/d3 >= thetafc)
+	_FluxL3toGW->matrix[r][c] += max<REAL8>(0,L2 - x[1]);
+      else
+	_FluxL3toGW->matrix[r][c] += max<REAL8>(0,L2 - x[1] - (thetafc*d3 - x[2]));
     }
 
     x[2]=L3;
@@ -115,7 +114,7 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
 
     // Tracking
     //if(ctrl.sw_trck)
-    //	_FluxL2toGW->matrix[r][c] -= max<REAL8>(0,L3 - x[2]);
+    //	_FluxL3toGW->matrix[r][c] -= max<REAL8>(0,L3 - x[2]);
   }
 
   theta1 = x[0]/d1;
@@ -130,8 +129,12 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
 
     // Tracking : remove the excess from groundwater (since in that case L2toL3 had not been
     // incremented anyway)
-    if(ctrl.sw_trck)
-      _FluxL2toGW->matrix[r][c] -= (theta3 - thetas) * d3 ;
+    if(ctrl.sw_trck){
+      _FluxL2toL3->matrix[r][c] -= (theta3 - thetas) * d3 ;
+      _FluxL3toGW->matrix[r][c] -= (theta3 - thetas) * d3 ;
+       if(_FluxL3toGW->matrix[r][c] < - RNDOFFERR)
+       	cout << r << " " << c << " | error: in SoilWaterRedis we have L3toGW < 0" << endl;
+    }
 
     theta3 = thetas;
   }

@@ -42,18 +42,18 @@ void Tracking::MixingV_up(Basin &bsn, Control &ctrl,
 
   double L1toSrf = bsn.getFluxExfilt()->matrix[r][c];
   double L2toL1 = bsn.getFluxL2toL1()->matrix[r][c];
-  //double L3toL2 = bsn.getFluxL3toL2()->matrix[r][c];
-  double GWtoL2 = bsn.getFluxGWtoL2()->matrix[r][c];
+  double L3toL2 = bsn.getFluxL3toL2()->matrix[r][c];
   double GWtoL3 = bsn.getFluxGWtoL3()->matrix[r][c];
 
   // == 2H ------------------------------------------------------------------------------------------
   if(ctrl.sw_2H){
     // Update layer 3 (vadose)
-    _d2Hsoil3->matrix[r][c] = InputMix(std::min<double>(fc,theta3_old)*d3, _d2Hsoil3->matrix[r][c],
-				      GWtoL3, _d2Hgroundwater->matrix[r][c]);
+    _d2Hsoil3->matrix[r][c] = InOutMix(std::min<double>(fc,theta3_old)*d3,
+				       _d2Hsoil3->matrix[r][c],
+				       GWtoL3, _d2Hgroundwater->matrix[r][c], L3toL2);
     // Update layer 2
     _d2Hsoil2->matrix[r][c] = InOutMix(theta2_old*d2, _d2Hsoil2->matrix[r][c],
-				   GWtoL2, _d2Hgroundwater->matrix[r][c], L2toL1);
+				   L3toL2, _d2Hsoil3->matrix[r][c], L2toL1);
     // Update layer 1
     _d2Hsoil1->matrix[r][c] = InOutMix(theta1_old*d1, _d2Hsoil1->matrix[r][c],
 				      L2toL1, _d2Hsoil2->matrix[r][c], L1toSrf);
@@ -65,11 +65,12 @@ void Tracking::MixingV_up(Basin &bsn, Control &ctrl,
   // == 18O -----------------------------------------------------------------------------------------
   if(ctrl.sw_18O){
     // Update layer 3 (vadose)
-    _d18Osoil3->matrix[r][c] = InputMix(std::min<double>(fc,theta3_old)*d3, _d18Osoil3->matrix[r][c],
-					GWtoL3, _d18Ogroundwater->matrix[r][c]);
+    _d18Osoil3->matrix[r][c] = InOutMix(std::min<double>(fc,theta3_old)*d3,
+					_d18Osoil3->matrix[r][c],
+					GWtoL3, _d18Ogroundwater->matrix[r][c], L3toL2);
     // Update layer 2
     _d18Osoil2->matrix[r][c] = InOutMix(theta2_old*d2, _d18Osoil2->matrix[r][c],
-					GWtoL2, _d18Ogroundwater->matrix[r][c], L2toL1);
+					L3toL2, _d18Osoil3->matrix[r][c], L2toL1);
     // Update layer 1
     _d18Osoil1->matrix[r][c] = InOutMix(theta1_old*d1, _d18Osoil1->matrix[r][c],
 					L2toL1, _d18Osoil2->matrix[r][c], L1toSrf);
@@ -81,11 +82,12 @@ void Tracking::MixingV_up(Basin &bsn, Control &ctrl,
   // == Age -----------------------------------------------------------------------------------------
   if(ctrl.sw_Age){
     // Update layer 3 (vadose)
-    _Agesoil3->matrix[r][c] = InputMix(std::min<double>(fc,theta3_old)*d3, _Agesoil3->matrix[r][c],
-				       GWtoL3, _Agegroundwater->matrix[r][c]);
+    _Agesoil3->matrix[r][c] = InOutMix(std::min<double>(fc,theta3_old)*d3,
+				       _Agesoil3->matrix[r][c],
+				       GWtoL3, _Agegroundwater->matrix[r][c], L3toL2);
     // Update layer 2
     _Agesoil2->matrix[r][c] = InOutMix(theta2_old*d2, _Agesoil2->matrix[r][c],
-				       GWtoL2, _Agegroundwater->matrix[r][c], L2toL1);
+				       L3toL2, _Agesoil3->matrix[r][c], L2toL1);
     // Update layer 1
     _Agesoil1->matrix[r][c] = InOutMix(theta1_old*d1, _Agesoil1->matrix[r][c],
 				       L2toL1, _Agesoil2->matrix[r][c], L1toSrf);

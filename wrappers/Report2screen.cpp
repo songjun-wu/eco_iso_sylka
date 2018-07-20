@@ -126,21 +126,6 @@ int Report2Screen(){
   printf("Mass Balance Error (%): %e \n", oBudget->MBErr);
   ofSummary << oBudget->MBErr ;//<< "\t";
 
-  if(oControl->sw_trck and oControl->sw_2H){
-    printf("Deuterium Mass Balance Error (%): %e \n", oBudget->MBErr_d2H);
-    ofSummary << "\t" << oBudget->MBErr_d2H ;
-  }
-
-  if(oControl->sw_trck and oControl->sw_18O){
-    printf("Oxygen 18 Mass Balance Error (%): %e \n", oBudget->MBErr_d18O);
-    ofSummary << "\t" << oBudget->MBErr_d18O ;
-  }
-
-  if(oControl->sw_trck and oControl->sw_Age){
-    printf("Age Mass Balance Error (%): %e \n", oBudget->MBErr_Age);
-    ofSummary << "\t" << oBudget->MBErr_Age ;
-  }
-
   ofSummary << "\n";
 
   return EXIT_SUCCESS;

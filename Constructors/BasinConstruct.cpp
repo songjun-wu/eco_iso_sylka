@@ -84,7 +84,7 @@ Basin::Basin(Control &ctrl)
 
 		//_rootfrac1 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay1, ctrl.MapType);
 		//_rootfrac2 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay2, ctrl.MapType);
-		//_Kroot = new grid(ctrl.path_BasinFolder + ctrl.fn_Kroot, ctrl.MapType);
+		_Kroot = new grid(ctrl.path_BasinFolder + ctrl.fn_Kroot, ctrl.MapType);
 
 		_snow = new grid(ctrl.path_BasinFolder + ctrl.fn_swe, ctrl.MapType);
 		_albedo = new grid(ctrl.path_BasinFolder + ctrl.fn_albedo, ctrl.MapType);
@@ -117,8 +117,8 @@ Basin::Basin(Control &ctrl)
 		_Temp_s = new grid(*_DEM);
 		//_Temp_s_old = new grid(*_DEM);
 		_CanopyStorage = new grid(*_DEM);
-		//_rootfrac1 = new grid(*_DEM);
-		//_rootfrac2 = new grid(*_DEM);
+		_rootfrac1 = new grid(*_DEM);
+		_rootfrac2 = new grid(*_DEM);
 
 		_IsSaturated = new grid(*_DEM);  //saturation map
 		_soilmoist_av = new grid(*_DEM); //average volumetric soil moisture of the first 10 cm of the soil as calculated using a hydrstatic equilibrium moisture profile
@@ -171,9 +171,8 @@ Basin::Basin(Control &ctrl)
 		_FluxL1toL2 = NULL;
 		_FluxL2toL1 = NULL;
 		_FluxL2toL3 = NULL;
-		//_FluxL3toL2 = NULL;
-		_FluxL2toGW = NULL;
-		_FluxGWtoL2 = NULL;
+		_FluxL3toL2 = NULL;
+		_FluxL3toGW = NULL;
 		_FluxGWtoL3 = NULL;
 		
 		if(ctrl.sw_trck){
@@ -181,8 +180,8 @@ Basin::Basin(Control &ctrl)
 		  _FluxL1toL2 = new grid(*_DEM); // percolation L1 to L2
 		  _FluxL2toL1 = new grid(*_DEM); // capillary + return flow, L2 to L1
 		  _FluxL2toL3 = new grid(*_DEM); // percolation L2 to L3
-		  _FluxL2toGW = new grid(*_DEM); // recharge L3 to groundwater
-		  _FluxGWtoL2 = new grid(*_DEM); // return flow, groundwater to L2
+		  _FluxL3toL2 = new grid(*_DEM); // recharge L3 to groundwater
+		  _FluxL3toGW = new grid(*_DEM); // return flow, groundwater to L2
 		  _FluxGWtoL3 = new grid(*_DEM); // discharge, groundwater to L3
 		}
 
@@ -256,12 +255,12 @@ Basin::Basin(Control &ctrl)
 		delete _depth_layer1;
 	if(_depth_layer2)
 		delete _depth_layer2;
-	//if(_rootfrac1)
-	//	delete _rootfrac1;
-	//if(_rootfrac2)
-	//	delete _rootfrac2;
-	//if(_Kroot)
-	//	delete _Kroot;
+	if(_rootfrac1)
+		delete _rootfrac1;
+	if(_rootfrac2)
+		delete _rootfrac2;
+	if(_Kroot)
+	  delete _Kroot;
 	if(_fieldcap)
 		delete _fieldcap;
 	if(_paramWc)
@@ -379,14 +378,12 @@ Basin::Basin(Control &ctrl)
 		delete _FluxL1toL2;
 	if(_FluxL2toL3)
 		delete _FluxL2toL3;
-	if(_FluxL2toGW)
-		delete _FluxL2toGW;
+	if(_FluxL3toGW)
+		delete _FluxL3toGW;
 	if(_FluxL2toL1)
 		delete _FluxL2toL1;
-	//if(_FluxL3toL2)
-	//	delete _FluxL3toL2;
-	if(_FluxGWtoL2)
-		delete _FluxGWtoL2;
+	if(_FluxL3toL2)
+		delete _FluxL3toL2;
 	if(_FluxGWtoL3)
 		delete _FluxGWtoL3;
 

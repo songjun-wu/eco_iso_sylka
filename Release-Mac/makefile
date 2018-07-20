@@ -58,7 +58,7 @@ all: ech2o
 ech2o: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"../lib" -fopenmp -o "ech2o_iso" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"/usr/local/lib" -L"../lib" -fopenmp -o "ech2o_iso" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

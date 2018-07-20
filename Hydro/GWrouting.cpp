@@ -72,16 +72,20 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	// Reinitialize to zero the fluxes upwards modified in the previous time step
 	_FluxExfilt->reset();
 	if(ctrl.sw_trck){
+	  _FluxSrftoL1->reset();
+	  _FluxL1toL2->reset();
+	  _FluxL2toL3->reset();
+	  _FluxL3toGW->reset();
 	  _FluxL2toL1->reset();
-	  //_FluxL3toL2->reset();
-	  _FluxGWtoL2->reset();
+	  _FluxL3toL2->reset();
 	  _FluxGWtoL3->reset();
 	}
 	// Initialize others
 	_FluxLattoSrf->reset();
 	_FluxLattoChn->reset();
 	_FluxLattoGW->reset();
-	
+
+	// --------------------------------------------------------------------------------------
 	for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
 	  r = _vSortedGrid.cells[j].row;
 	  c = _vSortedGrid.cells[j].col;
@@ -123,7 +127,8 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  
 	  if (ctrl.sw_channel && _channelwidth->matrix[r][c] > 0) { 
 	    //if this is a channel cell and channels are activated
-	    //maxR = ( _porosity->matrix[r][c] - fc ) * soildepth; //calculates the maximum gravitational water that can go
+	    //maxR = ( _porosity->matrix[r][c] - fc ) * soildepth; 
+	    //calculates the maximum gravitational water that can go
 	    qc = _Ksat->matrix[r][c] * gw
 	      * (1 - expl(-_chGWparam->matrix[r][c] * gw));
 	    gw -= qc * dtdx;
@@ -154,32 +159,42 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    deficit = (fc - theta3) * d3;
 	  }
 	  
-	  qj1i = _GWupstreamBC->matrix[r][c];	// discharge (j is timestep) so j1i is total discharge per unit width from upstream at t+1
-	  hji1 = 0; //Not used since local GW head is embedded in the updated theta3 portion which becomes R
-	  R = _GravityWater->matrix[r][c]; //recharge to the groundwater system at the end of the time step in meters
-	  _GravityWater->matrix[r][c] = 0; //gravity water becomes groundwater
+	  // discharge (j is timestep) so j1i is total upstream discharge per unit width at t+1
+	  qj1i = _GWupstreamBC->matrix[r][c];	
+	  //Not used since local GW head is embedded in the updated theta3 portion, becoming R	 
+	  hji1 = 0;
+	  //recharge to the groundwater system at the end of the time step in meters
+	  R = _GravityWater->matrix[r][c]; 
+	  //gravity water becomes groundwater
+	  _GravityWater->matrix[r][c] = 0; 
 	  
+	  // Solution of the kinematic wave (hj1i1 = head "ready to go" downstream)
 	  hj1i1 = (dtdx * qj1i + hji1 + R - returnflow - deficit)
 	    / (1 + alpha * dtdx); //R is in meters so no need to multiply times dt here
 	  
+	  
+	  // If there's deficit and negative head -> capillary flow to L3, no GW outflow
 	  if (deficit > 0 && hj1i1 < 0) {
 	    theta3 += (dtdx * qj1i + hji1 + R - returnflow) / d3;
 	    hj1i1 = 0;
 	    
 	    // Tracking
 	    if(ctrl.sw_trck)
-	      _FluxGWtoL3->matrix[r][c] += dtdx * qj1i + hji1 + R - returnflow;
+	      _FluxGWtoL3->matrix[r][c] =  dtdx * qj1i + hji1 + R - returnflow;
+	    //std::min<double>(deficit, dtdx * qj1i + hji1 + R - returnflow);
 	    
+	  // If there's deficit and positive head -> capillary flow to L3
 	  } else if (deficit > 0 && hj1i1 >= 0){
 	    theta3 += (dtdx * qj1i + hji1 + R - returnflow
 		       - hj1i1 * (1 + alpha * dtdx)) / d3;
 	    
 	    // Tracking
 	    if(ctrl.sw_trck)
-	      _FluxGWtoL3->matrix[r][c] += dtdx * qj1i + hji1 + R - returnflow - hj1i1 * (1 + alpha * dtdx);
+	      _FluxGWtoL3->matrix[r][c] = dtdx * qj1i + hji1 + R - returnflow - hj1i1 * (1 + alpha * dtdx);
 	  }
 	  
-	  //if the new amount of water in the cell is larger than the soil storage solve for return flow
+	  // If the new amount of water in the cell is larger than the soil storage:
+	  // --> Solve for return flow
 	  if (((poros - theta3) * d3) < hj1i1) {
 	    returnflow = -(poros - theta3) * d3 * (1 + alpha * dtdx)	\
 	      + (dtdx * qj1i) + hji1 + R - deficit;
@@ -187,8 +202,8 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    
 	    // Tracking
 	    if(ctrl.sw_trck){
-	      _FluxGWtoL2->matrix[r][c] += returnflow ;
-	      //_FluxL3toL2->matrix[r][c] += returnflow ;
+	      _FluxGWtoL3->matrix[r][c] += hj1i1 - (poros-theta3)*d3 ;
+	      _FluxL3toL2->matrix[r][c] = returnflow ;
 	    }
 	    
 	    if (theta2 > poros) {
@@ -205,6 +220,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    }
 	    
 	    //ponding += returnflow;
+	    // Update head
 	    hj1i1 = (poros - theta3) * d3;
 	  }
 	  
@@ -217,7 +233,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    
 	    // Tracking of seepage 
 	    // (following ECH2O's logic: seepage is taken fromn gw before the GW kinematic wave,
-	    // but it is added to channel after...Marco?)
+	    // but it is added to channel after)
 
 	    if(ctrl.sw_trck)
 	      trck.MixingV_seep(*this, ctrl, ponding, qc, r, c);
@@ -311,6 +327,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  // Check there is downstream cell
 	  if(lat_ok){
 	    // Tracking lateral inputs to the downstream cell
+	    // Summed tracking contribution downstream cells (for mixing)
 	    if(ctrl.sw_trck)
 	      trck.MixingH(*this, ctrl, hj1i1, alpha, ponding, Qk1, dtdx, _dx, r, c, rr, cc);
 	    

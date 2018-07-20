@@ -191,10 +191,8 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	      theta = _soilmoist1->matrix[r][c]; //soil moisture at time t
 	      theta2 = _soilmoist2->matrix[r][c];
 	      theta3 = _soilmoist3->matrix[r][c];
-	      froot1 = fForest->getRootFrac1(s)->matrix[r][c];
-	      froot2 = fForest->getRootFrac2(s)->matrix[r][c];
-	      //froot1 = _rootfrac1->matrix[r][c];
-	      //froot2 = _rootfrac2->matrix[r][c];
+	      froot1 = _rootfrac1->matrix[r][c];
+	      froot2 = _rootfrac2->matrix[r][c];
 	      froot3 = 1 - froot1 - froot2;
 	      theta_available = (theta-thetar) * froot1 + (theta2-thetar) * froot2 + (theta3-thetar) * froot3;
 	      //root depth is the depth of layers that contain 95% of roots

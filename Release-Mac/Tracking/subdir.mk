@@ -4,7 +4,8 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../Tracking/CalcGridIso.cpp \
+../Tracking/CalcTrck_L1L2.cpp \
+../Tracking/CalcTrck_SoilAv.cpp \
 ../Tracking/CheckMapsTrck.cpp \
 ../Tracking/Fractionation_Esoil.cpp \
 ../Tracking/IncrementAge.cpp \
@@ -14,10 +15,12 @@ CPP_SRCS += \
 ../Tracking/MixingV_seep.cpp \
 ../Tracking/MixingV_snow.cpp \
 ../Tracking/MixingV_through.cpp \
-../Tracking/MixingV_up.cpp 
+../Tracking/MixingV_up.cpp \
+../Tracking/OutletVals.cpp 
 
 OBJS += \
-./Tracking/CalcGridIso.o \
+./Tracking/CalcTrck_L1L2.o \
+./Tracking/CalcTrck_SoilAv.o \
 ./Tracking/CheckMapsTrck.o\
 ./Tracking/Fractionation_Esoil.o \
 ./Tracking/IncrementAge.o \
@@ -27,10 +30,12 @@ OBJS += \
 ./Tracking/MixingV_seep.o \
 ./Tracking/MixingV_snow.o \
 ./Tracking/MixingV_through.o \
-./Tracking/MixingV_up.o 
+./Tracking/MixingV_up.o \
+./Tracking/OutletVals.o
 
 CPP_DEPS += \
-./Tracking/CalcGridIso.d \
+./Tracking/CalcTrck_L1L2.d \
+./Tracking/CalcTrck_SoilAv.d \
 ./Tracking/CheckMapsTrck.d \
 ./Tracking/Fractionation_Esoil.d \
 ./Tracking/IncrementAge.d \
@@ -40,7 +45,8 @@ CPP_DEPS += \
 ./Tracking/MixingV_seep.d \
 ./Tracking/MixingV_snow.d \
 ./Tracking/MixingV_through.d \
-./Tracking/MixingV_up.d 
+./Tracking/MixingV_up.d  \
+./Tracking/OutletVals.d
 
 # Each subdirectory must supply rules for building sources it contributes
 Tracking/%.o: ../Tracking/%.cpp

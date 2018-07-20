@@ -96,12 +96,12 @@ Basin::~Basin(){
 		delete _depth_layer1;
 	if(_depth_layer2)
 		delete _depth_layer2;
-	//if(_rootfrac1)
-	//	delete _rootfrac1;
-	//if(_rootfrac2)
-	//      delete _rootfrac2;
-	//if(_Kroot)
-	//	delete _Kroot;
+	if(_rootfrac1)
+		delete _rootfrac1;
+	if(_rootfrac2)
+	      delete _rootfrac2;
+	if(_Kroot)
+		delete _Kroot;
 	if(_fieldcap)
 		delete _fieldcap;
 	if(_paramWc)
@@ -218,12 +218,12 @@ Basin::~Basin(){
 		delete _FluxL1toL2;
 	if(_FluxL2toL3)
 		delete _FluxL2toL3;
-	if(_FluxL2toGW)
-		delete _FluxL2toGW;
+	if(_FluxL3toGW)
+		delete _FluxL3toGW;
 	if(_FluxL2toL1)
 		delete _FluxL2toL1;
-	if(_FluxGWtoL2)
-		delete _FluxGWtoL2;
+	if(_FluxL3toL2)
+		delete _FluxL3toL2;
 	if(_FluxGWtoL3)
 		delete _FluxGWtoL3;
 

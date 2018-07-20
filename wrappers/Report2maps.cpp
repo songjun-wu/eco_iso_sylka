@@ -235,17 +235,6 @@ int Report2Maps(){
 			name.str("");
 		}
 
-		if (oControl->Rep_RootFrac1Species) {
-			name << "L1Ro" << i << "_";
-			WriteMapSeries(oBasin->getRootFrac1(i), name.str() , oControl->current_ts_count);
-			name.str("");
-		}
-		if (oControl->Rep_RootFrac2Species) {
-			name << "L2Ro" << i << "_";
-			WriteMapSeries(oBasin->getRootFrac2(i), name.str() , oControl->current_ts_count);
-			name.str("");
-		}
-
 		if (oControl->Rep_Leaf_Area_Index) {
 			name << "lai" << i << "_";
 			WriteMapSeries(oBasin->getLAI(i), name.str() , oControl->current_ts_count);
@@ -982,9 +971,9 @@ int Report2Ts(){
 		}
 		if (oControl->RepTs_d18OevapT_sum){
 			if(oControl->GetTimeStep() <= oControl->report_times)
-				oReport->RenameFile(oControl->path_ResultsFolder + "d18O_EvapT.tab");
+				oReport->RenameFile(oControl->path_ResultsFolder + "d18O_evapT.tab");
 			oReport->ReportTimeSeries(oTracking->getd18OevapT_sum(),
-					oControl->path_ResultsFolder + "d18O_EvapT.tab",
+					oControl->path_ResultsFolder + "d18O_evapT.tab",
 					oControl->current_ts_count);
 		}
 	}
@@ -1092,21 +1081,6 @@ int Report2Ts(){
 				if(oControl->GetTimeStep() <= oControl->report_times)
 					oReport->RenameFile(name.str());
 				oReport->ReportTimeSeries(oBasin->getStemDensity(i), name.str() , oControl->current_ts_count);
-				name.str("");
-			}
-
-			if (oControl->RepTs_RootFrac1Species) {
-				name << oControl->path_ResultsFolder << "RootFrac.L1_" << i << ".tab";
-				if(oControl->GetTimeStep() <= oControl->report_times)
-					oReport->RenameFile(name.str());
-				oReport->ReportTimeSeries(oBasin->getRootFrac1(i), name.str() , oControl->current_ts_count);
-				name.str("");
-			}
-			if (oControl->RepTs_RootFrac2Species) {
-				name << oControl->path_ResultsFolder << "RootFrac.L2_" << i << ".tab";
-				if(oControl->GetTimeStep() <= oControl->report_times)
-					oReport->RenameFile(name.str());
-				oReport->ReportTimeSeries(oBasin->getRootFrac2(i), name.str() , oControl->current_ts_count);
 				name.str("");
 			}
 

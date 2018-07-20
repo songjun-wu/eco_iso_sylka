@@ -50,27 +50,3 @@ double Budget::AccountStorages(const grid *map, const Basin *b)
 
 	        return result;
 }
-
-// --- Tracking
-double Budget::AccountTrckStorages(const grid *map1, const grid *map2, const Basin *b)
-{
-  
-  UINT4 length = b->getSortedGrid().cells.size();
-  UINT4 r, c;
-  REAL8 result = 0;
-  REAL8 dx = b->getCellSize();
-  
-#pragma omp parallel for			       \
-  default(shared) private(r,c)			       \
-  reduction (+:result)
-  for (UINT4 i = 0; i< length; i++){
-    
-    r = b->getSortedGrid().cells[i].row;
-    c = b->getSortedGrid().cells[i].col;
-
-    result += (map1->matrix[r][c]* map2->matrix[r][c] *dx*dx);
-
-}
-  
-  return result;
-}

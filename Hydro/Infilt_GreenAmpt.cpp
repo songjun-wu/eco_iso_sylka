@@ -31,7 +31,7 @@
 #include "Basin.h"
 
 void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
-		double &theta2, double &theta3, double &pond, double &gw,
+			     double &theta2, double &theta3, double &pond, double &gw,
 			     double dt, int r, int c) //time step
 {
 
@@ -47,7 +47,7 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
   if(ctrl.sw_trck){
     _FluxL1toL2->matrix[r][c] = 0;
     _FluxL2toL3->matrix[r][c] = 0;
-    _FluxL2toGW->matrix[r][c] = 0;
+    _FluxL3toGW->matrix[r][c] = 0;
   }
 
 
@@ -104,14 +104,12 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
     if (theta2 > ef_poros) {
       // Tracking
       if(ctrl.sw_trck){
+	_FluxL2toL3->matrix[r][c] = (theta2 - ef_poros) * depth2;
 	// Partition between percolation to unsaturated (L3) and recharge (GW)	
-	if(theta3 >= fc){
-	  _FluxL2toL3->matrix[r][c] = 0;
-	  _FluxL2toGW->matrix[r][c] = (theta2 - ef_poros) * depth2;
-	} else {
-	  _FluxL2toL3->matrix[r][c] = min<double>((theta2-ef_poros)*depth2,(fc-theta3)*depth3);
-	  _FluxL2toGW->matrix[r][c] = max<double>(0,(theta2-ef_poros)*depth2 - (fc-theta3)*depth3);
-	}
+	if(theta3 >= fc)
+	  _FluxL3toGW->matrix[r][c] = (theta2 - ef_poros) * depth2;
+	else
+	  _FluxL3toGW->matrix[r][c] = max<double>(0,(theta2-ef_poros)*depth2 - (fc-theta3)*depth3);
       }
       theta3 += (theta2 - ef_poros) * depth2 / depth3;
       theta2 = ef_poros;
@@ -119,13 +117,16 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
     if (theta3 > ef_poros) {
       pond += (theta3 - ef_poros) * depth3;
       // Subtract the "excess" infiltration" (as seen by L3)
-      // it is OK because here SrftoL1>=L1toL2>=(L2toL3+L2toGW)
+      // it is OK because here SrftoL1>=L1toL2>=L2toL3>=L3toGW
       _FluxSrftoL1->matrix[r][c] -= (theta3 - ef_poros) * depth3;
       // Tracking
       if(ctrl.sw_trck){
 	_FluxL1toL2->matrix[r][c] -= (theta3 - ef_poros) * depth3;
-	// In L3 it only concerns GW since from the above L2toL3 = 0
-	_FluxL2toGW->matrix[r][c] -= (theta3 - ef_poros) * depth3;
+	_FluxL2toL3->matrix[r][c] -= (theta3 - ef_poros) * depth3;
+	_FluxL3toGW->matrix[r][c] -= (theta3 - ef_poros) * depth3;
+	if(_FluxL3toGW->matrix[r][c] < -RNDOFFERR)
+	  cout << r << " " << c << " | error: in InfiltGreenAmpt1 we have L3toGW ="<<
+	    _FluxL3toGW->matrix[r][c] << endl;
       }
       theta3 = ef_poros;
     }
@@ -187,14 +188,12 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
   }
   if (theta2 > ef_poros) {
     if(ctrl.sw_trck){
+      _FluxL2toL3->matrix[r][c] = (theta2 - ef_poros) * depth2;
       // Partition between percolation to unsaturated (L3) and recharge (GW)
-      if(theta3 >= fc){
-	_FluxL2toL3->matrix[r][c] = 0;
-	_FluxL2toGW->matrix[r][c] = (theta2 - ef_poros) * depth2;
-      } else {
-	_FluxL2toL3->matrix[r][c] = min<double>((theta2-ef_poros)*depth2,(fc-theta3)*depth3);
-	_FluxL2toGW->matrix[r][c] = max<double>(0,(theta2-ef_poros)*depth2 - (fc-theta3)*depth3);
-      }
+      if(theta3 >= fc)
+	_FluxL3toGW->matrix[r][c] = (theta2 - ef_poros) * depth2;
+      else
+	_FluxL3toGW->matrix[r][c] = max<double>(0,(theta2-ef_poros)*depth2 - (fc-theta3)*depth3);
     }
     theta3 += (theta2 - ef_poros) * depth2 / depth3;
     theta2 = ef_poros;
@@ -202,13 +201,17 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
   if (theta3 > ef_poros) {
     pond += (theta3 - ef_poros) * depth3;
     // Subtract the "excess" infiltration" (as seen by L3)
-    // it is OK because here SrftoL1>=L1toL2>=(L2toL3+L2toGW)
+    // it is OK because here SrftoL1>=L1toL2>=L2toL3>=L3toGW
     _FluxSrftoL1->matrix[r][c] -= (theta3 - ef_poros) * depth3;
     // Tracking
     if(ctrl.sw_trck){
       _FluxL1toL2->matrix[r][c] -= (theta3 - ef_poros) * depth3;
-	// In L3 it only concerns GW since from the above L2toL3 = 0
-      _FluxL2toGW->matrix[r][c] -= (theta3 - ef_poros) * depth3 * (1-fc)/ ef_poros;
+      _FluxL2toL3->matrix[r][c] -= (theta3 - ef_poros) * depth3;
+      _FluxL3toGW->matrix[r][c] -= (theta3 - ef_poros) * depth3;
+      if(_FluxL3toGW->matrix[r][c] < -RNDOFFERR)
+	cout << r << " " << c << " | error: in InfiltGreenAmpt2 we have L3toGW ="<<
+	  _FluxL3toGW->matrix[r][c] << endl;
+
     }
     theta3 = ef_poros;
   }
@@ -216,3 +219,4 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
   gw = max<double>(0,(theta3 - fc) * depth3);
 
 }
+ 

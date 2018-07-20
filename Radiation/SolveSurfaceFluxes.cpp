@@ -92,13 +92,15 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
   _FluxSrftoL1->reset(); //
   _FluxL1toL2->reset(); //
   _FluxL2toL3->reset(); //
-  _FluxL2toGW->reset(); //
+  _FluxL3toGW->reset(); //
   }*/
   
-#pragma omp parallel default(shared) private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can, \
-					     evap, infcap, accinf, theta, theta2, theta3, ponding,leak,  gw, za, z0u, zdu, z0o, zdo, wind, treeheight, \
-					     nr, le, sens, grndh, snowh, mltht, dh_snow, p, etc, \
-					     d1, d2, d3, fc)
+#pragma omp parallel default(shared) \
+  private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can, \
+	  evap, infcap, accinf, theta, theta2, theta3, ponding,leak,  \
+	  gw, za, z0u, zdu, z0o, zdo, wind, treeheight,			\
+	  nr, le, sens, grndh, snowh, mltht, dh_snow, p, etc,		\
+	  d1, d2, d3, fc)
   {
     //thre = omp_get_num_threads();
     //#pragma omp single
@@ -134,7 +136,8 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	Tsold = 0;
 	Tdold = 0;
 	dh_snow = 0;
-	
+	BeersK = 0;
+
 	// Infiltration + percolation if exceeds porosity
 	Infilt_GreenAmpt(ctrl, infcap, accinf, theta, theta2, theta3, ponding, gw,
 			 dt, r, c); 

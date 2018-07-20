@@ -168,7 +168,7 @@ try{
     ofOut << "Veget_water_use_param2 = Wp.map " << endl;
     //ofOut << "Fraction_roots_soil_layer_1 = rootfrac1.map " << endl;
     //ofOut << "Fraction_roots_soil_layer_2 = rootfrac2.map " << endl;
-    //ofOut << "Root_profile_coeff = Kroot.map " << endl;
+    ofOut << "Root_profile_coeff = Kroot.map " << endl;
     ofOut << "Soil_bedrock_leakance = leakance.map " << endl << endl;
     ofOut << "Albedo = albedo.map" << endl;
     ofOut << "Surface_emissivity = emissivity.map" << endl;

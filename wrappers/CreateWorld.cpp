@@ -79,12 +79,6 @@ int CreateWorld(char* argv[]){
 		ofSummary << "Run-off2Stream\t";
 		ofSummary << "GW2channel\t";
 		ofSummary << "MassBalError";
-		if(oControl->sw_trck and oControl->sw_2H)
-		  ofSummary << "\td2H_MassBalError";
-		if(oControl->sw_trck and oControl->sw_18O)
-		  ofSummary << "\td18O_MassBalError";
-		if(oControl->sw_trck and oControl->sw_Age)
-		  ofSummary << "\tAge_MassBalError";
 		ofSummary << "\n";
 
 		return EXIT_SUCCESS;

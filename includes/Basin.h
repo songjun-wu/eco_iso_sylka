@@ -72,9 +72,9 @@ class Basin {
 	grid *_soildepth; //soil depth m
 	grid *_depth_layer1; //depth of layer 1. 0.1 m by default
 	grid *_depth_layer2; //depth of layer 2. Depth of layer 3 is calculated form depth
-	//grid *_Kroot; // exponential root profile shape (m-1)
-	//grid *_rootfrac1; //fraction of roots in soil layer 1
-	//grid *_rootfrac2; //fraction of roots in soil layer 2. For layer three it is calculated from layer 1 and 2
+	grid *_Kroot; // exponential root profile shape (m-1)
+	grid *_rootfrac1; //fraction of roots in soil layer 1
+	grid *_rootfrac2; //fraction of roots in soil layer 2. For layer three it is calculated from layer 1 and 2
 	grid *_fieldcap; //field capacity volumetric
 	grid *_paramWc; //empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
 	grid *_paramWp; ////empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
@@ -152,13 +152,12 @@ class Basin {
 	grid *_FluxInfilt; // timestep-summed infiltration from first layer
 	grid *_FluxL1toL2; // percolation L1 to L2
 	grid *_FluxL2toL3; // percolation L2 to L3
-	grid *_FluxL2toGW; // recharge L3 to groundwater
+	grid *_FluxL3toGW; // recharge L3 to groundwater
 	// Vertical (intra-cell) fluxes upwards
 	grid *_FluxExfilt; // first layer to surface (return flow)
 	grid *_FluxL2toL1; // capillary + return flow, L2 to L1
 	grid *_FluxL3toL2; // capillary + return flow, L2 to L3
-	grid *_FluxGWtoL2; // return flow, groundwater to L2
-	grid *_FluxGWtoL3; // discharge, groundwater to L2 unsaturated
+	grid *_FluxGWtoL3; // return flow, groundwater to L3
 	// Other intra-cell fluxes
 	grid *_FluxGWtoChn; // discharge, groundwater to channel
 	grid *_FluxSrftoChn; // overland flow to channel
@@ -558,14 +557,14 @@ public:
 	grid *getInfiltCap() const {
 		return _infilt_cap;
 	}
-	/*
+	
 	grid *getRootFrac1() const {
 		return _rootfrac1;
 	}
 	grid *getRootFrac2() const {
 		return _rootfrac2;
 	}
-	*/
+	
 	grid *getEvaporation() const {
 		return _Evaporation;
 	}
@@ -696,17 +695,14 @@ public:
 	grid *getFluxL2toL3() const {
 		return _FluxL2toL3;
 	}
-	grid *getFluxL2toGW() const {
-		return _FluxL2toGW;
+	grid *getFluxL3toGW() const {
+		return _FluxL3toGW;
 	}
 	grid *getFluxL2toL1() const {
 		return _FluxL2toL1;
 	}
-	/* grid *getFluxL3toL2() const { */
-	/* 	return _FluxL3toL2; */
-	/* } */
-	grid *getFluxGWtoL2() const {
-		return _FluxGWtoL2;
+	grid *getFluxL3toL2() const {
+	 	return _FluxL3toL2; 
 	}
 	grid *getFluxGWtoL3() const {
 		return _FluxGWtoL3;
@@ -756,9 +752,6 @@ public:
 	grid *getEsoil(UINT4 n) const;
 
 	grid *getLeafWaterPotential(UINT4 n) const;
-
-	grid *getRootFrac1(UINT4 n) const;
-	grid *getRootFrac2(UINT4 n) const;
 
 	// Addition tracking
 	// ---------------------------------

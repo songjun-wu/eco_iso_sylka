@@ -34,22 +34,3 @@ void Budget::TotalPrecipitation(const grid* map, const Atmosphere *b)
 {
   precipitation += AccountFluxes(map, b);
 }
-
-void Budget::TotalPrecipitation_d2H(const grid* map1, const grid* map2, const Atmosphere *atm)
-{
-  //precipitation_d2H += AccountTrckFluxes(map1, map2, atm);
-  precipitation_d2H = AccountTrckFluxes(map1, map2, atm);
-}
-
-void Budget::TotalPrecipitation_d18O(const grid* map1, const grid* map2, const Atmosphere *atm)
-{
-  //precipitation_d18O += AccountTrckFluxes(map1, map2, atm);
-  precipitation_d18O = AccountTrckFluxes(map1, map2, atm);
-}
-
-// the water that already entered is kept in the balance and "aging" as well
-void Budget::TotalPrecipitation_Age()
-{
-  //precipitation_Age += precipitation * dt / 86400;
-  precipitation_Age = 0;
-}
