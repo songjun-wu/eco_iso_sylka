@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lcsfosx -lboost_serialization -larmadillo
+LIBS := -lcsfosx -lboost_serialization -larmadillo -llapack -lblas
 
