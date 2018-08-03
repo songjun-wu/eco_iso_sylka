@@ -88,7 +88,7 @@ struct Control{
   string fn_depth_layer2;  //depth of layer 2 in m. Layer 3 evaluated from soil depth
   //string fn_root_fraction_lay1; //fraction of roots in soil layer 1
   //string fn_root_fraction_lay2; // fraction of roots in soil layer 2. Soil layer 3 implied
-  string fn_Kroot; // coefficient for exponential root profile, in m-1
+  //string fn_Kroot; // coefficient for exponential root profile, in m-1
   string fn_bedrock_leak; //bedrock leakance in s-1
   string fn_paramWc; //empirical parameter in water efficiency function for GPP calculation (see Landsber and Waring, 1997 or TRIPLEX paper
   string fn_paramWp;//empirical parameter in water efficiency function for GPP calculation (see Landsber and Waring, 1997 or TRIPLEX paper
@@ -192,6 +192,8 @@ struct Control{
   
   bool Rep_Veget_frac;
   bool Rep_Stem_Density;
+  bool Rep_RootFrac1Species;
+  bool Rep_RootFrac2Species;
   bool Rep_Leaf_Area_Index;
   bool Rep_Stand_Age;
   bool Rep_Canopy_Conductance;
@@ -272,6 +274,8 @@ struct Control{
   
   bool RepTs_Veget_frac;
   bool RepTs_Stem_Density;
+  bool RepTs_RootFrac1Species;
+  bool RepTs_RootFrac2Species;
   bool RepTs_Leaf_Area_Index;
   bool RepTs_Canopy_Conductance;
   bool RepTs_GPP;

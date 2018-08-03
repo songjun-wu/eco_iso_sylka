@@ -59,7 +59,9 @@ int Grove::CreateGrids(grid *base){
 		_Transpiration = new grid (*base);
 		_Esoil = new grid (*base);
 		_LeafWatPot = new grid (*base);
-	
+		_rootfrac1 = new grid (*base);
+		_rootfrac2 = new grid (*base);
+
 	}catch(const exception& e){
 
 		cerr << "Failed allocate memory for Grove grid object \n" << e.what() << endl;

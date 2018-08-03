@@ -155,6 +155,10 @@ public:
 			return _species[n].KBeers;
     }
     
+    REAL8 getKRoot(UINT4 n) const {
+      return _species[n].Kroot;
+    }
+
     REAL8 getSperry_d(UINT4 n, UINT4 row, UINT4 col) const {
     	return _species[n].sperry_d;
     }
@@ -187,6 +191,13 @@ public:
     REAL8 getLeafWaterPotential(UINT4 n, UINT4 row, UINT4 col) const {
     	return _species[n]._LeafWatPot->matrix[row][col];
     }
+    grid *getRootFrac1(UINT4 n) const {
+    	return _species[n]._rootfrac1;
+    }
+    grid *getRootFrac2(UINT4 n) const {
+    	return _species[n]._rootfrac2;
+    }
+
 
     grid *getLAISpeciesMap(UINT4 n) const {
     		return _species[n]._LAI;
@@ -273,6 +284,12 @@ public:
     }
    void setETSpecies(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
              _species[n]._ET->matrix[row][col] = value;
+    }
+   void setRootFrac1Species(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+     _species[n]._rootfrac1->matrix[row][col] = value;
+    }
+   void setRootFrac2Species(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
+     _species[n]._rootfrac2->matrix[row][col] = value;
     }
 
     // -- Tracking

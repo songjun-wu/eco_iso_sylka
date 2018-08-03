@@ -58,6 +58,8 @@ Grove::Grove(){
 	_Transpiration = NULL;
 	_Esoil = NULL;
 	_LeafWatPot = NULL;
+	_rootfrac1 = NULL;
+	_rootfrac2 = NULL;
 
 	// Tracking
 	_d2Hcanopy = NULL;

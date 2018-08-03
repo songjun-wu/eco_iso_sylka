@@ -84,7 +84,7 @@ Basin::Basin(Control &ctrl)
 
 		//_rootfrac1 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay1, ctrl.MapType);
 		//_rootfrac2 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay2, ctrl.MapType);
-		_Kroot = new grid(ctrl.path_BasinFolder + ctrl.fn_Kroot, ctrl.MapType);
+		//_Kroot = new grid(ctrl.path_BasinFolder + ctrl.fn_Kroot, ctrl.MapType);
 
 		_snow = new grid(ctrl.path_BasinFolder + ctrl.fn_swe, ctrl.MapType);
 		_albedo = new grid(ctrl.path_BasinFolder + ctrl.fn_albedo, ctrl.MapType);
@@ -117,8 +117,8 @@ Basin::Basin(Control &ctrl)
 		_Temp_s = new grid(*_DEM);
 		//_Temp_s_old = new grid(*_DEM);
 		_CanopyStorage = new grid(*_DEM);
-		_rootfrac1 = new grid(*_DEM);
-		_rootfrac2 = new grid(*_DEM);
+		//_rootfrac1 = new grid(*_DEM);
+		//_rootfrac2 = new grid(*_DEM);
 
 		_IsSaturated = new grid(*_DEM);  //saturation map
 		_soilmoist_av = new grid(*_DEM); //average volumetric soil moisture of the first 10 cm of the soil as calculated using a hydrstatic equilibrium moisture profile
@@ -255,12 +255,12 @@ Basin::Basin(Control &ctrl)
 		delete _depth_layer1;
 	if(_depth_layer2)
 		delete _depth_layer2;
-	if(_rootfrac1)
-		delete _rootfrac1;
-	if(_rootfrac2)
-		delete _rootfrac2;
-	if(_Kroot)
-	  delete _Kroot;
+	//if(_rootfrac1)
+	//	delete _rootfrac1;
+	//if(_rootfrac2)
+	//	delete _rootfrac2;
+	//if(_Kroot)
+	//	delete _Kroot;
 	if(_fieldcap)
 		delete _fieldcap;
 	if(_paramWc)

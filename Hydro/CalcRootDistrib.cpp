@@ -34,10 +34,15 @@
 int Basin::CalcRootDistrib(){
 
   UINT4 r, c;
+  UINT4 s, nsp;
+  REAL8 frac1, frac2;
   REAL8 k, d1, d2, d;
   
+  nsp = fForest->getNumSpecies();
+
 #pragma omp parallel default(none)		\
-  private(r,c,k,d,d1,d2) 
+  private(s,r,c,k,d,d1,d2,frac1,frac2) \
+  shared(nsp)
   { 
 #pragma omp for nowait
 
@@ -49,10 +54,27 @@ int Basin::CalcRootDistrib(){
 	d = _soildepth->matrix[r][c];
 	d1 = _depth_layer1->matrix[r][c];
 	d2 = _depth_layer2->matrix[r][c];
-      	
-	k = _Kroot->matrix[r][c];
-	_rootfrac1->matrix[r][c] = (1 - expl(-k*d1))/(1-expl(-k*d));
-	_rootfrac2->matrix[r][c] = (expl(-k*d1) - expl(-k*(d1+d2)))/(1-expl(-k*d));
+      
+	for (s = 0; s < nsp; s++) {
+
+	  if (s == nsp - 1) { //if this is bare ground set fracs to 0
+	    frac1 = 0;
+	    frac2 = 0;
+	  } 
+	  else {
+	    // use exponential profile
+	    k = fForest->getKRoot(s);
+	    frac1 = (1 - expl(-k*d1))/(1-expl(-k*d));
+	    frac2 = (expl(-k*d1) - expl(-k*(d1+d2)))/(1-expl(-k*d));
+	  }
+
+	  fForest->setRootFrac1Species(s, r, c, frac1);
+	  fForest->setRootFrac2Species(s, r, c, frac2);
+	} 
+	
+	//k = _Kroot->matrix[r][c];
+	//_rootfrac1->matrix[r][c] = (1 - expl(-k*d1))/(1-expl(-k*d));
+	//_rootfrac2->matrix[r][c] = (expl(-k*d1) - expl(-k*(d1+d2)))/(1-expl(-k*d));
 
       } // for
   } //end omp parallel block

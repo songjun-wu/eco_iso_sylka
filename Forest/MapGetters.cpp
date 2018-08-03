@@ -112,6 +112,12 @@ grid *Basin::getEsoil(UINT4 n) const {
 grid *Basin::getLeafWaterPotential(UINT4 n) const {
 	return fForest->getLeafWaterPotSpeciesMap(n);
 }
+grid *Basin::getRootFrac1(UINT4 n) const {
+  return fForest->getRootFrac1(n);
+}
+grid *Basin::getRootFrac2(UINT4 n) const {
+  return fForest->getRootFrac2(n);
+}
 
 // -- Tracking: calls tracking data contained in forest class
 // 2H

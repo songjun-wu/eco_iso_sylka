@@ -83,8 +83,10 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       theta = bas.getSoilMoist1()->matrix[r][c]; // moisture in soil L1 at time t
       theta2 = bas.getSoilMoist2()->matrix[r][c];
       theta3 = bas.getSoilMoist3()->matrix[r][c];
-      froot1 = bas.getRootFrac1()->matrix[r][c];
-      froot2 = bas.getRootFrac2()->matrix[r][c];    
+      froot1 = _species[j]._rootfrac1->matrix[r][c];
+      froot2 = _species[j]._rootfrac2->matrix[r][c];
+      //froot1 = bas.getRootFrac1()->matrix[r][c];
+      //froot2 = bas.getRootFrac2()->matrix[r][c];    
       froot3 = 1-froot1-froot2;
       UsableTheta = (max<REAL8>(0,(theta-theta_wp)* froot1) +
 		     max<REAL8>(0,(theta2-theta_wp)* froot2) +

@@ -72,9 +72,9 @@ class Basin {
 	grid *_soildepth; //soil depth m
 	grid *_depth_layer1; //depth of layer 1. 0.1 m by default
 	grid *_depth_layer2; //depth of layer 2. Depth of layer 3 is calculated form depth
-	grid *_Kroot; // exponential root profile shape (m-1)
-	grid *_rootfrac1; //fraction of roots in soil layer 1
-	grid *_rootfrac2; //fraction of roots in soil layer 2. For layer three it is calculated from layer 1 and 2
+	//grid *_Kroot; // exponential root profile shape (m-1)
+	//grid *_rootfrac1; //fraction of roots in soil layer 1
+	//grid *_rootfrac2; //fraction of roots in soil layer 2. For layer three it is calculated from layer 1 and 2
 	grid *_fieldcap; //field capacity volumetric
 	grid *_paramWc; //empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
 	grid *_paramWp; ////empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
@@ -557,14 +557,14 @@ public:
 	grid *getInfiltCap() const {
 		return _infilt_cap;
 	}
-	
+	/*
 	grid *getRootFrac1() const {
 		return _rootfrac1;
 	}
 	grid *getRootFrac2() const {
 		return _rootfrac2;
 	}
-	
+	*/
 	grid *getEvaporation() const {
 		return _Evaporation;
 	}
@@ -752,6 +752,9 @@ public:
 	grid *getEsoil(UINT4 n) const;
 
 	grid *getLeafWaterPotential(UINT4 n) const;
+
+	grid *getRootFrac1(UINT4 n) const;
+	grid *getRootFrac2(UINT4 n) const;
 
 	// Addition tracking
 	// ---------------------------------

@@ -48,8 +48,8 @@ int Forest::SetSpeciesParameters(Control &ctrl){
     cout << "ERROR: number of species in config.ini larger than species provided in table " << ctrl.fn_paramtable << endl;
     throw(EXIT_FAILURE);
   }
-  if(_tableParams->c !=39){
-    cout << "ERROR: number of parameters in " << ctrl.fn_paramtable << " is different from the 39 parameters expected"  << endl;
+  if(_tableParams->c !=40){
+    cout << "ERROR: number of parameters in " << ctrl.fn_paramtable << " is different from the 40 parameters expected"  << endl;
     throw(EXIT_FAILURE);
   }
 
@@ -91,14 +91,15 @@ int Forest::SetSpeciesParameters(Control &ctrl){
     _species[i].emissivity = _tableParams->matrix[i][33];
     _species[i].KBeers = _tableParams->matrix[i][34];
     _species[i].beta = _tableParams->matrix[i][35];
+    _species[i].Kroot = _tableParams->matrix[i][36];
 
     //enter section for grasses if is_grass switch is on
-    _species[i].is_grass = _tableParams->matrix[i][36];
+    _species[i].is_grass = _tableParams->matrix[i][37];
     /*The next two lines reuse Fprn and Fpra in a new place of the SpeciesParam file [30] and [31]
      * to avoid using the same variable in the SpeciesParam file for tree and grass parameters*/
     if(_species[i].is_grass){
-      _species[i].Fprn = _tableParams->matrix[i][37]; //This reassigns dead grass leaf turnover rate to Fprn if is_grass=1.
-      _species[i].Fpra = _tableParams->matrix[i][38];//This reassign dead grass leaf turnover adjustment rate to reuse Fpra if is_grass=1
+      _species[i].Fprn = _tableParams->matrix[i][38]; //This reassigns dead grass leaf turnover rate to Fprn if is_grass=1.
+      _species[i].Fpra = _tableParams->matrix[i][39];//This reassign dead grass leaf turnover adjustment rate to reuse Fpra if is_grass=1
     }
 
 

@@ -153,7 +153,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_depth_layer2, "Depth_soil_layer_2");
 	//Config.readInto(fn_root_fraction_lay1, "Fraction_roots_soil_layer_1");
 	//Config.readInto(fn_root_fraction_lay2, "Fraction_roots_soil_layer_2");
-	Config.readInto(fn_Kroot, "Root_profile_coeff");
+	//Config.readInto(fn_Kroot, "Root_profile_coeff");
 	Config.readInto(fn_soilmoist2, "Soil_moisture_2");
 	Config.readInto(fn_soilmoist3, "Soil_moisture_3");
 	Config.readInto(fn_bedrock_leak, "Soil_bedrock_leakance");
@@ -211,6 +211,8 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 
 	Rep_Veget_frac = Config.read<bool>("Report_Veget_frac");
 	Rep_Stem_Density = Config.read<bool>("Report_Stem_Density");
+	Rep_RootFrac1Species = Config.read<bool>("Report_RootFracL1_species");
+	Rep_RootFrac2Species = Config.read<bool>("Report_RootFracL2_species");
 	Rep_Leaf_Area_Index = Config.read<bool>("Report_Leaf_Area_Index");
 	Rep_Stand_Age = Config.read<bool>("Report_Stand_Age");
 	Rep_Canopy_Conductance = Config.read<bool>("Report_Canopy_Conductance");
@@ -290,6 +292,8 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 
 	RepTs_Veget_frac = Config.read<bool>("Ts_Veget_frac");
 	RepTs_Stem_Density = Config.read<bool>("Ts_Stem_Density");
+	RepTs_RootFrac1Species = Config.read<bool>("Ts_RootFracL1_species");
+	RepTs_RootFrac2Species = Config.read<bool>("Ts_RootFracL2_species");
 	RepTs_Leaf_Area_Index = Config.read<bool>("Ts_Leaf_Area_Index");
 	RepTs_Canopy_Conductance = Config.read<bool>("Ts_Canopy_Conductance");
 	RepTs_GPP = Config.read<bool>("Ts_GPP");
