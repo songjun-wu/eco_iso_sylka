@@ -34,3 +34,28 @@ void Budget::TotalGrndFlow(const vectCells *timeseries, const Basin *b)
 {
 	gwtrflow += AccountFluxes(timeseries, b);
 }
+
+void Budget::TotalGrndFlow_d2H(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  gwtrflow_d2H += AccountTrckFluxes(timeseries1, timeseries2);
+  //gwtrflow_d2H = AccountTrckFluxes(timeseries1, timeseries2);
+}
+
+void Budget::TotalGrndFlow_d18O(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  gwtrflow_d18O += AccountTrckFluxes(timeseries1, timeseries2);
+  //gwtrflow_d18O = AccountTrckFluxes(timeseries1, timeseries2);
+}
+
+// the water that already left is kept in the balance and "aging" as well
+void Budget::TotalGrndFlow_Age(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  gwtrflow_Age += gwtrflow * dt / 86400 + AccountTrckFluxes(timeseries1, timeseries2);
+  //gwtrflow_Age = AccountTrckFluxes(timeseries1, timeseries2);
+}
+
+// Instantaneous age reporting
+void Budget::InstGrndFlow_Age(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  AgeGWOut = AccountTrckFluxes2(timeseries1, timeseries2);
+}

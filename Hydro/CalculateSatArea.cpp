@@ -52,7 +52,7 @@ int Basin::CalculateSatArea(Atmosphere &atm, Control &ctrl) {
       
       //surface routing stuff
       theta1 = _soilmoist1->matrix[r][c];
-      poros = _porosity->matrix[r][c];
+      poros = _porosityL1->matrix[r][c];
       
       if (fabs(poros - theta1) < RNDOFFERR)
 	IsSaturated = 1;

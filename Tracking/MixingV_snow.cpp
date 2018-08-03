@@ -31,75 +31,77 @@
 #include "Basin.h"
 
 void Tracking::MixingV_snow(Atmosphere &atm, Basin &bsn, Control &ctrl,
-			    double &dh_snow, int r, int c) //time step
+			    double &h, double &dh, int r, int c) //time step
 {
   
-  double V_new;
-  double snow_old = bsn.getSnowWaterEquiv()->matrix[r][c];
-  double snow_in = bsn.getFluxUptoSnow()->matrix[r][c];
-  double pond_old = bsn.getPondingWater()->matrix[r][c];
-  
-  // - in snowpack (snowfall in + snowmelt out), considering that snowmelt "flushes" the most recent snowfall first, without mixing
-  // - in the surface pool, mixing of snowmelt
-  
-  // Case where there is more snowfall than snowmelt: snowpack mixed, snowmelt has snowfall signature
-  if(snow_in > dh_snow){
+  double h_eff; // Effective SWE used for mixing
+  double snow_in = bsn.getFluxCnptoSnow()->matrix[r][c];
 
-    V_new = snow_in - dh_snow;
+  // - in snowpack (snowfall in + snowmelt out), 
+  // considering that snowmelt "flushes" the most recent snowfall first, without mixing
+  if(abs(h) < RNDOFFERR){
+    if(ctrl.sw_2H)
+      _d2Hsnowpack->matrix[r][c] = -1000;
+    if(ctrl.sw_18O)
+      _d18Osnowpack->matrix[r][c] = -1000;
+    if(ctrl.sw_Age)
+      _Agesnowpack->matrix[r][c] = 0.0;
+  }
+
+  // Case where there is more snowfall than snowmelt: 
+  // snowpack mixed, snowmelt has snowfall signature
+  if(h > RNDOFFERR and snow_in > dh){
+
+    h_eff = snow_in - dh;
 
     if(ctrl.sw_2H){
       // Snowpack: last (same timestep) in, first melt
-      _d2Hsnowpack->matrix[r][c] = InputMix(snow_old, _d2Hsnowpack->matrix[r][c],
-					   V_new, atm.getd2Hprecip()->matrix[r][c]);
-      // Surface: snowfall (=rain) signature
-      _d2Hsurface->matrix[r][c] = InputMix(pond_old, _d2Hsurface->matrix[r][c],
-					  dh_snow, atm.getd2Hprecip()->matrix[r][c]);
+      _d2Hsnowpack->matrix[r][c] = InputMix(h, _d2Hsnowpack->matrix[r][c],
+					    h_eff, atm.getd2Hprecip()->matrix[r][c]);
+      // Snowmelt: snowfall (=rain) signature
+      _d2Hsnowmelt->matrix[r][c] = atm.getd2Hprecip()->matrix[r][c];
     }
+
     if(ctrl.sw_18O){
       // Snowpack: last (same timestep) in, first melt
-      _d18Osnowpack->matrix[r][c] = InputMix(snow_old, _d18Osnowpack->matrix[r][c],
-					     V_new, atm.getd18Oprecip()->matrix[r][c]);
-      // Surface: snowfall (=rain) signature
-      _d18Osurface->matrix[r][c] = InputMix(pond_old, _d18Osurface->matrix[r][c],
-					    dh_snow, atm.getd18Oprecip()->matrix[r][c]);
+      _d18Osnowpack->matrix[r][c] = InputMix(h, _d18Osnowpack->matrix[r][c],
+					     h_eff, atm.getd18Oprecip()->matrix[r][c]);
+      // Snowmelt: snowfall (=rain) signature
+      _d18Osnowmelt->matrix[r][c] = atm.getd18Oprecip()->matrix[r][c];
     }
+
     if(ctrl.sw_Age){
       // Snowpack: last (same timestep) in, first melt
-      _Agesnowpack->matrix[r][c] = InputMix(snow_old, _Agesnowpack->matrix[r][c],
-					    V_new, 0.0);
-      // Surface: snowfall (=rain) signature
-      _Agesurface->matrix[r][c] = InputMix(pond_old, _Agesurface->matrix[r][c],
-					   dh_snow, 0.0);
+      _Agesnowpack->matrix[r][c] = InputMix(h, _Agesnowpack->matrix[r][c], h_eff, 0.0);
+      // Snowmelt: age 0
+      _Agesnowmelt->matrix[r][c] = 0.0;
     }
 
   } else {
 
-    // Case where there is more snowmelt than snowfall: no mixing in snowpack, snowmelt has mixed signature
-    V_new = dh_snow - snow_in;
+    // Case where there is more snowmelt than snowfall: 
+    // no mixing in snowpack, snowmelt has mixed signature
+    h_eff = dh - snow_in;
 
     if(ctrl.sw_2H){
       // Snowpack: no change (all recent snow has melted)
-      // Surface: weighted snowfall (=rain) signature and previous snowpack
-      _d2Hsurface->matrix[r][c] = InputMix(pond_old, _d2Hsurface->matrix[r][c], dh_snow,
-					  // Ugly and "convoluted", but no waste of temp variables
-					  InputMix(V_new, _d2Hsnowpack->matrix[r][c],
-						   snow_in, atm.getd2Hprecip()->matrix[r][c]));
-    }
+      // Snowmelt: mix of snowpack and throughfall
+      _d2Hsnowmelt->matrix[r][c] = InputMix(h_eff, _d2Hsnowpack->matrix[r][c],
+					    snow_in, atm.getd2Hprecip()->matrix[r][c]);
+    }    
     if(ctrl.sw_18O){
       // Snowpack: no change (all recent snow has melted)
-      // Surface: weighted snowfall (=rain) signature and previous snowpack
-      _d18Osurface->matrix[r][c] = InputMix(pond_old, _d18Osurface->matrix[r][c], dh_snow,
-					    // Ugly and "convoluted", but no waste of temp variables
-					    InputMix(V_new, _d18Osnowpack->matrix[r][c],
-						     snow_in, atm.getd18Oprecip()->matrix[r][c]));
+      // Snowmelt: mix of snowpack and throughfall
+      _d18Osnowmelt->matrix[r][c] = InputMix(h_eff, _d18Osnowpack->matrix[r][c],
+					     snow_in, atm.getd18Oprecip()->matrix[r][c]);
     }
+    
     if(ctrl.sw_Age){
       // Snowpack: no change (all snow in melted)
-      // Surface: weighted snowfall (=rain) signature and previous snowpack
-      _Agesurface->matrix[r][c] = InputMix(pond_old, _Agesurface->matrix[r][c], dh_snow,
-					   // Ugly and "convoluted", but no waste of temp variables
-					   InputMix(V_new, _Agesnowpack->matrix[r][c],
-						    snow_in, 0.0));
+      // Snowmelt: mix of snowpack and throughfall
+      _Agesnowmelt->matrix[r][c] = InputMix(h_eff, _Agesnowpack->matrix[r][c],
+					    snow_in, 0.0);
+      
     }
   }
   

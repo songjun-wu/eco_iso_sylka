@@ -50,18 +50,30 @@ class Tracking {
   grid *_d2Hprecip, *_d18Oprecip;
   grid *_d2Hcanopy_sum, *_d18Ocanopy_sum, *_Agecanopy_sum; // Canopy (avg over veg fractions)
   grid *_d2Hsnowpack, *_d18Osnowpack, *_Agesnowpack; // Snowpack
+  grid *_d2Hsnowmelt, *_d18Osnowmelt, *_Agesnowmelt; // Snowmelt
   grid *_d2Hsurface,  *_d18Osurface, *_Agesurface; // Ponding
   grid *_d2Hsoil1,    *_d18Osoil1, *_Agesoil1; // Vadose layer 1
   grid *_d2Hsoil2,    *_d18Osoil2, *_Agesoil2; // Vadose layer 2
   grid *_d2Hsoil_12,  *_d18Osoil_12, *_Agesoil_12; // Weighted average L1+L2
   grid *_d2Hsoil3,    *_d18Osoil3, *_Agesoil3; // Vadose layer 3
   grid *_d2HsoilAv,   *_d18OsoilAv, *_AgesoilAv; // Vadose weighted average
+  grid *_d2H_MW1,    *_d18O_MW1, *_Age_MW1; // Mobile water water 1
+  grid *_d2H_MW2,    *_d18O_MW2, *_Age_MW2; // Mobile water water 2
+  grid *_d2H_TB1,    *_d18O_TB1, *_Age_TB1; // Tightly-bound water 1
+  grid *_d2H_TB2,    *_d18O_TB2, *_Age_TB2; // Tightly-bound water 2
+  grid *_Age_MW12, *_Age_TB12;
   grid *_d2Hgroundwater, *_d18Ogroundwater, *_Agegroundwater; // Groundwater
   // Signature of outgoing water
   grid *_d2HevapS_sum, *_d18OevapS_sum, *_AgeevapS_sum;
   grid *_d2HevapI_sum, *_d18OevapI_sum, *_AgeevapI_sum;
   grid *_d2HevapT_sum, *_d18OevapT_sum, *_AgeevapT_sum;
   grid *_d2Hleakage, *_d18Oleakage, *_Ageleakage; // Groundwater
+  // Signature of outgoing water
+  grid *_Fd2HLattoSrf, *_Fd18OLattoSrf, *_FAgeLattoSrf;
+  grid *_Fd2HLattoChn, *_Fd18OLattoChn, *_FAgeLattoChn;
+  grid *_Fd2HLattoGW, *_Fd18OLattoGW, *_FAgeLattoGW;
+  // Internal age contributions
+  grid *_AgeGWtoChn, *_AgeSrftoChn, *_AgeRecharge;
 
   //vectors containing signature of water output for each cell with no drainage (ldd value of 5). 
   // The vectCell structure contains the row and col  
@@ -82,18 +94,13 @@ class Tracking {
   //Destructor
   ~Tracking();
   
-  /*int MixingV_evapT(Basin &bsn, Control &ctrl,
-    REAL8 &pTrp1, REAL8 &pTrp2, REAL8 &pTrp3,
-    REAL8 &2HevapT_f, REAL8 &18OevapT_f, REAL8 &AgeevapT_f, 
-    REAL8 &p, int s, int r, int c);*/
-  
   void MixingV_down(Basin &bsn, Control &ctrl, 
 		    double &d1, double &d2, double &d3, double &fc,
-		    double &leak, int r, int c, bool reinf);
+		    double &leak, int r, int c, int step);
   
-  void MixingV_up(Basin &bsn, Control &ctrl, 
-		  double &d1, double &d2, double &d3, double &fc,
-		  int r, int c);
+  void MixingV_latup(Basin &bsn, Control &ctrl, 
+		     double &d1, double &d2, double &d3, double &fc,
+		     double &Qk1, double &dtdx, double &dx, int r, int c);
   
   void MixingV_evapS(Atmosphere &atm, Basin &bsn, Control &ctrl, 
 		     double &d1, double &theta_new,
@@ -101,16 +108,19 @@ class Tracking {
 		     double &d2Hevap, double &d18Oevap, double &Agevap,
 		     int r, int c);
   
-  void MixingV_seep(Basin &bsn, Control &ctrl, double &ponding, double &qc, int r, int c);
-  
-  void MixingV_snow(Atmosphere &atm, Basin &bsn, Control &ctrl, double &dh_snow, int r, int c);
+  void MixingV_snow(Atmosphere &atm, Basin &bsn, Control &ctrl, double &h, double &dh, int r, int c);
   
   void MixingV_through(Atmosphere &atm, Basin &bsn, Control &ctrl, double &rain, double &p, int r, int c);
   
-  void MixingH(Basin &bsn, Control &ctrl, 
-	       double &hj1i1, double &alpha, double &ponding, double &Qk1,
-	       double &dtdx, double &dx, int r, int c, int rr, int cc);
+  void FCdownstream(Basin &bsn, Control &ctrl, 
+		    double &Qk1, double &dtdx, double &dx, int r, int c, int rr, int cc);
 
+  void MixingTPD_postET(Basin &bsn, Control &ctrl,
+			double &dtheta, double &dtheta2,
+			double &kTB_L1, double &kTB_L2,
+			double &kMW_L1, double &kMW_L2,
+			int r, int c);
+  
   // Outlet lateral fluxes' signatures
   void OutletVals(Control &ctrl, int mode, int r, int c);
 
@@ -138,10 +148,14 @@ class Tracking {
 			      const grid &mL3, const grid &mGW, grid &mO, int iso);
   //int ReadConfigTrck(Control &ctrl, string confilename = "configTrck.ini");
   
+  // Conversion from soil to two-pore and vice-versa
+  int CalcInitTPD(Basin &bsn, Control &ctrl);
+  int CalcTPDtoLayers(Basin &bsn, Control &ctrl);
+
   //Getters 2H (ratios)
-  grid *getd2Hprecip() const {
-    return _d2Hprecip;
-  }
+  //grid *getd2Hprecip() const {
+  //  return _d2Hprecip;
+  //}
   grid *getd2Hcanopy_sum() const {
     return _d2Hcanopy_sum;
   }
@@ -187,13 +201,25 @@ class Tracking {
   const vectCells *getd2HGwtrOutput() const {
     return &_d2HGwtrOutput;
   }
+  grid *getd2H_MW1() const {
+    return _d2H_MW1;
+  }
+  grid *getd2H_MW2() const {
+    return _d2H_MW2;
+  }
+  grid *getd2H_TB1() const {
+    return _d2H_TB1;
+  }
+  grid *getd2H_TB2() const {
+    return _d2H_TB2;
+  }
   // -------
   
   
   // 18O
-  grid *getd18Oprecip() const {
-    return _d18Oprecip;
-  }
+  //grid *getd18Oprecip() const {
+  //  return _d18Oprecip;
+  //}
   grid *getd18Ocanopy_sum() const {
     return _d18Ocanopy_sum;
   }
@@ -239,6 +265,18 @@ class Tracking {
   const vectCells *getd18OGwtrOutput() const {
     return &_d18OGwtrOutput;
   }
+  grid *getd18O_MW1() const {
+    return _d18O_MW1;
+  }
+  grid *getd18O_MW2() const {
+    return _d18O_MW2;
+  }
+  grid *getd18O_TB1() const {
+    return _d18O_TB1;
+  }
+  grid *getd18O_TB2() const {
+    return _d18O_TB2;
+  }
   // -------
     
   // Age
@@ -281,11 +319,39 @@ class Tracking {
   grid *getAgeleakage() const {
     return _Ageleakage;
   }
+  grid *getAgeGWtoChn() const {
+    return _AgeGWtoChn;
+  }
+  grid *getAgeSrftoChn() const {
+    return _AgeSrftoChn;
+  }
+  grid *getAgeRecharge() const {
+    return _AgeRecharge;
+  }
+
   const vectCells *getAgeOvlndOutput() const {
     return &_AgeOvlndOutput;
   }  
   const vectCells *getAgeGwtrOutput() const {
     return &_AgeGwtrOutput;
+  }
+  grid *getAge_MW1() const {
+    return _Age_MW1;
+  }
+  grid *getAge_MW2() const {
+    return _Age_MW2;
+  }
+  grid *getAge_MW12() const {
+    return _Age_MW12;
+  }
+  grid *getAge_TB1() const {
+    return _Age_TB1;
+  }
+  grid *getAge_TB2() const {
+    return _Age_TB2;
+  }
+  grid *getAge_TB12() const {
+    return _Age_TB12;
   }
   // ---
   
@@ -321,6 +387,11 @@ class Tracking {
   void setd2HevapT_sum(UINT4 row, UINT4 col, REAL8 value) {
     _d2HevapT_sum->matrix[row][col] = value;
   }
+  void resetFd2HLat() { // reset summed lateral contributions
+    _Fd2HLattoGW->reset();
+    _Fd2HLattoChn->reset();
+    _Fd2HLattoSrf->reset();
+  }
 
   // - 18O
   void setd18Ocanopy_sum(UINT4 row, UINT4 col, REAL8 value) {
@@ -352,6 +423,11 @@ class Tracking {
   }
   void setd18OevapT_sum(UINT4 row, UINT4 col, REAL8 value) {
     _d18OevapT_sum->matrix[row][col] = value;
+  }
+  void resetFd18OLat() { // reset summed lateral contributions
+    _Fd18OLattoGW->reset();
+    _Fd18OLattoChn->reset();
+    _Fd18OLattoSrf->reset();
   }
 
   // - Age
@@ -385,10 +461,17 @@ class Tracking {
   void setAgeevapT_sum(UINT4 row, UINT4 col, REAL8 value) {
     _AgeevapT_sum->matrix[row][col] = value;
   }
-  
+  void resetFAgeLat() { // reset summed lateral contributions
+    _FAgeLattoGW->reset();
+    _FAgeLattoChn->reset();
+    _FAgeLattoSrf->reset();
+  }
+
+  // ---- Mixing equations ------------------------------------------------------------------
   // When there's only input
   double InputMix(double hold, double iold, double qin, double iin){
-    double inew;
+
+    double inew = 0;
     // Assign fluxes
     if(hold + qin > RNDOFFERR)
       inew = (iold*hold + iin*qin)/ (hold + qin);
@@ -397,17 +480,42 @@ class Tracking {
     return inew;
   }
   
-  // When one input one output
-  double InOutMix(double hold, double iold, double qin, double iin, double qout){
-    double inew;
-    // Assign fluxes: implicit ??
-    if(hold + qin > RNDOFFERR)
-      inew = (iold*hold + iin*qin)/ (hold + qin);// + qout);
-    else
-      inew = iold;
+  // Mixing when one input one output: two modes to apporximate what aggregated h and i
+  // values the DE approximation uses.
+  // If mode = 0, h=hold and i=inew. Mixing without change of volume due to output.
+  // If mode = 1, h=0.5*(hold+hnew) and i=0.5*(inew+iold). A somewhat linear model of mixing.
+  // If mode = 2, h=0.5*(hold+hnew) and i=(hold*inew+hnew*iold)/(hold+hnew). 
+  // A more complex, and stable weighted-linear model of mixing.
+  // 1000 is added (and then suvstracted) to avoid numerical instabilities with isotopes
+  // signatures (it is transparent for age)
+  double InOutMix(double hold, double iold, double qin, double iin, double qout, int mode){
+
+    double inew = 0;
+    double hsum = 0;
+
+    if(mode==0)
+      inew = hold + qin > RNDOFFERR ?
+	(iold*hold + iin*qin)/ (hold + qin) : iold;
+    /* else if (mode==1) */
+    /*   inew = hold + qin - 0.5*qout > RNDOFFERR ?  */
+    /* 	((iold+1000)*(hold-0.5*qout) + (iin+1000)*qin)/ (hold - 0.5*qout + qin) -1000 : iold; */
+    /* else if (mode==2){ */
+    /*   hsum = 2*hold+qin-qout; */
+    /*   inew = powl(hsum,2)/2 + hold*qin > RNDOFFERR ?  */
+    /* 	((iold+1000)*(powl(hsum,2)/2-(hsum-hold)*qin) + (iin+1000)*qin*hsum) / */
+    /* 	(powl(hsum,2)/2 + hold*qin) -1000 : iold; */
+    /*   //(iold*(powl(hsum,2)/2-(hsum-hold)*qin) + iin*qin*hsum) / */
+    /*   //(powl(hsum,2)/2 + hold*qin) : iold; */
+    //}
+    else if(mode ==1) {
+      hsum = 0.5*(hold+qin+std::max<double>(0,hold-qout));
+      inew = 0.5*hsum+qin > RNDOFFERR ? 
+	((iold+1000)*(hsum-0.5*qin) + (iin+1000)*qin)/ (hsum + 0.5*qin) -1000 : iold;
+    }
+
     return inew;
   }
-  
+  // ------------------------------------------------------------------------------------------
 };
 
 #endif /* TRACKING_H_ */

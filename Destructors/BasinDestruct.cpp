@@ -68,16 +68,32 @@ Basin::~Basin(){
 		delete _Temp_d;
 	if(_ponding)
 		delete _ponding;
-	if(_Ksat)
-		delete _Ksat;
+	if(_Ksat0)
+		delete _Ksat0;
+	if(_kKsat)
+		delete _kKsat;
+	if(_KsatL1)
+		delete _KsatL1;
+	if(_KsatL2)
+		delete _KsatL2;
+	if(_KsatL3)
+		delete _KsatL3;
 	if(_KvKs)
 		delete _KvKs;
 	if(_random_roughness)
 		delete _random_roughness;
 	if(_slope)
 		delete _slope;
-	if(_porosity)
-		delete _porosity;
+	if(_porosity0)
+		delete _porosity0;
+	if(_kporos)
+		delete _kporos;
+	if(_porosityL1)
+		delete _porosityL1;
+	if(_porosityL2)
+		delete _porosityL2;
+	if(_porosityL3)
+		delete _porosityL3;
 	if(_psi_ae)
 		delete _psi_ae;
 	if(_BClambda)
@@ -102,8 +118,12 @@ Basin::~Basin(){
 	//      delete _rootfrac2;
 	//if(_Kroot)
 	//	delete _Kroot;
-	if(_fieldcap)
-		delete _fieldcap;
+	if(_fieldcapL1)
+		delete _fieldcapL1;
+	if(_fieldcapL2)
+		delete _fieldcapL2;
+	if(_fieldcapL3)
+		delete _fieldcapL3;
 	if(_paramWc)
 		delete _paramWc;
 	if(_paramWp)
@@ -172,14 +192,20 @@ Basin::~Basin(){
 
 	if(_ponding_old)
 	  delete _ponding_old;
-	if(_FluxUptoSnow)
-		delete _FluxUptoSnow;
+	if(_FluxCnptoSrf)
+		delete _FluxCnptoSrf;
+	if(_FluxCnptoSnow)
+		delete _FluxCnptoSnow;
+	if(_FluxSnowtoSrf)
+		delete _FluxSnowtoSrf;
 	if(_FluxSrftoL1)
 		delete _FluxSrftoL1;
 	if(_FluxInfilt)
 		delete _FluxInfilt;
 	if(_FluxExfilt)
 		delete _FluxExfilt;
+	if(_FluxRecharge)
+		delete _FluxRecharge;
 	if(_FluxLattoSrf)
 		delete _FluxLattoSrf;
 	if(_FluxLattoGW)
@@ -214,17 +240,33 @@ Basin::~Basin(){
 		delete _AccSrftoChn;
 
 	// Tracking
+	if(_psi_MW)
+	  delete _psi_MW;
+	if(_moist_MW1)
+	  delete _moist_MW1;
+	if(_moist_MW2)
+	  delete _moist_MW2;
+	if(_fracMW1)
+	  delete _fracMW1;
+	if(_fracMW2)
+	  delete _fracMW2;
+	if(_fracMW12)
+	  delete _fracMW12;
 	if(_FluxL1toL2)
 		delete _FluxL1toL2;
 	if(_FluxL2toL3)
 		delete _FluxL2toL3;
-	if(_FluxL3toGW)
-		delete _FluxL3toGW;
+	//if(_FluxL2toGW)
+	//		delete _FluxL2toGW;
+	//if(_FluxL3toGW)
+	//		delete _FluxL3toGW;
 	if(_FluxL2toL1)
 		delete _FluxL2toL1;
 	if(_FluxL3toL2)
 		delete _FluxL3toL2;
-	if(_FluxGWtoL3)
-		delete _FluxGWtoL3;
+	//if(_FluxGWtoL2)
+	//	delete _FluxGWtoL2;
+	//	if(_FluxGWtoL3)
+	//	delete _FluxGWtoL3;
 
 }

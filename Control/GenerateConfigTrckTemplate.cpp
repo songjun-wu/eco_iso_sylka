@@ -60,7 +60,15 @@ void GenerateConfigTrckTemplate(const char *fn){
     ofOut << "water_Age = 1 # Age tracking" << endl;
     ofOut << "# Isotopic fractionation from soil evaporation" << endl;
     ofOut << "water_frac = 1" << endl ;
-    
+    ofOut << "# Two-pore domain conceptualization in the soil" << endl;
+    ofOut << "water_two-pore_domain = 0" << endl << endl;
+
+    ofOut << "# Approach for full mixing" << endl;
+    ofOut << "# 0--> mixing computation uses Vres(t) and Cres(t+1)" << endl;
+    ofOut << "# 1--> mixing computation uses (Cres(t)+Cres(t+1))/2, and " << endl;
+    ofOut << "#  useful volume = (Vres(t)+Fin+max(0,Vres(t)-Fout))/2 (still ignore storage limitations if Fin or Fout large)" << endl;
+    ofOut << "Mixing_mode = 1" << endl << endl ;
+
     ofOut << "## Toggles switches (only used of water_frac = 1)" << endl;
     ofOut << "# Surface relative humidity - taking into account air space between pores" << endl;
     ofOut << "# 0--> soilRH=1, 1--> soilRH follows Lee and Pielke 1992 (consistent with the evaporation routine)"<< endl;
@@ -74,7 +82,7 @@ void GenerateConfigTrckTemplate(const char *fn){
     ofOut << "# 1--> Di/D = 0.9877 (2H) and 0.9859 (18O), from Vogt (1976)" << endl;
     ofOut << "# 2--> Empirical model by Merlivat and Jouzel (1978)" << endl;
     ofOut << "Fractionation_kinetic_diffusion = 1" << endl << endl ;
-    
+
     ofOut << "# -- Inputs files (only necessary if the corresponding switch is =1)" << endl;
     ofOut << "#" << endl;
     ofOut << "# Climate input for isotopes" << endl;
@@ -106,11 +114,23 @@ void GenerateConfigTrckTemplate(const char *fn){
     ofOut << "init_Age_soil3 = Age_soilL3.map" << endl;
     ofOut << "init_Age_groundwater = Age_groundwater.map" << endl << endl;
 
+    ofOut << "# Two-pores domain:" << endl;
+    ofOut << "# if activated, map of pressure head delimiting the two domains" << endl ;
+    ofOut << "MobileWater_Transition_Head = TPD_transition_head.map # in meters of head" << endl << endl ;
+
     ofOut << "#   " << endl;
     ofOut << "#Report map section " << endl;
     ofOut << "#   " << endl << endl ;
+    ofOut << "# If two-pore domain activated  " << endl ;
+    ofOut << "Rep_Moisture_MobileWater_L1 = 0" << endl;
+    ofOut << "Rep_Moisture_MobileWater_L2 = 0" << endl;
+    ofOut << "Rep_Frac_MobileWater_L1 = 0" << endl;
+    ofOut << "Rep_Frac_MobileWater_L2 = 0" << endl;
+    ofOut << "Rep_Frac_MobileWater_Up = 0" << endl;
+    ofOut << "#" << endl;
     ofOut << "Rep_d2Hprecip = 0" << endl;
-    ofOut << "#Rep_d2Hcanopy = 0" << endl;
+    ofOut << "Rep_d2Hcanopy = 0" << endl;
+    ofOut << "Rep_d2Hcanopy_sum = 0" << endl;
     ofOut << "Rep_d2Hsnowpack = 0" << endl;
     ofOut << "Rep_d2Hsurface = 0" << endl;
     ofOut << "Rep_d2Hsoil1 = 0" << endl;
@@ -124,10 +144,15 @@ void GenerateConfigTrckTemplate(const char *fn){
     ofOut << "Rep_d2HevapI = 0" << endl;
     ofOut << "Rep_d2HevapI_sum = 0" << endl;
     ofOut << "Rep_d2HevapT = 0" << endl;
-    ofOut << "Rep_d2HevapT_sum = 0" << endl << endl ;
+    ofOut << "Rep_d2HevapT_sum = 0" << endl ;
+    ofOut << "Rep_d2Hsoil1_MobileWater = 0" << endl ;
+    ofOut << "Rep_d2Hsoil2_MobileWater = 0" << endl ;
+    ofOut << "Rep_d2Hsoil1_TightlyBound = 0" << endl ;
+    ofOut << "Rep_d2Hsoil2_TightlyBound = 0" << endl << endl ;
 
     ofOut << "Rep_d18Oprecip = 0" << endl;
-    ofOut << "#Rep_d18Ocanopy = 0" << endl;
+    ofOut << "Rep_d18Ocanopy = 0" << endl;
+    ofOut << "Rep_d18Ocanopy_sum = 0" << endl;
     ofOut << "Rep_d18Osnowpack = 0" << endl;
     ofOut << "Rep_d18Osurface = 0" << endl;
     ofOut << "Rep_d18Osoil1 = 0" << endl;
@@ -141,9 +166,14 @@ void GenerateConfigTrckTemplate(const char *fn){
     ofOut << "Rep_d18OevapI = 0" << endl;
     ofOut << "Rep_d18OevapI_sum = 0" << endl;
     ofOut << "Rep_d18OevapT = 0" << endl;
-    ofOut << "Rep_d18OevapT_sum = 0" << endl << endl ;
+    ofOut << "Rep_d18OevapT_sum = 0" << endl ;
+    ofOut << "Rep_d18Osoil1_MobileWater = 0" << endl ;
+    ofOut << "Rep_d18Osoil2_MobileWater = 0" << endl ;
+    ofOut << "Rep_d18Osoil1_TightlyBound = 0" << endl ;
+    ofOut << "Rep_d18Osoil2_TightlyBound = 0" << endl << endl;
 
-    ofOut << "#Rep_Agecanopy = 0" << endl;
+    ofOut << "Rep_Agecanopy = 0" << endl;
+    ofOut << "Rep_Agecanopy_sum = 0" << endl;
     ofOut << "Rep_Agesnowpack = 0" << endl;
     ofOut << "Rep_Agesurface = 0" << endl;
     ofOut << "Rep_Agesoil1 = 0" << endl;
@@ -157,16 +187,33 @@ void GenerateConfigTrckTemplate(const char *fn){
     ofOut << "Rep_AgeevapI = 0" << endl;
     ofOut << "Rep_AgeevapI_sum = 0" << endl;
     ofOut << "Rep_AgeevapT = 0" << endl;
-    ofOut << "Rep_AgeevapT_sum = 0" << endl << endl;
+    ofOut << "Rep_AgeevapT_sum = 0" << endl ;
+    ofOut << "Rep_AgeGWtoChn = 0" << endl ;
+    ofOut << "Rep_AgeSrftoChn = 0" << endl ;
+    ofOut << "Rep_AgeRecharge = 0" << endl ;
+    ofOut << "Rep_Agesoil1_MobileWater = 0" << endl ;
+    ofOut << "Rep_Agesoil2_MobileWater = 0" << endl ;
+    ofOut << "Rep_AgesoilUp_MobileWater = 0" << endl ;
+    ofOut << "Rep_Agesoil1_TightlyBound = 0" << endl ;
+    ofOut << "Rep_Agesoil2_TightlyBound = 0" << endl ;
+    ofOut << "Rep_AgesoilUp_TightlyBound = 0" << endl << endl;
 
     ofOut << "#   " << endl;
     ofOut << "#Report time series section " << endl;
     ofOut << "#(locations specified in TS_mask map, see main config file)" << endl;
     ofOut << "#   " << endl << endl;
 
-    ofOut << "# -- Report time series" << endl;
+    ofOut << "# -- Report time series" << endl << endl;
+    ofOut << "# If two-pore domain activated  " << endl ;
+    ofOut << "Ts_Moisture_MobileWater_L1 = 0" << endl;
+    ofOut << "Ts_Moisture_MobileWater_L2 = 0" << endl;
+    ofOut << "Ts_Frac_MobileWater_L1 = 0" << endl;
+    ofOut << "Ts_Frac_MobileWater_L2 = 0" << endl;
+    ofOut << "Ts_Frac_MobileWater_Up = 0" << endl << endl;
+    ofOut << "#" << endl;
     ofOut << "Ts_d2Hprecip = 0" << endl;
-    ofOut << "#Ts_d2Hcanopy = 0" << endl;
+    ofOut << "Ts_d2Hcanopy = 0" << endl;
+    ofOut << "Ts_d2Hcanopy_sum = 0" << endl;
     ofOut << "Ts_d2Hsnowpack = 0" << endl;
     ofOut << "Ts_d2Hsurface = 1" << endl;
     ofOut << "Ts_d2Hsoil1 = 1" << endl;
@@ -180,10 +227,15 @@ void GenerateConfigTrckTemplate(const char *fn){
     ofOut << "Ts_d2HevapI = 0" << endl;
     ofOut << "Ts_d2HevapI_sum = 0" << endl;
     ofOut << "Ts_d2HevapT = 1" << endl;
-    ofOut << "Ts_d2HevapT_sum = 0" << endl << endl;
+    ofOut << "Ts_d2HevapT_sum = 0" << endl ;
+    ofOut << "Ts_d2Hsoil1_MobileWater = 0" << endl ;
+    ofOut << "Ts_d2Hsoil2_MobileWater = 0" << endl ;
+    ofOut << "Ts_d2Hsoil1_TightlyBound = 0" << endl ;
+    ofOut << "Ts_d2Hsoil2_TightlyBound = 0" << endl << endl;
 
     ofOut << "Ts_d18Oprecip = 0" << endl;
-    ofOut << "#Ts_d18Ocanopy = 0" << endl;
+    ofOut << "Ts_d18Ocanopy = 0" << endl;
+    ofOut << "Ts_d18Ocanopy_sum = 0" << endl;
     ofOut << "Ts_d18Osnowpack = 0 " << endl;
     ofOut << "Ts_d18Osurface = 1" << endl;
     ofOut << "Ts_d18Osoil1 = 1" << endl;
@@ -197,9 +249,14 @@ void GenerateConfigTrckTemplate(const char *fn){
     ofOut << "Ts_d18OevapI = 0" << endl;
     ofOut << "Ts_d18OevapI_sum = 0" << endl;
     ofOut << "Ts_d18OevapT = 1" << endl;
-    ofOut << "Ts_d18OevapT_sum = 0" << endl << endl;
+    ofOut << "Ts_d18OevapT_sum = 0" << endl ;
+    ofOut << "Ts_d18Osoil1_MobileWater = 0" << endl ;
+    ofOut << "Ts_d18Osoil2_MobileWater = 0" << endl ;
+    ofOut << "Ts_d18Osoil1_TightlyBound = 0" << endl ;
+    ofOut << "Ts_d18Osoil2_TightlyBound = 0" << endl << endl;
 
-    ofOut << "#Ts_Agecanopy = 0" << endl;
+    ofOut << "Ts_Agecanopy = 0" << endl;
+    ofOut << "Ts_Agecanopy_sum = 0" << endl;
     ofOut << "Ts_Agesnowpack = 1" << endl;
     ofOut << "Ts_Agesurface = 1" << endl;
     ofOut << "Ts_Agesoil1 = 1" << endl;
@@ -213,7 +270,16 @@ void GenerateConfigTrckTemplate(const char *fn){
     ofOut << "Ts_AgeevapI = 1" << endl;
     ofOut << "Ts_AgeevapI_sum = 0" << endl;
     ofOut << "Ts_AgeevapT = 0" << endl;
-    ofOut << "Ts_AgeevapT_sum = 1" << endl << endl;
+    ofOut << "Ts_AgeevapT_sum = 1" << endl ;
+    ofOut << "Ts_AgeGWtoChn = 0" << endl ;
+    ofOut << "Ts_AgeSrftoChn = 0" << endl ;
+    ofOut << "Ts_AgeRecharge = 0" << endl ;
+    ofOut << "Ts_Agesoil1_MobileWater = 0" << endl ;
+    ofOut << "Ts_Agesoil2_MobileWater = 0" << endl ;
+    ofOut << "Ts_AgesoilUp_MobileWater = 0" << endl ;
+    ofOut << "Ts_Agesoil1_TightlyBound = 0" << endl ;
+    ofOut << "Ts_Agesoil2_TightlyBound = 0" << endl ;
+    ofOut << "Ts_AgesoilUp_TightlyBound = 0" << endl << endl;
 
 
    if (ofOut)

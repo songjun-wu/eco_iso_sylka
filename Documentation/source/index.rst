@@ -9,7 +9,7 @@ This document provides a tutorial that guides users through the process of compi
 .. toctree::
    :maxdepth: 3
 
-   INSTALL
+   Install
    Setup
    CaseStudy
    Keywords

@@ -67,6 +67,7 @@ int main(int argc, char* argv[]) {
 				Report2Ts(); //report results
 				report_time = 0; //reset the counter
 			}
+
 			// Report maps
 			reportMap_time += oControl->dt;
 			if (reportMap_time >= oControl->reportMap_times) { //if report time overdue

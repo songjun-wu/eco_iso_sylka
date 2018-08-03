@@ -38,3 +38,4 @@ Report *oReport  = NULL;
 Tracking *oTracking  = NULL;
 
 ofstream ofSummary;
+ofstream ofAgeSummary;

@@ -52,13 +52,13 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: ech2o_iso
+all: ech2o
 
 # Tool invocations
-ech2o_iso: $(OBJS) $(USER_OBJS)
+ech2o: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"../lib" -L"/usr/local/lib" -fopenmp -o "ech2o_iso" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"../lib" -fopenmp -o "ech2o_iso" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

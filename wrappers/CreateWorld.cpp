@@ -32,54 +32,101 @@
 
 int CreateWorld(char* argv[]){
 
-		oControl = new Control;
-		cout << "Control created ok... " << "\n";
-		oControl->ReadConfigFile(argv[1]);
-		cout << "Config.ini read ok... " << "\n";
+  oControl = new Control;
+  cout << "Control created ok... " << "\n";
+  oControl->ReadConfigFile(argv[1]);
+  cout << "Config.ini read ok... " << "\n";
 
-		oBasin = new Basin(*oControl);
-		cout << "Basin created ok... " << "\n";
+  oBasin = new Basin(*oControl);
+  cout << "Basin created ok... " << "\n";
 
-		oAtmosphere = new Atmosphere(*oControl);
-		cout << "Atmosphere created ok... " << "\n";
+  oAtmosphere = new Atmosphere(*oControl);
+  cout << "Atmosphere created ok... " << "\n";
 
-		oReport = new Report(*oControl);
-		cout << "Report created ok... " << "\n";
+  oReport = new Report(*oControl);
+  cout << "Report created ok... " << "\n";
 
-		oTracking = new Tracking(*oControl, *oBasin);
-		if(oControl->sw_trck)
-			cout << "Isotope module created ok... " << "\n";
+  oTracking = new Tracking(*oControl, *oBasin);
+  if(oControl->sw_trck)
+    cout << "Isotope module created ok... " << "\n";
 
-		oBudget = new Budget(oBasin, oControl, oTracking);
-		cout << "Budget created ok... " << "\n";
-		
-		try{
-		  ofSummary.open((oControl->path_ResultsFolder + "BasinSummary.txt").c_str());
-		  if(!ofSummary)
-		    throw std::ios::failure("Error opening Summary.txt buffer\n");
+  oBudget = new Budget(oBasin, oControl, oTracking);
+  cout << "Budget created ok... " << "\n";
 
-}catch(const std::exception &e){
-	cout << e.what() << endl;
-	throw;
-}
-		ofSummary << "Precip\t";
-		ofSummary << "SWE\t";
-		ofSummary << "Intercep\t";
-		ofSummary << "Ponding\t";
-		ofSummary << "SoilWater\t";
-		ofSummary << "GW\t";
-		ofSummary << "ETtot\t";
-		ofSummary << "EvapS\t";
-		ofSummary << "EvapI\t";
-		ofSummary << "EvapT\t";
-		ofSummary << "Leakage\t";
-		ofSummary << "OvlndFlow\t";
-		ofSummary << "GWFlow\t";
-		ofSummary << "SatExtent\t";
-		ofSummary << "Run-off2Stream\t";
-		ofSummary << "GW2channel\t";
-		ofSummary << "MassBalError";
-		ofSummary << "\n";
+  // == Basin Summary ==========================================================
+  // ---
+  try{
+    ofSummary.open((oControl->path_ResultsFolder + "BasinSummary.txt").c_str());
+    if(!ofSummary)
+      throw std::ios::failure("Error opening BasinSummary.txt buffer\n");
 
-		return EXIT_SUCCESS;
+  }catch(const std::exception &e){
+    cout << e.what() << endl;
+    throw;
+  }
+  // Headers for BasinSummary
+  ofSummary << "Precip\t";
+  ofSummary << "SWE\t";
+  ofSummary << "Intrcp\t";
+  ofSummary << "Surface\t";
+  ofSummary << "SoilW\t";
+  ofSummary << "GW\t";
+  ofSummary << "ET\t";
+  ofSummary << "EvapS\t";
+  ofSummary << "EvapI\t";
+  ofSummary << "EvapT\t";
+  ofSummary << "Leakage\t";
+  ofSummary << "SrfOut\t";
+  ofSummary << "GWOut\t";
+  ofSummary << "SrftoCh\t";
+  ofSummary << "GWtoCh\t";
+  ofSummary << "Rchrge\t";
+  ofSummary << "SatExt\t";
+  ofSummary << "MBErr";
+  if(oControl->sw_trck and oControl->sw_2H)
+    ofSummary << "\t2H_MBE";
+  if(oControl->sw_trck and oControl->sw_18O)
+    ofSummary << "\t18O_MBE";
+  if(oControl->sw_trck and oControl->sw_Age)
+    ofSummary << "\tAge_MBE";
+  ofSummary << "\n";
+
+  // == Age Summary ==========================================================
+  // ---  
+  if(oControl->sw_trck and oControl->sw_Age){
+    try{
+      ofAgeSummary.open((oControl->path_ResultsFolder + "BasinAgeSummary.txt").c_str());
+      if(!ofAgeSummary)
+	throw std::ios::failure("Error opening BasinAgeSummary.txt buffer\n");
+      
+    }catch(const std::exception &e){
+      cout << e.what() << endl;
+      throw;
+    }
+    // Headers for BasinSummary
+    ofAgeSummary << "StorAll\t";
+    ofAgeSummary << "Snow\t";
+    ofAgeSummary << "Intercp\t";
+    ofAgeSummary << "Surface\t";
+    ofAgeSummary << "Soil\t";
+    ofAgeSummary << "SoilL1\t";
+    ofAgeSummary << "SoilL2\t";
+    ofAgeSummary << "SoilL3\t";
+    ofAgeSummary << "GW\t";
+    ofAgeSummary << "ET\t";
+    ofAgeSummary << "EvapS\t";
+    ofAgeSummary << "EvapI\t";
+    ofAgeSummary << "EvapT\t";
+    ofAgeSummary << "Leakage\t";
+    ofAgeSummary << "SrfOut\t";
+    ofAgeSummary << "GWOut\t";
+    ofAgeSummary << "AllOut\t";
+    ofAgeSummary << "SrftoCh\t";
+    ofAgeSummary << "GWtoCh\t";
+    ofAgeSummary << "Rchrge\n";
+
+  }
+
+  
+  return EXIT_SUCCESS;
 }

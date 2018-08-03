@@ -68,7 +68,7 @@ int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
     // Sorderberg et al. (2012), orginially for dry soils 
     // (departs from EcH2O's evaporation conceptualization of evap!
     th_r = bsn.getSoilMoistR()->matrix[r][c];
-    th_s = bsn.getPorosity()->matrix[r][c];
+    th_s = bsn.getPorosityL1()->matrix[r][c];
     psiae = bsn.getPsiAE()->matrix[r][c];
     bclambda = bsn.getBClambda()->matrix[r][c];
     hs = expl(psiae*powl((V_old/d1-th_r)/(th_s-th_r),-bclambda)*18.0145/(8.3145*Ts*1000)); // waterpot*molarmass/(R*Ts*waterdensity)
@@ -100,7 +100,7 @@ int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
   } else if (ctrl.toggle_n == 1) {
     // Mathieu and Bariac (1996) + Braud et al. (2005)
     n = 1 - 0.5*(V_old/d1-bsn.getSoilMoistR()->matrix[r][c])/
-      (bsn.getPorosity()->matrix[r][c]-bsn.getSoilMoistR()->matrix[r][c]);
+      (bsn.getPorosityL1()->matrix[r][c]-bsn.getSoilMoistR()->matrix[r][c]);
   } else {
     std::cout << "Wrong option in the soil fractionation n toggle switch. Please verify the configuration file" << std::endl;
     exit(EXIT_FAILURE);  
@@ -149,10 +149,10 @@ int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
   // Isotopic signature of evaporated water
   di_evap = std::max<double>(-1000,(hs*alpha_p*di_new - ha_p*di_atm - eps)/ (hs - ha_p + eps_k/1000));
 
-  if(abs(di_new)>1e3 or abs(di_evap)>1e3)
-    cout << r << " " << c << "| iso:" << iso << "| evapS:" << V_old-V_new << "| disoil_new:" << di_new << "|di_old:" << di_old <<
-      "| di_star:" << di_s << "| di_evap:" << di_evap << 
-      "| f:" << f <<"| m:" << m << endl;
+  if(abs(di_new)>100 or abs(di_evap)>1e3)
+     cout << r << " " << c << "| iso:" << iso << "| evapS:" << V_old-V_new << "| disoil_new:" << di_new << "|di_old:" << di_old <<
+       "| di_star:" << di_s << "| di_evap:" << di_evap << 
+       "| f:" << f <<"| m:" << m <<"| ha_p:" << ha_p <<"| hs:" << hs << endl;
   
   return EXIT_SUCCESS;
   

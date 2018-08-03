@@ -35,10 +35,11 @@
 int Tracking::Calcd2Hsoil_Av(Basin &bsn){
   
   double depth, d1, d2, d3;
-  double fc, theta1, theta2, theta3;
+  //double fc; 
+  double theta1, theta2, theta3;
   int r, c;
 #pragma omp parallel default(shared) private(r,c,depth, d1, d2, d3, \
-					     fc, theta1, theta2, theta3)
+					     theta1, theta2, theta3)
   {
 #pragma omp for nowait
     for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
@@ -48,15 +49,17 @@ int Tracking::Calcd2Hsoil_Av(Basin &bsn){
       d1 = bsn.getSoilDepth1()->matrix[r][c];
       d2 = bsn.getSoilDepth2()->matrix[r][c];
       d3 = depth - d1 - d2;
-      fc = bsn.getFieldCapacity()->matrix[r][c];
+      //fc = bsn.getFieldCapacity()->matrix[r][c];
       theta1 = bsn.getSoilMoist1()->matrix[r][c];
       theta2 = bsn.getSoilMoist2()->matrix[r][c];
       theta3 = bsn.getSoilMoist3()->matrix[r][c];
       
       _d2HsoilAv->matrix[r][c] = (_d2Hsoil1->matrix[r][c] * d1 * theta1
 				 + _d2Hsoil2->matrix[r][c] * d2 * theta2
-				 + _d2Hsoil3->matrix[r][c] * d3 * std::min<double>(fc,theta3)
-				 + _d2Hgroundwater->matrix[r][c] * d3 * std::max<double>(0.0,theta3-fc)) / (d1*theta1+d2*theta2+d3*theta3);
+				 + _d2Hsoil3->matrix[r][c] * d3 * theta3 )/ 
+	(d1*theta1+d2*theta2+d3*theta3);
+      //std::min<double>(fc,theta3)
+      //+ _d2Hgroundwater->matrix[r][c] * d3 * std::max<double>(0.0,theta3-fc))
     }
   }
   return EXIT_SUCCESS;
@@ -65,10 +68,11 @@ int Tracking::Calcd2Hsoil_Av(Basin &bsn){
 int Tracking::Calcd18Osoil_Av(Basin &bsn){
   
   double depth, d1, d2, d3;
-  double fc, theta1, theta2, theta3;
+  //double fc; 
+  double theta1, theta2, theta3;
   int r, c;
 #pragma omp parallel default(shared) private(r,c,depth, d1, d2, d3, \
-					     fc, theta1, theta2, theta3)
+					     theta1, theta2, theta3)
   {
 #pragma omp for nowait
     for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
@@ -78,15 +82,17 @@ int Tracking::Calcd18Osoil_Av(Basin &bsn){
       d1 = bsn.getSoilDepth1()->matrix[r][c];
       d2 = bsn.getSoilDepth2()->matrix[r][c];
       d3 = depth - d1 - d2;
-      fc = bsn.getFieldCapacity()->matrix[r][c];
+      //fc = bsn.getFieldCapacity()->matrix[r][c];
       theta1 = bsn.getSoilMoist1()->matrix[r][c];
       theta2 = bsn.getSoilMoist2()->matrix[r][c];
       theta3 = bsn.getSoilMoist3()->matrix[r][c];
       
       _d18OsoilAv->matrix[r][c] = (_d18Osoil1->matrix[r][c] * d1 * theta1
 				 + _d18Osoil2->matrix[r][c] * d2 * theta2
-				 + _d18Osoil3->matrix[r][c] * d3 * std::min<double>(fc,theta3)
-				 + _d18Ogroundwater->matrix[r][c] * d3 * std::max<double>(0.0,theta3-fc)) / (d1*theta1+d2*theta2+d3*theta3);
+				 + _d18Osoil3->matrix[r][c] * d3 * theta3 )/ 
+	(d1*theta1+d2*theta2+d3*theta3);
+      //std::min<double>(fc,theta3)
+      //+ _d18Ogroundwater->matrix[r][c] * d3 * std::max<double>(0.0,theta3-fc)) 
 
     }
   }
@@ -96,10 +102,11 @@ int Tracking::Calcd18Osoil_Av(Basin &bsn){
 int Tracking::CalcAgesoil_Av(Basin &bsn){
   
   double depth, d1, d2, d3;
-  double fc, theta1, theta2, theta3;
+  //double fc; 
+  double theta1, theta2, theta3;
   int r, c;
 #pragma omp parallel default(shared) private(r,c,depth, d1, d2, d3, \
-					     fc, theta1, theta2, theta3)
+					     theta1, theta2, theta3)
   {
 #pragma omp for nowait
     for (unsigned int j = 0; j < bsn.getSortedGrid().cells.size(); j++) {
@@ -109,15 +116,17 @@ int Tracking::CalcAgesoil_Av(Basin &bsn){
       d1 = bsn.getSoilDepth1()->matrix[r][c];
       d2 = bsn.getSoilDepth2()->matrix[r][c];
       d3 = depth - d1 - d2;
-      fc = bsn.getFieldCapacity()->matrix[r][c];
+      //fc = bsn.getFieldCapacity()->matrix[r][c];
       theta1 = bsn.getSoilMoist1()->matrix[r][c];
       theta2 = bsn.getSoilMoist2()->matrix[r][c];
       theta3 = bsn.getSoilMoist3()->matrix[r][c];
       
       _AgesoilAv->matrix[r][c] = (_Agesoil1->matrix[r][c] * d1 * theta1
 				 + _Agesoil2->matrix[r][c] * d2 * theta2
-				 + _Agesoil3->matrix[r][c] * d3 * std::min<double>(fc,theta3)
-				 + _Agegroundwater->matrix[r][c] * d3 * std::max<double>(0.0,theta3-fc)) / (d1*theta1+d2*theta2+d3*theta3);
+				  + _Agesoil3->matrix[r][c] * d3 * theta3 )/ 
+	(d1*theta1+d2*theta2+d3*theta3);
+      //std::min<double>(fc,theta3)
+      //+ _Agegroundwater->matrix[r][c] * d3 * std::max<double>(0.0,theta3-fc)) 
 
     }
   }

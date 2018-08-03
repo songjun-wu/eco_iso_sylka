@@ -68,6 +68,9 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	sw_veg_dyn = Config.read<bool>("Vegetation_dynamics");
 	sw_reinfilt = Config.read<bool>("Reinfiltration");
 	sw_channel = Config.read<bool>("Channel");
+	sw_expKsat = Config.read<bool>("Hydraulic_Conductivity_profile");
+	sw_expPoros = Config.read<bool>("Porosity_profile");
+
 	sw_trck = Config.read<bool>("Tracking");
 
 	// If there is water tracking, another config file will be read
@@ -109,11 +112,13 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_climzones, "ClimateZones");
 	Config.readInto(fn_patches, "ForestPatches");
 
-	Config.readInto(fn_ksat, "Horiz_Hydraulic_Conductivity");
+	Config.readInto(fn_Ksat0, "Top-of-profile_Horiz_Hydraulic_Conductivity");
+	Config.readInto(fn_kKsat, "Horiz_Hydraulic_Conductivity_Profile_Coeff");
 	Config.readInto(fn_kvkh, "Vert_Horz_Anis_ratio");
 	Config.readInto(fn_randrough, "Terrain_Random_Roughness");
 	Config.readInto(fn_slope, "Slope");
-	Config.readInto(fn_poros, "Porosity");
+	Config.readInto(fn_poros0, "Top-of-profile_Porosity");
+	Config.readInto(fn_kporos, "Porosity_Profile_Coeff");
 	Config.readInto(fn_psi_ae, "Air_entry_pressure");
 	Config.readInto(fn_BClambda, "Brooks_Corey_lambda");
 	Config.readInto(fn_theta_r, "Residual_soil_moisture");
@@ -193,6 +198,9 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_Soil_Water_Content_L2 = Config.read<bool>("Report_Soil_Water_Content_L2");
 	Rep_Soil_Water_Content_L3 = Config.read<bool>("Report_Soil_Water_Content_L3");
 	Rep_WaterTableDepth = Config.read<bool>("Report_WaterTableDepth");
+	Rep_Field_Capacity_L1 = Config.read<bool>("Report_Field_Capacity_L1");
+	Rep_Field_Capacity_L2 = Config.read<bool>("Report_Field_Capacity_L2");
+	Rep_Field_Capacity_L3 = Config.read<bool>("Report_Field_Capacity_L3");
 	Rep_Soil_Sat_Deficit = Config.read<bool>("Report_Soil_Sat_Deficit");
 	Rep_GWater = Config.read<bool>("Report_Ground_Water");
 	Rep_Total_ET = Config.read<bool>("Report_Total_ET");
@@ -208,6 +216,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_Einterception_sum = Config.read<bool>("Report_Einterception_sum");
 	Rep_Esoil_sum = Config.read<bool>("Report_Esoil_sum");
 	Rep_Net_Rad_sum = Config.read<bool>("Report_Net_Rad_sum");
+	Rep_Canopy_Water_Stor_sum = Config.read<bool>("Report_Canopy_Water_Stor_sum");
 
 	Rep_Veget_frac = Config.read<bool>("Report_Veget_frac");
 	Rep_Stem_Density = Config.read<bool>("Report_Stem_Density");
@@ -237,6 +246,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Rep_SrftoChn = Config.read<bool>("Report_Surface_to_Channel");
 	Rep_Infilt = Config.read<bool>("Report_Infiltration");
 	Rep_Exfilt = Config.read<bool>("Report_Return_Flow_Surface");
+	Rep_Recharge = Config.read<bool>("Report_Recharge_to_Layer3");
 	Rep_LattoSrf = Config.read<bool>("Report_Overland_Inflow");
 	Rep_LattoChn = Config.read<bool>("Report_Stream_Inflow");
 	Rep_LattoGW = Config.read<bool>("Report_Groundwater_Inflow");
@@ -274,6 +284,9 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_Soil_Water_Content_L2 = Config.read<bool>("Ts_Soil_Water_Content_L2");
 	RepTs_Soil_Water_Content_L3 = Config.read<bool>("Ts_Soil_Water_Content_L3");
 	RepTs_WaterTableDepth = Config.read<bool>("Ts_WaterTableDepth");
+	RepTs_Field_Capacity_L1 = Config.read<bool>("Ts_Field_Capacity_L1");
+	RepTs_Field_Capacity_L2 = Config.read<bool>("Ts_Field_Capacity_L2");
+	RepTs_Field_Capacity_L3 = Config.read<bool>("Ts_Field_Capacity_L3");
 	RepTs_Soil_Sat_Deficit = Config.read<bool>("Ts_Soil_Sat_Deficit");
 	RepTs_GroundWater = Config.read<bool>("Ts_Ground_Water");
 	RepTs_Soil_Net_Rad = Config.read<bool>("Ts_Soil_Net_Rad");
@@ -289,6 +302,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_Einterception_sum = Config.read<bool>("Ts_Einterception_sum");
 	RepTs_Esoil_sum = Config.read<bool>("Ts_Esoil_sum");
 	RepTs_Net_Rad_sum = Config.read<bool>("Ts_Net_Rad_sum");
+	RepTs_Canopy_Water_Stor_sum = Config.read<bool>("Ts_Canopy_Water_Stor_sum");
 
 	RepTs_Veget_frac = Config.read<bool>("Ts_Veget_frac");
 	RepTs_Stem_Density = Config.read<bool>("Ts_Stem_Density");
@@ -317,6 +331,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	RepTs_SrftoChn = Config.read<bool>("Ts_Surface_to_Channel");
 	RepTs_Infilt = Config.read<bool>("Ts_Infiltration");
 	RepTs_Exfilt = Config.read<bool>("Ts_Return_Flow_Surface");
+	RepTs_Recharge = Config.read<bool>("Ts_Recharge_to_Layer3");
 	RepTs_LattoSrf = Config.read<bool>("Ts_Overland_Inflow");
 	RepTs_LattoChn = Config.read<bool>("Ts_Stream_Inflow");
 	RepTs_LattoGW = Config.read<bool>("Ts_Groundwater_Inflow");

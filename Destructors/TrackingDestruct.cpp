@@ -36,6 +36,8 @@ Tracking::~Tracking(){
 	      delete _d2Hcanopy_sum;
 	    if(_d2Hsnowpack)
 	      delete _d2Hsnowpack;
+	    if(_d2Hsnowmelt)
+	      delete _d2Hsnowmelt;
 	    if(_d2Hsurface)
 	      delete _d2Hsurface;
 	    if(_d2Hsoil1)
@@ -58,11 +60,27 @@ Tracking::~Tracking(){
 	      delete _d2HevapT_sum;
 	    if(_d2Hleakage)
 	      delete _d2Hleakage;
-	    
+	    if(_Fd2HLattoGW)
+	      delete _Fd2HLattoGW;
+	    if(_Fd2HLattoSrf)
+	      delete _Fd2HLattoSrf;
+	    if(_Fd2HLattoChn)
+	      delete _Fd2HLattoChn;
+	    if(_d2H_MW1)
+	      delete _d2H_MW1;
+	    if(_d2H_MW2)
+	      delete _d2H_MW2;
+	    if(_d2H_TB1)
+	      delete _d2H_TB1;
+	    if(_d2H_TB2)
+	      delete _d2H_TB2;
+
 	    if(_d18Ocanopy_sum)
 	      delete _d18Ocanopy_sum;
 	    if(_d18Osnowpack)
 	      delete _d18Osnowpack;
+	    if(_d18Osnowmelt)
+	      delete _d18Osnowmelt;
 	    if(_d18Osurface)
 	      delete _d18Osurface;
 	    if(_d18Osoil1)
@@ -85,11 +103,27 @@ Tracking::~Tracking(){
 	      delete _d18OevapT_sum;
 	    if(_d18Oleakage)
 	      delete _d18Oleakage;
+	    if(_Fd18OLattoGW)
+	      delete _Fd18OLattoGW;
+	    if(_Fd18OLattoSrf)
+	      delete _Fd18OLattoSrf;
+	    if(_Fd18OLattoChn)
+	      delete _Fd18OLattoChn;
+	    if(_d18O_MW1)
+	      delete _d18O_MW1;
+	    if(_d18O_MW2)
+	      delete _d18O_MW2;
+	    if(_d18O_TB1)
+	      delete _d18O_TB1;
+	    if(_d18O_TB2)
+	      delete _d18O_TB2;
 	    
 	    if(_Agecanopy_sum)
 	      delete _Agecanopy_sum;
 	    if(_Agesnowpack)
 	      delete _Agesnowpack;
+	    if(_Agesnowmelt)
+	      delete _Agesnowmelt;
 	    if(_Agesurface)
 	      delete _Agesurface;
 	    if(_Agesoil1)
@@ -110,6 +144,30 @@ Tracking::~Tracking(){
 	      delete _AgeevapI_sum;
 	    if(_AgeevapT_sum)
 	      delete _AgeevapT_sum;
+	    if(_AgeGWtoChn)
+	      delete _AgeGWtoChn;
+	    if(_AgeSrftoChn)
+	      delete _AgeSrftoChn;
+	    if(_AgeRecharge)
+	      delete _AgeRecharge;
 	    if(_Ageleakage)
 	      delete _Ageleakage;
+	    if(_FAgeLattoGW)
+	      delete _FAgeLattoGW;
+	    if(_FAgeLattoSrf)
+	      delete _FAgeLattoSrf;
+	    if(_FAgeLattoChn)
+	      delete _FAgeLattoChn;
+	    if(_Age_MW1)
+	      delete _Age_MW1;
+	    if(_Age_MW2)
+	      delete _Age_MW2;
+	    if(_Age_MW12)
+	      delete _Age_MW12;
+	    if(_Age_TB1)
+	      delete _Age_TB1;
+	    if(_Age_TB2)
+	      delete _Age_TB2;
+	    if(_Age_TB12)
+	      delete _Age_TB12;
 }

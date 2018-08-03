@@ -62,7 +62,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
   REAL8 leak = 0; //bedrock leakage flux;
   
   double d1, d2, d3; // soil layers' depths
-  double fc; //field capacity
+  double fc; //field capacity in third layer (for tracking)
   
   //aerodynamic resistance parameters
   REAL8 za; //height of wind speed measurements
@@ -84,17 +84,14 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
   _dailyGwtrOutput.cells.clear();
   _GWupstreamBC->reset();
   _Disch_upstreamBC->reset();
+  // Recharge
+  _FluxRecharge->reset();
   // Set EvapS to zero before looping over baresoil/understory
   _EvaporationS_all->reset();
-  
-  /*if(ctrl.sw_trck){
-  //For tracking
-  _FluxSrftoL1->reset(); //
-  _FluxL1toL2->reset(); //
-  _FluxL2toL3->reset(); //
-  _FluxL3toGW->reset(); //
-  }*/
-  
+
+  if(ctrl.sw_trck)
+    trck.OutletVals(ctrl, 0, 0, 0);
+    
 #pragma omp parallel default(shared) \
   private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can, \
 	  evap, infcap, accinf, theta, theta2, theta3, ponding,leak,  \
@@ -121,7 +118,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	gw = _GravityWater->matrix[r][c]; //gravity water at time t
 	leak = 0;
 	
-	fc = _fieldcap->matrix[r][c];
+	fc = _fieldcapL3->matrix[r][c];
 	d1 = _depth_layer1->matrix[r][c];
 	d2 = _depth_layer2->matrix[r][c];
 	d3 = _soildepth->matrix[r][c] - d1 - d2;
@@ -152,7 +149,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 	// Tracking
 	if(ctrl.sw_trck)
-	  trck.MixingV_down(*this, ctrl, d1, d2, d3, fc, leak, r, c, false);
+	  trck.MixingV_down(*this, ctrl, d1, d2, d3, fc, leak, r, c, 0);
 	
 	// Update global objects
 	_ponding->matrix[r][c] = ponding;
@@ -212,7 +209,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    //rs =  1/max<double>( 0.0000000000001, ExfiltrationCapacity(theta, dt, r, c) );
 	    
 	    //theta_old = theta;
-	    
+
 	    SolveSurfaceEnergyBalance(atm, ctrl, trck, ra, rs, 0.0, BeersK, LAI,
 				      emis_can, Temp_can, nr, le, sens, grndh, snowh, mltht,
 				      Tsold, evap, ponding, theta, Ts, Tdold, p, r, c, s);
@@ -244,15 +241,9 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	_Temp_s->matrix[r][c] = Tsold; //
 	
 	_Temp_d->matrix[r][c] = Tdold;
-	
-	dh_snow = SnowOutput(atm, ctrl, mltht, r, c);
-	
-	// Flux tracking after snowmelt
-	if(ctrl.sw_trck)
-	  trck.MixingV_snow(atm, *this, ctrl, dh_snow, r, c);
-	
+		
 	// Update surface pool
-	_ponding->matrix[r][c] += dh_snow;
+	_ponding->matrix[r][c] += SnowOutput(atm, ctrl, trck, mltht, r, c);
 	// Back up before routing
 	_GrndWater_old->matrix[r][c] = _GrndWater->matrix[r][c];
 	

@@ -35,40 +35,40 @@
 
 void GenerateConfigTemplate(const char *fn){
 
-	ofstream ofOut;
+  ofstream ofOut;
 
-try{
+  try{
 
-		if (access(fn, F_OK) != -1) {
+    if (access(fn, F_OK) != -1) {
 
-			cout << "File exists. Do you want to overwrite? (y, n):  " << endl;
-			char c;
-			cin.get(c);
-			switch (c) {
-			case 'y':
-				break;
-			case 'n':
-				exit(EXIT_SUCCESS);
-				break;
-			default:
-				cout << "Not a valid option. Bye" << endl;
-				exit(EXIT_SUCCESS);
+      cout << "File exists. Do you want to overwrite? (y, n):  " << endl;
+      char c;
+      cin.get(c);
+      switch (c) {
+      case 'y':
+	break;
+      case 'n':
+	exit(EXIT_SUCCESS);
+	break;
+      default:
+	cout << "Not a valid option. Bye" << endl;
+	exit(EXIT_SUCCESS);
 
-			}
-		}
+      }
+    }
 
-		ofOut.open(fn);
-		if(!ofOut)
-			throw std::ios::failure("Error opening file ");
-
-
+    ofOut.open(fn);
+    if(!ofOut)
+      throw std::ios::failure("Error opening file ");
 
 
 
-	ofOut << "#ECH2O configuration file v1.7" << std::endl << std::endl;
-	ofOut << "# Please, check Appendix A of Documentation" << std::endl;
-	ofOut << "# for units of parameters and variables  " << std::endl;
-	ofOut << "# (http://ech2o-iso.readthedocs.io/en/latest/Keywords.html)" << std::endl << std::endl;
+
+
+    ofOut << "#ECH2O configuration file v1.7" << std::endl << std::endl;
+    ofOut << "# Please, check Appendix A of Documentation" << std::endl;
+    ofOut << "# for units of parameters and variables  " << std::endl;
+    ofOut << "# (http://ech2o-iso.readthedocs.io/en/latest/Keywords.html)" << std::endl << std::endl;
 
     ofOut << "#" << endl << "#Folder section" << endl << "#" << endl << endl;
 
@@ -85,10 +85,14 @@ try{
     ofOut << "MapTypes = csf" << endl;
     ofOut << "Species_State_Variable_Input_Method = tables # maps or tables" << endl << endl;
 
-    ofOut << "# Boolean switches" << endl;
+    ofOut << "#== Boolean switches" << endl;
     ofOut << "Vegetation_dynamics = 1" << endl;
     ofOut << "Reinfiltration = 1" << endl;
-    ofOut << "Channel = 1" << endl << endl;
+    ofOut << "Channel = 1" << endl ;
+    ofOut << "# Exponential profiles: if set to 0, vertically-uniform with value equal to" << endl;
+    ofOut << "# the top-of-profile open (see corresponding map inputs below)" << endl;
+    ofOut << "Hydraulic_Conductivity_profile = 0" << endl ;
+    ofOut << "Porosity_profile = 0" << endl << endl;
 
     ofOut << "# TOGGLE SWITCHES:" << endl;
     ofOut << "# Aerodynamic resistance choices: " << endl;
@@ -154,10 +158,12 @@ try{
     ofOut << "#   " << endl;
     ofOut << "DEM = DEM.map" << endl;
     ofOut << "Slope = slope.map " << endl;
-    ofOut << "Horiz_Hydraulic_Conductivity = Keff.map " << endl;
+    ofOut << "Top-of-profile_Horiz_Hydraulic_Conductivity = Keff.map " << endl;
+    ofOut << "Horiz_Hydraulic_Conductivity_Profile_Coeff = kKsat.map " << endl;
     ofOut << "Vert_Horz_Anis_ratio = KvKh.map " << endl;
     ofOut << "Terrain_Random_Roughness = randrough.map " << endl;
-    ofOut << "Porosity = poros.map " << endl;
+    ofOut << "Top-of-profile_Porosity = poros.map " << endl;
+    ofOut << "Porosity_Profile_Coeff = kporos.map " << endl;
     ofOut << "Air_entry_pressure = psi_ae.map " << endl;
     ofOut << "Brooks_Corey_lambda = BClambda.map " << endl;
     ofOut << "Residual_soil_moisture = theta_r.map " << endl;
@@ -216,6 +222,9 @@ try{
     ofOut << "Report_Soil_Water_Content_L2 = 0 " << endl;
     ofOut << "Report_Soil_Water_Content_L3 = 0 " << endl;
     ofOut << "Report_WaterTableDepth = 0 " << endl;
+    ofOut << "Report_Field_Capacity_L1 = 0 " << endl;
+    ofOut << "Report_Field_Capacity_L2 = 0 " << endl;
+    ofOut << "Report_Field_Capacity_L3 = 0 " << endl;
     ofOut << "Report_Soil_Sat_Deficit = 0 " << endl;
     ofOut << "Report_Ground_Water = 0 " << endl;
     ofOut << "Report_Soil_Net_Rad = 0 " << endl;
@@ -230,7 +239,8 @@ try{
     ofOut << "Report_Transpiration_sum = 0 " << endl;
     ofOut << "Report_Einterception_sum = 0 " << endl;
     ofOut << "Report_Esoil_sum = 0 " << endl;
-    ofOut << "Report_Net_Rad_sum = 0 " << endl << endl;
+    ofOut << "Report_Net_Rad_sum = 0 " << endl ;
+    ofOut << "Report_Canopy_Water_Stor_sum = 0 " << endl << endl;
 
     ofOut << "Report_Veget_frac = 0 " << endl;
     ofOut << "Report_Stem_Density = 0 " << endl;
@@ -259,6 +269,7 @@ try{
     ofOut << "Report_Surface_to_Channel = 0 " << endl;
     ofOut << "Report_Infiltration = 0" << endl ;
     ofOut << "Report_Return_Flow_Surface = 0" << endl ;
+    ofOut << "Report_Recharge_to_Layer3 = 0" << endl ;
     ofOut << "Report_Overland_Inflow = 0" << endl ;
     ofOut << "Report_Stream_Inflow = 0" << endl;
     ofOut << "Report_Groundwater_Inflow = 0 " << endl ;
@@ -298,6 +309,9 @@ try{
     ofOut << "Ts_Soil_Water_Content_L2 = 1 " << endl;
     ofOut << "Ts_Soil_Water_Content_L3 = 1 " << endl;
     ofOut << "Ts_WaterTableDepth = 0 " << endl;
+    ofOut << "Ts_Field_Capacity_L1 = 0 " << endl;
+    ofOut << "Ts_Field_Capacity_L2 = 0 " << endl;
+    ofOut << "Ts_Field_Capacity_L3 = 0 " << endl;
     ofOut << "Ts_Soil_Sat_Deficit = 0 " << endl;
     ofOut << "Ts_Ground_Water = 0 " << endl;
     ofOut << "Ts_Soil_Net_Rad = 0 " << endl;
@@ -312,7 +326,8 @@ try{
     ofOut << "Ts_Transpiration_sum = 1 " << endl;
     ofOut << "Ts_Einterception_sum = 1 " << endl;
     ofOut << "Ts_Esoil_sum = 1 " << endl;
-    ofOut << "Ts_Net_Rad_sum = 0 " << endl << endl;
+    ofOut << "Ts_Net_Rad_sum = 0 " << endl ;
+    ofOut << "Ts_Canopy_Water_Stor_sum = 0 " << endl << endl;
 
     ofOut << "Ts_Veget_frac = 0 " << endl;
     ofOut << "Ts_Stem_Density = 0 " << endl;
@@ -341,6 +356,7 @@ try{
     ofOut << "Ts_Surface_to_Channel = 0 " << endl;
     ofOut << "Ts_Infiltration = 0" << endl ;
     ofOut << "Ts_Return_Flow_Surface = 0" << endl ;
+    ofOut << "Ts_Recharge_to_Layer3 = 0" << endl ;
     ofOut << "Ts_Overland_Inflow = 0" << endl ;
     ofOut << "Ts_Stream_Inflow = 0" << endl;
     ofOut << "Ts_Groundwater_Inflow = 0 " << endl ;
@@ -358,12 +374,12 @@ try{
     ofOut << "Ts_Groundwater_Outflow_acc = 0" << endl;
 
 
-   if (ofOut)
-	   ofOut.close();
-}
-catch(const std::exception &e){
-	cout << "Failure writing configuration template file with  " << e.what() << endl;
-	exit(EXIT_FAILURE);
-}
+    if (ofOut)
+      ofOut.close();
+  }
+  catch(const std::exception &e){
+    cout << "Failure writing configuration template file with  " << e.what() << endl;
+    exit(EXIT_FAILURE);
+  }
 }
 

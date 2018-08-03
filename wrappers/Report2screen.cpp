@@ -32,6 +32,7 @@
 
 int Report2Screen(){
 
+  /*
   // A few tracking reports here, so that 
   // the age mass balance check uses beg-of-time-step values, more simple!
   if(oControl->sw_trck){
@@ -57,44 +58,32 @@ int Report2Screen(){
       if(oControl->Rep_AgesoilAv || oControl->RepTs_AgesoilAv)
 	oTracking->CalcAgesoil_Av(*oBasin);
     }
-  }
+    }*/
+
+  // ==== BasinSummary.txt --------------------------------------------------------
   // -----------------------------------------------------
-
-
   printf("\nTotal Precipitation (m3):  %.2f \t", oBudget->precipitation);
-  //cout << "Total Precipitation (m3): " << oBudget->precipitation << "\t";
   ofSummary << oBudget->precipitation << "\t";
 
   printf("SWE (m3): %.2f \n", oBudget->snowpack);
-  //cout << "SWE (m3): " << oBudget->snowpack << "\t";
   ofSummary << oBudget->snowpack << "\t";
 
   printf("Canopy Storage (m3): %.2f \t", oBudget->canopy);
-  //cout << "Canopy Storage (m3): " << oBudget->canopy << "\n";
   ofSummary << oBudget->canopy << "\t";
 
   printf("Ponding (m3): %.2f \n", oBudget->ponding);
-  //cout << "Ponding: " << oBudget->ponding << "\t";
   ofSummary << oBudget->ponding << "\t";
 
   printf("Soil water (m3): %.2f \t", oBudget->vadose);
-  //cout << "Soil water (m3): " << oBudget->vadose << "\n";
   ofSummary << oBudget->vadose << "\t";
 
   printf("of which Groundwater (m3): %.2f \n", oBudget->grndwater);
-  //cout << "Groundwater: " << oBudget->grndwater << "\n";
   ofSummary << oBudget->grndwater << "\t";
 
-  /*printf("Gravity Water (m3): %.2f \n", oBudget->gravwater);
-  //cout << "Gravity Water: " << oBudget->gravwater << "\t";
-  ofSummary << oBudget->gravwater << "\t";*/
-
   printf("Total Evapotranspiration (m3): %.2f \t", oBudget->evaporation);
-  //cout << "Total Evapotranspiration (m3): " << oBudget->evaporation << "\n";
   ofSummary << oBudget->evaporation << "\t";
 
   printf("Total Soil Evaporation (m3): %.2f \n", oBudget->evaporationS);
-  //cout << "Total Evapotranspiration (m3): " << oBudget->evaporation << "\n";
   ofSummary << oBudget->evaporationS << "\t";
 
   printf("Total Canopy Evaporation (m3): %.2f \t", oBudget->evaporationI);
@@ -107,15 +96,10 @@ int Report2Screen(){
   ofSummary << oBudget->leakage << "\t";
 
   printf("Total OvlndFlow output (m3): %.2f \t", oBudget->ovlndflow);
-  //cout << "Total OvlndFlow output (m3): " << oBudget->ovlndflow << "\n";
   ofSummary << oBudget->ovlndflow << "\t";
 
   printf("Total GWFlow output (m3): %.2f \n", oBudget->gwtrflow);
   ofSummary << oBudget->gwtrflow << "\t";
-
-  // Saturated area (% of the catchment)
-  printf("Saturated area fraction: %.2f \n", oBudget->satarea);
-  ofSummary << oBudget->satarea << "\t";
 
   printf("Run-off to channel (m3): %.2f \t", oBudget->srftochn);
   ofSummary << oBudget->srftochn << "\t";
@@ -123,10 +107,58 @@ int Report2Screen(){
   printf("GW to channel (m3): %.2f \n", oBudget->gwtochn);
   ofSummary << oBudget->gwtochn << "\t";
 
+  printf("Recharge (to layer 3, m3): %.2f \t", oBudget->recharge);
+  ofSummary << oBudget->recharge << "\t";
+
+  // Saturated area (% of the catchment)
+  printf("Saturated area fraction: %.2f \n", oBudget->satarea);
+  ofSummary << oBudget->satarea << "\t";
+
   printf("Mass Balance Error (%): %e \n", oBudget->MBErr);
   ofSummary << oBudget->MBErr ;//<< "\t";
 
+  if(oControl->sw_trck and oControl->sw_2H){
+    //printf("Deuterium Mass Balance Error (%): %e \n", oBudget->MBErr_d2H);
+    ofSummary << "\t" << oBudget->MBErr_d2H ;
+  }
+
+  if(oControl->sw_trck and oControl->sw_18O){
+    //printf("Oxygen 18 Mass Balance Error (%): %e \n", oBudget->MBErr_d18O);
+    ofSummary << "\t" << oBudget->MBErr_d18O ;
+  }
+
+  if(oControl->sw_trck and oControl->sw_Age){
+    //printf("Age Mass Balance Error (%): %e \n", oBudget->MBErr_Age);
+    ofSummary << "\t" << oBudget->MBErr_Age ;
+  }
+
   ofSummary << "\n";
+
+  // ==== BasinAgeSummary.txt --------------------------------------------------------
+  // -----------------------------------------------------
+  if(oControl->sw_trck and oControl->sw_Age){
+    ofAgeSummary << oBudget->AgeTot << "\t";
+    ofAgeSummary << oBudget->Agesnowpack << "\t";
+    ofAgeSummary << oBudget->Agecanopy << "\t";
+    ofAgeSummary << oBudget->Ageponding << "\t";
+    ofAgeSummary << oBudget->Agevadose << "\t";
+    ofAgeSummary << oBudget->AgesoilL1 << "\t";
+    ofAgeSummary << oBudget->AgesoilL2 << "\t";
+    ofAgeSummary << oBudget->AgesoilL3 << "\t";
+    ofAgeSummary << oBudget->Agegrndwater << "\t";
+    ofAgeSummary << oBudget->AgeET << "\t";
+    ofAgeSummary << oBudget->AgeevapS << "\t";
+    ofAgeSummary << oBudget->AgeevapI << "\t";
+    ofAgeSummary << oBudget->AgeevapT << "\t";
+    ofAgeSummary << oBudget->Ageleakage << "\t";
+    ofAgeSummary << oBudget->AgeOvlndOut << "\t";
+    ofAgeSummary << oBudget->AgeGWOut << "\t";
+    ofAgeSummary << oBudget->AgeOut << "\t";
+    ofAgeSummary << oBudget->Agesrftochn << "\t";
+    ofAgeSummary << oBudget->Agegwtochn << "\t";   
+    ofAgeSummary << oBudget->Agerecharge << "\n";
+
+  }
 
   return EXIT_SUCCESS;
 }

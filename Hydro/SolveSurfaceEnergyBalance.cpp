@@ -101,10 +101,10 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 
   MeltFac = _meltCoeff->matrix[r][c];
   
-  //REAL8 temp = (-38113*(_fieldcap->matrix[r][c]/13.515)*expl(-13.515*theta/_fieldcap->matrix[r][c])+193.880417969279)/(38113*(_fieldcap->matrix[r][c]/13.515)*(expl(-13.515*_theta_r->matrix[r][c]/_fieldcap->matrix[r][c])-expl(-13.515)));//rs/(-3.8113e4*(_fieldcap->matrix[r][c]/13.515)*(expl(-13.515) - expl(-13.515*_theta_r->matrix[r][c]/_fieldcap->matrix[r][c])));
+  //REAL8 temp = (-38113*(_fieldcapL1->matrix[r][c]/13.515)*expl(-13.515*theta/_fieldcapL1->matrix[r][c])+193.880417969279)/(38113*(_fieldcapL1->matrix[r][c]/13.515)*(expl(-13.515*_theta_r->matrix[r][c]/_fieldcapL1->matrix[r][c])-expl(-13.515)));//rs/(-3.8113e4*(_fieldcapL1->matrix[r][c]/13.515)*(expl(-13.515) - expl(-13.515*_theta_r->matrix[r][c]/_fieldcapL1->matrix[r][c])));
   
   h = _snow->matrix[r][c];
-  n = _porosity->matrix[r][c];
+  n = _porosityL1->matrix[r][c];
   //ea = AirEmissivity(atm.getTemperature()->matrix[r][c]);
   rho_a = AirDensity(atm.getTemperature()->matrix[r][c]); //kgm-3
   
@@ -114,7 +114,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
   //d = sqrt((K/C) * Pe / PI);
   d = sqrt( (K/C) / ( 2 * ( 2 * PI / Pe) ) );
   
-  fc = _fieldcap->matrix[r][c];
+  fc = _fieldcapL1->matrix[r][c];
   //thetar = _theta_r->matrix[r][c];
   if (h>0.005){
     beta = 1; //relative humidity in snow pores is assumed to be saturated. Switch when there is at least 1 cms of snow
@@ -212,7 +212,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
 
     // Convert Ts to Kelvins for fractionation  
     trck.MixingV_evapS(atm, *this, ctrl, d1, theta, Ts+273.15, etp, beta,
-		       d2H_evap, d18O_evap, Age_evap, r, c);   
+    		       d2H_evap, d18O_evap, Age_evap, r, c);   
 
     // Vegetation-dependent values are assigned here because fForest is private (to be fixed?)
     if(ctrl.sw_2H)

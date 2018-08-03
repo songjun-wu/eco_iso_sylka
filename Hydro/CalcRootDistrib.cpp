@@ -54,7 +54,7 @@ int Basin::CalcRootDistrib(){
 	d = _soildepth->matrix[r][c];
 	d1 = _depth_layer1->matrix[r][c];
 	d2 = _depth_layer2->matrix[r][c];
-      
+	
 	for (s = 0; s < nsp; s++) {
 
 	  if (s == nsp - 1) { //if this is bare ground set fracs to 0
@@ -71,11 +71,11 @@ int Basin::CalcRootDistrib(){
 	  fForest->setRootFrac1Species(s, r, c, frac1);
 	  fForest->setRootFrac2Species(s, r, c, frac2);
 	} 
-	
-	//k = _Kroot->matrix[r][c];
-	//_rootfrac1->matrix[r][c] = (1 - expl(-k*d1))/(1-expl(-k*d));
-	//_rootfrac2->matrix[r][c] = (expl(-k*d1) - expl(-k*(d1+d2)))/(1-expl(-k*d));
-
+	/*
+	k = _Kroot->matrix[r][c];
+	_rootfrac1->matrix[r][c] = (1 - expl(-k*d1))/(1-expl(-k*d));
+	_rootfrac2->matrix[r][c] = (expl(-k*d1) - expl(-k*(d1+d2)))/(1-expl(-k*d));
+	*/
       } // for
   } //end omp parallel block
   return EXIT_SUCCESS;

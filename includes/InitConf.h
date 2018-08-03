@@ -61,7 +61,9 @@ struct Control{
   bool sw_veg_dyn; //switch to turn on and off the dynamic vegetation module (allocation and lai calculation)
   bool sw_reinfilt; //switch to turn on and off the reinfiltration option
   bool sw_channel; //switch to turn on and off the channel option
-  
+  bool sw_expKsat; //switch to turn on and off the exponential profile for hydraulic conductivity
+  bool sw_expPoros; //switch to turn on and off the exponential profile for porosity
+
   /*multiple option switches*/
   //int toggle_soil_water_profile; //toggle between different soil moisture profile calculation
   int toggle_ra; //toggle between aerodynamic resistance options
@@ -75,11 +77,13 @@ struct Control{
   string fn_chmanningn; //channel roughness parameter
   
   /*Soil properties and parameters*/
-  string fn_ksat; //soil hydraulic conductivity mh-1
+  string fn_Ksat0; //top-of-column soil hydraulic conductivity ms-1
+  string fn_kKsat; //soil hydraulic conductivity profile coeff m
   string fn_kvkh; //vertical to horizontal ksat anisotropy ratio
   string fn_randrough; //terrain base random roughness to calcualte aerodynamic resistance (m)
   string fn_slope; //surface slope m m-1
-  string fn_poros; //volumetric
+  string fn_poros0; //top-of-column porosity (m3.m-3)
+  string fn_kporos; // porosity profile coeff (m)
   string fn_psi_ae; //soil air entry pressure m
   string fn_BClambda; //brooks and corey lambda param
   string fn_theta_r; //residual soil moisture
@@ -88,7 +92,7 @@ struct Control{
   string fn_depth_layer2;  //depth of layer 2 in m. Layer 3 evaluated from soil depth
   //string fn_root_fraction_lay1; //fraction of roots in soil layer 1
   //string fn_root_fraction_lay2; // fraction of roots in soil layer 2. Soil layer 3 implied
-  //string fn_Kroot; // coefficient for exponential root profile, in m-1
+  string fn_Kroot; // coefficient for exponential root profile, in m-1
   string fn_bedrock_leak; //bedrock leakance in s-1
   string fn_paramWc; //empirical parameter in water efficiency function for GPP calculation (see Landsber and Waring, 1997 or TRIPLEX paper
   string fn_paramWp;//empirical parameter in water efficiency function for GPP calculation (see Landsber and Waring, 1997 or TRIPLEX paper
@@ -153,6 +157,9 @@ struct Control{
   bool Rep_Soil_Water_Content_L2;
   bool Rep_Soil_Water_Content_L3;
   bool Rep_WaterTableDepth;
+  bool Rep_Field_Capacity_L1;
+  bool Rep_Field_Capacity_L2;
+  bool Rep_Field_Capacity_L3;
   bool Rep_Soil_Sat_Deficit;
   bool Rep_GWater;
   bool Rep_Soil_Net_Rad;
@@ -170,6 +177,7 @@ struct Control{
 
   bool Rep_Infilt;
   bool Rep_Exfilt;
+  bool Rep_Recharge;
   bool Rep_LattoSrf;
   bool Rep_LattoChn;
   bool Rep_LattoGW;
@@ -189,6 +197,7 @@ struct Control{
   bool Rep_Transpiration_sum;
   bool Rep_Einterception_sum;
   bool Rep_Esoil_sum;
+  bool Rep_Canopy_Water_Stor_sum;
   
   bool Rep_Veget_frac;
   bool Rep_Stem_Density;
@@ -235,6 +244,9 @@ struct Control{
   bool RepTs_Soil_Water_Content_L2;
   bool RepTs_Soil_Water_Content_L3;
   bool RepTs_WaterTableDepth;
+  bool RepTs_Field_Capacity_L1;
+  bool RepTs_Field_Capacity_L2;
+  bool RepTs_Field_Capacity_L3;
   bool RepTs_Soil_Sat_Deficit;
   bool RepTs_GroundWater;
   bool RepTs_Soil_Net_Rad;
@@ -252,6 +264,7 @@ struct Control{
 
   bool RepTs_Infilt;
   bool RepTs_Exfilt;
+  bool RepTs_Recharge;
   bool RepTs_LattoSrf;
   bool RepTs_LattoChn;
   bool RepTs_LattoGW;
@@ -271,6 +284,7 @@ struct Control{
   bool RepTs_Transpiration_sum;
   bool RepTs_Einterception_sum;
   bool RepTs_Esoil_sum;
+  bool RepTs_Canopy_Water_Stor_sum;
   
   bool RepTs_Veget_frac;
   bool RepTs_Stem_Density;
@@ -302,12 +316,19 @@ struct Control{
   bool sw_18O; //switch to turn on and off the 18O tracking option (if sw_trck = 1)
   bool sw_Age; //switch to turn on and off the age tracking option (if sw_trck = 1)
   bool sw_frac; //switch to turn on and off fractionation in soil evap (if sw_trck = 1)
-  bool sw_FSD; //switch to turn on the two pore domain option (if sw_trck = 1)
+  bool sw_TPD; //switch to turn on the two pore domain option (if sw_trck = 1)
 
   // Toggle switch for fractionation
   int toggle_hs; // toggle to choose which surface relative humidity for fractionation: 0->hs=1, 1->Lee&Pielke 1992, 2->Soderberg 2012
   int toggle_n; // toggle to choose how the turbulent factor is calculated for kinetic fractionation: 0->n=1, 1->follows Mathieu and Bariac 1996
   int toggle_ek; // choose how kinetic fractio. factor is calculated: 0=Merlivat, 1=Vogt, 2=Merlivat & Jouzel
+  int toggle_mix; // choose how input+output mixing is done: 
+  // 0->immediate mixing without volume change with output, (Vag=V(t), Cag=C(t+1))
+  // 1->using average "useful" volume (still without sotrage limit if Fin or Fout >> Vt, Vt+1): 
+  //    Cag=(C(t)+C(t+1))/2, Vag=(V(t)+Fin+max(0,V(t)-Fout))/2
+ 
+  string fn_psi_MW; // Transition pressure (in meters of head) from tightly-bound
+  // to tightly-bound to mobile water (if sw_TPD =1)
 
   /* input maps for initial values*/
   string fn_d2Hprecip; // deuterium signature in precipitations (2H, per mil)
@@ -337,8 +358,15 @@ struct Control{
   string fn_Agegroundwater;
   
   /* maps report */
+  bool Rep_Moist_MW1;
+  bool Rep_Moist_MW2;
+  bool Rep_Frac_MW1;
+  bool Rep_Frac_MW2;
+  bool Rep_Frac_MW12;
+
   bool Rep_d2Hprecip;
   bool Rep_d2Hcanopy;
+  bool Rep_d2Hcanopy_sum;
   bool Rep_d2Hsnowpack;
   bool Rep_d2Hsurface;
   bool Rep_d2Hsoil1;
@@ -353,9 +381,14 @@ struct Control{
   bool Rep_d2HevapI_sum;
   bool Rep_d2HevapT;
   bool Rep_d2HevapT_sum;
-
+  bool Rep_d2H_MW1;
+  bool Rep_d2H_MW2;
+  bool Rep_d2H_TB1;
+  bool Rep_d2H_TB2;
+  
   bool Rep_d18Oprecip;
   bool Rep_d18Ocanopy;
+  bool Rep_d18Ocanopy_sum;
   bool Rep_d18Osnowpack;
   bool Rep_d18Osurface;
   bool Rep_d18Osoil1;
@@ -370,8 +403,13 @@ struct Control{
   bool Rep_d18OevapI_sum;
   bool Rep_d18OevapT;
   bool Rep_d18OevapT_sum;
+  bool Rep_d18O_MW1;
+  bool Rep_d18O_MW2;
+  bool Rep_d18O_TB1;
+  bool Rep_d18O_TB2;
   
   bool Rep_Agecanopy;
+  bool Rep_Agecanopy_sum;
   bool Rep_Agesnowpack;
   bool Rep_Agesurface;
   bool Rep_Agesoil1;
@@ -386,10 +424,26 @@ struct Control{
   bool Rep_AgeevapI_sum;
   bool Rep_AgeevapT;
   bool Rep_AgeevapT_sum;
+  bool Rep_AgeGWtoChn;
+  bool Rep_AgeSrftoChn;
+  bool Rep_AgeRecharge;
+  bool Rep_Age_MW1;
+  bool Rep_Age_MW2;
+  bool Rep_Age_MWUp;
+  bool Rep_Age_TB1;
+  bool Rep_Age_TB2;
+  bool Rep_Age_TBUp;
   
   // Time series
+  bool RepTs_Moist_MW1;
+  bool RepTs_Moist_MW2;
+  bool RepTs_Frac_MW1;
+  bool RepTs_Frac_MW2;
+  bool RepTs_Frac_MW12;
+
   bool RepTs_d2Hprecip;
-  //bool RepTs_d2Hcanopy;
+  bool RepTs_d2Hcanopy;
+  bool RepTs_d2Hcanopy_sum;
   bool RepTs_d2Hsnowpack;
   bool RepTs_d2Hsurface;
   bool RepTs_d2Hsoil1;
@@ -404,9 +458,14 @@ struct Control{
   bool RepTs_d2HevapI_sum;
   bool RepTs_d2HevapT;
   bool RepTs_d2HevapT_sum;
+  bool RepTs_d2H_MW1;
+  bool RepTs_d2H_MW2;
+  bool RepTs_d2H_TB1;
+  bool RepTs_d2H_TB2;
   
   bool RepTs_d18Oprecip;
-  //bool RepTs_d18Ocanopy;
+  bool RepTs_d18Ocanopy;
+  bool RepTs_d18Ocanopy_sum;
   bool RepTs_d18Osnowpack;
   bool RepTs_d18Osurface;
   bool RepTs_d18Osoil1;
@@ -421,8 +480,13 @@ struct Control{
   bool RepTs_d18OevapI_sum;
   bool RepTs_d18OevapT;
   bool RepTs_d18OevapT_sum;
-  
-  //bool RepTs_Agecanopy;
+  bool RepTs_d18O_MW1;
+  bool RepTs_d18O_MW2;
+  bool RepTs_d18O_TB1;
+  bool RepTs_d18O_TB2;
+    
+  bool RepTs_Agecanopy;
+  bool RepTs_Agecanopy_sum;
   bool RepTs_Agesnowpack;
   bool RepTs_Agesurface;
   bool RepTs_Agesoil1;
@@ -437,7 +501,16 @@ struct Control{
   bool RepTs_AgeevapI_sum;
   bool RepTs_AgeevapT;
   bool RepTs_AgeevapT_sum;
-  // --------------------------
+  bool RepTs_AgeGWtoChn;
+  bool RepTs_AgeSrftoChn;
+  bool RepTs_AgeRecharge;
+  bool RepTs_Age_MW1;
+  bool RepTs_Age_MW2;
+  bool RepTs_Age_MWUp;
+  bool RepTs_Age_TB1;
+  bool RepTs_Age_TB2;
+  bool RepTs_Age_TBUp;
+    // --------------------------
   
   
   Control(){ 	current_ts_count = 1;

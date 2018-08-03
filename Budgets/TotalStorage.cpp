@@ -52,3 +52,88 @@ void Budget::TotalStorage( const grid *Canopy,
 	grndwater = AccountStorages(GrndWater, b);
 	vadose = soilL1 + soilL2 + soilL3 + grndwater;
 }
+
+void Budget::TotalStorage_d2H( const grid *Canopy, const grid *Canopy_d2H,
+			      const grid *Snow, const grid *Snow_d2H,
+			      const grid *Ponding, const grid *Ponding_d2H,
+			      const grid *SoilL1, const grid *SoilL1_d2H,
+			      const grid *SoilL2, const grid *SoilL2_d2H,
+			      const grid *SoilL3, const grid *SoilL3_d2H,
+			      const grid *GWater, const grid *GWater_d2H,
+			      const Basin *b)//, const Control *ctrl)
+{
+  canopy_d2H = AccountTrckStorages(Canopy, Canopy_d2H, b);
+  snowpack_d2H = AccountTrckStorages(Snow, Snow_d2H, b);
+  ponding_d2H = AccountTrckStorages(Ponding, Ponding_d2H, b);
+  soilL1_d2H = AccountTrckStorages(SoilL1, SoilL1_d2H, b);
+  soilL2_d2H = AccountTrckStorages(SoilL2, SoilL2_d2H, b);
+  soilL3_d2H = AccountTrckStorages(SoilL3, SoilL3_d2H, b);
+  grndwater_d2H = AccountTrckStorages(GWater, GWater_d2H, b);
+}
+
+void Budget::TotalStorage_d18O( const grid *Canopy, const grid *Canopy_d18O,
+			      const grid *Snow, const grid *Snow_d18O,
+			      const grid *Ponding, const grid *Ponding_d18O,
+			      const grid *SoilL1, const grid *SoilL1_d18O,
+			      const grid *SoilL2, const grid *SoilL2_d18O,
+			      const grid *SoilL3, const grid *SoilL3_d18O,
+			      const grid *GWater, const grid *GWater_d18O,
+				const Basin *b)//, const Control *ctrl)
+{
+  canopy_d18O = AccountTrckStorages(Canopy, Canopy_d18O, b);
+  snowpack_d18O = AccountTrckStorages(Snow, Snow_d18O, b);
+  ponding_d18O = AccountTrckStorages(Ponding, Ponding_d18O, b);
+  soilL1_d18O = AccountTrckStorages(SoilL1, SoilL1_d18O, b);
+  soilL2_d18O = AccountTrckStorages(SoilL2, SoilL2_d18O, b);
+  soilL3_d18O = AccountTrckStorages(SoilL3, SoilL3_d18O, b);
+  grndwater_d18O = AccountTrckStorages(GWater, GWater_d18O, b);
+}
+
+void Budget::TotalStorage_Age( const grid *Canopy, const grid *Canopy_Age,
+			      const grid *Snow, const grid *Snow_Age,
+			      const grid *Ponding, const grid *Ponding_Age,
+			      const grid *SoilL1, const grid *SoilL1_Age,
+			      const grid *SoilL2, const grid *SoilL2_Age,
+			      const grid *SoilL3, const grid *SoilL3_Age,
+			      const grid *GWater, const grid *GWater_Age,
+			       const Basin *b)//, const Control *ctrl)
+{
+
+  //cout << AgeTot << " "<< AgesoilL1 << " " << AgesoilL2 << " " << AgesoilL3 << " " << 
+  //  Agegrndwater << endl;
+  //cout << Agecanopy << " "<< Agesnowpack << " " << Ageponding << " " << endl;
+
+  canopy_Age = AccountTrckStorages(Canopy, Canopy_Age, b);
+  snowpack_Age = AccountTrckStorages(Snow, Snow_Age, b);
+  ponding_Age = AccountTrckStorages(Ponding, Ponding_Age, b);
+  soilL1_Age = AccountTrckStorages(SoilL1, SoilL1_Age, b);
+  soilL2_Age = AccountTrckStorages(SoilL2, SoilL2_Age, b);
+  soilL3_Age = AccountTrckStorages(SoilL3, SoilL3_Age, b);
+  grndwater_Age = AccountTrckStorages(GWater, GWater_Age, b);
+
+  //cout << Agesnowpack << endl;
+  Agecanopy = AccountTrckStorages2(Canopy, Canopy_Age, b);
+  Agesnowpack = AccountTrckStorages2(Snow, Snow_Age, b);
+  Ageponding = AccountTrckStorages2(Ponding, Ponding_Age, b);
+  AgesoilL1 = AccountTrckStorages2(SoilL1, SoilL1_Age, b);
+  AgesoilL2 = AccountTrckStorages2(SoilL2, SoilL2_Age, b);
+  AgesoilL3 = AccountTrckStorages2(SoilL3, SoilL3_Age, b);
+  Agegrndwater = AccountTrckStorages2(GWater, GWater_Age, b);
+
+  //cout << Agesnowpack << endl;
+  Agevadose = AccountTrckVadose(SoilL1, SoilL1_Age,
+				SoilL2, SoilL2_Age,
+				SoilL3, SoilL3_Age,
+				GWater, GWater_Age, b);
+  AgeTot = AccountTrckDomain(Canopy, Canopy_Age,
+			     Snow, Snow_Age,
+			     Ponding, Ponding_Age,
+			     SoilL1, SoilL1_Age,
+			     SoilL2, SoilL2_Age,
+			     SoilL3, SoilL3_Age,
+			     GWater, GWater_Age, b);
+
+  //cout << AgeTot << " "<< AgesoilL1 << " " << AgesoilL2 << " " << AgesoilL3 << " " << 
+  //  Agegrndwater << endl;
+  //cout << Agecanopy << " "<< Agesnowpack << " " << Ageponding << " " << endl;
+}

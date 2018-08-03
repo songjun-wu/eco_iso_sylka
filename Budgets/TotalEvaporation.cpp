@@ -34,3 +34,24 @@ void Budget::TotalEvaporation(const grid* map, const Basin *b)
 {
 	evaporation += AccountFluxes(map, b);
 }
+
+void Budget::InstOut_Age(const grid* evapS, const grid* CevapS,
+			 const grid* evapI, const grid* CevapI,
+			 const grid* evapT, const grid* CevapT,
+			 const grid* leakage, const grid* Cleakage,
+			 const vectCells *OvlndOut, const vectCells *COvlndOut,
+			 const vectCells *GWOut, const vectCells *CGWOut,
+			 const Basin *b)
+{
+  // In days
+  AgeOut = AccountTrckOut(evapS, CevapS,evapI, CevapI, evapT, CevapT,
+			  leakage, Cleakage, OvlndOut, COvlndOut, GWOut, CGWOut, b);
+}
+
+void Budget::InstEvaporation_Age(const grid* evapS, const grid* CevapS,
+				 const grid* evapI, const grid* CevapI,
+				 const grid* evapT, const grid* CevapT,
+				 const Basin *b)
+{
+  AgeET = AccountTrckET(evapS, CevapS,evapI, CevapI, evapT, CevapT, b);
+}

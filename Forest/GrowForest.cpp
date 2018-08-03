@@ -37,12 +37,13 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
   REAL8 alpha = 0; //canopy quantum efficiency
   REAL8 beta = 0; //canopy water efficiency
   REAL8 par = 0;
-  REAL8 lai = 0;
+  //REAL8 lai = 0;
   REAL8 forestAge = 0;
   REAL8 airTemp, optTemp, maxTemp, minTemp;
   REAL8 Wc, Wp, UsableTheta, Wr, gsmax;
   REAL8 fa, ft, fw;
   REAL8 theta_wp;
+  REAL8 fc1, fc2, fc3;
   REAL8 theta, theta2, theta3;
   REAL8 froot1, froot2, froot3;
   REAL8 E;
@@ -53,9 +54,9 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
   for (j = 0; j < _Nsp - 1; j++) //grow forest up to Nsp -1 because Nsp is bare soil
 
 #pragma omp parallel for default(none)			\
-  private( r, c, alpha, beta, par, E, lai, forestAge,		\
+  private( r, c, alpha, beta, par, E, forestAge,		\
 	   airTemp, optTemp, maxTemp, minTemp, Wc, Wp, gsmax,	\
-	   UsableTheta, Wr, fa, ft ,fw,  \
+	   UsableTheta, Wr, fa, ft ,fw, fc1, fc2, fc3,		    \
 	   theta_wp, theta, theta2, theta3, froot1, froot2, froot3) \
   shared(j,bas, atm, ctrl,dt)
 
@@ -70,7 +71,7 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       beta = _species[j].beta;
       par = atm.getIncomingShortWave()->matrix[r][c] * dt * 0.47; //dt to convert watts to joules. Assume 47% of incoming solar radiation is par
       E = _species[j]._Transpiration->matrix[r][c] * dt; //total amount of transpiration for the time period (m)
-      lai = _species[j]._LAI->matrix[r][c];
+      //lai = _species[j]._LAI->matrix[r][c];
       forestAge = _species[j]._AGE->matrix[r][c];
       airTemp = atm.getTemperature()->matrix[r][c];
       optTemp = _species[j].TempOpt;
@@ -88,12 +89,17 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       //froot1 = bas.getRootFrac1()->matrix[r][c];
       //froot2 = bas.getRootFrac2()->matrix[r][c];    
       froot3 = 1-froot1-froot2;
-      UsableTheta = (max<REAL8>(0,(theta-theta_wp)* froot1) +
-		     max<REAL8>(0,(theta2-theta_wp)* froot2) +
-		     max<REAL8>(0,(theta3-theta_wp)* froot3)) / (bas.getFieldCapacity()->matrix[r][c] - theta_wp);
+
+      fc1 = bas.getFieldCapacityL1()->matrix[r][c];
+      fc2 = bas.getFieldCapacityL2()->matrix[r][c];
+      fc3 = bas.getFieldCapacityL3()->matrix[r][c];
+
+      UsableTheta = max<REAL8>(0,min<REAL8>(1,(theta-theta_wp)/(fc1-theta_wp)))*froot1 +
+	max<REAL8>(0,min<REAL8>(1,(theta2-theta_wp)/(fc2-theta_wp)))*froot2 +
+	max<REAL8>(0,min<REAL8>(1,(theta3-theta_wp)/(fc3-theta_wp)))*froot3;
       
-      if (UsableTheta > bas.getFieldCapacity()->matrix[r][c])
-	UsableTheta = 1;
+      //      if (UsableTheta > bas.getFieldCapacity()->matrix[r][c])
+      //UsableTheta = 1;
 
       Wr = /*_species[j]._fraction->matrix[r][c] **/UsableTheta; //TODO: URGENT: improve competition for water. no competition now*/
 

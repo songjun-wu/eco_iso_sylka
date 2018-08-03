@@ -41,7 +41,11 @@ void Basin::CalcSoilMoistureProfile(Atmosphere &atm, Control &ctrl, REAL8 theta,
 		UINT4 row, UINT4 col) {
 
 	REAL8 d = _soildepth->matrix[row][col];
-	REAL8 poros = _porosity->matrix[row][col];
+
+	REAL8 kp = _kporos->matrix[row][col];
+	REAL8 poros0 = _porosity0->matrix[row][col];
+	REAL8 poros = kp*poros0/d*(1-expl(-d/kp));
+
 	REAL8 theta_r = _theta_r->matrix[row][col];
 	REAL8 psi = _psi_ae->matrix[row][col];
 	REAL8 lambda = 1 / _BClambda->matrix[row][col];

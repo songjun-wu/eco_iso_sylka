@@ -30,6 +30,10 @@
 
 #include "Basin.h"
 
+UINT4 Basin::getNumSpecies() const {
+  return fForest->getNumSpecies();
+}
+
 grid *Basin::getVegetFrac(UINT4 n) const {
 		return fForest->getPropSpeciesMap(n);
 }
@@ -160,3 +164,15 @@ grid *Basin::getAgeevapS(UINT4 n) const {
 	return fForest->getAgeevapS(n);
 }
 
+void Basin::setAgecanopy(UINT4 n, UINT4 r, UINT4 c, REAL8 value) const {
+  fForest->setAgecanopy(n, r, c, value);
+}
+void Basin::setAgeevapS(UINT4 n, UINT4 r, UINT4 c, REAL8 value) const {
+  fForest->setAgeevapS(n, r, c, value);
+}
+void Basin::setAgeevapI(UINT4 n, UINT4 r, UINT4 c, REAL8 value) const {
+  fForest->setAgeevapI(n, r, c, value);
+}
+void Basin::setAgeevapT(UINT4 n, UINT4 r, UINT4 c, REAL8 value) const {
+  fForest->setAgeevapT(n, r, c, value);
+}

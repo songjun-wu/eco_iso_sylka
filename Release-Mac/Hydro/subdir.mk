@@ -5,15 +5,16 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../Hydro/CalcCatchArea.cpp \
-../Hydro/CalcFieldCapacity.cpp \
+../Hydro/CalcFracMobileWater.cpp \
 ../Hydro/CalcInitialStreamStorage.cpp \
 ../Hydro/CalcSoilResist.cpp \
+../Hydro/CalcTPDMoisture.cpp \
 ../Hydro/CalcRootDistrib.cpp \
 ../Hydro/CalcSoilMoistureProfile.cpp \
+../Hydro/CalcPropLayers.cpp \
 ../Hydro/CalculateForestGrowth.cpp \
 ../Hydro/CalculateSatArea.cpp \
 ../Hydro/CanopyInterception.cpp \
-../Hydro/Exfiltration.cpp \
 ../Hydro/GWrouting.cpp \
 ../Hydro/Infilt_GreenAmpt.cpp \
 ../Hydro/KinematicWave.cpp \
@@ -26,15 +27,16 @@ CPP_SRCS += \
 
 OBJS += \
 ./Hydro/CalcCatchArea.o \
-./Hydro/CalcFieldCapacity.o \
+./Hydro/CalcFracMobileWater.o \
 ./Hydro/CalcInitialStreamStorage.o \
+./Hydro/CalcTPDMoisture.o \
 ./Hydro/CalcSoilResist.o \
 ./Hydro/CalcRootDistrib.o \
 ./Hydro/CalculateForestGrowth.o \
 ./Hydro/CalcSoilMoistureProfile.o \
+./Hydro/CalcPropLayers.o \
 ./Hydro/CalculateSatArea.o \
 ./Hydro/CanopyInterception.o \
-./Hydro/Exfiltration.o \
 ./Hydro/GWrouting.o \
 ./Hydro/Infilt_GreenAmpt.o \
 ./Hydro/KinematicWave.o \
@@ -47,15 +49,16 @@ OBJS += \
 
 CPP_DEPS += \
 ./Hydro/CalcCatchArea.d \
-./Hydro/CalcFieldCapacity.d \
+./Hydro/CalcFracMobileWater.d \
 ./Hydro/CalcInitialStreamStorage.d \
+./Hydro/CalcTPDMoisture.d \
 ./Hydro/CalcSoilResist.d \
 ./Hydro/CalcRootDistrib.d \
 ./Hydro/CalcSoilMoistureProfile.d \
+./Hydro/CalcPropLayers.d \
 ./Hydro/CalculateForestGrowth.d \
 ./Hydro/CalculateSatArea.d \
 ./Hydro/CanopyInterception.d \
-./Hydro/Exfiltration.d \
 ./Hydro/GWrouting.d \
 ./Hydro/Infilt_GreenAmpt.d \
 ./Hydro/KinematicWave.d \

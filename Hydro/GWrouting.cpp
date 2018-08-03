@@ -42,7 +42,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	REAL8 hj1i1;
 	REAL8 R;
 	REAL8 dt = ctrl.dt;
-	REAL8 poros; //porosity
+	REAL8 poros1, poros2, poros3; //porosity
 	REAL8 soildepth, d1, d2, d3; //guess
 	REAL8 fc; //field capacity
 	REAL8 deficit; //soil water deficit to reach field capacity in m
@@ -65,20 +65,23 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	REAL8 Si1j1 = 0; //storage in channel at the end of time step
 
 	REAL8 leak = 0;
-//	grid *upstreamBC = new grid(*_GrndWater); //holds the upstream boundary conditions
 
 	dtdx = dt / _dx;
 
-	// Reinitialize to zero the fluxes upwards modified in the previous time step
+	// Reinitialize to zero the fluxes modified earlier / in the previous time step
 	_FluxExfilt->reset();
 	if(ctrl.sw_trck){
 	  _FluxSrftoL1->reset();
 	  _FluxL1toL2->reset();
 	  _FluxL2toL3->reset();
-	  _FluxL3toGW->reset();
 	  _FluxL2toL1->reset();
 	  _FluxL3toL2->reset();
-	  _FluxGWtoL3->reset();
+	  if(ctrl.sw_2H)
+	    trck.resetFd2HLat();
+	  if(ctrl.sw_18O)
+	    trck.resetFd18OLat();
+	  if(ctrl.sw_Age)
+	    trck.resetFAgeLat();
 	}
 	// Initialize others
 	_FluxLattoSrf->reset();
@@ -90,7 +93,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  r = _vSortedGrid.cells[j].row;
 	  c = _vSortedGrid.cells[j].col;
 	  d = _vSortedGrid.cells[j].dir;
-	  
+
 	  //surface routing stuff
 	  returnflow = 0;
 	  Qij1 = _Disch_upstreamBC->matrix[r][c];
@@ -102,7 +105,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  //ca = _catcharea->matrix[r][c];
 	  gw = _GravityWater->matrix[r][c];
 	  
-	  fc = _fieldcap->matrix[r][c];
+	  fc = _fieldcapL3->matrix[r][c];
 	  soildepth = _soildepth->matrix[r][c];
 	  d1 = _depth_layer1->matrix[r][c];
 	  d2 = _depth_layer2->matrix[r][c];
@@ -114,45 +117,47 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    // Store time-step- and cumulated- infitlration flux (only if there is reinfiltration)
 	    _FluxInfilt->matrix[r][c] += _FluxSrftoL1->matrix[r][c];
 	    _AccInfilt->matrix[r][c] += _FluxSrftoL1->matrix[r][c];
-	    // Tracking
-	    if(ctrl.sw_trck)
-	      trck.MixingV_down(*this, ctrl, d1, d2, d3, fc, leak, r, c, true);
+	  }
+
+	  // Tracking
+	  if(ctrl.sw_trck){
+	    // Mixing across the profile, accounting for snowmelt and lateral input
+	    trck.MixingV_down(*this, ctrl, d1, d2, d3, fc, leak, r, c, 1);
+
+	    // Back up soil moisture before vertical redistrib
+	    _soilmoist1->matrix[r][c] = theta1; //soil moisture at t=t+1
+	    _soilmoist2->matrix[r][c] = theta2;
+	    _soilmoist3->matrix[r][c] = theta3;
+	    // Back up ponding before GW seepage (for rivers)
+	    _ponding->matrix[r][c] = ponding;
 	  }
 	  
+	  // For the rest of the routine, theta3 is only the content of the non-saturated
+	  // part of L3
 	  if (theta3 > fc) {
 	    gw = (theta3 - fc) * d3;
 	    theta3 = fc;
 	  } else
 	    gw = 0;
 	  
+
 	  if (ctrl.sw_channel && _channelwidth->matrix[r][c] > 0) { 
 	    //if this is a channel cell and channels are activated
 	    //maxR = ( _porosity->matrix[r][c] - fc ) * soildepth; 
 	    //calculates the maximum gravitational water that can go
-	    qc = _Ksat->matrix[r][c] * gw
+	    qc = _KsatL3->matrix[r][c] * gw
 	      * (1 - expl(-_chGWparam->matrix[r][c] * gw));
 	    gw -= qc * dtdx;
 
-	    //if(ctrl.sw_trck)
-	    //  trck.MixingV_seep(*this, ctrl, ponding, qc, r, c);
+	  }
 
-	  }
-	  
-	  // Tracking
-	  if(ctrl.sw_trck){
-	    // Back up soil moisture before vertical redistrib
-	    _soilmoist1->matrix[r][c] = theta1; //soil moisture at t=t+1
-	    _soilmoist2->matrix[r][c] = theta2;
-	    _soilmoist3->matrix[r][c] = theta3;
-	    // Back up ponding before adding GW seepage (for rivers)
-	    _ponding->matrix[r][c] = ponding;
-	  }
-	  
 	  _GravityWater->matrix[r][c] = gw;
 	  
 	  ///enter groundwater
-	  poros = _porosity->matrix[r][c];
-	  alpha = _Ksat->matrix[r][c] * sin(atan(_slope->matrix[r][c]));
+	  poros1 = _porosityL1->matrix[r][c];
+	  poros2 = _porosityL2->matrix[r][c];
+	  poros3 = _porosityL3->matrix[r][c];
+	  alpha = _KsatL3->matrix[r][c] * sin(atan(_slope->matrix[r][c]));
 	  
 	  deficit = 0;
 	  if (fabs(fc - theta3) > RNDOFFERR) {
@@ -177,67 +182,44 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  if (deficit > 0 && hj1i1 < 0) {
 	    theta3 += (dtdx * qj1i + hji1 + R - returnflow) / d3;
 	    hj1i1 = 0;
-	    
-	    // Tracking
-	    if(ctrl.sw_trck)
-	      _FluxGWtoL3->matrix[r][c] =  dtdx * qj1i + hji1 + R - returnflow;
-	    //std::min<double>(deficit, dtdx * qj1i + hji1 + R - returnflow);
-	    
-	  // If there's deficit and positive head -> capillary flow to L3
+	    // If there's deficit and positive head -> capillary flow to L3
 	  } else if (deficit > 0 && hj1i1 >= 0){
 	    theta3 += (dtdx * qj1i + hji1 + R - returnflow
 		       - hj1i1 * (1 + alpha * dtdx)) / d3;
-	    
-	    // Tracking
-	    if(ctrl.sw_trck)
-	      _FluxGWtoL3->matrix[r][c] = dtdx * qj1i + hji1 + R - returnflow - hj1i1 * (1 + alpha * dtdx);
 	  }
 	  
 	  // If the new amount of water in the cell is larger than the soil storage:
 	  // --> Solve for return flow
-	  if (((poros - theta3) * d3) < hj1i1) {
-	    returnflow = -(poros - theta3) * d3 * (1 + alpha * dtdx)	\
+	  if (((poros3 - theta3) * d3) < hj1i1) {
+	    returnflow = -(poros3 - theta3) * d3 * (1 + alpha * dtdx)	\
 	      + (dtdx * qj1i) + hji1 + R - deficit;
 	    theta2 += returnflow / d2;
 	    
 	    // Tracking
-	    if(ctrl.sw_trck){
-	      _FluxGWtoL3->matrix[r][c] += hj1i1 - (poros-theta3)*d3 ;
+	    if(ctrl.sw_trck)
 	      _FluxL3toL2->matrix[r][c] = returnflow ;
-	    }
 	    
-	    if (theta2 > poros) {
-	      theta1 += (theta2 - poros) * d2 / d1;
+	    if (theta2 > poros2) {
+	      theta1 += (theta2 - poros2) * d2 / d1;
 	      // Tracking
 	      if(ctrl.sw_trck)
-		_FluxL2toL1->matrix[r][c] += (theta2 - poros) * d2 ;
-	      theta2 = poros;
+		_FluxL2toL1->matrix[r][c] += (theta2 - poros2) * d2 ;
+	      theta2 = poros2;
 	    }
-	    if (theta1 > poros) {
-	      ponding += (theta1 - poros) * d1;
-	      _FluxExfilt->matrix[r][c] += (theta1 - poros) * d1 ;
-	      theta1 = poros;
+	    if (theta1 > poros1) {
+	      ponding += (theta1 - poros1) * d1;
+	      _FluxExfilt->matrix[r][c] += (theta1 - poros1) * d1 ;
+	      theta1 = poros1;
 	    }
 	    
 	    //ponding += returnflow;
 	    // Update head
-	    hj1i1 = (poros - theta3) * d3;
+	    hj1i1 = (poros3 - theta3) * d3;
 	  }
 	  
-	  // Tracking of return flow
-	  if(ctrl.sw_trck)
-	    trck.MixingV_up(*this, ctrl, d1, d2, d3, fc, r, c);
-
 	  //channel routing
 	  if (ctrl.sw_channel && _channelwidth->matrix[r][c] > 0) {
 	    
-	    // Tracking of seepage 
-	    // (following ECH2O's logic: seepage is taken fromn gw before the GW kinematic wave,
-	    // but it is added to channel after)
-
-	    if(ctrl.sw_trck)
-	      trck.MixingV_seep(*this, ctrl, ponding, qc, r, c);
-	    	    
 	    ponding += qc * dtdx;
 	    
 	    qall = ponding * _dx / dt;
@@ -258,14 +240,8 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
 	    ponding = 0;
 	    
-	  }
-	  
-	  // Update objects
-	  _soilmoist1->matrix[r][c] = theta1;
-	  _soilmoist2->matrix[r][c] = theta2;
-	  _soilmoist3->matrix[r][c] = theta3 + hj1i1 / d3;
-	  _GrndWater->matrix[r][c] = hj1i1;
-	  
+	  }	  
+
 	  // Locate downstream cell (if it exists)
 	  lat_ok = 0;
 	  switch (d) 
@@ -293,12 +269,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	    case 5: //if it is an outlet store the outflow m3s-1
 	      _dailyGwtrOutput.cells.push_back(cell(r, c, (alpha * hj1i1 * _dx)));
 	      _dailyOvlndOutput.cells.push_back(cell(r, c, Qk1+ponding * _dx *_dx / dt)); 
-	      //second term needed to account for outer at outlets with no channel
-	      
-	      // Tracking
-	      if(ctrl.sw_trck)
-		trck.OutletVals(ctrl, 1, r, c);
-	      
+	      //second term needed to account for outer at outlets with no channel	      
 	      break;
 	    case 6:
 	      rr = r;
@@ -326,11 +297,7 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  
 	  // Check there is downstream cell
 	  if(lat_ok){
-	    // Tracking lateral inputs to the downstream cell
-	    // Summed tracking contribution downstream cells (for mixing)
-	    if(ctrl.sw_trck)
-	      trck.MixingH(*this, ctrl, hj1i1, alpha, ponding, Qk1, dtdx, _dx, r, c, rr, cc);
-	    
+
 	    // Input water for downstream cells (additive)
 	    _FluxLattoSrf->matrix[rr][cc] += ponding ;
 	    _FluxLattoChn->matrix[rr][cc] += Qk1*dtdx/_dx;
@@ -354,12 +321,30 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  _AccSrftoLat->matrix[r][c] += _FluxSrftoLat->matrix[r][c];
 	  _AccGWtoLat->matrix[r][c] += _FluxGWtoLat->matrix[r][c];	  
 
-	  // Update ponding
+	  // Tracking of lateral in/out + return + seepage
+	  if(ctrl.sw_trck){
+	    trck.MixingV_latup(*this, ctrl, d1, d2, d3, fc, 
+			       Qk1, dtdx, _dx, r, c);
+	    // Tracking lateral inputs to the downstream cell
+	    // Summed tracking contribution downstream cells (for mixing)
+	    if(lat_ok == 1)
+	      trck.FCdownstream(*this, ctrl, Qk1, dtdx, _dx, r, c, rr, cc);
+	    else
+	      // Catchment outlets' values
+	      trck.OutletVals(ctrl, 1, r, c);
+	  }
+
+	  // Update ponding and water contents
 	  if (ctrl.sw_channel && _channelwidth->matrix[r][c] > 0)
 	    _ponding->matrix[r][c] = Si1j1 / (_dx * _dx);
 	  else
 	    _ponding->matrix[r][c] = 0.0;
-	  
+
+	  _soilmoist1->matrix[r][c] = theta1;
+	  _soilmoist2->matrix[r][c] = theta2;
+	  _soilmoist3->matrix[r][c] = theta3 + hj1i1 / d3;
+	  _GrndWater->matrix[r][c] = hj1i1;
+
 	  // Save river discharge
 	  _Disch_old->matrix[r][c] = Qk1;
 	  Qk1 = 0;
@@ -372,6 +357,6 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	// Save previous GW and surface state
 	*_GrndWater_old = *_GrndWater;
 	*_ponding_old = *_ponding;
-	
+
 	return EXIT_SUCCESS;
 }

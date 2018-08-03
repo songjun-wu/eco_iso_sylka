@@ -36,3 +36,9 @@ void Budget::TotalGWtoChn(const grid *map, const Basin *b)
   // AccountStorages is used because FluxGWtoChn is already in m/tstep
   // (no need to multiply by dt)
 }
+
+// Instantaneous age reporting
+void Budget::InstGWtoChn_Age(const grid *map1, const grid *map2, const Basin *b)
+{
+  Agegwtochn = AccountTrckFluxes2(map1, map2, b);
+}

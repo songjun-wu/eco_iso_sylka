@@ -7,6 +7,7 @@ CPP_SRCS += \
 ../Budgets/AccountFluxes.cpp \
 ../Budgets/AccountRelArea.cpp \
 ../Budgets/AccountStorages.cpp \
+../Budgets/AccountTrckStorages.cpp \
 ../Budgets/MassBalanceError.cpp \
 ../Budgets/TotalEvaporation.cpp \
 ../Budgets/TotalEvaporationS.cpp \
@@ -16,10 +17,12 @@ CPP_SRCS += \
 ../Budgets/TotalLeakage.cpp \
 ../Budgets/TotalOvlndFlow.cpp \
 ../Budgets/TotalPrecipitation.cpp \
+../Budgets/TotalRecharge.cpp \
 ../Budgets/TotalSaturationArea.cpp \
 ../Budgets/TotalSrftoChn.cpp \
 ../Budgets/TotalStorage.cpp \
-../Budgets/totalGrndFlow.cpp
+../Budgets/totalGrndFlow.cpp \
+../Budgets/TrckBalanceError.cpp
 
 OBJS += \
 ./Budgets/AccountFluxes.o \
@@ -34,10 +37,12 @@ OBJS += \
 ./Budgets/TotalLeakage.o \
 ./Budgets/TotalOvlndFlow.o \
 ./Budgets/TotalPrecipitation.o \
+./Budgets/TotalRecharge.o \
 ./Budgets/TotalSaturationArea.o \
 ./Budgets/TotalSrftoChn.o \
 ./Budgets/TotalStorage.o \
-./Budgets/totalGrndFlow.o 
+./Budgets/totalGrndFlow.o \
+./Budgets/TrckBalanceError.o
 
 CPP_DEPS += \
 ./Budgets/AccountFluxes.d \
@@ -52,10 +57,13 @@ CPP_DEPS += \
 ./Budgets/TotalLeakage.d \
 ./Budgets/TotalOvlndFlow.d \
 ./Budgets/TotalPrecipitation.d \
+./Budgets/TotalRecharge.d \
 ./Budgets/TotalSaturationArea.d \
 ./Budgets/TotalSrftoChn.d \
 ./Budgets/TotalStorage.d \
-./Budgets/totalGrndFlow.d 
+./Budgets/totalGrndFlow.d \
+./Budgets/TrckBalanceError.d
+
 
 # Each subdirectory must supply rules for building sources it contributes
 Budgets/%.o: ../Budgets/%.cpp

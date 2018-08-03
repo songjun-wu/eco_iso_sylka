@@ -33,29 +33,38 @@
 
 int SolveTimeStep(){
 
-	oBasin->SolveCanopyFluxes(*oAtmosphere, *oControl, *oTracking);
-	oBasin->SolveSurfaceFluxes(*oAtmosphere, *oControl, *oTracking);
-	oBasin->CalculateGrowForest(*oAtmosphere, *oControl);
-	oBasin->DailyGWRouting(*oAtmosphere, *oControl, *oTracking);
-	oBasin->CalculateSatArea(*oAtmosphere, *oControl);
-	/*
-  	if(oControl->sw_trck){
-	  if(oControl->sw_2H){
-	    if(oControl->Rep_d2HsoilUp || oControl->RepTs_d2HsoilUp)
-	      oTracking->Calc2Hsoil_12(*oBasin);
-	  }
-	  if(oControl->sw_18O){
-	    if(oControl->Rep_d18OsoilUp || oControl->RepTs_d18OsoilUp)
-	      oTracking->Calc18Osoil_12(*oBasin);
-	      }
+  oBasin->SolveCanopyFluxes(*oAtmosphere, *oControl, *oTracking);
+  oBasin->SolveSurfaceFluxes(*oAtmosphere, *oControl, *oTracking);
+  oBasin->CalculateGrowForest(*oAtmosphere, *oControl);
+  oBasin->DailyGWRouting(*oAtmosphere, *oControl, *oTracking);
+  oBasin->CalculateSatArea(*oAtmosphere, *oControl);
 
-	  if(oControl->sw_Age){
-	    // Increment age by one time step duration
-	    oTracking->IncrementAge(*oBasin, *oControl);
-	    // Reported quantities
-	    if(oControl->Rep_AgesoilUp || oControl->RepTs_AgesoilUp)
-	      oTracking->CalcAgesoil_12(*oBasin);
-	  }
-	}*/
-		return EXIT_SUCCESS;
+  // If tracking...	  
+  if(oControl->sw_trck){
+    // If Two-pore...
+    if(oControl->sw_TPD){
+      // Calculate the soil-averaged tracer values
+      oTracking->CalcTPDtoLayers(*oBasin, *oControl);
+      // Calculate the relative fraction of tightly-bound domain
+      oBasin->CalcFracMobileWater();
+    }
+
+    if(oControl->sw_2H and 
+       (oControl->Rep_d2HsoilUp || oControl->RepTs_d2HsoilUp))
+      oTracking->Calcd2Hsoil_12(*oBasin);
+    
+    if(oControl->sw_18O and
+       (oControl->Rep_d18OsoilUp || oControl->RepTs_d18OsoilUp))
+      oTracking->Calcd18Osoil_12(*oBasin);
+
+    if(oControl->sw_Age){
+      // Increment age by one time step duration
+      oTracking->IncrementAge(*oBasin, *oControl);
+      // Reported quantities
+      if(oControl->Rep_AgesoilUp || oControl->RepTs_AgesoilUp)
+	oTracking->CalcAgesoil_12(*oBasin);
+    }
+  }
+
+  return EXIT_SUCCESS;
 }

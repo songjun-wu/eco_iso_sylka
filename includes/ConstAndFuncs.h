@@ -55,6 +55,9 @@ const double thermal_conduct_air = 0.024; //thermal conductivity of air Wm-1C-1
 const double max_snow_albedo = 0.8; //maximum albedo of snow
 
 
+// Slow-to-Mobile water transition tension
+//const double psiMW = 0.612; // in meter of head (= 600 hPa)
+
 //Print progress bar when sorting gridd in GridLdd.cpp
 extern void printProgBar( int percent );
 

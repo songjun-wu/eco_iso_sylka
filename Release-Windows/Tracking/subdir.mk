@@ -9,6 +9,7 @@ CPP_SRCS += \
 ../Tracking/CheckMapsTrck.cpp \
 ../Tracking/Fractionation_Esoil.cpp \
 ../Tracking/IncrementAge.cpp \
+../Tracking/MixingTPD_postET.cpp \
 ../Tracking/MixingH.cpp \
 ../Tracking/MixingV_down.cpp \
 ../Tracking/MixingV_evapS.cpp \
@@ -24,6 +25,7 @@ OBJS += \
 ./Tracking/CheckMapsTrck.o\
 ./Tracking/Fractionation_Esoil.o \
 ./Tracking/IncrementAge.o \
+./Tracking/MixingTPD_postET.o \
 ./Tracking/MixingH.o \
 ./Tracking/MixingV_down.o \
 ./Tracking/MixingV_evapS.o \
@@ -39,6 +41,7 @@ CPP_DEPS += \
 ./Tracking/CheckMapsTrck.d \
 ./Tracking/Fractionation_Esoil.d \
 ./Tracking/IncrementAge.d \
+./Tracking/MixingTPD_postET.d \
 ./Tracking/MixingH.d \
 ./Tracking/MixingV_down.d \
 ./Tracking/MixingV_evapS.d \
@@ -52,7 +55,7 @@ CPP_DEPS += \
 Tracking/%.o: ../Tracking/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	x86_64-w64-mingw32-gcc -DCPU_LITTLE_ENDIAN -I"../includes" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

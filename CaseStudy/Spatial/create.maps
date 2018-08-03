@@ -1,5 +1,3 @@
-#!/bin/ksh
-
 echo
 echo \#\#\# Basic site geometry \#\#\#
 echo
@@ -73,10 +71,16 @@ echo \#\#\# Soil depth
 pcrcalc 'depth_soil.map = topind.map/areaaverage(topind.map,nominal(unit.map))'
 
 echo \#\#\# Effective hydraulic conductivity
-pcrcalc 'Keff.map = 1 / (depth_soil.map * 36000)'
+pcrcalc 'Ksat0.map = 1 / (depth_soil.map * 36000)'
+
+echo \#\#\# Effective hydraulic conductivity
+pcrcalc 'kKsat.map = 0.15 * unit.map'
 
 echo \#\#\# Porosity
-pcrcalc 'poros.map = 1 / (1 + exp(0.01 * topind.map))'
+pcrcalc 'poros0.map = 1 / (1 + exp(0.01 * topind.map))'
+
+echo \#\#\# Porosity
+pcrcalc 'kporos.map = 2 * unit.map'
 
 echo \#\#\# Snow water equivalent
 pcrcalc 'swe.map = unit.map * 0'
