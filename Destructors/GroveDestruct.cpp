@@ -84,11 +84,7 @@ Grove::~Grove(){
 			delete _Esoil;
 	if(_LeafWatPot)
 		delete _LeafWatPot;
-	if(_rootfrac1)
-		delete _rootfrac1;
-	if(_rootfrac2)
-		delete _rootfrac2;
-
+	
 	// Tracking
 	if(_d2Hcanopy)
 		delete _d2Hcanopy;

@@ -234,8 +234,6 @@ try{
 
     ofOut << "Report_Veget_frac = 0 " << endl;
     ofOut << "Report_Stem_Density = 0 " << endl;
-    ofOut << "Report_RootFracL1_species = 0 " << endl;
-    ofOut << "Report_RootFracL2_species = 0 " << endl;
     ofOut << "Report_Leaf_Area_Index = 1 " << endl;
     ofOut << "Report_Stand_Age = 0 " << endl;
     ofOut << "Report_Canopy_Conductance = 0 " << endl;
@@ -316,8 +314,6 @@ try{
 
     ofOut << "Ts_Veget_frac = 0 " << endl;
     ofOut << "Ts_Stem_Density = 0 " << endl;
-    ofOut << "Ts_RootFracL1_species = 0 " << endl;
-    ofOut << "Ts_RootFracL2_species = 0 " << endl;
     ofOut << "Ts_Leaf_Area_Index = 1 " << endl;
     ofOut << "Ts_Stand_Age = 0 " << endl;
     ofOut << "Ts_Canopy_Conductance = 1 " << endl;

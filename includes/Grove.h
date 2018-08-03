@@ -66,7 +66,6 @@ struct Grove {
 	REAL8 albedo; //albedo of dry canopy
 	REAL8 emissivity; //emissivity of dry canopy
 	REAL8 KBeers; //Extinction coefficient in Beers law of light extinction
-	REAL8 Kroot; //Extinction coefficient in Beers law of light extinction
 	REAL8 beta; //canopy water efficiency (gC m-1)
 	// Sperry parameters
 	REAL8 sperry_d; // Sperry model scaling parameter (m)
@@ -107,9 +106,7 @@ struct Grove {
 	grid *_Transpiration; //transpiration component ms-1
 	grid *_Esoil; // soil evaporation component m.s-1
 	grid *_LeafWatPot; // leaf water potential (positive m of head)
-  grid *_rootfrac1; // root fraction in first layer
-  grid *_rootfrac2; // root fraction in first layer
-
+  
 	// Tracking
 	grid *_d2Hcanopy; // d2H of interception water
 	grid *_d18Ocanopy; // d18O of interception water

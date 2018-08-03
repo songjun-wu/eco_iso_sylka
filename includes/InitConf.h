@@ -192,8 +192,6 @@ struct Control{
   
   bool Rep_Veget_frac;
   bool Rep_Stem_Density;
-  bool Rep_RootFrac1Species;
-  bool Rep_RootFrac2Species;
   bool Rep_Leaf_Area_Index;
   bool Rep_Stand_Age;
   bool Rep_Canopy_Conductance;
@@ -274,8 +272,6 @@ struct Control{
   
   bool RepTs_Veget_frac;
   bool RepTs_Stem_Density;
-  bool RepTs_RootFrac1Species;
-  bool RepTs_RootFrac2Species;
   bool RepTs_Leaf_Area_Index;
   bool RepTs_Canopy_Conductance;
   bool RepTs_GPP;
