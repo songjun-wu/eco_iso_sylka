@@ -62,7 +62,7 @@ How to Cite
 
 Please, acknowledge the use of |ech2o|-iso by citing:
 
-- Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (2018). |ech2o|-iso 1.0: Water isotopes and age tracking in a process-based, distributed ecohydrological model, Geosci. Model Dev. Discuss., `<https://doi.org/10.5194/gmd-2018-25>`_, *in review for Geosci. Model Dev.*.
+- Kuppel, S., Tetzlaff, D., Maneta, M. P., and Soulsby, C. (2018). |ech2o|-iso 1.0: Water isotopes and age tracking in a process-based, distributed ecohydrological model, Geosci. Model Dev., 11, 3045-3069, `<https://doi.org/10.5194/gmd-11-3045-2018>`_.
 
 Further references (and useful reads!):
 
