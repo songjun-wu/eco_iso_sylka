@@ -130,6 +130,7 @@ karst area or similar), so if we see internal flow sinks it may be due
 to errors in the DEM that to some extent can be corrected with some of
 the functions in PCRaster (see PCRaster documentation for this)
 
+**Important**
 For technical reasons, needs a buffer of at least 1 cell of no-data (MV)
 around the drainage network (i.e. the edges of the ldd image must be
 no-data or missing value cells). The easiest way is to calculate the ldd
