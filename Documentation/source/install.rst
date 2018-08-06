@@ -3,7 +3,7 @@
 Installation: compiling the code
 ================================
 
-The following page contains information on how to compile the latest version of |ech2o|-iso, whose executable is ``ech2o``.  
+The following page contains information on how to compile the latest version of |ech2o|-iso, whose executable is ``ech2o_iso``.  
     
 The current version of |ech2o|-iso does not have a configure script. The Makefile has been generated for the gnu c++ compiler and does not check for dependencies. MINGW or CYGWIN is necessary to compile in Windows. 
 
@@ -40,10 +40,10 @@ or download from
 and compile from source. Then replace the old libcsf64 library in the ``lib`` directory with the newly compiled library. Make sure you change the name of the new library so it has the same name as the old one. 
    
 
-2. Making ``ech2o``
-^^^^^^^^^^^^^^^^^^^^
+2. Making ``ech2o_iso``
+^^^^^^^^^^^^^^^^^^^^^^^
 
-*  Change to the ``Release`` folder within the source folder
+*  Change to the ``Release-*`` folder within the source folder, where ``*`` is your OS type: Linux, Mac or Windows.
 
 * If compiling for Windows, edit the objects.mk file and substitute item ``-lcsf64`` for ``-llibcsf64`` so that ``make`` will link against the correct static library. Save and close the editor
 
@@ -72,6 +72,6 @@ If you need assistance compiling the source, contact marco.maneta@umontana.edu, 
 
 If you find this documentation to be incomplete, please file a ticket in the appropriate issue tracker:
 
-* ech2o compilation issues:  https://bitbucket.org/sylka/ech2o_iso/issues
+* ech2o_iso compilation issues:  https://bitbucket.org/sylka/ech2o_iso/issues
 * asc2c compilation issues:  https://bitbucket.org/maneta/asc2c/issues
   

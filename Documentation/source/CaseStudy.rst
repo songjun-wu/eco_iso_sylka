@@ -30,7 +30,7 @@ edited. To generate a configuration file template, navigate to the
 ::
 
 <<<<<<< HEAD
-    ech2o -g config.ini
+    ech2o_iso -g config.ini
 =======
     ech2o_iso -g config.ini
 >>>>>>> bdbbd9a70ab083a03db4fa8a5fa309950b7710da
@@ -570,7 +570,7 @@ command:
 ::
 
 <<<<<<< HEAD
-    ech2o config.ini
+    ech2o_iso config.ini
 =======
     ech2o_iso config.ini
 >>>>>>> bdbbd9a70ab083a03db4fa8a5fa309950b7710da
