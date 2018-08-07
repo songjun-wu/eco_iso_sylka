@@ -53,7 +53,8 @@ Basin::Basin(Control &ctrl)
 		}
 		else{
 			printf("File not found!. Initializing and sorting grid...\n");
-
+			printf("WARNING -- if the progress bar stalls for too long, please consider checking your DEM map: it should\n");
+			printf("contain a buffer of at least 1 cell of no-data (mv) around the valid domain (see documentation) --\n");
 		/*sorts the basin with data cells according
 		 * to the ldd after _DEM and _ldd have been created*/
 			_vSortedGrid = Basin::SortGridLDD();
