@@ -29,9 +29,15 @@
  */
 
 #include <errno.h>
+#include <stdio.h>
+#include <string.h>
 #include "Atmosphere.h"
 
 Atmosphere::Atmosphere(Control &ctrl){
+
+  //reset the errno value to ensure that any errors in loading the binaries inputs are not
+  // "leftovers" from BasinConstruct failures
+  errno = 0;
 
   try{
 
@@ -116,7 +122,7 @@ Atmosphere::Atmosphere(Control &ctrl){
 
     }
     catch (string e){
-      cout << "Dang!!: cannot open " << e << "  file " << endl;
+      cout << "Dang!!: cannot find/read the" << e << "  file: error " << strerror(errno) << endl;
       throw;
     }
 

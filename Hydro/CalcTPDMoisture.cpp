@@ -26,7 +26,7 @@
  * --> translation of tightly-bound domain tension in mobile water moisture
  *
  *  Created on: Apr 6, 2018
- *      Author: Marco.Maneta
+ *      Author: Sylvain Kuppel
  */
 
 #include "Basin.h"

@@ -29,10 +29,16 @@
  */
 
 #include "Tracking.h"
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
 
 Tracking::Tracking(Control &ctrl, Basin &bsn)
 {
 
+  // reset the errno value
+  errno = 0;
+  
   // Construct NULL pointer in case the object is not fully constructed
   // (avoids memory leak)
   _d2Hcanopy_sum = NULL;
@@ -202,9 +208,30 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_Age_TB12 = new grid(*bsn.getDEM());
       }
     }
-	  
-    //Partial check of maps mainly to make sure no no data is written within the valid domain
-    CheckMapsTrck(ctrl, bsn);
+
+    try{
+
+      //Partial check of maps mainly to make sure no no data is written within the valid domain
+      CheckMapsTrck(ctrl, bsn);
+      if(errno!=0){
+	cout << "Error creating tracking maps: " << endl;
+	throw string("  ");
+      }
+            
+      // If Two-pore domain, initialize the maps based on inputs maps
+      if(ctrl.sw_TPD){
+	CalcInitTPD(bsn, ctrl);
+	if(errno!=0){
+	  cout << "Error calculating the initial tightly-bound / mobile tracking signatures: " << endl;
+	  throw string("  ");
+	}
+      }
+      
+    } catch (string e){
+      cout << "Check the  " << e << " maps, error " << strerror(errno) << endl;
+      throw;
+    }
+
 	  
   }catch (std::bad_alloc &)
     { cerr << " Cleaning tracking objects..." << "\n";
@@ -352,8 +379,4 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	    	    
       throw;
     }
-
-  // If Two-pore domain, initialize the maps based on inputs maps
-  if(ctrl.sw_TPD)
-    CalcInitTPD(bsn, ctrl);
 }
