@@ -42,10 +42,9 @@ void Basin::CalcSoilMoistureProfile(Atmosphere &atm, Control &ctrl, REAL8 theta,
 
 	REAL8 d = _soildepth->matrix[row][col];
 
-	REAL8 kp = _kporos->matrix[row][col];
 	REAL8 poros0 = _porosity0->matrix[row][col];
-	REAL8 poros = kp*poros0/d*(1-expl(-d/kp));
-
+	REAL8 kp, poros;
+	
 	REAL8 theta_r = _theta_r->matrix[row][col];
 	REAL8 psi = _psi_ae->matrix[row][col];
 	REAL8 lambda = 1 / _BClambda->matrix[row][col];
@@ -56,6 +55,13 @@ void Basin::CalcSoilMoistureProfile(Atmosphere &atm, Control &ctrl, REAL8 theta,
 	REAL8 fH, dfH;
 	UINT4 k = 0;
 
+	if(ctrl.sw_expPoros){
+	  kp = _kporos->matrix[row][col];
+	  poros = kp*poros0/d*(1-expl(-d/kp));
+	} else {
+	  poros = poros0;
+	}
+	
 	//TODO: prepare case of lambda = 1, which results in a different integrated function for soil moisture
 	//for the time being, if lambda =1 change it to 0.95 (lambda shouldnt be that high anyway)
 

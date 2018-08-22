@@ -113,12 +113,14 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 	Config.readInto(fn_patches, "ForestPatches");
 
 	Config.readInto(fn_Ksat0, "Top-of-profile_Horiz_Hydraulic_Conductivity");
-	Config.readInto(fn_kKsat, "Horiz_Hydraulic_Conductivity_Profile_Coeff");
+	if(sw_expKsat)
+	  Config.readInto(fn_kKsat, "Horiz_Hydraulic_Conductivity_Profile_Coeff");
 	Config.readInto(fn_kvkh, "Vert_Horz_Anis_ratio");
 	Config.readInto(fn_randrough, "Terrain_Random_Roughness");
 	Config.readInto(fn_slope, "Slope");
 	Config.readInto(fn_poros0, "Top-of-profile_Porosity");
-	Config.readInto(fn_kporos, "Porosity_Profile_Coeff");
+	if(sw_expPoros)
+	  Config.readInto(fn_kporos, "Porosity_Profile_Coeff");
 	Config.readInto(fn_psi_ae, "Air_entry_pressure");
 	Config.readInto(fn_BClambda, "Brooks_Corey_lambda");
 	Config.readInto(fn_theta_r, "Residual_soil_moisture");
