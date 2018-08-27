@@ -194,7 +194,7 @@ Basin::Basin(Control &ctrl)
 	//Partial check of maps mainly to make sure no no data is written within the valid domain
 	CheckMaps(ctrl);
 	if(errno!=0){
-	  cout << "Error creating maps: " << endl;
+	  cout << "Error in the input/initialized maps: " << endl;
 	  throw string(" ");
         }
 	//Fills-in the _catcharea map with the upstream catchment area of each cell

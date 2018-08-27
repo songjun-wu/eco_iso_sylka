@@ -134,13 +134,13 @@ void Basin::CheckMaps(Control &ctrl) {
 		 "soil depth map contains negative values inside the valid domain...\n");
 	throw e;
       }
-      /*
+      
       if (_Kroot->matrix[r][c] == _Kroot->nodata) {
 	string e(
 		 "root profile map contains no data inside the valid domain...\n");
 	throw e;
       }
-      */
+      
       if (_paramWc->matrix[r][c] == _paramWc->nodata) {
 	string e(
 		 "Soil parameter Wc map contains no data values inside the valid domain...\n");
