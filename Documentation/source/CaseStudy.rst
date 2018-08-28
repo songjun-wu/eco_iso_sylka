@@ -175,7 +175,7 @@ the functions in PCRaster (see PCRaster documentation for this).
 A map of the channels and the width of the channel is provided in the
 folder ``Spatial``. Inspect it using aguila and observe that cells with a channel
 have a positive number indicating the width of the channel in meters and
-cells without a channel have attribute 0 or nodata.
+cells without a channel should have attribute 0.
 
 The resistance presented by the channel to flow is given by Manning’s
 :math:`n` coefficient. Values for Manning’s :math:`n` coefficient needs
