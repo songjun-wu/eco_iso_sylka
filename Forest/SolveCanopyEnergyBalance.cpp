@@ -296,11 +296,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
     _species[s]._SensHeat_Can->matrix[r][c] = SensHeatCanopy(atm, ra, x[2],
 							     r, c);
 
-    CalculateCanopyConduct(bas, atm, ctrl, x[1], dgcdfgspsi, s, r, c); //Updates canopy conductance with final values of soil potential
+    //Updates canopy conductance with final values of soil potential
+    CalculateCanopyConduct(bas, atm, ctrl, x[1], dgcdfgspsi, s, r, c); 
 
-    ///////////this chunk of code is to make sure we are not transpiring below residual moisture content
-    /////////// Probably not needed anymore since mass balance is enforced in the system of eqs.
-    /////////// solved in this function
+    //////////////////////////////////////////
+    // This chunk of code is to make sure we are not transpiring below residual moisture content
+    // Probably not needed anymore since mass balance is enforced in the system of eqs.
+    // solved in this function
     REAL8 Tp;
     Tp = transp_a * ctrl.dt;
 
@@ -309,8 +311,13 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
     //Tp = (theta - thetar) * rootdepth;
     // DONE :-)
     theta = f1*theta1 + f2*theta2 + f3*theta3;
+
+    // Here we also check that theta is larger than both wp and thetar, otherwise
+    // Tp could end up being negative if e.g. wp > thetar
     if ((theta - std::max<double>(_species[s].WiltingPoint,thetar)) * rootdepth < Tp) {
-      Tp = (theta - std::max<double>(_species[s].WiltingPoint,thetar)) * rootdepth;
+      theta = (theta - std::max<double>(_species[s].WiltingPoint,thetar)) < 0 ? 0 :
+	(theta - std::max<double>(_species[s].WiltingPoint,thetar));
+      Tp = theta * rootdepth;
       transp_a = Tp / ctrl.dt;
     }
 

@@ -149,10 +149,10 @@ int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
   // Isotopic signature of evaporated water
   di_evap = std::max<double>(-1000,(hs*alpha_p*di_new - ha_p*di_atm - eps)/ (hs - ha_p + eps_k/1000));
 
-  if(abs(di_new)>100 or abs(di_evap)>1e3)
-     cout << r << " " << c << "| iso:" << iso << "| evapS:" << V_old-V_new << "| disoil_new:" << di_new << "|di_old:" << di_old <<
-       "| di_star:" << di_s << "| di_evap:" << di_evap << 
-       "| f:" << f <<"| m:" << m <<"| ha_p:" << ha_p <<"| hs:" << hs << endl;
+  // if(abs(di_new)>100 or abs(di_evap)>1e3)
+  //    cout << r << " " << c << "| iso:" << iso << "| evapS:" << V_old-V_new << "| disoil_new:" << di_new << "|di_old:" << di_old <<
+  //      "| di_star:" << di_s << "| di_evap:" << di_evap << 
+  //      "| f:" << f <<"| m:" << m <<"| ha_p:" << ha_p <<"| hs:" << hs << endl;
   
   return EXIT_SUCCESS;
   
