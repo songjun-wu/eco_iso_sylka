@@ -73,6 +73,7 @@ Basin::Basin(Control &ctrl)
     _slope = new grid(ctrl.path_BasinFolder + ctrl.fn_slope, ctrl.MapType);
 
     _Ksat0 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
+    _kKsat = NULL;
     if(ctrl.sw_expKsat)
       _kKsat = new grid(ctrl.path_BasinFolder + ctrl.fn_kKsat, ctrl.MapType);
 
@@ -80,6 +81,7 @@ Basin::Basin(Control &ctrl)
     _random_roughness = new grid(ctrl.path_BasinFolder + ctrl.fn_randrough, ctrl.MapType);
 
     _porosity0 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
+    _kporos = NULL;
     if(ctrl.sw_expPoros)
       _kporos = new grid(ctrl.path_BasinFolder + ctrl.fn_kporos, ctrl.MapType);
 
