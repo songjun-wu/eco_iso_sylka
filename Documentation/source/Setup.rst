@@ -1,4 +1,4 @@
-.. |ech2o| replace:: EcH\ :sub:`2`\ O
+A.. |ech2o| replace:: EcH\ :sub:`2`\ O
 
 Model set-up
 ============
