@@ -317,8 +317,8 @@ second layers, respectively.
 
 .. Important::
    In the ``master_KrootVeg`` version of the code, :math:`K_{root}` is
-   dependent on vegetation species, it must be provided in the
-   ``SpeciesParams.tab`` file (column 37).
+   dependent on vegetation species, it is thus read from the
+   ``SpeciesParams.tab`` file (column 37, preceding the ``is_grass`` switch).
 
 Finally, for simplicity we further assume that the bedrock at depth of
 the soil is impervious (leakance=0). This parameter varies between 0
