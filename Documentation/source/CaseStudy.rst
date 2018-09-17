@@ -299,18 +299,33 @@ temperature of 10\ :math:`^{\circ}C` throughout the basin:
 We will also assume that the first hydraulic layer of the soil is 10 cm
 deep (0.1 m). We will also assume that the second hydraulic layer is 10
 cm deep. will calculate the depth of the 3rd layer such that the sum of
-the three layers equals the soil depth at the pixel. Additionally, the
-first soil layer will contain 10% of the roots and the second layer will
-contain the remaining 90%. For simplicity we further assume that the
-bedrock at depth of the soil is impervious (leakance=0). This parameters
-varies between 0 (no flow boundary) and 1 (free drainage).
-
+the three layers equals the soil depth at the pixel.
 ::
 
     pcrcalc depth_soil1.map = unit.map * 0.1
     pcrcalc depth_soil2.map = unit.map * 0.1
-    pcrcalc rootfrac1.map = unit.map * 0.1
-    pcrcalc rootfrac2.map = unit.map * 0.9
+
+|ech2o|-iso assumes an exponential root profile: :math:`root(z)=exp(-K_{root}z)`.
+The :math:`K_{root}` parameter is to be provided as a map in the
+``master_1.0`` version of the code (default branch). Here we chose
+a value of 10 m\ :sup:`-1`, which, given the depths provided above,
+results in having ~63% and ~23% of the roots in the first and
+second layers, respectively.
+::
+
+   pcrcalc Kroot.map = unit.map * 0.1   
+
+.. Important::
+   In the ``master_KrootVeg`` version of the code, :math:`K_{root}` is
+   dependent on vegetation species, it is thus read from the
+   ``SpeciesParams.tab`` file (column 37, preceding the ``is_grass`` switch).
+
+Finally, for simplicity we further assume that the bedrock at depth of
+the soil is impervious (leakance=0). This parameter varies between 0
+(no flow boundary) and 1 (free drainage).
+
+::
+
     pcrcalc leakance.map = unit.map * 0.0
 
 We will see later we will spin-up the model to equilibrate the initial
