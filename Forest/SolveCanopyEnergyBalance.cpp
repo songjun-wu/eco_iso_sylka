@@ -305,22 +305,24 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
     // solved in this function
     REAL8 Tp;
     Tp = transp_a * ctrl.dt;
-
-    ///TODO: change to wilting point (not residual water content)
-    //if ((theta - thetar) * rootdepth < Tp) {
-    //Tp = (theta - thetar) * rootdepth;
-    // DONE :-)
     theta = f1*theta1 + f2*theta2 + f3*theta3;
+    
+    ///TODO: change to wilting point (not residual water content)
+    if ((theta - thetar) * rootdepth < Tp) {
+      Tp = (theta - thetar) * rootdepth;
+      transp_a = Tp / ctrl.dt;
+    }
 
+    /* THIS PREVIOUS UPDATE CAN CAUSE PROBLEMS, NOT USED FOR NOW
     // Here we also check that theta is larger than both wp and thetar, otherwise
     // Tp could end up being negative if e.g. wp > thetar
     if ((theta - std::max<double>(_species[s].WiltingPoint,thetar)) * rootdepth < Tp) {
-      theta = (theta - std::max<double>(_species[s].WiltingPoint,thetar)) < 0 ? 0 :
+      theta = (theta - std::max<double>(_species[s].WiltingPoint,thetar)) < RNDOFFERR ? 0 :
 	(theta - std::max<double>(_species[s].WiltingPoint,thetar));
       Tp = theta * rootdepth;
       transp_a = Tp / ctrl.dt;
     }
-
+    */
     //////////////////////////////////////////
 
     _species[s]._Einterception->matrix[r][c] = evap_a;

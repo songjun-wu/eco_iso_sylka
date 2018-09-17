@@ -1,3 +1,5 @@
+A.. |ech2o| replace:: EcH\ :sub:`2`\ O
+
 Model set-up
 ============
 
@@ -130,12 +132,13 @@ karst area or similar), so if we see internal flow sinks it may be due
 to errors in the DEM that to some extent can be corrected with some of
 the functions in PCRaster (see PCRaster documentation for this)
 
-For technical reasons, needs a buffer of at least 1 cell of no-data (MV)
-around the drainage network (i.e. the edges of the ldd image must be
-no-data or missing value cells). The easiest way is to calculate the ldd
-from a DEM image that has blank cells (no data or missing values) beyond
-the domain of interest and that the domain of interest does not reach
-the edge of the image.
+.. Important:: 
+  For technical reasons, |ech2o|-iso needs a buffer of at least 1 cell of
+  no-data (MV) around the drainage network (i.e. the edges of the ldd 
+  image must be no-data or missing value cells). The easiest way is to
+  calculate the ldd from a DEM image that has blank cells (no data or 
+  missing values) beyond the domain of interest and that the domain of
+  interest does not reach the edge of the image.
 
 Soil characteristics and surface properties
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
