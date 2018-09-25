@@ -111,7 +111,7 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       _species[j]._GPP->matrix[r][c] = sqrtl(alpha * par * beta * E) * fa* ft; // * fw;
       _species[j]._NPP->matrix[r][c] = _species[j]._GPP->matrix[r][c] * _species[j].GPP2NPP;
       
-    if (_species[j].is_grass == 2){
+    if (_species[j].vegtype == 2){
           
            ft = expl(-BeerK * lai) ;
            fw =1 / (1 + powl(psi_ae/_species[j].lwp_d, _species[j].lwp_c));
@@ -120,7 +120,7 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
 
 
       if(ctrl.sw_veg_dyn){
-	if (_species[j].is_grass == 1)
+	if (_species[j].vegtype == 1)
 	  GrowGrass(j, r, c, dt);
 	else
         

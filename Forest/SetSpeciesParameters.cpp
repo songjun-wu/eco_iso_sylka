@@ -92,13 +92,13 @@ int Forest::SetSpeciesParameters(Control &ctrl){
     _species[i].KBeers = _tableParams->matrix[i][34];
     _species[i].beta = _tableParams->matrix[i][35];
 
-    //enter section for grasses if is_grass switch is on
-    _species[i].is_grass = _tableParams->matrix[i][36];
+    //enter section for grasses, i.e. if vegtype = 1
+    _species[i].vegtype = _tableParams->matrix[i][36];
     /*The next two lines reuse Fprn and Fpra in a new place of the SpeciesParam file [30] and [31]
      * to avoid using the same variable in the SpeciesParam file for tree and grass parameters*/
-    if(_species[i].is_grass == 1){
-      _species[i].Fprn = _tableParams->matrix[i][37]; //This reassigns dead grass leaf turnover rate to Fprn if is_grass=1.
-      _species[i].Fpra = _tableParams->matrix[i][38];//This reassign dead grass leaf turnover adjustment rate to reuse Fpra if is_grass=1
+    if(_species[i].vegtype == 1){
+      _species[i].Fprn = _tableParams->matrix[i][37]; //This reassigns dead grass leaf turnover rate to Fprn if vegtype=1.
+      _species[i].Fpra = _tableParams->matrix[i][38];//This reassign dead grass leaf turnover adjustment rate to reuse Fpra if vegtype=1
     }
 
 

@@ -400,7 +400,7 @@ in Box 3 and below.
     MaxLeafTurnoverTempStress LeafTurnoverTempStressParam
     ColdStressParam	RootTurnoverRate MaxCanStorageParam albedo
     emissivity	KBeers	CanopyWatEffic 
-    is_grass 
+    vegtype 
     DeadGrassLeafTurnoverRate DeadGrassLeafTurnoverTempAdjustment 
 
 
@@ -517,10 +517,10 @@ is\_grass
     Switch that indicates if the vegetation type is herbaceous (1) or not (0)
 
 DeadGrassLeafTurnoverRate
-    Base Rate of decomposition of dry grass leaves, :math:`s^{-1}`. The value is used only if ``is_grass`` = 1 although a value needs to be supplied in all cases
+    Base Rate of decomposition of dry grass leaves, :math:`s^{-1}`. The value is used only if ``vegtype`` = 1 although a value needs to be supplied in all cases
 
 DeadGrassLeafTurnoverTempAdjustment
-    Temperature threshold that triggers the decomposition of dry grass leaves, :math:`\deg C`. The value is used only if ``is_grass`` = 1 although a value needs to be supplied in all cases
+    Temperature threshold that triggers the decomposition of dry grass leaves, :math:`\deg C`. The value is used only if ``vegtype`` = 1 although a value needs to be supplied in all cases
 
 Initial conditions for vegetation state variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -37,7 +37,7 @@ int Forest::GrowTrees(UINT4 j, UINT4 r, UINT4 c, REAL8 dt, REAL8 fa, REAL8 ft, R
 	REAL8 nr, ns, nf, nrmin, nsmin, nsvar;
 	REAL8 DBH;
 
-            if (_species[j].is_grass == 0){
+            if (_species[j].vegtype == 0){
 		   	
                 Fprn = _species[j].Fprn;
                 Fpra = _species[j].Fpra;
@@ -54,7 +54,7 @@ int Forest::GrowTrees(UINT4 j, UINT4 r, UINT4 c, REAL8 dt, REAL8 fa, REAL8 ft, R
 
 
             }
-            if (_species[j].is_grass == 2){
+            if (_species[j].vegtype == 2){
                 
                 nrmin = _species[j].Fprn;
                 nsmin = _species[j].Fpra;
