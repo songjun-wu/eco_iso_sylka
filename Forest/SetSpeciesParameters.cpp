@@ -96,7 +96,7 @@ int Forest::SetSpeciesParameters(Control &ctrl){
     _species[i].is_grass = _tableParams->matrix[i][36];
     /*The next two lines reuse Fprn and Fpra in a new place of the SpeciesParam file [30] and [31]
      * to avoid using the same variable in the SpeciesParam file for tree and grass parameters*/
-    if(_species[i].is_grass){
+    if(_species[i].is_grass == 1){
       _species[i].Fprn = _tableParams->matrix[i][37]; //This reassigns dead grass leaf turnover rate to Fprn if is_grass=1.
       _species[i].Fpra = _tableParams->matrix[i][38];//This reassign dead grass leaf turnover adjustment rate to reuse Fpra if is_grass=1
     }

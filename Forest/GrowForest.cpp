@@ -45,7 +45,7 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
   REAL8 theta_wp;
   REAL8 theta, theta2, theta3;
   REAL8 froot1, froot2, froot3;
-  REAL8 E;
+  REAL8 E, BeerK, psi_ae ;
   unsigned int j;
 
   dt = ctrl.dt;
@@ -55,7 +55,7 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
 #pragma omp parallel for default(none)			\
   private( r, c, alpha, beta, par, E, lai, forestAge,		\
 	   airTemp, optTemp, maxTemp, minTemp, Wc, Wp, gsmax,	\
-	   UsableTheta, Wr, fa, ft ,fw,  \
+	   UsableTheta, Wr, fa, ft ,fw, BeerK , psi_ae,  \
 	   theta_wp, theta, theta2, theta3, froot1, froot2, froot3) \
   shared(j,bas, atm, ctrl,dt)
 
@@ -86,6 +86,11 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       froot1 = bas.getRootFrac1()->matrix[r][c];
       froot2 = bas.getRootFrac2()->matrix[r][c];    
       froot3 = 1-froot1-froot2;
+      psi_ae = bas.getPsiAE()->matrix[r][c];
+            
+      
+      BeerK = _species[j].KBeers;
+            
       UsableTheta = (max<REAL8>(0,(theta-theta_wp)* froot1) +
 		     max<REAL8>(0,(theta2-theta_wp)* froot2) +
 		     max<REAL8>(0,(theta3-theta_wp)* froot3)) / (bas.getFieldCapacity()->matrix[r][c] - theta_wp);
@@ -97,19 +102,28 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
 
       fa = Calculate_fa(_species[j].MaxAge, forestAge);
       ft = Calculate_ft(airTemp, maxTemp, minTemp, optTemp);
-
+     
+        
       fw = Calculate_fw(_species[j]._CanopyConductance->matrix[r][c],
 			gsmax, Wr, Wc, Wp);
+      
 
-      _species[j]._GPP->matrix[r][c] = sqrtl(alpha * par * beta * E) * fa
-	* ft; // * fw;
-      _species[j]._NPP->matrix[r][c] = _species[j]._GPP->matrix[r][c]
-	* _species[j].GPP2NPP;
+      _species[j]._GPP->matrix[r][c] = sqrtl(alpha * par * beta * E) * fa* ft; // * fw;
+      _species[j]._NPP->matrix[r][c] = _species[j]._GPP->matrix[r][c] * _species[j].GPP2NPP;
+      
+    if (_species[j].is_grass == 2){
+          
+           ft = expl(-BeerK * lai) ;
+           fw =1 / (1 + powl(psi_ae/_species[j].lwp_d, _species[j].lwp_c));
+          
+    }
+
 
       if(ctrl.sw_veg_dyn){
-	if (_species[j].is_grass)
+	if (_species[j].is_grass == 1)
 	  GrowGrass(j, r, c, dt);
 	else
+        
 	  GrowTrees(j, r, c, dt, fa, ft, fw, atm.getMinTemperature()->matrix[r][c], UsableTheta);
       }
 

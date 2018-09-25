@@ -69,9 +69,10 @@ Basin::Basin(Control &ctrl)
     }
 
     fForest = new Forest(ctrl); //constructs the Forest object
-
+    
     /*basin parameters and properties*/
     _slope = new grid(ctrl.path_BasinFolder + ctrl.fn_slope, ctrl.MapType);
+    
     _Ksat = new grid(ctrl.path_BasinFolder + ctrl.fn_ksat, ctrl.MapType);
     _KvKs = new grid(ctrl.path_BasinFolder + ctrl.fn_kvkh, ctrl.MapType);
     _random_roughness = new grid(ctrl.path_BasinFolder + ctrl.fn_randrough, ctrl.MapType);
@@ -79,7 +80,7 @@ Basin::Basin(Control &ctrl)
     _psi_ae = new grid(ctrl.path_BasinFolder + ctrl.fn_psi_ae, ctrl.MapType);
     _BClambda = new grid(ctrl.path_BasinFolder + ctrl.fn_BClambda, ctrl.MapType);
     _theta_r = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);
-    _soildepth = new grid(ctrl.path_BasinFolder + ctrl.fn_soildepth, ctrl.MapType);
+   _soildepth = new grid(ctrl.path_BasinFolder + ctrl.fn_soildepth, ctrl.MapType);
     _depth_layer1 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer1, ctrl.MapType);
     _depth_layer2 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer2, ctrl.MapType);
     _bedrock_leak = new grid(ctrl.path_BasinFolder + ctrl.fn_bedrock_leak, ctrl.MapType);
@@ -90,7 +91,7 @@ Basin::Basin(Control &ctrl)
     //_rootfrac1 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay1, ctrl.MapType);
     //_rootfrac2 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay2, ctrl.MapType);
     _Kroot = new grid(ctrl.path_BasinFolder + ctrl.fn_Kroot, ctrl.MapType);
-
+ 
     _snow = new grid(ctrl.path_BasinFolder + ctrl.fn_swe, ctrl.MapType);
     _albedo = new grid(ctrl.path_BasinFolder + ctrl.fn_albedo, ctrl.MapType);
     _emiss_surf = new grid(ctrl.path_BasinFolder + ctrl.fn_emiss, ctrl.MapType);
@@ -98,7 +99,7 @@ Basin::Basin(Control &ctrl)
     _soil_dry_thermcond = new grid(ctrl.path_BasinFolder + ctrl.fn_soilthermcond, ctrl.MapType);
     _dampdepth = new grid(ctrl.path_BasinFolder + ctrl.fn_dampdepth, ctrl.MapType);
     _Temp_d = new grid(ctrl.path_BasinFolder + ctrl.fn_tempdamp, ctrl.MapType);
-
+ 
     _channelwidth = new grid(ctrl.path_BasinFolder + ctrl.fn_chwidth, ctrl.MapType);
     _chGWparam = new grid(ctrl.path_BasinFolder + ctrl.fn_chgwparam, ctrl.MapType);
     _Manningn = new grid(ctrl.path_BasinFolder + ctrl.fn_chmanningn, ctrl.MapType);
@@ -160,6 +161,7 @@ Basin::Basin(Control &ctrl)
     _FluxGWtoChn = new grid(*_DEM); // intra-cell groundwater to channel
     _FluxSrftoChn = new grid(*_DEM); // intra-cell ponding to channel
 
+ 
     // Accumulated fluxes
     _AccInfilt = new grid(*_DEM);
     _AccExfilt = new grid(*_DEM);

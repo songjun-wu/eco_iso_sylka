@@ -72,7 +72,7 @@ struct Grove {
 	REAL8 sperry_c; // Sperry model shape exponent (m)
 	REAL8 sperry_Kp; // Sperry model hydraulic conductivity tissue (ms-1) used to calculate conductaance using DBH and plant height
 	REAL8 RAI_a; // parameter to scale effective RAI as per Daly et al. (2004). Coupled Dynamics of Photosynthesis,.... J Hydromet.
-	bool is_grass; //switch to indicate the species is of type grass
+	UINT4 is_grass; //switch to indicate the species is of type grass
 	REAL8 MaxLeafTurnoverWaterStress; //maximum leaf turnover rate due to water stress (s-1)
 	REAL8 LeafTurnoverWaterStressShpParam; //Shape parameter leaf turnover rate due to water stress (-)
 	REAL8 MaxLeafTurnoverColdStress; //maximum leaf turnover rate due to cold stress (s-1)
