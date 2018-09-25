@@ -34,22 +34,40 @@ int Forest::GrowTrees(UINT4 j, UINT4 r, UINT4 c, REAL8 dt, REAL8 fa, REAL8 ft, R
 
 	REAL8 Fprn, Fpra, Sprn, Spra;
 	REAL8 pfs;
-	REAL8 nr, ns, nf;
+	REAL8 nr, ns, nf, nrmin, nsmin, nsvar;
 	REAL8 DBH;
 
+            if (_species[j].vegtype == 0){
+		   	
+                Fprn = _species[j].Fprn;
+                Fpra = _species[j].Fpra;
+                Sprn = _species[j].Sprn;
+                Spra = _species[j].Spra;
 
-		   	Fprn = _species[j].Fprn;
-		   	Fpra = _species[j].Fpra;
-		   	Sprn = _species[j].Sprn;
-		   	Spra = _species[j].Spra;
+                DBH = 2 * powl(_species[j]._BasalArea->matrix[r][c] / PI, 0.5);
 
-		   	DBH = 2 * powl(_species[j]._BasalArea->matrix[r][c] / PI, 0.5);
+                pfs = ( (Fprn*Fpra) / (Sprn*Spra) ) * powl( DBH ,(Fprn - Sprn) );
 
-		   	pfs = ( (Fprn*Fpra) / (Sprn*Spra) ) * powl( DBH ,(Fprn - Sprn) );
+                nr = 0.5 / (1 + 2.5 * fa * ft * fw);
+                ns = (1 - nr) / (1 + pfs);
+                nf = 1 - nr - ns;
 
-		   	nr = 0.5 / (1 + 2.5 * fa * ft * fw);
-		   	ns = (1 - nr) / (1 + pfs);
-		   	nf = 1 - nr - ns;
+
+            }
+            if (_species[j].vegtype == 2){
+                
+                nrmin = _species[j].Fprn;
+                nsmin = _species[j].Fpra;
+                nsvar = _species[j].Sprn;
+                
+                //nr = 0.5 / (1 + 2.5 * fa * ft * fw);
+                nr = (nrmin+nrmin*(1-fw))/( 1+ nrmin*(1-fw));
+            
+                ns = (nsmin + nsvar * (1-ft));
+                ns = min<double>(1-nr, ns);
+                nf = 1 - nr - ns;
+
+            }
 
 		   	//Increase root Mass
 		   	_species[j]._Del_RootMass->matrix[r][c] = _species[j]._NPP->matrix[r][c] * nr;

@@ -44,9 +44,9 @@ struct Grove {
 	REAL8 TempOpt; //optimal temperature of species degC
 	REAL8 TempMax; //maximum temperature in which specie can grow degC
 	REAL8 TempMin; //maximum temperature in which specie can grow degC
-	REAL8 Fprn; //coefficient n for allocation of NPP to foliage or dead grass leaf turnover rate if is_grass = 1
-	REAL8 Fpra; //coefficient a for allocation of NPP to foliage or dead grass leaf turnover adjustment rate if is_grass = 1
-	REAL8 Sprn; //coefficient n for allocation of NPP to stems
+	REAL8 Fprn; //coefficient n for allocation of NPP to foliage if vegtype = 0; dead grass leaf turnover rate if vegtype = 1; minimum root allocation factor if vegtype =2
+	REAL8 Fpra; //coefficient a for allocation of NPP to foliage if vegtype =0; dead grass leaf turnover adjustment rate if vegtype = 1;  minimum stem allocation factor if vegtype =2
+	REAL8 Sprn; //coefficient n for allocation of NPP to stems if vegtype =1;  variable stem allocation factor if vegtype =2
 	REAL8 Spra; //coefficient a for allocation of NPP to stems
 	REAL8 gs_light_coeff; //curvature coefficient for light factor in stomatal conductance
 	REAL8 gs_vpd_coeff; //curvature coefficient for vapor pressure deficit factor in stomatal conductance
@@ -73,7 +73,7 @@ struct Grove {
 	REAL8 sperry_c; // Sperry model shape exponent (m)
 	REAL8 sperry_Kp; // Sperry model hydraulic conductivity tissue (ms-1) used to calculate conductaance using DBH and plant height
 	REAL8 RAI_a; // parameter to scale effective RAI as per Daly et al. (2004). Coupled Dynamics of Photosynthesis,.... J Hydromet.
-	bool is_grass; //switch to indicate the species is of type grass
+	UINT4 vegtype; // 0 = evergreen tree . 1 = grass . 2 = deciduous tree
 	REAL8 MaxLeafTurnoverWaterStress; //maximum leaf turnover rate due to water stress (s-1)
 	REAL8 LeafTurnoverWaterStressShpParam; //Shape parameter leaf turnover rate due to water stress (-)
 	REAL8 MaxLeafTurnoverColdStress; //maximum leaf turnover rate due to cold stress (s-1)
