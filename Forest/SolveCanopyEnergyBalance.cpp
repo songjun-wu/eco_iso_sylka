@@ -116,8 +116,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
     BeerK = _species[s].KBeers;
     LAI = _species[s]._LAI->matrix[r][c];
 
-    lwp_den = _species[s].lwp_d;
-    lwp_c = _species[s].lwp_c;
+    lwp_min = _species[s].lwp_min;
+    lwp_max = _species[s].lwp_max;
 
     // Root fractiona
     f1 = _species[s]._rootfrac1->matrix[r][c];
@@ -183,7 +183,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
     //provide initial guess  for loop
     x[0] = Sold;
-    x[1] = psiae / powl(x[0], bclambda);
+    x[1] = psiae * 0.0098 / powl(x[0], bclambda); // 0.0098 convert from m to MPa
     x[2] = airTp;
 
     //used to calculate the gc factors other than f_lwp
@@ -194,7 +194,9 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
       lambda = x[2] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
-      gc = dgcdfgspsi * 1 / (1 + powl(x[1]/lwp_den, lwp_c));
+      gc = dgcdfgspsi*std::max<REAL8>(0,std::min<REAL8>(1,(lwp_min - x[1]) /
+							(lwp_min - lwp_max)));
+      //gc = dgcdfgspsi * 1 / (1 + powl(x[1]/lwp_den, lwp_c));
 
       if (gc < 1e-13)
 	gc = 1e-13;
@@ -220,7 +222,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
 
       F[0] = (x[0] - Sold) * maxAv * rootdepth / dt + E;
-      F[1] = psiae / powl(x[0], bclambda) - x[1];
+      F[1] = psiae * 0.0098 / powl(x[0], bclambda) - x[1];
       F[2] = NetRadCanopy(atm, x[2], emissivity, albedo, BeerK, LAI, r, c)
 	+ LE + H + LET;
 
