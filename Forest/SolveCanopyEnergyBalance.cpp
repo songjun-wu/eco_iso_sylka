@@ -85,7 +85,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
   REAL8 maxAv = 0; // Equivalent (weighted) maximum available water 
   
   REAL8 gc = 0;
-  REAL8 lwp_den, lwp_c; //denominator and exponent of lwp stomatal model
+  REAL8 lwp_min, lwp_max; // lower and higher boundaries for linear lwp stomatal model
   REAL8 dgcdfgspsi = 0;
   
   REAL8 theta1 = bas.getSoilMoist1()->matrix[r][c];
@@ -235,14 +235,18 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 	dleafRHdpsi_l = - rho_w * grav * Vw * leafRH  / (Rbar*(x[2]+273.15));
 
       es = SatVaporPressure(x[2]);
-      desdTs = es * ((17.3 / (x[2] + 237.3))
-		     - 17.3 * x[2] / (powl(x[2] + 237.3, 2)));
+      desdTs = es * ((17.3 / (x[2] + 237.3)) - 17.3 * x[2] / (powl(x[2] + 237.3, 2)));
 
       //dgcdlwp = gc == 1e-13 ? 0 : - dgcdfgspsi * lwp_c * powl(x[1]/lwp_den, lwp_c) / (x[1] * ( powl(x[1]/lwp_den, lwp_c) + 1) * ( powl(x[1]/lwp_den, lwp_c) + 1));
-      if (dgcdfgspsi == 0)
-	dLETdlwp = 0;
+      if (gc < 1e-12 || x[1] > lwp_min)
+	dLETdlwp = LET = E = 0;
+      else if (x[1] < lwp_max)
+	dLETdlwp = -spec_heat_air * rho_a * (ea - es) * (lwp_min - lwp_max)
+	  / (gamma * dgcdfgspsi * (lwp_min - lwp_max) * (lwp_min - lwp_max) * ra_t * ra_t);
       else
-	dLETdlwp = - rho_a * spec_heat_air * (ea - es) * lwp_c * powl(x[1]/lwp_den, lwp_c) / (dgcdfgspsi * x[1] * gamma *ra_t * ra_t);
+	dLETdlwp = -spec_heat_air * rho_a * (ea - es) * (lwp_min - lwp_max)
+	  / (gamma * dgcdfgspsi * (lwp_min - x[1])  * (lwp_min - x[1]) * ra_t * ra_t);
+
       dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdT);
 
       dEdlwp = - dLETdlwp / (rho_w * lambda);
@@ -257,8 +261,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
       J(1,1) = -1;
 
       J(2,1) = dLETdlwp;
-      J(2,2) = fA * powl(x[2] + 273.2, 3) + fB * desdTs * leavesurfRH
-	+ fC + dLETdT;
+      J(2,2) = fA * powl(x[2] + 273.2, 3) + fB * desdTs * leavesurfRH + fC + dLETdT;
 
       // solve system
       if (!solve(deltax, J, -F)) {
