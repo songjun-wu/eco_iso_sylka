@@ -312,7 +312,7 @@ and ~23% of the roots in the first and second layers, respectively.
 
 - In the ``master_KrootVeg`` version of the code, :math:`K_{root}` is
 dependent on vegetation species, it is thus read from the
-``SpeciesParams.tab`` file (column 37, preceding the ``is_grass`` switch).
+``SpeciesParams.tab`` file (column 37, preceding the ``vegtype`` switch).
 
 - In the ``master_KrootVeg`` version of the code, :math:`K_{root}` is
   to be provided as a map:

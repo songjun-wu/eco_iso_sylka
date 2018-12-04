@@ -400,7 +400,7 @@ in Box 3 and below.
     MaxLeafTurnoverTempStress LeafTurnoverTempStressParam
     ColdStressParam	RootTurnoverRate MaxCanStorageParam albedo
     emissivity	KBeers	CanopyWatEffic 
-    is_grass 
+    vegtype 
     DeadGrassLeafTurnoverRate DeadGrassLeafTurnoverTempAdjustment 
 
 
@@ -430,13 +430,13 @@ MinTemp
     Minimum temperature of comfort for the species, in degrees C
 
 FoliageAllocCoef\_a
-    Foliage allocation coefficient as per 3PG model. Typical value around 2.235
+    Foliage allocation coefficient as per 3PG model if ``vegtype=0`` (typical value around 2.235). Dead grass turnover rate (in :math:`m^2KgC^{-1}`) if ``vegtype=1``. Minimum root allocation factor if ``vegtype=2``.
 
 FoliageAllocCoef\_b
-    Foliage allocation coefficient as per 3PG model. Typical value around 0.006
+    Foliage allocation coefficient as per 3PG model if ``vegtype=0`` (typical value around 0.006). Dead grass leaf turnover adjustment rate (in :math:`m^2KgC^{-1}`) if ``vegtype = 1``. Minimum stem allocation factor if ``vegtype=2``
 
 StemAllocCoef\_a
-    Stem allocation coefficient as per 3PG model. Typical value around 3.3
+    Stem allocation coefficient as per 3PG model  if ``vegtype=0`` (typical value around 3.3). Coefficient n for allocation of NPP to stems if ``vegtype=1``. Allocation parameter (modulates water and light effect) if ``vegtype=2``.
 
 StemAllocCoef\_b
     Stem allocation coefficient as per 3PG model. Typical value around 0.0000006
@@ -447,12 +447,12 @@ gs\_light\_coeff
 gs\_vpd\_coeff 
     Parameter controlling stomatal sensitivity to vapor pressure deficit. Typical value around 0.002
 
-gs_psi_d
-    Soil moisture suction potential at which stomatal function is reduced by 50%.
+lwp_min
+    Lowest leaf water potential before stomatal function shuts down, in -MPa. Typical value around 3.92 (-400 m of head)
 
-gs_psi_c
-    Parameter controlling stomatal sensitivity to soil moisture content.
-
+lwp_max
+    Leaf water potential threshold beyond which stomatal efficiency is maximal, in -MPa. Typical value around 0.069 (-7 m of head)
+    
 WiltingPnt
     Volumetric soil water content at wilting point, dependent on plant and soil characteristics.
 
@@ -472,10 +472,10 @@ WoodDens
     Wood density, in :math:`gCm^{-2}`
 
 Fhdmax
-    Maximum allowed ratio of tree height to stem diameter
+    Maximum allowed ratio of tree height to stem diameter (0 to 1).
 
 Fhdmin
-    Minimum allowed ratio of tree height to stem diameter
+    Minimum allowed ratio of tree height to stem diameter (0 to 1).
 
 LeafTurnoverRate
     Base leaf turnover rate, in :math:`s^{-1}`
@@ -513,14 +513,14 @@ KBeers
 CanopyWatEffic
      Water use efficiency of the canopy, in terms of grams of carbon assimilated per meter of transpired water, :math:`gCm^{-1}`
 
-is\_grass
-    Switch that indicates if the vegetation type is herbaceous (1) or not (0)
+vegtype
+    Switch that indicates if the vegetation type is evergreen trees (0), herbaceous (1) or deciduous trees (2)
 
 DeadGrassLeafTurnoverRate
-    Base Rate of decomposition of dry grass leaves, :math:`s^{-1}`. The value is used only if ``is_grass`` = 1 although a value needs to be supplied in all cases
+    Base Rate of decomposition of dry grass leaves, :math:`s^{-1}`. The value is used only if ``vegtype`` = 1 although a value needs to be supplied in all cases
 
 DeadGrassLeafTurnoverTempAdjustment
-    Temperature threshold that triggers the decomposition of dry grass leaves, :math:`\deg C`. The value is used only if ``is_grass`` = 1 although a value needs to be supplied in all cases
+    Temperature threshold that triggers the decomposition of dry grass leaves, :math:`\deg C`. The value is used only if ``vegtype`` = 1 although a value needs to be supplied in all cases
 
 Initial conditions for vegetation state variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

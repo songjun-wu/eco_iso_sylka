@@ -85,7 +85,7 @@ int Forest::SetStateVarsTabs(Control &ctrl){
 
 	    	if(_patches->matrix[r][c] == id){
 	    		_species[j-1]._fraction->matrix[r][c] = frac;
-				if(_species[j-1].is_grass){ //needed to initialize green and total lai of grass
+				if(_species[j-1].vegtype==1){ //needed to initialize green and total lai of grass
 					_species[j-1]._grassLAI_g->matrix[r][c] = lai;
 					_species[j-1]._LAI->matrix[r][c] = lai;
 				}

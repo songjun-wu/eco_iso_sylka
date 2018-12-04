@@ -45,8 +45,7 @@ int Forest::GrowGrassLAI(UINT4 spec, UINT4 row, UINT4 col, REAL8 dt){
 
 	DryLaiDecay = DryLeafTurnoverRate * DryDecayAdjustment * dt * _species[spec]._grassLAI_d->matrix[row][col];
 
-	_species[spec]._grassLAI_g->matrix[row][col] += max<REAL8>(-0.95*_species[spec]._grassLAI_g->matrix[row][col],
-			_species[spec]._Del_FoliageMass->matrix[row][col] * SLA_g - GreenLaiDecay);
+	_species[spec]._grassLAI_g->matrix[row][col] += max<REAL8>(-0.95*_species[spec]._grassLAI_g->matrix[row][col], _species[spec]._Del_FoliageMass->matrix[row][col] * SLA_g - GreenLaiDecay);
 
     _species[spec]._grassLAI_d->matrix[row][col] += GreenLaiDecay - DryLaiDecay;
 
