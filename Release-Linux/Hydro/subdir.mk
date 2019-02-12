@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../Hydro/AdvanceLAIMaps.cpp \
 ../Hydro/CalcCatchArea.cpp \
 ../Hydro/CalcFracMobileWater.cpp \
 ../Hydro/CalcInitialStreamStorage.cpp \
@@ -26,6 +27,7 @@ CPP_SRCS += \
 ../Hydro/UpdateSnowPack.cpp 
 
 OBJS += \
+./Hydro/AdvanceLAIMaps.o \
 ./Hydro/CalcCatchArea.o \
 ./Hydro/CalcFracMobileWater.o \
 ./Hydro/CalcInitialStreamStorage.o \
@@ -48,6 +50,7 @@ OBJS += \
 ./Hydro/UpdateSnowPack.o 
 
 CPP_DEPS += \
+./Hydro/AdvanceLAIMaps.d \
 ./Hydro/CalcCatchArea.d \
 ./Hydro/CalcFracMobileWater.d \
 ./Hydro/CalcInitialStreamStorage.d \

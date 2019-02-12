@@ -305,6 +305,8 @@ class Basin {
 
   int CalcFracMobileWater();
 
+  int AdvanceLAIMaps();
+  
   //Getters
 
   REAL8 getCellSize() const {

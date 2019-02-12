@@ -58,7 +58,6 @@ struct Control{
   string ForestStateVarsInputType; //indicates if the forest state variables are input as tables (tables) or maps (maps)
   
   /*Option switches*/
-  bool sw_veg_dyn; //switch to turn on and off the dynamic vegetation module (allocation and lai calculation)
   bool sw_reinfilt; //switch to turn on and off the reinfiltration option
   bool sw_channel; //switch to turn on and off the channel option
   bool sw_expKsat; //switch to turn on and off the exponential profile for hydraulic conductivity
@@ -66,8 +65,13 @@ struct Control{
 
   /*multiple option switches*/
   //int toggle_soil_water_profile; //toggle between different soil moisture profile calculation
+  int toggle_veg_dyn; //switch to turn on and off the dynamic vegetation module (allocation and lai calculation)
   int toggle_ra; //toggle between aerodynamic resistance options
   int toggle_rs; //toggle between different soil resistance option
+
+  // LAI time series binaries (if toggle_veg_dyn ==2)
+  // file names (per species) = name below + "_"+ species number (starting at 0) + ".bin"
+  string fn_LAI_timeseries;
   
   /*Base maps filenames*/
   string fn_dem; //local base dem filename that forces grid geometry

@@ -32,34 +32,32 @@
 
 int Atmosphere::AdvanceClimateMaps(Control &ctrl){
 
-  // In UpdateClimateMap, there first integer indicates whther it is 
-  // an isotopic variable, and (if so) the second one is the type (2H=0, 18O=1)
   if(UpdateClimateMap(ifLdown, *_Ldown)!=_vSsortedGridTotalCellNumber)
-		throw;
+    throw;
   if(UpdateClimateMap(ifSdown, *_Sdown)!=_vSsortedGridTotalCellNumber)
-		throw;
+    throw;
   if(UpdateClimateMap(ifTp, *_Tp)!=_vSsortedGridTotalCellNumber)
-		throw;
+    throw;
   if(UpdateClimateMap(ifMaxTp, *_MaxTp)!=_vSsortedGridTotalCellNumber)
-		throw;
+    throw;
   if(UpdateClimateMap(ifMinTp, *_MinTp)!=_vSsortedGridTotalCellNumber)
-		throw;
+    throw;
   if(UpdateClimateMap(ifPrecip, *_Precip)!=_vSsortedGridTotalCellNumber)
-		throw;
-	AdjustPrecip(); // adjust precipitation with the isohyet map
-	if(UpdateClimateMap(ifRelHumid, *_Rel_humid)!=_vSsortedGridTotalCellNumber)
-		throw;
-	if(UpdateClimateMap(ifWindSpeed, *_Wind_speed)!=_vSsortedGridTotalCellNumber)
-		throw;
-
-	// Tracking
-	if(ctrl.sw_trck && ctrl.sw_2H){
-	  if(UpdateClimateMap(ifd2Hprecip, *_d2Hprecip)!=_vSsortedGridTotalCellNumber)
-			throw;}
-	if(ctrl.sw_trck && ctrl.sw_18O){
-	  if(UpdateClimateMap(ifd18Oprecip, *_d18Oprecip)!=_vSsortedGridTotalCellNumber)
-			throw;}
-
-	return EXIT_SUCCESS;
-
+    throw;
+  AdjustPrecip(); // adjust precipitation with the isohyet map
+  if(UpdateClimateMap(ifRelHumid, *_Rel_humid)!=_vSsortedGridTotalCellNumber)
+    throw;
+  if(UpdateClimateMap(ifWindSpeed, *_Wind_speed)!=_vSsortedGridTotalCellNumber)
+    throw;
+  
+  // Tracking
+  if(ctrl.sw_trck && ctrl.sw_2H){
+    if(UpdateClimateMap(ifd2Hprecip, *_d2Hprecip)!=_vSsortedGridTotalCellNumber)
+      throw;}
+  if(ctrl.sw_trck && ctrl.sw_18O){
+    if(UpdateClimateMap(ifd18Oprecip, *_d18Oprecip)!=_vSsortedGridTotalCellNumber)
+      throw;}
+  
+  return EXIT_SUCCESS;
+  
 }

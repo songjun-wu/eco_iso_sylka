@@ -15,4 +15,4 @@ pcrcalc 'isohyet.map = ../Spatial/unit.map'
 ./asc2c d2H.txt d2H.bin
 ./asc2c d18O.txt d18O.bin
 
-
+./asc2c LAI_0.txt LAI_0.bin

@@ -32,55 +32,74 @@
 
 Forest::Forest(Control &ctrl)
 {
+
+  stringstream fn;
+  
+  try{
+
+    //Read the base map and writes the dimensions of the grid
+    _patches = new grid(ctrl.path_BasinFolder + ctrl.fn_patches, ctrl.MapType);
+    _NRows = _patches->r;
+    _NCols = _patches->c;
+    _dx = _patches->dx;
+    _Nsp = ctrl.NumSpecs + 1; //num of species plus bare soil
+
+    /*sorts the basin with data cells according
+     * to the ldd after _DEM and _ldd have been created*/
+    _vSortedGrid = SortGrid();
+
+    _species = new Grove[_Nsp]; //creates Grove array with default constructor
+
+    for (UINT4 i = 0; i < _Nsp; i++){ //initializes the grids in each Grove object
+      _species[i].CreateGrids(_patches);
+      // Tracking: vegetation-dependent maps
+      if(ctrl.sw_trck && ctrl.sw_2H)
+	_species[i].CreateGridsd2H(_patches);
+      if(ctrl.sw_trck && ctrl.sw_18O)
+	_species[i].CreateGridsd18O(_patches);
+      if(ctrl.sw_trck && ctrl.sw_Age)
+	_species[i].CreateGridsAge(_patches);
+      
+      // If LAI is prescribed over time
+      if(i < _Nsp - 1 and ctrl.toggle_veg_dyn == 2){
+	// Read file
+	fn.str(""); fn << ctrl.fn_LAI_timeseries << "_" << i << ".bin";
 	try{
-
-	//Read the base map and writes the dimensions of the grid
-		_patches = new grid(ctrl.path_BasinFolder + ctrl.fn_patches, ctrl.MapType);
-		_NRows = _patches->r;
-		_NCols = _patches->c;
-		_dx = _patches->dx;
-		_Nsp = ctrl.NumSpecs + 1; //num of species plus bare soil
-
-		/*sorts the basin with data cells according
-		 * to the ldd after _DEM and _ldd have been created*/
-		_vSortedGrid = SortGrid();
-
-		_species = new Grove[_Nsp]; //creates Grove array with default constructor
-
-		for (UINT4 i = 0; i < _Nsp; i++){ //initializes the grids in each Grove object
-			_species[i].CreateGrids(_patches);
-			// Tracking: vegetation-dependent maps
-			if(ctrl.sw_trck && ctrl.sw_2H)
-				_species[i].CreateGridsd2H(_patches);
-			if(ctrl.sw_trck && ctrl.sw_18O)
-				_species[i].CreateGridsd18O(_patches);
-			if(ctrl.sw_trck && ctrl.sw_Age)
-				_species[i].CreateGridsAge(_patches);
-		}
-
-		SetSpeciesParameters(ctrl);
-
-		if(!ctrl.ForestStateVarsInputType.compare("tables"))
-			SetStateVarsTabs(ctrl);
-		else if(!ctrl.ForestStateVarsInputType.compare("maps"))
-			SetStateVarsMaps(ctrl);
-		else{
-			cerr << "Illegal type " << ctrl.ForestStateVarsInputType << endl;
-			throw;
-		}
-
-
-		//SetSpeciesParameters(ctrl);
-        checkForestDatabase(); //check the sanity of the database
-
-	}catch (std::bad_alloc &)
-	  { cerr << "Cleaning up the forest..." << "\n";
-		if(_patches)
-			delete _patches;
-		if(_species)
-			delete[] _species;
-
+	  _species[i].ifLAI.open((ctrl.path_ClimMapsFolder + fn.str()).c_str(), ios::binary);
+	  if(errno!=0) throw fn.str();
+	} catch (string e) {
+	  cout << "Dang!!: cannot find/read the " << e << "  file: error " << strerror(errno) << endl;
 	  throw;
-	  }
+	}
+	
+	//Initiate LAI map
+	cout << "species " << i << ", input LAI file: " << fn.str() << endl ;
+	InitiateLAIMap(_species[i].ifLAI, *_species[i]._LAI);
+      }
+    }
+
+    SetSpeciesParameters(ctrl);
+
+    if(!ctrl.ForestStateVarsInputType.compare("tables"))
+      SetStateVarsTabs(ctrl);
+    else if(!ctrl.ForestStateVarsInputType.compare("maps"))
+      SetStateVarsMaps(ctrl);
+    else{
+      cerr << "Illegal type " << ctrl.ForestStateVarsInputType << endl;
+      throw;
+    }
+
+    //SetSpeciesParameters(ctrl);
+    checkForestDatabase(); //check the sanity of the database
+
+  }catch (std::bad_alloc &)
+    { cerr << "Cleaning up the forest..." << "\n";
+      if(_patches)
+	delete _patches;
+      if(_species)
+	delete[] _species;
+
+      throw;
+    }
 
 }

@@ -62,10 +62,7 @@ void GenerateConfigTemplate(const char *fn){
       throw std::ios::failure("Error opening file ");
 
 
-
-
-
-    ofOut << "#ECH2O configuration file v1.7" << std::endl << std::endl;
+    ofOut << "#ECH2O configuration file v2" << std::endl << std::endl;
     ofOut << "# Please, check Appendix A of Documentation" << std::endl;
     ofOut << "# for units of parameters and variables  " << std::endl;
     ofOut << "# (http://ech2o-iso.readthedocs.io/en/latest/Keywords.html)" << std::endl << std::endl;
@@ -86,7 +83,6 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Species_State_Variable_Input_Method = tables # maps or tables" << endl << endl;
 
     ofOut << "#== Boolean switches" << endl;
-    ofOut << "Vegetation_dynamics = 1" << endl;
     ofOut << "Reinfiltration = 1" << endl;
     ofOut << "Channel = 1" << endl ;
     ofOut << "# Exponential profiles: if set to 0, vertically-uniform with value equal to" << endl;
@@ -94,7 +90,16 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Hydraulic_Conductivity_profile = 0" << endl ;
     ofOut << "Porosity_profile = 0" << endl << endl;
 
-    ofOut << "# TOGGLE SWITCHES:" << endl;
+    ofOut << "# TOGGLE SWITCHES:" << endl << endl;
+    ofOut << "#Vegetation dynamics (via allocation): 3 modes" << endl;
+    ofOut << "# 0 -> desactivated, no dynamic allocation and constant LAI to initial value" <<endl;
+    ofOut << "# 1 -> fully activated" << endl;
+    ofOut << "# 2 -> partially activated, except that LAI is prescribed via an input file" << endl;
+    ofOut << "Vegetation_dynamics = 1" << endl;
+    ofOut << "# Used only if Vegetation_dynamics = 2. Files names for each species is" << endl;
+    ofOut << "# name below + '_'+ species number (starting at 0) + '.bin'" << endl;
+    ofOut<< "TimeSeries_LAI = LAI" << endl << endl;
+    
     ofOut << "# Aerodynamic resistance choices: " << endl;
     ofOut << "# 0 = Penman Monteith option " << endl;
     ofOut << "# 1 = Thom and Oliver 1977 " << endl;

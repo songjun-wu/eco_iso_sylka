@@ -34,7 +34,9 @@ int Forest::GrowTrees(UINT4 j, UINT4 r, UINT4 c, REAL8 dt, REAL8 fa, REAL8 ft, R
 
   REAL8 Fprn, Fpra, Sprn, Spra;
   REAL8 pfs;
-  REAL8 nr, ns, nf;
+  REAL8 nr = 0;
+  REAL8 ns = 0;
+  REAL8 nf = 0;
   REAL8 eta_r, eta_s, omega;
   REAL8 DBH;
 

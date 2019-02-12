@@ -53,7 +53,6 @@ class Forest {
 
   Grove *_species;
 
-
   vectCells SortGrid();
 
   void checkForestDatabase();
@@ -61,6 +60,15 @@ class Forest {
   int SetStateVarsTabs(Control &ctrl);
   void SetStateVarsMaps(Control &ctrl);
   int SetSpeciesParameters(Control &ctrl);
+
+  // For LAI input ----------------------------------------------
+  UINT4 InitiateLAIMap(ifstream & ifHandle, grid & ClimMap);
+  // internal function that updates a LAI map
+  int UpdateLAIMap(ifstream & ifHandle, grid & ClimMap);
+  // LAI data file handles
+  ifstream ifLAI;
+  // -------------------------------------------------------------
+  
 
   /*State variables*/
 
@@ -373,6 +381,10 @@ class Forest {
   void setAgeevapT(UINT4 n, UINT4 row, UINT4 col, REAL8 value) {
     _species[n]._AgeevapT->matrix[row][col] = value;
   }
+
+  //external interface that updates all LAI maps by calling UpdateLAIMap
+  int AdvanceLAIMaps(); 
+  
   /*  //setters
       void setEvapoTransp(REAL8 ET, UINT4 n, UINT4 row, UINT4 col){
       _species[n]._ET->matrix[row][col] = ET;

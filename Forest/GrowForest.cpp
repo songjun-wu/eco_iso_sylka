@@ -46,18 +46,18 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
   REAL8 fc1, fc2, fc3;
   REAL8 theta, theta2, theta3;
   REAL8 froot1, froot2, froot3;
-  REAL8 E, lai,psi_ae,BeerK ;
+  REAL8 E, lai, BeerK ;
   unsigned int j;
 
   dt = ctrl.dt;
 
   for (j = 0; j < _Nsp - 1; j++) //grow forest up to Nsp -1 because Nsp is bare soil
 
-#pragma omp parallel for default(none)			\
-  private( r, c, alpha, beta, par, E, lai,forestAge,		\
-	   airTemp, optTemp, maxTemp, minTemp, Wc, Wp, gsmax,	\
-	   UsableTheta, Wr, fa, ft ,fw, fc1, fc2, fc3, BeerK, psi_ae,		    \
-	   theta_wp, theta, theta2, theta3, froot1, froot2, froot3) \
+#pragma omp parallel for default(none)					\
+  private( r, c, alpha, beta, par, E, lai,forestAge,			\
+	   airTemp, optTemp, maxTemp, minTemp, Wc, Wp, gsmax,		\
+	   UsableTheta, Wr, fa, ft ,fw, fc1, fc2, fc3, BeerK,		\
+	   theta_wp, theta, theta2, theta3, froot1, froot2, froot3)	\
   shared(j,bas, atm, ctrl,dt)
 
     for (unsigned int k = 0; k < _vSortedGrid.cells.size(); k++) {
@@ -90,7 +90,7 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       //froot2 = bas.getRootFrac2()->matrix[r][c];    
       froot3 = 1-froot1-froot2;
       
-      psi_ae = bas.getPsiAE()->matrix[r][c];
+      //psi_ae = bas.getPsiAE()->matrix[r][c];
       BeerK = _species[j].KBeers;
       
 
@@ -99,8 +99,8 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       fc3 = bas.getFieldCapacityL3()->matrix[r][c];
 
       UsableTheta = max<REAL8>(0,min<REAL8>(1,(theta-theta_wp)/(fc1-theta_wp)))*froot1 +
-      max<REAL8>(0,min<REAL8>(1,(theta2-theta_wp)/(fc2-theta_wp)))*froot2 +
-      max<REAL8>(0,min<REAL8>(1,(theta3-theta_wp)/(fc3-theta_wp)))*froot3;
+	max<REAL8>(0,min<REAL8>(1,(theta2-theta_wp)/(fc2-theta_wp)))*froot2 +
+	max<REAL8>(0,min<REAL8>(1,(theta3-theta_wp)/(fc3-theta_wp)))*froot3;
       
       //      if (UsableTheta > bas.getFieldCapacity()->matrix[r][c])
       //UsableTheta = 1;
@@ -113,26 +113,32 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       fw = Calculate_fw(_species[j]._CanopyConductance->matrix[r][c],
 			gsmax, Wr, Wc, Wp);
       
-     _species[j]._GPP->matrix[r][c] = sqrtl(alpha * par * beta * E) * fa* ft; // * fw;
-     _species[j]._NPP->matrix[r][c] = _species[j]._GPP->matrix[r][c] * _species[j].GPP2NPP;
+      _species[j]._GPP->matrix[r][c] = sqrtl(alpha * par * beta * E) * fa* ft; // * fw;
+      _species[j]._NPP->matrix[r][c] = _species[j]._GPP->matrix[r][c] * _species[j].GPP2NPP;
       
-    if (_species[j].vegtype == 2){
+      if (_species[j].vegtype == 2){
           
-           ft = expl(-BeerK * lai) ;
-           fw = Wr;//1 / (1 + powl(psi_ae/_species[j].lwp_d, _species[j].lwp_c));
+	ft = expl(-BeerK * lai) ;
+	fw = Wr;//1 / (1 + powl(psi_ae/_species[j].lwp_d, _species[j].lwp_c));
           
-    }
+      }
 
+      // Dynamic allocation:
+      // - veg_dyn = 0 : none if 
+      // - veg_dyn = 1 : calculated dynamically
+      // - veg_dyn = 2 : LAI forced from input times series (update from ech2o.cpp)
+      if(ctrl.toggle_veg_dyn == 1){
 
-      if(ctrl.sw_veg_dyn){
-        if (_species[j].vegtype == 1)
-            GrowGrass(j, r, c, dt);
-        else
-        
-            GrowTrees(j, r, c, dt, fa, ft, fw,
-		      atm.getMinTemperature()->matrix[r][c], UsableTheta);
+	if (_species[j].vegtype == 1)
+	  GrowGrass(j, r, c, dt);
+        else	  
+	  GrowTrees(j, r, c, dt, fa, ft, fw,
+		    atm.getMinTemperature()->matrix[r][c], UsableTheta);
+
       }
 
     }
+
   return EXIT_SUCCESS;
+
 }

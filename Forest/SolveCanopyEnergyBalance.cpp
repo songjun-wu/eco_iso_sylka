@@ -257,7 +257,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
       J(0,1) = E==0 ?  0 : dEdlwp;
       J(0,2) = E==0 ? 0 : dEdT;
 
-      J(1,0) = -bclambda * psiae * powl(x[0], -(bclambda + 1));
+      J(1,0) = -bclambda * psiae * 0.0098 * powl(x[0], -(bclambda + 1));
       J(1,1) = -1;
 
       J(2,1) = dLETdlwp;

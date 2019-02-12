@@ -34,10 +34,16 @@ Configuration (main) file keywords
 | Species\_State\_Variable\_Input\_Method | | Specifies the input format of the vegetation state          |
 |                                         | | variables. Options are *table* or *maps*                    |
 +-----------------------------------------+---------------------------------------------------------------+
-| Vegetation\_dynamics                    | | Switch 1/0 to turn vegetation allocation and growth         |
-|                                         | | component on (1) or off (0)                                 |
+| Vegetation\_dynamics                    | | Switches between different approaches to vegetation         |
+|                                         | | dynamics: 0 assumes constant LAI (equal to initial value),  |
+|                                         | | 1 turns on vegetation allocation and growth module to       |
+|                                         | | calculate LAI, and 2 allows for externally forcing LAI.     |
 +-----------------------------------------+---------------------------------------------------------------+
-| Reinfiltration                          | Switch 1/0 to turn reinfiltration on (1) or off (0)           |
+| TimeSeries\_LAI                         | | if Vegetation\_dynamics = 2, template name of binary files  |
+|                                         | | giving LAI dynamics, one for each species.                  |
+|                                         | | Files name format: template + '_' + species # + '.bin'      |
++-----------------------------------------+---------------------------------------------------------------+
+| Reinfiltration                          | Boolean switch to turn reinfiltration on (1) or off (0)       |
 +-----------------------------------------+---------------------------------------------------------------+
 | Aerodyn\_resist\_opt                    | | Switches between different aerodynamic resistance           |
 |                                         | | formulations. 0: Penman; 1: Thom and Oliver (1977);         |
