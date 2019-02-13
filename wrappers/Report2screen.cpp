@@ -32,6 +32,9 @@
 
 int Report2Screen(){
 
+  UINT4 ncell = oBasin->getSortedGrid().cells.size();
+  REAL8 dx = oBasin->getCellSize();
+  REAL8 area = ncell * dx * dx;
   /*
   // A few tracking reports here, so that 
   // the age mass balance check uses beg-of-time-step values, more simple!
@@ -62,52 +65,73 @@ int Report2Screen(){
 
   // ==== BasinSummary.txt --------------------------------------------------------
   // -----------------------------------------------------
-  printf("\nTotal Precipitation (m3):  %.2f \t", oBudget->precipitation);
+
+  // For the splash screen, using mm for flux and stores
+  // makes things more obvious than m3 (to check quickly)!
+  // m3 is kept for BasinSummary.txt
+  
+  //printf("\nTotal Precipitation (m3):  %.2f \t", oBudget->precipitation);
+  printf("\nTotal Precipitation (mm):  %.2f \t", 1000 * oBudget->precipitation / area);
   ofSummary << oBudget->precipitation << "\t";
 
-  printf("SWE (m3): %.2f \n", oBudget->snowpack);
+  //printf("SWE (m3): %.2f \n", oBudget->snowpack);
+  printf("SWE (mm): %.2f \n", 1000 * oBudget->snowpack / area);
   ofSummary << oBudget->snowpack << "\t";
 
-  printf("Canopy Storage (m3): %.2f \t", oBudget->canopy);
+  //printf("Canopy Storage (m3): %.2f \t", oBudget->canopy);
+  printf("Canopy Storage (mm): %.2f \t", 1000 * oBudget->canopy /area);
   ofSummary << oBudget->canopy << "\t";
 
-  printf("Ponding (m3): %.2f \n", oBudget->ponding);
+  //printf("Ponding (m3): %.2f \n", oBudget->ponding);
+  printf("Ponding (mm): %.2f \n", 1000 * oBudget->ponding / area);
   ofSummary << oBudget->ponding << "\t";
 
-  printf("Soil water (m3): %.2f \t", oBudget->vadose);
+  //printf("Soil water (m3): %.2f \t", oBudget->vadose);
+  printf("Soil water (mm): %.2f \t", 1000 * oBudget->vadose / area);
   ofSummary << oBudget->vadose << "\t";
 
-  printf("of which Groundwater (m3): %.2f \n", oBudget->grndwater);
+  //printf("of which Groundwater (m3): %.2f \n", oBudget->grndwater);
+  printf("of which Groundwater (mm): %.2f \n", 1000 * oBudget->grndwater / area);
   ofSummary << oBudget->grndwater << "\t";
 
-  printf("Total Evapotranspiration (m3): %.2f \t", oBudget->evaporation);
+  //printf("Total Evapotranspiration (m3): %.2f \t", oBudget->evaporation);
+  printf("Total Evapotranspiration (mm): %.2f \t", 1000 * oBudget->evaporation / area);
   ofSummary << oBudget->evaporation << "\t";
 
-  printf("Total Soil Evaporation (m3): %.2f \n", oBudget->evaporationS);
+  //printf("Total Soil Evaporation (m3): %.2f \n", oBudget->evaporationS);
+  printf("Total Soil Evaporation (mm): %.2f \n", 1000 * oBudget->evaporationS /area);
   ofSummary << oBudget->evaporationS << "\t";
 
-  printf("Total Canopy Evaporation (m3): %.2f \t", oBudget->evaporationI);
+  //printf("Total Canopy Evaporation (m3): %.2f \t", oBudget->evaporationI);
+  printf("Total Canopy Evaporation (mm): %.2f \t", 1000 * oBudget->evaporationI / area);
   ofSummary << oBudget->evaporationI << "\t";
 
-  printf("Total Transpiration (m3): %.2f \n", oBudget->transpiration);
+  //printf("Total Transpiration (m3): %.2f \n", oBudget->transpiration);
+  printf("Total Transpiration (mm): %.2f \n", 1000 * oBudget->transpiration / area);
   ofSummary << oBudget->transpiration << "\t";
 
-  printf("Bedrock Leak (m3): %.2f \n", oBudget->leakage);
+  //printf("Bedrock Leak (m3): %.2f \n", oBudget->leakage);
+  printf("Bedrock Leak (mm): %.2f \n", 1000 * oBudget->leakage /area);
   ofSummary << oBudget->leakage << "\t";
 
-  printf("Total OvlndFlow output (m3): %.2f \t", oBudget->ovlndflow);
+  //printf("Total OvlndFlow output (m3): %.2f \t", oBudget->ovlndflow);
+  printf("Total OvlndFlow output (mm): %.2f \t", 1000 * oBudget->ovlndflow / area);
   ofSummary << oBudget->ovlndflow << "\t";
 
-  printf("Total GWFlow output (m3): %.2f \n", oBudget->gwtrflow);
+  //printf("Total GWFlow output (m3): %.2f \n", oBudget->gwtrflow);
+  printf("Total GWFlow output (mm): %.2f \n", 1000 * oBudget->gwtrflow / area);
   ofSummary << oBudget->gwtrflow << "\t";
 
-  printf("Run-off to channel (m3): %.2f \t", oBudget->srftochn);
+  //printf("Run-off to channel (m3): %.2f \t", oBudget->srftochn);
+  printf("Run-off to channel (m3): %.2f \t", 1000 * oBudget->srftochn / area);
   ofSummary << oBudget->srftochn << "\t";
 
-  printf("GW to channel (m3): %.2f \n", oBudget->gwtochn);
+  //printf("GW to channel (m3): %.2f \n", oBudget->gwtochn);
+  printf("GW to channel (m3): %.2f \n", 1000 * oBudget->gwtochn / area);
   ofSummary << oBudget->gwtochn << "\t";
 
-  printf("Recharge (to layer 3, m3): %.2f \t", oBudget->recharge);
+  //printf("GW recharge (m3): %.2f \t", oBudget->recharge);
+  printf("GW recharge (mm): %.2f \t", 1000 * oBudget->recharge / area);
   ofSummary << oBudget->recharge << "\t";
 
   // Saturated area (% of the catchment)
