@@ -93,7 +93,8 @@ class Forest {
   int CalculateCanopyConduct(const Basin &bas, const Atmosphere &atm, const Control &ctrl, const double &lwp, double &dgsdlwp, UINT4 j, UINT4 r, UINT4 c);
 
   UINT4 SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctrl,
-				 REAL8 thetar, REAL8 rootdepth, 
+				 REAL8 theta_r1, REAL8 theta_r2, REAL8 theta_r3,
+				 REAL8 rootdepth, 
 				 REAL8 psiae, REAL8 bclambda, REAL8 ra, 
 				 REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, REAL8 &netR_a,
 				 UINT4 s, UINT4 r, UINT4 c);

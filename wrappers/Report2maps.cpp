@@ -48,7 +48,21 @@ int Report2Maps(){
     WriteMapSeries(oAtmosphere->getMinTemperature(), "TpMin", oControl->current_ts_count);
   if(oControl->Rep_MaxAir_Temperature)
     WriteMapSeries(oAtmosphere->getMaxTemperature(), "TpMax", oControl->current_ts_count);
-
+  
+  // If exponential porosity profile, give field capacity for each.
+  // Else, it's the same across the profile
+  if(oControl->sw_expPoros){
+    if (oControl->Rep_Field_Capacity_L1) 
+      WriteMapSeries(oBasin->getFieldCapacityL1(), "FCap1", oControl->current_ts_count);
+    if (oControl->Rep_Field_Capacity_L2)
+      WriteMapSeries(oBasin->getFieldCapacityL2(), "FCap2", oControl->current_ts_count);
+    if (oControl->Rep_Field_Capacity_L3)
+      WriteMapSeries(oBasin->getFieldCapacityL3(), "FCap3", oControl->current_ts_count);
+  } else
+    if (oControl->Rep_Field_Capacity_L1 or oControl->Rep_Field_Capacity_L2 or
+	oControl->Rep_Field_Capacity_L3)
+      WriteMapSeries(oBasin->getFieldCapacityL1(), "FCap", oControl->current_ts_count);
+  
   if (oControl->Rep_Canopy_Water_Stor_sum)
     WriteMapSeries(oBasin->getCanopyStorage(), "Cs", oControl->current_ts_count);
   if (oControl->Rep_SWE)
@@ -73,12 +87,6 @@ int Report2Maps(){
     WriteMapSeries(oBasin->getSoilMoist3(), "SWC3_", oControl->current_ts_count);
   if (oControl->Rep_WaterTableDepth)
     WriteMapSeries(oBasin->getWaterTableDepth(), "WTD_", oControl->current_ts_count);
-  if (oControl->Rep_Field_Capacity_L1)
-    WriteMapSeries(oBasin->getFieldCapacityL1(), "FCap1", oControl->current_ts_count);
-  if (oControl->Rep_Field_Capacity_L2)
-    WriteMapSeries(oBasin->getFieldCapacityL2(), "FCap2", oControl->current_ts_count);
-  if (oControl->Rep_Field_Capacity_L3)
-    WriteMapSeries(oBasin->getFieldCapacityL3(), "FCap3", oControl->current_ts_count);
   if (oControl->Rep_Soil_Sat_Deficit)
     WriteMapSeries(oBasin->getSaturationDeficit(), "SatDef", oControl->current_ts_count);
   if (oControl->Rep_GWater)
@@ -564,6 +572,41 @@ int Report2Ts(){
 			      oControl->current_ts_count);
   }
 
+  // If exponential porosity profile, give field capacity for each.
+  // Else, it's the same across the profile
+  if(oControl->sw_expPoros){
+    if (oControl->RepTs_Field_Capacity_L1){
+      if(oControl->GetTimeStep() <= oControl->report_times)
+	oReport->RenameFile(oControl->path_ResultsFolder + "FieldCapL1.tab");
+      oReport->ReportTimeSeries(oBasin->getFieldCapacityL1(),
+				oControl->path_ResultsFolder + "FieldCapL1.tab",
+				oControl->current_ts_count);
+    }
+    if (oControl->RepTs_Field_Capacity_L2){
+      if(oControl->GetTimeStep() <= oControl->report_times)
+	oReport->RenameFile(oControl->path_ResultsFolder + "FieldCapL2.tab");
+      oReport->ReportTimeSeries(oBasin->getFieldCapacityL2(),
+				oControl->path_ResultsFolder + "FieldCapL2.tab",
+				oControl->current_ts_count);
+    }
+    if (oControl->RepTs_Field_Capacity_L3){
+      if(oControl->GetTimeStep() <= oControl->report_times)
+	oReport->RenameFile(oControl->path_ResultsFolder + "FieldCapL3.tab");
+      oReport->ReportTimeSeries(oBasin->getFieldCapacityL3(),
+				oControl->path_ResultsFolder + "FieldCapL3.tab",
+				oControl->current_ts_count);
+    }
+  } else
+    if (oControl->RepTs_Field_Capacity_L1 or oControl->RepTs_Field_Capacity_L2 or
+	oControl->RepTs_Field_Capacity_L3){
+      if(oControl->GetTimeStep() <= oControl->report_times)
+	oReport->RenameFile(oControl->path_ResultsFolder + "FieldCap.tab");
+      oReport->ReportTimeSeries(oBasin->getFieldCapacityL3(),
+				oControl->path_ResultsFolder + "FieldCap.tab",
+				oControl->current_ts_count);
+    }
+
+  
   if (oControl->RepTs_Canopy_Water_Stor_sum){
     if(oControl->GetTimeStep() <= oControl->report_times)
       oReport->RenameFile(oControl->path_ResultsFolder + "CanopyWaterSotr.tab");
@@ -639,27 +682,6 @@ int Report2Ts(){
       oReport->RenameFile(oControl->path_ResultsFolder + "WaterTableDepth.tab");
     oReport->ReportTimeSeries(oBasin->getWaterTableDepth(),
 			      oControl->path_ResultsFolder + "WaterTableDepth.tab",
-			      oControl->current_ts_count);
-  }
-  if (oControl->RepTs_Field_Capacity_L1){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "FieldCapL1.tab");
-    oReport->ReportTimeSeries(oBasin->getFieldCapacityL1(),
-			      oControl->path_ResultsFolder + "FieldCapL1.tab",
-			      oControl->current_ts_count);
-  }
-  if (oControl->RepTs_Field_Capacity_L2){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "FieldCapL2.tab");
-    oReport->ReportTimeSeries(oBasin->getFieldCapacityL2(),
-			      oControl->path_ResultsFolder + "FieldCapL2.tab",
-			      oControl->current_ts_count);
-  }
-  if (oControl->RepTs_Field_Capacity_L3){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "FieldCapL3.tab");
-    oReport->ReportTimeSeries(oBasin->getFieldCapacityL3(),
-			      oControl->path_ResultsFolder + "FieldCapL3.tab",
 			      oControl->current_ts_count);
   }
   if (oControl->RepTs_Soil_Sat_Deficit){

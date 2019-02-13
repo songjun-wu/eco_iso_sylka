@@ -67,7 +67,7 @@ void Tracking::MixingV_latup(Basin &bsn, Control &ctrl,
   // Two-pore stuff
   double theta_MW1 = 0;
   double theta_MW2 = 0;
-  double theta_r = 0;
+  //double theta_r = 0;
   //double porosity = 0;
   double L3toTB2 = 0;
   double L3toMW2 = 0;
@@ -78,7 +78,7 @@ void Tracking::MixingV_latup(Basin &bsn, Control &ctrl,
   double d_old = 0;
 
   if(ctrl.sw_TPD){
-    theta_r = bsn.getSoilMoistR()->matrix[r][c];
+    //theta_r = bsn.getSoilMoistR()->matrix[r][c];
     theta_MW1 = bsn.getMoistureMW1()->matrix[r][c];
     theta_MW2 = bsn.getMoistureMW2()->matrix[r][c];
     // Return flow to L2: weighted between TB2 (if there's deficit there) and MW2

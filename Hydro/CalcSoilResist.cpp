@@ -50,7 +50,7 @@ REAL8 Basin::CalcSoilResist(double &theta, int row, int col, UINT4 option){
 
 	double thetas = _porosityL1->matrix[row][col];
 	double thetafc = _fieldcapL1->matrix[row][col];
-	double thetar = _theta_r->matrix[row][col];
+	double thetar = _theta_rL1->matrix[row][col];
 
 
 	double S = (theta - thetar) / (thetafc - thetar);

@@ -1,6 +1,6 @@
 .. |ech2o| replace:: EcH\ :sub:`2`\ O
 
-|ech2o|-iso 1.0
+|ech2o|-iso 2.0
 ===============
 
 |ech2o|-iso builds on the **physically-based, spatially distributed ecohydrologic model EcH**\ :sub:`2`\ **O** developed in C++ in the Regional Hydrology Lab at the University of Montana (Maneta and Silverman, 2013) (`link <http://hs.umt.edu/RegionalHydrologyLab/software/default.php>`_).

@@ -115,7 +115,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	theta2 = _soilmoist2->matrix[r][c];
 	theta3 = _soilmoist3->matrix[r][c];
 	ponding = _ponding->matrix[r][c]; //surface ponding at time t
-	gw = _GravityWater->matrix[r][c]; //gravity water at time t
+	gw = _GrndWater->matrix[r][c]; //gravity water at time t
 	leak = 0;
 	
 	fc = _fieldcapL3->matrix[r][c];

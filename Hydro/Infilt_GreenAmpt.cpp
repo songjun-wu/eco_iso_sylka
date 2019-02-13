@@ -31,7 +31,7 @@
 #include "Basin.h"
 
 void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
-		double &theta2, double &theta3, double &pond, double &gw,
+			     double &theta2, double &theta3, double &pond, double &gw,
 			     double dt, int r, int c) //time step
 {
 
@@ -39,8 +39,8 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
   double ef_poros1 = _porosityL1->matrix[r][c];
   double ef_poros2 = _porosityL2->matrix[r][c];
   double ef_poros3 = _porosityL3->matrix[r][c];
-  double thetar = _theta_r->matrix[r][c];
-
+  double theta_r1 = _theta_rL1->matrix[r][c];
+ 
   double KvKh = _KvKs->matrix[r][c];
   double Ks1 = _KsatL1->matrix[r][c] * KvKh;
   double psi = _psi_ae->matrix[r][c];
@@ -56,7 +56,7 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
     _FluxL2toL3->matrix[r][c] = 0;
   }
   
-  gw = 0;
+  //gw = 0;
 
   double inp = pond / dt; //inp is potential water input in ms-1
 
@@ -65,7 +65,7 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
     return;
   }
 	
-  double S = (theta - thetar) / (ef_poros1 - thetar);
+  double S = (theta - theta_r1) / (ef_poros1 - theta_r1);
   double dtheta = (1 - S) * ef_poros1;
 
   if (dtheta < RNDOFFERR) { //if there is no room for more water
@@ -143,7 +143,7 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
 
       Fp = i * tp;
 
-      //S = (theta + (Fp / depth)  - thetar)/(ef_poros - thetar); //updates relative soil moisture with moisture infiltrated before ponding
+      //S = (theta + (Fp / depth)  - theta_r)/(ef_poros - theta_r); //updates relative soil moisture with moisture infiltrated before ponding
       //psidtheta = fabs(psi) * (1 - S) * ef_poros;//to recalculate infiltration after ponding using N-R with correct suction forces
 
       F1 = Ks1 * DT; //initial guess

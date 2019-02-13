@@ -35,12 +35,15 @@
 //using namespace arma;
 
 void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &theta1,
-				    double &theta2, double &theta3, double &pond, double &gw, double &leak,  double dt,
+				    double &theta2, double &theta3, double &pond,
+				    double &gw, double &leak,  double dt,
 				    int r, int c) {
 
 
   //double K1, K12, K2, K23, K3;
-  double thetar = _theta_r->matrix[r][c];
+  double theta_r1 = _theta_rL1->matrix[r][c];
+  double theta_r2 = _theta_rL2->matrix[r][c];
+  double theta_r3 = _theta_rL3->matrix[r][c];
   double thetafc1 = _fieldcapL1->matrix[r][c];
   double thetafc2 = _fieldcapL2->matrix[r][c];
   double thetafc3 = _fieldcapL3->matrix[r][c];
@@ -69,15 +72,15 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
   x[1] = L2;
   x[2] = L3;
 
-  double a1 = dt*Ks1/(poros1-thetar);
-  double a2 = dt*Ks2/(poros2-thetar);
-  double a3 = dt*Ks3/(poros3-thetar);
+  double a1 = dt*Ks1/(poros1-theta_r1);
+  double a2 = dt*Ks2/(poros2-theta_r2);
+  double a3 = dt*Ks3/(poros3-theta_r3);
 
   // == Gravitational drainage -------------------------------------------------
 
   // -- First layer 1 + updating the layer below
   if(x[0]/d1 > thetafc1){
-    x[0] =( L1 + a1* thetar) / (1 + a1/d1);
+    x[0] =( L1 + a1* theta_r1) / (1 + a1/d1);
     //check if too much drainage
     if(x[0]/d1 < thetafc1)
       x[0] = thetafc1 * d1;
@@ -93,7 +96,7 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
 
   // -- Second layer + updating the layer below
   if(L2/d2 > thetafc2){
-    x[1] =(L2 + a2* thetar) / (1 + a2/d2);
+    x[1] =(L2 + a2* theta_r2) / (1 + a2/d2);
     //check if too much drainage
     if(x[1]/d2 < thetafc2)
       x[1] = thetafc2 * d2;
@@ -110,7 +113,7 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
 
   // -- Third layer 
   if(L3/d3 > thetafc3){
-    x[2] =(L3 + L*a3* thetar) / (1 + L*a3/d3);
+    x[2] =(L3 + L*a3* theta_r3) / (1 + L*a3/d3);
     //check if too much drainage
     if(x[2]/d3 < thetafc3)
       x[2] = thetafc3 * d3;

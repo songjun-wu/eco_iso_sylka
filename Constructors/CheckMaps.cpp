@@ -128,22 +128,24 @@ void Basin::CheckMaps(Control &ctrl) {
 	//throw e;
       }
 
-      if (_theta_r->matrix[r][c] == _theta_r->nodata) {
+      // Initial check of theta_r using L1 (it is the same for all 3 layers,
+      // at least before comparing to _porosityL*) 
+      if (_theta_rL1->matrix[r][c] == _theta_rL1->nodata) {
 	string e(
 		 "residual moisture map contains no data values inside the valid domain...\n");
 	throw e;
       }
-      if (_theta_r->matrix[r][c] <= 0) {
+      if (_theta_rL1->matrix[r][c] <= 0) {
 	string e(
 		 "residual moisture map contains negative or zero values inside the valid domain...\n");
 	throw e;
       }
-      if (_theta_r->matrix[r][c] > _porosity0->matrix[r][c]) {
+      if (_theta_rL1->matrix[r][c] > _porosity0->matrix[r][c]) {
 	string e(
-		 "Residual soil moisture map is larger than porosity than inside the valid domain...\n");
+		 "Input residual soil moisture map is larger than top-of-profile porosity inside the valid domain...\n");
 	throw e;
       }
-
+      
       if (_soildepth->matrix[r][c] == _soildepth->nodata) {
 	string e(
 		 "soil depth map contains no data values inside the valid domain...\n");
@@ -155,11 +157,11 @@ void Basin::CheckMaps(Control &ctrl) {
 	throw e;
       }
       /*
-      if (_Kroot->matrix[r][c] == _Kroot->nodata) {
+	if (_Kroot->matrix[r][c] == _Kroot->nodata) {
 	string e(
-		 "root profile map contains no data inside the valid domain...\n");
+	"root profile map contains no data inside the valid domain...\n");
 	throw e;
-      }
+	}
       */
       if (_paramWc->matrix[r][c] == _paramWc->nodata) {
 	string e(
@@ -267,6 +269,27 @@ void Basin::CheckMaps(Control &ctrl) {
 	throw e;
       }
 
+      // Compare theta_rL* and porosityL* (to avoid inconsistencies when exp profiel is activated)
+      if (_theta_rL1->matrix[r][c] > 0.25 * _porosityL1->matrix[r][c]) {
+	string e("WARNING: Topsoil residual soil moisture is > 0.25 * topsoil porosity, let's tone it down...\n");
+	cout << e;
+	_theta_rL1->matrix[r][c] = 0.25 * _porosityL1->matrix[r][c];
+	// throw e;
+      }
+      if (_theta_rL2->matrix[r][c] > 0.25 * _porosityL2->matrix[r][c]) {
+	string e("WARNING: Residual soil moisture in layer 2 is > 0.25*porosity, let's tone it down...\n");
+	cout << e;
+	_theta_rL2->matrix[r][c] = 0.25 * _porosityL2->matrix[r][c];
+	// throw e;
+      }
+      if (_theta_rL3->matrix[r][c] > 0.25 * _porosityL3->matrix[r][c]) {
+	string e("WARNING: Residual soil moisture in layer 3 is > 0.25 * porosity, let's tone it down...\n");
+	cout << e;
+	_theta_rL3->matrix[r][c] = 0.25 * _porosityL3->matrix[r][c];
+	// throw e;
+      }
+
+      // Check soil moisture itself
       if (_soilmoist1->matrix[r][c] == _soilmoist1->nodata) {
 	string e(
 		 "Initial soil moisture map contains no data values inside the valid domain...\n");
@@ -282,40 +305,40 @@ void Basin::CheckMaps(Control &ctrl) {
 		 "Initial soil moisture map in layer 3 contains no data values inside the valid domain...\n");
 	throw e;
       }
-      if (_soilmoist1->matrix[r][c] < _theta_r->matrix[r][c]) {
+      if (_soilmoist1->matrix[r][c] < _theta_rL1->matrix[r][c]) {
 	string e("WARNING: Topsoil Initial soil moisture map is lower than residual moisture, let's jump it up...\n");
 	cout << e;
-	_soilmoist1->matrix[r][c] = (_theta_r->matrix[r][c] + 3*_porosityL1->matrix[r][c]) / 4;
+	_soilmoist1->matrix[r][c] = (_theta_rL1->matrix[r][c] + 3*_porosityL1->matrix[r][c]) / 4;
 	// throw e;
       }
-      if (_soilmoist2->matrix[r][c] < _theta_r->matrix[r][c]) {
-	string e("WARNING: Initial oil moisture map in layer 2 is lower than residual moisture, let's jump it up...\n");
+      if (_soilmoist2->matrix[r][c] < _theta_rL2->matrix[r][c]) {
+	string e("WARNING: Initial soil moisture map in layer 2 is lower than residual moisture, let's jump it up...\n");
 	cout << e;
-	_soilmoist2->matrix[r][c] = (_theta_r->matrix[r][c] + 3*_porosityL2->matrix[r][c]) / 4;
+	_soilmoist2->matrix[r][c] = (_theta_rL2->matrix[r][c] + 3*_porosityL2->matrix[r][c]) / 4;
 	// throw e ;
       }
-      if (_soilmoist3->matrix[r][c] < _theta_r->matrix[r][c]) {
+      if (_soilmoist3->matrix[r][c] < _theta_rL3->matrix[r][c]) {
 	string e("WARNING: Initial soil moisture map in layer 3 is lower than residual moisture, let's jump it up...\n");
 	cout << e;
-	_soilmoist3->matrix[r][c] = (_theta_r->matrix[r][c] + 3*_porosityL3->matrix[r][c]) / 4;
+	_soilmoist3->matrix[r][c] = (_theta_rL3->matrix[r][c] + 3*_porosityL3->matrix[r][c]) / 4;
 	//throw e;
       }
       if (_soilmoist1->matrix[r][c] > _porosityL1->matrix[r][c]) {
 	string e("WARNING: Topsoil Initial soil moisture map is larger than porosity, let's bring it down...\n");
 	cout << e;
-	_soilmoist1->matrix[r][c] = (_theta_r->matrix[r][c] + 3*_porosityL1->matrix[r][c]) / 4;
+	_soilmoist1->matrix[r][c] = (_theta_rL1->matrix[r][c] + 3*_porosityL1->matrix[r][c]) / 4;
 	//throw e;
       }
       if (_soilmoist2->matrix[r][c] > _porosityL2->matrix[r][c]) {
 	string e("WARNING: Initial soil moisture in layer 2 is larger than porosity, let's bring it down...\n");
 	cout << e;
-	_soilmoist1->matrix[r][c] = (_theta_r->matrix[r][c] + 3*_porosityL1->matrix[r][c]) / 4;
+	_soilmoist1->matrix[r][c] = (_theta_rL2->matrix[r][c] + 3*_porosityL1->matrix[r][c]) / 4;
 	//throw e;
       }
       if (_soilmoist3->matrix[r][c] > _porosityL3->matrix[r][c]) {
 	string e("WARNING: Initial soil moisture in layer 3 is larger than porosity, let's bring it down...\n");
 	cout << e;
-	_soilmoist1->matrix[r][c] = (_theta_r->matrix[r][c] + 3*_porosityL1->matrix[r][c]) / 4;
+	_soilmoist1->matrix[r][c] = (_theta_rL3->matrix[r][c] + 3*_porosityL1->matrix[r][c]) / 4;
 	//throw e;
       }
       if (_channelwidth->matrix[r][c] < 0) {

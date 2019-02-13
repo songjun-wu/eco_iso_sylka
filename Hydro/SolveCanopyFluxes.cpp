@@ -58,7 +58,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
   //soil parameters
   REAL8 rootdepth;
-  REAL8 thetar;
+  REAL8 theta_r1, theta_r2, theta_r3;
   REAL8 fc3;
   REAL8 poros1, poros2, poros3;
   REAL8 psi_ae;
@@ -113,7 +113,8 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
   private( s, r,c, p,  treeheight, wind, za, z0o, zdo,			\
 	   Tp, maxTp, minTp, snow, rain, sno_rain_thres, evap,		\
 	   transp, netR, evap_f, transp_f, D, DelCanStor, theta, theta2, theta3, theta_available, ra, \
-	   psi_ae, bclambda, rootdepth, froot1, froot2, froot3, d1, d2, d3, thetar, fc3, \
+	   psi_ae, bclambda, rootdepth, froot1, froot2, froot3, d1, d2, d3, \
+	   theta_r1, theta_r2, theta_r3, fc3,					\
 	   pTrp1, pTrp2, pTrp3, veg_p, d2HevapT_f, d18OevapT_f, AgeevapT_f, \
 	   d2HevapI_f, d18OevapI_f, AgeevapI_f, d2Hcanopy_f, d18Ocanopy_f, Agecanopy_f, \
 	   poros1, poros2, poros3,					\
@@ -143,7 +144,9 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
       theta = _soilmoist1->matrix[r][c]; //soil moisture at time t
       theta2 = _soilmoist2->matrix[r][c];
       theta3 = _soilmoist3->matrix[r][c];
-      thetar = _theta_r->matrix[r][c];
+      theta_r1 = _theta_rL1->matrix[r][c];
+      theta_r2 = _theta_rL2->matrix[r][c];
+      theta_r3 = _theta_rL3->matrix[r][c];
       fc3 = _fieldcapL3->matrix[r][c];
 
       psi_ae = _psi_ae->matrix[r][c];
@@ -217,8 +220,8 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  //froot2 = _rootfrac2->matrix[r][c];
 	  froot3 = 1 - froot1 - froot2;
 
-	  theta_available = (theta-thetar) * froot1 + 
-	    (theta2-thetar) * froot2 + (theta3-thetar) * froot3;
+	  theta_available = (theta-theta_r1) * froot1 + 
+	    (theta2-theta_r2) * froot2 + (theta3-theta_r3) * froot3;
 
 	  //cout << "theta_a : " << theta_available << ", theta1 : " << theta <<
 	  //  ", theta2 : " << theta2 << ", theta3 : " << theta3 << endl;
@@ -267,7 +270,8 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  
 	  // TODO : Implement fractionation in canopy interception in SolveCanopyEnergyBalance
 	  fForest->SolveCanopyEnergyBalance(*this, atm, ctrl, 
-					    thetar, rootdepth, psi_ae, bclambda, 
+					    theta_r1, theta_r2, theta_r3,
+					    rootdepth, psi_ae, bclambda, 
 					    ra, DelCanStor, evap, transp, netR, 
 					    s, r, c);
        
@@ -313,9 +317,9 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  // Transpiration-related update etc.
 	  transp_f += transp * p;
        
-	  pTrp1 = ((theta-thetar)*froot1) / theta_available;
-	  pTrp2 = ((theta2-thetar)*froot2) / theta_available;
-	  pTrp3 = ((theta3-thetar)*froot3) / theta_available;
+	  pTrp1 = ((theta-theta_r1)*froot1) / theta_available;
+	  pTrp2 = ((theta2-theta_r2)*froot2) / theta_available;
+	  pTrp3 = ((theta3-theta_r3)*froot3) / theta_available;
        
 	  dth1 = transp * p * dt * pTrp1 /d1;
 	  dth2 = transp * p * dt * pTrp2 /d2;
@@ -339,12 +343,12 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	      // full to have fast (so at a minimum transpi takes fully from tightly-bound)
 	      if(dth1 > RNDOFFERR){
 		kMW_L1 = max<double>(0,(_soilmoist1->matrix[r][c] - theta_MW1) /
-				     (_soilmoist1->matrix[r][c] - thetar));
+				     (_soilmoist1->matrix[r][c] - theta_r1));
 		kTB_L1 = max<double>(0,1 - kMW_L1);
 	      }
 	      if(dth2 > RNDOFFERR) {
 		kMW_L2 = min<double>(0, (_soilmoist2->matrix[r][c] - theta_MW2) /
-				     (_soilmoist2->matrix[r][c] - thetar));
+				     (_soilmoist2->matrix[r][c] - theta_r2));
 		kTB_L2 = max<double>(0,1 - kMW_L2);
 	      }
 	      if(ctrl.sw_2H){

@@ -57,10 +57,15 @@ int Basin::CalcKsatLayers(Control &ctrl){
 	  d2 = _depth_layer2->matrix[r][c];
 	  k = _kKsat->matrix[r][c];
 	  
-	  _KsatL1->matrix[r][c] = k*K0 * (1 - expl(-d1/k))/ d1;
-	  _KsatL2->matrix[r][c] = k*K0 * (expl(-d1/k) - expl(-(d1+d2)/k)) / d2;
-	  _KsatL3->matrix[r][c] = k*K0 * (expl(-(d1+d2)/k) - expl(-d/k)) / (d-d1-d2);
-
+	  if(abs(k) > RNDOFFERR){	  
+	    _KsatL1->matrix[r][c] = k*K0 * (1 - expl(-d1/k))/ d1;
+	    _KsatL2->matrix[r][c] = k*K0 * (expl(-d1/k) - expl(-(d1+d2)/k)) / d2;
+	    _KsatL3->matrix[r][c] = k*K0 * (expl(-(d1+d2)/k) - expl(-d/k)) / (d-d1-d2);
+	  } else {
+	    _KsatL1->matrix[r][c] = K0 ;
+	    _KsatL2->matrix[r][c] = K0 ;
+	    _KsatL3->matrix[r][c] = K0 ;
+	  }
 	} else {
 	  _KsatL1->matrix[r][c] = K0 ;
 	  _KsatL2->matrix[r][c] = K0 ;
@@ -98,11 +103,16 @@ int Basin::CalcPorosLayers(Control &ctrl){
 	  d1 = _depth_layer1->matrix[r][c];
 	  d2 = _depth_layer2->matrix[r][c];
 	  k = _kporos->matrix[r][c];
-	  
-	  _porosityL1->matrix[r][c] = k*phi0 * (1 - expl(-d1/k)) / d1;
-	  _porosityL2->matrix[r][c] = k*phi0 * (expl(-d1/k) - expl(-(d1+d2)/k)) / d2;
-	  _porosityL3->matrix[r][c] = k*phi0 * (expl(-(d1+d2)/k) - expl(-d/k)) / (d-d1-d2);
 
+	  if(abs(k) > RNDOFFERR){
+	    _porosityL1->matrix[r][c] = k*phi0 * (1 - expl(-d1/k)) / d1;
+	    _porosityL2->matrix[r][c] = k*phi0 * (expl(-d1/k) - expl(-(d1+d2)/k)) / d2;
+	    _porosityL3->matrix[r][c] = k*phi0 * (expl(-(d1+d2)/k) - expl(-d/k)) / (d-d1-d2);
+	  } else {
+	    _porosityL1->matrix[r][c] = phi0 ;
+	    _porosityL2->matrix[r][c] = phi0 ;
+	    _porosityL3->matrix[r][c] = phi0 ;
+	  }
 	} else {
 	  _porosityL1->matrix[r][c] = phi0 ;
 	  _porosityL2->matrix[r][c] = phi0 ;
@@ -130,18 +140,18 @@ int Basin::CalcFieldCapacity(){
 	    
 	    _fieldcapL1->matrix[r][c] =
 	      powl(_psi_ae->matrix[r][c] / 3.36 ,1/_BClambda->matrix[r][c])
-	      * (_porosityL1->matrix[r][c] - _theta_r->matrix[r][c])
-	      + _theta_r->matrix[r][c];
+	      * (_porosityL1->matrix[r][c] - _theta_rL1->matrix[r][c])
+	      + _theta_rL1->matrix[r][c];
 
 	    _fieldcapL2->matrix[r][c] =
 	      powl(_psi_ae->matrix[r][c] / 3.36 ,1/_BClambda->matrix[r][c])
-	      * (_porosityL2->matrix[r][c] - _theta_r->matrix[r][c])
-	      + _theta_r->matrix[r][c];
+	      * (_porosityL2->matrix[r][c] - _theta_rL2->matrix[r][c])
+	      + _theta_rL2->matrix[r][c];
 
 	    _fieldcapL3->matrix[r][c] =
 	      powl(_psi_ae->matrix[r][c] / 3.36 ,1/_BClambda->matrix[r][c])
-	      * (_porosityL3->matrix[r][c] - _theta_r->matrix[r][c])
-	      + _theta_r->matrix[r][c];
+	      * (_porosityL3->matrix[r][c] - _theta_rL3->matrix[r][c])
+	      + _theta_rL3->matrix[r][c];
 
 	  }
 		

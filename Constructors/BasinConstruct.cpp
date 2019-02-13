@@ -88,7 +88,9 @@ Basin::Basin(Control &ctrl)
 
     _psi_ae = new grid(ctrl.path_BasinFolder + ctrl.fn_psi_ae, ctrl.MapType);
     _BClambda = new grid(ctrl.path_BasinFolder + ctrl.fn_BClambda, ctrl.MapType);
-    _theta_r = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);
+    _theta_rL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);
+    _theta_rL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);
+    _theta_rL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);
     _soildepth = new grid(ctrl.path_BasinFolder + ctrl.fn_soildepth, ctrl.MapType);
     _depth_layer1 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer1, ctrl.MapType);
     _depth_layer2 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer2, ctrl.MapType);
@@ -232,65 +234,65 @@ Basin::Basin(Control &ctrl)
     }
 
     try{
-        //calculate the value of Ksat for each layer (integrated from expo profile)
-        CalcKsatLayers(ctrl); 
-	if(errno!=0){
-	  cout << "Error creating Ksat for each layer: " << endl;
-	  throw string("Ksat, soil depths, kKsat");
-        }
-        //calculate the value of porosity for each layer (integrated from expo profile)
-        CalcPorosLayers(ctrl);
-	if(errno!=0){
-	  cout << "Error creating Kporos for each layer: " << endl;
-	  throw string("porosm, kporos, soil depths");
-        }
-	//Partial check of maps mainly to make sure no no data is written within the valid domain
-	CheckMaps(ctrl);
-	if(errno!=0){
-	  cout << "Error creating maps: " << endl;
-	  throw string(" ");
-        }
-	//Fills-in the _catcharea map with the upstream catchment area of each cell
-        CalcCatchArea();
-	if(errno!=0){
-	  cout << "Error creating catchment area: " << strerror(errno) << endl;
-	  throw string(" ");
-        }
-        // Calculate the value of field capacity using the Brooks and Corey Formula
-        CalcFieldCapacity();	
-	if(errno!=0){
-	  cout << "Error creating field capacity: " << endl;
-	  throw string("psi_ae, BClambda, poros, theta_r ");
-        }
-	
-        //Reads initial streamflow map and populate _ponding variable with initial storage in stream
-        CalcInitialStreamStorage();
-	if(errno!=0){
-	  cout << "Error creating stream storage maps: " << endl;
-	  throw string("slope, chanmask, chanmann, chanwidth ");
-        }
-
-	// From the species root profile and layer depth --> root frac in each layer
-        CalcRootDistrib();
-	if(errno!=0){
-	  cout << "Error creating root distributions: " << endl;
-	  throw string("kroot, soil depths  ");
-        }
-
-	// From the specified tightly-bound / mobile tension threshold, the threshold moisture is calculated using the Brooks-Corey formula 
-	if(ctrl.sw_trck and ctrl.sw_TPD){
-	  CalcTPDMoisture(ctrl);
-	  if(errno!=0){
-	    cout << "Error creating the TPD moisture threshold: " << endl;
-	    throw string(" psi_ae, psi_MW, bclambda, poros, theta_r  ");
-	  }
-	}
-
-
-  	} catch (string e){
-      cout << "Check the  " << e << " maps, error " << strerror(errno) << endl;
-	throw;
+      //calculate the value of Ksat for each layer (integrated from expo profile)
+      CalcKsatLayers(ctrl); 
+      if(errno!=0){
+	cout << "Error creating Ksat for each layer: " << endl;
+	throw string("Ksat, soil depths, kKsat");
       }
+      //calculate the value of porosity for each layer (integrated from expo profile)
+      CalcPorosLayers(ctrl);
+      if(errno!=0){
+	cout << "Error creating Kporos for each layer: " << endl;
+	throw string("porosm, kporos, soil depths");
+      }
+      //Partial check of maps mainly to make sure no no data is written within the valid domain
+      CheckMaps(ctrl);
+      if(errno!=0){
+	cout << "Error creating maps: " << endl;
+	throw string(" ");
+      }
+      //Fills-in the _catcharea map with the upstream catchment area of each cell
+      CalcCatchArea();
+      if(errno!=0){
+	cout << "Error creating catchment area: " << strerror(errno) << endl;
+	throw string(" ");
+      }
+      // Calculate the value of field capacity using the Brooks and Corey Formula
+      CalcFieldCapacity();	
+      if(errno!=0){
+	cout << "Error creating field capacity: " << endl;
+	throw string("psi_ae, BClambda, poros, theta_r ");
+      }
+	
+      //Reads initial streamflow map and populate _ponding variable with initial storage in stream
+      CalcInitialStreamStorage();
+      if(errno!=0){
+	cout << "Error creating stream storage maps: " << endl;
+	throw string("slope, chanmask, chanmann, chanwidth ");
+      }
+
+      // From the species root profile and layer depth --> root frac in each layer
+      CalcRootDistrib();
+      if(errno!=0){
+	cout << "Error creating root distributions: " << endl;
+	throw string("kroot, soil depths  ");
+      }
+
+      // From the specified tightly-bound / mobile tension threshold, the threshold moisture is calculated using the Brooks-Corey formula 
+      if(ctrl.sw_trck and ctrl.sw_TPD){
+	CalcTPDMoisture(ctrl);
+	if(errno!=0){
+	  cout << "Error creating the TPD moisture threshold: " << endl;
+	  throw string(" psi_ae, psi_MW, bclambda, poros, theta_r  ");
+	}
+      }
+
+
+    } catch (string e){
+      cout << "Check the  " << e << " maps, error " << strerror(errno) << endl;
+      throw;
+    }
 
 
   }catch (std::bad_alloc &)
@@ -361,8 +363,12 @@ Basin::Basin(Control &ctrl)
 	delete _psi_ae;
       if(_BClambda)
 	delete _BClambda;
-      if(_theta_r)
-	delete _theta_r;
+      if(_theta_rL1)
+	delete _theta_rL1;
+      if(_theta_rL2)
+	delete _theta_rL2;
+      if(_theta_rL3)
+	delete _theta_rL3;
       if(_infilt_cap)
 	delete _infilt_cap;
       if(_soilmoist1)

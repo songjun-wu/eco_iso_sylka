@@ -72,7 +72,7 @@ class Basin {
   grid *_kKsat; // coefficient for exponential profile of Ksat, in m
   grid *_KvKs; //vertical to horiontal Ks anisotropy ratio
   grid *_random_roughness; //terrain roughness to calculate aerodynamic resistance (m)
-  grid *_theta_r; //residual soil moisture volumetric
+  grid *_theta_rL1, *_theta_rL2, *_theta_rL3; //residual soil moisture volumetric in each layer (initially the same for all layers, corrected in case theta_rL* > porosityL*).
   grid *_psi_ae; // soil air entry pressure in m
   grid *_BClambda; //Brooks and Corey lambda parameter
   grid *_soildepth; //soil depth m
@@ -550,42 +550,47 @@ class Basin {
 
   grid *getWaterTableDepth() const {
     /*int r, c;
-      double depth, fc, eta;
+    double depth, fc1, fc2, fc3, eta1, eta2, eta3;
       double d1, d2, d3;
       #pragma omp parallel for						\
-      default(none) private(r, c, fc, eta, depth, d1, d2, d3)
+	default(none) private(r, c, fc1, fc2, fc3, \
+			      eta1, eta2, eta3, depth, d1, d2, d3)
       for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
       r = _vSortedGrid.cells[j].row;
       c = _vSortedGrid.cells[j].col;
-      fc = _fieldcap->matrix[r][c];
-      eta = _porosity->matrix[r][c];
+      fc1 = _fieldcapL1->matrix[r][c];
+      fc2 = _fieldcapL2->matrix[r][c];
+      fc3 = _fieldcapL3->matrix[r][c];
+      eta1 = _porosityL1->matrix[r][c];
+      eta2 = _porosityL2->matrix[r][c];
+      eta3 = _porosityL3->matrix[r][c];
       depth = _soildepth->matrix[r][c];
       // If the theta3 is not above field cap, then no water table within the profile
-      if(fc - _soilmoist3->matrix[r][c] > 0)
-      _WaterTableDepth->matrix[r][c] = depth;
+      if(fc3 - _soilmoist3->matrix[r][c] > 0)
+	_WaterTableDepth->matrix[r][c] = depth;
       else{
-      d1 = _depth_layer1->matrix[r][c];
-      d2 = _depth_layer2->matrix[r][c];
-      d3 = depth - d1 - d2;
-      // If theta3 below porosity, water table within third layer
-      if(fabs(eta - _soilmoist3->matrix[r][c]) > RNDOFFERR)
-      _WaterTableDepth->matrix[r][c] =
-      d1 + d2 + d3*(eta - _soilmoist3->matrix[r][c])/(eta - fc);
-      // If layer 3 saturated...
-      else{
-      // If theta2 below porosity, water table within third layer
-      if(fabs(eta - _soilmoist2->matrix[r][c]) > RNDOFFERR)
-      _WaterTableDepth->matrix[r][c] =
-      d1 + d2*(eta - _soilmoist2->matrix[r][c])/(eta - fc);
-      // If layer 2 saturated, water table within first layer
-      else
-      _WaterTableDepth->matrix[r][c] =
-      d1*(eta - _soilmoist1->matrix[r][c])/(eta - fc);
+	d1 = _depth_layer1->matrix[r][c];
+	d2 = _depth_layer2->matrix[r][c];
+	d3 = depth - d1 - d2;
+	// If theta3 below porosity, water table within third layer
+	if(fabs(eta3 - _soilmoist3->matrix[r][c]) > RNDOFFERR)
+	  _WaterTableDepth->matrix[r][c] =
+	    d1 + d2 + d3*(eta3 - _soilmoist3->matrix[r][c])/(eta3 - fc3);
+	// If layer 3 saturated...
+	else{
+	  // If theta2 below porosity, water table within third layer
+	  if(fabs(eta2 - _soilmoist2->matrix[r][c]) > RNDOFFERR)
+	    _WaterTableDepth->matrix[r][c] =
+	      d1 + d2*(eta2 - _soilmoist2->matrix[r][c])/(eta2 - fc2);
+	  // If layer 2 saturated, water table within first layer
+	  else
+	    _WaterTableDepth->matrix[r][c] =
+	      d1*(eta1 - _soilmoist1->matrix[r][c])/(eta1 - fc1);
+	}
       }
       }
-      }*/
-	  
-    return _WaterTableDepth;
+    */
+      return _WaterTableDepth;
   }
 
   grid * getSaturationDeficit() const {
@@ -594,8 +599,8 @@ class Basin {
     for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
       r = _vSortedGrid.cells[j].row;
       c = _vSortedGrid.cells[j].col;
-      _SoilSatDeficit->matrix[r][c] = 1 - ((_soilmoist1->matrix[r][c] - _theta_r->matrix[r][c])
-	   / (_porosityL1->matrix[r][c] - _theta_r->matrix[r][c]));
+      _SoilSatDeficit->matrix[r][c] = 1 - ((_soilmoist1->matrix[r][c] - _theta_rL1->matrix[r][c])
+	   / (_porosityL1->matrix[r][c] - _theta_rL1->matrix[r][c]));
     }
 
     return _SoilSatDeficit;
@@ -652,8 +657,14 @@ class Basin {
   grid *getPorosityL3() const {
     return _porosityL3;
   }
-  grid *getSoilMoistR() const {
-    return _theta_r;
+  grid *getSoilMoistR1() const {
+    return _theta_rL1;
+  }
+  grid *getSoilMoistR2() const {
+    return _theta_rL2;
+  }
+  grid *getSoilMoistR3() const {
+    return _theta_rL3;
   }
   grid *getPsiAE() const {
     return _psi_ae;

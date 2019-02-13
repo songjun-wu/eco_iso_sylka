@@ -67,7 +67,7 @@ int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
   } else if (ctrl.toggle_hs == 2) {
     // Sorderberg et al. (2012), orginially for dry soils 
     // (departs from EcH2O's evaporation conceptualization of evap!
-    th_r = bsn.getSoilMoistR()->matrix[r][c];
+    th_r = bsn.getSoilMoistR1()->matrix[r][c];
     th_s = bsn.getPorosityL1()->matrix[r][c];
     psiae = bsn.getPsiAE()->matrix[r][c];
     bclambda = bsn.getBClambda()->matrix[r][c];
@@ -99,8 +99,8 @@ int Tracking::Frac_Esoil(Atmosphere &atm, Basin &bsn, Control &ctrl,
     n = 1;
   } else if (ctrl.toggle_n == 1) {
     // Mathieu and Bariac (1996) + Braud et al. (2005)
-    n = 1 - 0.5*(V_old/d1-bsn.getSoilMoistR()->matrix[r][c])/
-      (bsn.getPorosityL1()->matrix[r][c]-bsn.getSoilMoistR()->matrix[r][c]);
+    n = 1 - 0.5*(V_old/d1-bsn.getSoilMoistR1()->matrix[r][c])/
+      (bsn.getPorosityL1()->matrix[r][c]-bsn.getSoilMoistR1()->matrix[r][c]);
   } else {
     std::cout << "Wrong option in the soil fractionation n toggle switch. Please verify the configuration file" << std::endl;
     exit(EXIT_FAILURE);  

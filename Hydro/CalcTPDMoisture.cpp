@@ -51,13 +51,13 @@ int Basin::CalcTPDMoisture(Control &ctrl){
 	std::min<double>(_fieldcapL1->matrix[r][c],
 			 powl(_psi_ae->matrix[r][c] / _psi_MW->matrix[r][c], 
 			      1/_BClambda->matrix[r][c])
-			 * (_porosityL1->matrix[r][c] - _theta_r->matrix[r][c]) + _theta_r->matrix[r][c]);
+			 * (_porosityL1->matrix[r][c] - _theta_rL1->matrix[r][c]) + _theta_rL1->matrix[r][c]);
 
       _moist_MW2->matrix[r][c] = 
 	std::min<double>(_fieldcapL2->matrix[r][c],
 			 powl(_psi_ae->matrix[r][c] / _psi_MW->matrix[r][c], 
 			      1/_BClambda->matrix[r][c])
-			 * (_porosityL2->matrix[r][c] - _theta_r->matrix[r][c]) + _theta_r->matrix[r][c]);
+			 * (_porosityL2->matrix[r][c] - _theta_rL2->matrix[r][c]) + _theta_rL2->matrix[r][c]);
       
     }
   

@@ -34,7 +34,8 @@
 using namespace arma;
 
 UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctrl,
-				       REAL8 thetar, REAL8 rootdepth,
+				       REAL8 theta_r1, REAL8 theta_r2, REAL8 theta_r3,
+				       REAL8 rootdepth,
 				       REAL8 psiae, REAL8 bclambda, REAL8 ra, 
 				       REAL8 &DelCanStor, REAL8 &evap_a, 
 				       REAL8 &transp_a, REAL8 &netR_a,
@@ -78,7 +79,6 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
   REAL8 dLETdlwp =0;
   REAL8 dLETdT =0;
 
-
   // variables for Sperry's model
   REAL8 Sold = 0;  // Soil Saturation at beginning of t
   REAL8 E = 0; // Temporary calculatio of transpiration
@@ -91,7 +91,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
   REAL8 theta1 = bas.getSoilMoist1()->matrix[r][c];
   REAL8 theta2 = bas.getSoilMoist2()->matrix[r][c];
   REAL8 theta3 = bas.getSoilMoist3()->matrix[r][c];
-  REAL8 theta = 0;
+  //REAL8 theta = 0;
   REAL8 poros1 = bas.getPorosityL1()->matrix[r][c];
   REAL8 poros2 = bas.getPorosityL2()->matrix[r][c];
   REAL8 poros3 = bas.getPorosityL3()->matrix[r][c];
@@ -148,17 +148,23 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
     // Soil to root conductance. 
     // Adapted from Rodriguez-Iturbe and Porporato (eq 6.4, page 181) for units of hydraulic head
     // Here using a weighted average because porosity changes with depth
-    Sold = f1* (theta1 - thetar) / (poros1 - thetar) +
-      f2* (theta2 - thetar) / (poros2 - thetar)+
-      f3* (theta3 - thetar) / (poros3 - thetar);
+    //Sold = f1* (theta1 - theta_r1) / (poros1 - theta_r1) +
+    //  f2* (theta2 - theta_r2) / (poros2 - theta_r2)+
+    //  f3* (theta3 - theta_r3) / (poros3 - theta_r3);
     // Maximum available water
-    maxAv = (poros1 - thetar) * (poros2 - thetar) * (poros3 - thetar) /
-      (f1*(poros2-thetar)*(poros3-thetar)+f2*(poros1-thetar)*(poros3-thetar)+
-       f3*(poros1-thetar)*(poros2-thetar));
-	  
+    //maxAv = (poros1 - theta_r1) * (poros2 - theta_r2) * (poros3 - theta_r3) /
+    //  (f1*(poros2-theta_r2)*(poros3-theta_r3)+f2*(poros1-theta_r1)*(poros3-theta_r3)+
+    //   f3*(poros1-theta_r1)*(poros2-theta_r2));
+
+    // EDIT: this formulation makes things much more simple
+    maxAv = f1*(poros1 - theta_r1) + f2*(poros2-theta_r2)+f3*(poros3-theta_r3);
+    Sold = (f1*(theta1-theta_r1)+f2*(theta2-theta_r2)+f3*(theta3-theta_r3)) / maxAv ;
+		
     if(Sold>1+RNDOFFERR){
       cout << "WARNING: S>1: " << r << " " << c << " " <<", Sold: " << Sold << // ", theta : " << theta << 
-	", thetar : " << thetar << endl;//", poros : " << poros << endl;
+	", theta_r1 : " << theta_r1 <<
+	", theta_r2 : " << theta_r2 <<
+	", theta_r3 : " << theta_r3 << endl;//", poros : " << poros << endl;
       cout << ", theta3: " << bas.getSoilMoist3()->matrix[r][c] << 
 	", poros3: " << bas.getPorosityL3()->matrix[r][c] << 
 	", theta2: " << bas.getSoilMoist2()->matrix[r][c] << 
@@ -308,13 +314,12 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
     // This chunk of code is to make sure we are not transpiring below residual moisture content
     // Probably not needed anymore since mass balance is enforced in the system of eqs.
     // solved in this function
-    REAL8 Tp;
-    Tp = transp_a * ctrl.dt;
-    theta = f1*theta1 + f2*theta2 + f3*theta3;
-    
+    REAL8 Tp = transp_a * ctrl.dt;
+    REAL8 WaterAv = f1* (theta1 - theta_r1) + f2*(theta2 - theta_r2) + f3*(theta3 - theta_r3);
+        
     ///TODO: change to wilting point (not residual water content)
-    if ((theta - thetar) * rootdepth < Tp) {
-      Tp = (theta - thetar) * rootdepth;
+    if (WaterAv * rootdepth < Tp) {
+      Tp = WaterAv * rootdepth;
       transp_a = Tp / ctrl.dt;
     }
 

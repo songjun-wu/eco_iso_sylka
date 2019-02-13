@@ -56,7 +56,7 @@ void Tracking::MixingV_down(Basin &bsn, Control &ctrl,
 
   double theta_MW1 = 0;
   double theta_MW2 = 0;
-  double theta_r = 0;
+  //double theta_r = 0;
   //double porosity = 0;
   double SrftoTB1 = 0;
   double SrftoMW1 = 0;
@@ -73,7 +73,7 @@ void Tracking::MixingV_down(Basin &bsn, Control &ctrl,
 
     
   if(ctrl.sw_TPD){
-    theta_r = bsn.getSoilMoistR()->matrix[r][c];
+    //theta_r = bsn.getSoilMoistR()->matrix[r][c];
     theta_MW1 = bsn.getMoistureMW1()->matrix[r][c];
     theta_MW2 = bsn.getMoistureMW2()->matrix[r][c];
     //porosity = bsn.getPorosity()->matrix[r][c];
