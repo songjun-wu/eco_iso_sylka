@@ -221,7 +221,7 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Report_Streamflow = 0 " << endl;
     ofOut << "Report_Saturation_Area = 0 " << endl;
     ofOut << "Report_Ponding = 0 " << endl;
-    ofOut << "Report_Soil_Water_Content_Average = 1 " << endl;
+    ofOut << "Report_Soil_Water_Content_Average = 0 " << endl;
     ofOut << "Report_Soil_Water_Content_Up = 0 " << endl;
     ofOut << "Report_Soil_Water_Content_L1 = 0 " << endl;
     ofOut << "Report_Soil_Water_Content_L2 = 0 " << endl;
@@ -251,7 +251,7 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Report_Stem_Density = 0 " << endl;
     ofOut << "Report_RootFracL1_species = 0 " << endl;
     ofOut << "Report_RootFracL2_species = 0 " << endl;
-    ofOut << "Report_Leaf_Area_Index = 1 " << endl;
+    ofOut << "Report_Leaf_Area_Index = 0 " << endl;
     ofOut << "Report_Stand_Age = 0 " << endl;
     ofOut << "Report_Canopy_Conductance = 0 " << endl;
     ofOut << "Report_GPP = 0 " << endl;
@@ -274,22 +274,39 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Report_Surface_to_Channel = 0 " << endl;
     ofOut << "Report_Infiltration = 0" << endl ;
     ofOut << "Report_Return_Flow_Surface = 0" << endl ;
-    ofOut << "Report_Recharge_to_Layer3 = 0" << endl ;
+    ofOut << "Report_Percolation_to_Layer2 = 0" << endl ;
+    ofOut << "Report_Return_Flow_to_Layer1 = 0" << endl ;
+    ofOut << "Report_Percolation_to_Layer3 = 0" << endl ;
+    ofOut << "Report_Groundwater_Recharge = 0" << endl ;
+    ofOut << "Report_Return_Flow_to_Layer2 = 0" << endl ;
+	
     ofOut << "Report_Overland_Inflow = 0" << endl ;
     ofOut << "Report_Stream_Inflow = 0" << endl;
     ofOut << "Report_Groundwater_Inflow = 0 " << endl ;
     ofOut << "Report_Overland_Outflow = 0" << endl ;
+    ofOut << "Report_Stream_Outflow = 0" << endl;
     ofOut << "Report_Groundwater_Outflow = 0" << endl ;
 
-    ofOut << "Report_GW_to_Channel_acc = 0 " << endl;
-    ofOut << "Report_Surface_to_Channel_acc = 0 " << endl;
     ofOut << "Report_Infiltration_acc = 0" << endl ;
     ofOut << "Report_Return_Flow_Surface_acc = 0" << endl ;
+    ofOut << "Report_Return_Flow_Surface_acc = 0" << endl ;
+    ofOut << "Report_Percolation_to_Layer2_acc = 0" << endl ;
+    ofOut << "Report_Return_Flow_to_Layer1_acc = 0" << endl ;
+    ofOut << "Report_Percolation_to_Layer3_acc = 0" << endl ;
+    ofOut << "Report_Groundwater_Recharge_acc = 0" << endl ;
+    ofOut << "Report_Return_Flow_to_Layer2_acc = 0" << endl ;
+    ofOut << "Report_Soil_Evaporation_acc = 0" << endl ;
+    ofOut << "Report_Transpiration_Layer1_acc = 0" << endl ;
+    ofOut << "Report_Transpiration_Layer2_acc = 0" << endl ;
+    ofOut << "Report_Transpiration_Layer3_acc = 0" << endl ;
     ofOut << "Report_Overland_Inflow_acc = 0" << endl ;
     ofOut << "Report_Stream_Inflow_acc = 0" << endl ;
     ofOut << "Report_Groundwater_Inflow_acc = 0" << endl ;
     ofOut << "Report_Overland_Outflow_acc = 0" << endl ;
+    ofOut << "Report_Stream_Outflow_acc = 0" << endl ;
     ofOut << "Report_Groundwater_Outflow_acc = 0" << endl << endl;
+    ofOut << "Report_GW_to_Channel_acc = 0 " << endl;
+    ofOut << "Report_Surface_to_Channel_acc = 0 " << endl;
     
     ofOut << "#   " << endl;
     ofOut << "#Report time series section " << endl;
@@ -361,23 +378,17 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Ts_Surface_to_Channel = 0 " << endl;
     ofOut << "Ts_Infiltration = 0" << endl ;
     ofOut << "Ts_Return_Flow_Surface = 0" << endl ;
-    ofOut << "Ts_Recharge_to_Layer3 = 0" << endl ;
+    ofOut << "Ts_Percolation_to_Layer2 = 0" << endl ;
+    ofOut << "Ts_Return_Flow_to_Layer1 = 0" << endl ;
+    ofOut << "Ts_Percolation_to_Layer3 = 0" << endl ;
+    ofOut << "Ts_Groundwater_Recharge = 0" << endl ;
+    ofOut << "Ts_Return_Flow_to_Layer2 = 0" << endl ;
     ofOut << "Ts_Overland_Inflow = 0" << endl ;
     ofOut << "Ts_Stream_Inflow = 0" << endl;
     ofOut << "Ts_Groundwater_Inflow = 0 " << endl ;
     ofOut << "Ts_Overland_Outflow = 0" << endl ;
+    ofOut << "Ts_Stream_Outflow = 0" << endl;
     ofOut << "Ts_Groundwater_Outflow = 0" << endl ;
-
-    ofOut << "Ts_GW_to_Channel_acc = 0 " << endl;
-    ofOut << "Ts_Surface_to_Channel_acc = 0 " << endl;
-    ofOut << "Ts_Infiltration_acc = 0" << endl ;
-    ofOut << "Ts_Return_Flow_Surface_acc = 0" << endl ;
-    ofOut << "Ts_Overland_Inflow_acc = 0" << endl ;
-    ofOut << "Ts_Stream_Inflow_acc = 0" << endl ;
-    ofOut << "Ts_Groundwater_Inflow_acc = 0" << endl ;
-    ofOut << "Ts_Overland_Outflow_acc = 0" << endl ;
-    ofOut << "Ts_Groundwater_Outflow_acc = 0" << endl;
-
 
     if (ofOut)
       ofOut.close();

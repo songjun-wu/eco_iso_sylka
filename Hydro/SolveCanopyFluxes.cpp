@@ -328,7 +328,12 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  theta  -= dth1 ; //soil moisture at t=t+1
 	  theta2 -= dth2 ; //soil moisture at t=t+1
 	  theta3 -= dth3 ; //soil moisture at t=t+1
-       
+
+	  // Cumulative values: taken here to separate layers contributions
+	  _AccTranspiL1->matrix[r][c] += dth1 * d1;
+	  _AccTranspiL2->matrix[r][c] += dth2 * d2;
+	  _AccTranspiL3->matrix[r][c] += dth3 * d3;
+	  
 	  // Tracking (evapT):
        
 	  if(ctrl.sw_trck){

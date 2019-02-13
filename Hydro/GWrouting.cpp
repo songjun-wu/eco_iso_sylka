@@ -70,12 +70,12 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
   // Reinitialize to zero the fluxes modified earlier / in the previous time step
   _FluxExfilt->reset();
+  _FluxL2toL1->reset();
+  _FluxL3toL2->reset();
   if(ctrl.sw_trck){
     _FluxSrftoL1->reset();
     _FluxL1toL2->reset();
     _FluxL2toL3->reset();
-    _FluxL2toL1->reset();
-    _FluxL3toL2->reset();
     if(ctrl.sw_2H)
       trck.resetFd2HLat();
     if(ctrl.sw_18O)
@@ -112,12 +112,8 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
     d3 = soildepth - d1 - d2;
 	  
     //if reinfiltration switch is on is not a channel cell or the channel switch is off
-    if (ctrl.sw_reinfilt && !(ctrl.sw_channel && _channelwidth->matrix[r][c] > 0)){
-      Infilt_GreenAmpt(ctrl, f, F, theta1, theta2, theta3, ponding, gw, dt, r, c);
-      // Store time-step- and cumulated- infitlration flux (only if there is reinfiltration)
-      _FluxInfilt->matrix[r][c] += _FluxSrftoL1->matrix[r][c];
-      _AccInfilt->matrix[r][c] += _FluxSrftoL1->matrix[r][c];
-    }
+    if (ctrl.sw_reinfilt && !(ctrl.sw_channel && _channelwidth->matrix[r][c] > 0))
+      Infilt_GreenAmpt(ctrl, f, F, theta1, theta2, theta3, ponding, gw, dt, r, c) ;
 
     // Tracking
     if(ctrl.sw_trck){
@@ -195,20 +191,23 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	+ (dtdx * qj1i) + hji1 + R - deficit;
       theta2 += returnflow / d2;
 	    
-      // Tracking
-      if(ctrl.sw_trck)
-	_FluxL3toL2->matrix[r][c] = returnflow ;
+      // Tracking (always on)
+      _FluxL3toL2->matrix[r][c] = returnflow ;
 	    
       if (theta2 > poros2) {
 	theta1 += (theta2 - poros2) * d2 / d1;
-	// Tracking
-	if(ctrl.sw_trck)
-	  _FluxL2toL1->matrix[r][c] += (theta2 - poros2) * d2 ;
+
+	// Tracking (always on)
+	_FluxL2toL1->matrix[r][c] = (theta2 - poros2) * d2 ;
+
 	theta2 = poros2;
       }
       if (theta1 > poros1) {
 	ponding += (theta1 - poros1) * d1;
-	_FluxExfilt->matrix[r][c] += (theta1 - poros1) * d1 ;
+
+	// Tracking (always on)
+	_FluxExfilt->matrix[r][c] = (theta1 - poros1) * d1 ;
+
 	theta1 = poros1;
       }
 	    
@@ -317,9 +316,11 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
     //if(ctrl.sw_trck){
     _FluxSrftoLat->matrix[r][c] = lat_ok != 0 ? ponding : 0.0;
     _FluxGWtoLat->matrix[r][c] = lat_ok != 0 ? hj1i1 * alpha * dtdx : 0.0;
+    _FluxChntoLat->matrix[r][c] = lat_ok != 0 ? Qk1*dtdx / _dx : 0.0;
     // Accumulated fluxes
     _AccSrftoLat->matrix[r][c] += _FluxSrftoLat->matrix[r][c];
-    _AccGWtoLat->matrix[r][c] += _FluxGWtoLat->matrix[r][c];	  
+    _AccGWtoLat->matrix[r][c] += _FluxGWtoLat->matrix[r][c];
+    _AccChntoLat->matrix[r][c] += _FluxChntoLat->matrix[r][c];
 
     // Tracking of lateral in/out + return + seepage
     if(ctrl.sw_trck){
@@ -350,8 +351,14 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
     Qk1 = 0;
 
     // Accumulated fluxes
+    _AccInfilt->matrix[r][c] += _FluxInfilt->matrix[r][c];
     _AccExfilt->matrix[r][c] += _FluxExfilt->matrix[r][c];
-
+    _AccPercolL2->matrix[r][c] += _FluxPercolL2->matrix[r][c];
+    _AccL2toL1->matrix[r][c] += _FluxL2toL1->matrix[r][c];
+    _AccPercolL3->matrix[r][c] += _FluxPercolL3->matrix[r][c];
+    _AccL3toL2->matrix[r][c] += _FluxL3toL2->matrix[r][c];
+    _AccRecharge->matrix[r][c] += _FluxRecharge->matrix[r][c];
+    _AccEvaporationS->matrix[r][c] += _EvaporationS_all->matrix[r][c] *dt;
   }
 	
   // Save previous GW and surface state

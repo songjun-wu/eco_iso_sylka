@@ -150,7 +150,6 @@ Basin::Basin(Control &ctrl)
     _soilmoist_12 = new grid(*_DEM); //average volumetric soil moisture of the upper two layers
     _ponding = new grid(*_DEM);
     _infilt_cap = new grid(*_DEM); //infilt cap m h-1
-    _AccumInfilt = new grid(*_DEM); //accumulated infiltration in meters
     _Evaporation = new grid(*_DEM); //actual evaporation in m s-1
     _BedrockLeakageFlux = new grid(*_DEM); //bedrock leakage flux in m s-1
     _SoilWaterDepth = new grid(*_DEM); //soil moisture depth m
@@ -169,13 +168,17 @@ Basin::Basin(Control &ctrl)
     _EvaporationI_all = new grid(*_DEM); //actual evaporation from summed interception in m s-1
     _Transpiration_all = new grid(*_DEM); //transpiration from summed in m s-1
 
-    _FluxSrftoL1 = new grid(*_DEM); // surface to first layer
-    _FluxInfilt = new grid(*_DEM); // surface to first layer (summed-over timestep)
-    _FluxExfilt = new grid(*_DEM); // first layer to surface (return flow)
-    _FluxRecharge = new grid(*_DEM); // recahrge to third layer 
+    _FluxInfilt = new grid(*_DEM); // surface to L1 (summed over timestep)
+    _FluxExfilt = new grid(*_DEM); // L1 to surface (return flow)
+    _FluxPercolL2 = new grid(*_DEM); // L1 to L2 (summed over timestep)
+    _FluxL2toL1 = new grid(*_DEM); // capillary + return flow, L2 to L1
+    _FluxPercolL3 = new grid(*_DEM); // L2 to L3 (summed over timestep)
+    _FluxRecharge = new grid(*_DEM); // Recharge to GW
+    _FluxL3toL2 = new grid(*_DEM); // return from L3 to L2
     _FluxLattoChn = new grid(*_DEM); // channel inflow
     _FluxLattoSrf = new grid(*_DEM); // surface run-on (excluding streamflow)
-    _FluxLattoGW = new grid(*_DEM); // groundwater lateral outflow	
+    _FluxLattoGW = new grid(*_DEM); // groundwater lateral outflow
+    _FluxChntoLat = new grid(*_DEM); // surface run-off (only streamflow)
     _FluxSrftoLat = new grid(*_DEM); // surface run-off (excluding streamflow)
     _FluxGWtoLat = new grid(*_DEM); // groundwater lateral inflow	
     _FluxGWtoChn = new grid(*_DEM); // intra-cell groundwater to channel
@@ -184,9 +187,19 @@ Basin::Basin(Control &ctrl)
     // Accumulated fluxes
     _AccInfilt = new grid(*_DEM);
     _AccExfilt = new grid(*_DEM);
+    _AccPercolL2 = new grid(*_DEM); // L1 to L2 (summed over timestep)
+    _AccL2toL1 = new grid(*_DEM); // capillary + return flow, L2 to L1
+    _AccPercolL3 = new grid(*_DEM); // L2 to L3 (summed over timestep)
+    _AccRecharge = new grid(*_DEM); // Recharge to GW
+    _AccEvaporationS = new grid(*_DEM);
+    _AccTranspiL1 = new grid(*_DEM);
+    _AccTranspiL2 = new grid(*_DEM);
+    _AccTranspiL3 = new grid(*_DEM);
+    _AccL3toL2 = new grid(*_DEM); // return from L3 to L2
     _AccLattoChn = new grid(*_DEM);
     _AccLattoSrf = new grid(*_DEM);
     _AccLattoGW = new grid(*_DEM);
+    _AccChntoLat = new grid(*_DEM);
     _AccSrftoLat = new grid(*_DEM);
     _AccGWtoLat = new grid(*_DEM);
     _AccGWtoChn = new grid(*_DEM); // groundwater to channel (accumlated)
@@ -202,10 +215,9 @@ Basin::Basin(Control &ctrl)
     _FluxCnptoSrf = NULL;
     _FluxCnptoSnow = NULL;
     _FluxSnowtoSrf = NULL;
+    _FluxSrftoL1 = NULL;
     _FluxL1toL2 = NULL;
-    _FluxL2toL1 = NULL;
     _FluxL2toL3 = NULL;
-    _FluxL3toL2 = NULL;
     //_FluxL2toGW = NULL;
     //_FluxL3toGW = NULL;
     //_FluxGWtoL2 = NULL;
@@ -215,12 +227,11 @@ Basin::Basin(Control &ctrl)
       _FluxCnptoSrf = new grid(*_DEM); // canopy/sky to surface
       _FluxCnptoSnow = new grid(*_DEM); // canopy/sky to snowpac
       _FluxSnowtoSrf = new grid(*_DEM); // snowpack to surface
+      _FluxSrftoL1 = new grid(*_DEM); // surface to first layer
       _FluxL1toL2 = new grid(*_DEM); // percolation L1 to L2
-      _FluxL2toL1 = new grid(*_DEM); // capillary + return flow, L2 to L1
       _FluxL2toL3 = new grid(*_DEM); // percolation L2 to L3
       //_FluxL2toGW = new grid(*_DEM); // recharge L3 to groundwater
       //_FluxL3toGW = new grid(*_DEM); // recharge L3 to groundwater
-      _FluxL3toL2 = new grid(*_DEM); // recharge L3 to groundwater
       //_FluxGWtoL2 = new grid(*_DEM); // return flow, groundwater to L2
       //_FluxGWtoL3 = new grid(*_DEM); // discharge, groundwater to L3
       if(ctrl.sw_TPD){
@@ -373,8 +384,6 @@ Basin::Basin(Control &ctrl)
 	delete _infilt_cap;
       if(_soilmoist1)
 	delete _soilmoist1;
-      if(_AccumInfilt)
-	delete _AccumInfilt;
       if(_soildepth)
 	delete _soildepth;
       if(_depth_layer1)
@@ -474,14 +483,24 @@ Basin::Basin(Control &ctrl)
 	delete _FluxInfilt;
       if(_FluxExfilt)
 	delete _FluxExfilt;
+      if(_FluxPercolL2)
+	delete _FluxPercolL2;
+      if(_FluxL2toL1)
+	delete _FluxL2toL1;
+      if(_FluxPercolL3)
+	delete _FluxPercolL3;
       if(_FluxRecharge)
 	delete _FluxRecharge;
+      if(_FluxL3toL2)
+	delete _FluxL3toL2;
       if(_FluxLattoSrf)
 	delete _FluxLattoSrf;
       if(_FluxLattoGW)
 	delete _FluxLattoGW;
       if(_FluxLattoChn)
 	delete _FluxLattoChn;
+      if(_FluxChntoLat)
+	delete _FluxChntoLat;
       if(_FluxSrftoLat)
 	delete _FluxSrftoLat;
       if(_FluxGWtoLat)
@@ -490,16 +509,37 @@ Basin::Basin(Control &ctrl)
 	delete _FluxGWtoChn;
       if(_FluxSrftoChn)
 	delete _FluxSrftoChn;
+
       if(_AccInfilt)
 	delete _AccInfilt;
       if(_AccExfilt)
 	delete _AccExfilt;
+      if(_AccPercolL2)
+	delete _AccPercolL2;
+      if(_AccL2toL1)
+	delete _AccL2toL1;
+      if(_AccPercolL3)
+	delete _AccPercolL3;
+      if(_AccRecharge)
+	delete _AccRecharge;
+      if(_AccL3toL2)
+	delete _AccL3toL2;
+      if(_AccEvaporationS)
+	delete _AccEvaporationS;
+      if(_AccTranspiL1)
+	delete _AccTranspiL1;
+      if(_AccTranspiL2)
+	delete _AccTranspiL2;
+      if(_AccTranspiL3)
+	delete _AccTranspiL3;
       if(_AccLattoGW)
 	delete _AccLattoGW;
       if(_AccLattoSrf)
 	delete _AccLattoSrf;
       if(_AccLattoChn)
 	delete _AccLattoChn;
+      if(_AccChntoLat)
+	delete _AccChntoLat;
       if(_AccSrftoLat)
 	delete _AccSrftoLat;
       if(_AccGWtoLat)
@@ -530,10 +570,6 @@ Basin::Basin(Control &ctrl)
       //		delete _FluxL2toGW;
       //if(_FluxL3toGW)
       //	delete _FluxL3toGW;
-      if(_FluxL2toL1)
-	delete _FluxL2toL1;
-      if(_FluxL3toL2)
-	delete _FluxL3toL2;
       //if(_FluxGWtoL2)
       //	delete _FluxGWtoL2;
       //if(_FluxGWtoL3)

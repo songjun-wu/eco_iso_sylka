@@ -60,7 +60,7 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
 
   double inp = pond / dt; //inp is potential water input in ms-1
 
-  if (inp < RNDOFFERR){
+  if (ctrl.sw_trck and inp < RNDOFFERR){
     _FluxSrftoL1->matrix[r][c] = 0;
     return;
   }
@@ -69,7 +69,8 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
   double dtheta = (1 - S) * ef_poros1;
 
   if (dtheta < RNDOFFERR) { //if there is no room for more water
-    _FluxSrftoL1->matrix[r][c] = 0;
+    if(ctrl.sw_trck)
+      _FluxSrftoL1->matrix[r][c] = 0;
     f = 0;
     return;
   }
@@ -93,9 +94,12 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
     pond = 0;
 
     // Tracking
-    _FluxSrftoL1->matrix[r][c] = inp * DT;
+    _FluxInfilt->matrix[r][c] += inp * DT;
+    if(ctrl.sw_trck)
+      _FluxSrftoL1->matrix[r][c] = inp * DT;
 
     if (theta > ef_poros1) {
+      _FluxPercolL2->matrix[r][c] += (theta - ef_poros1) * depth;
       // Tracking
       if(ctrl.sw_trck)
 	_FluxL1toL2->matrix[r][c] = (theta - ef_poros1) * depth;
@@ -104,7 +108,7 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
       theta = ef_poros1;
     }
     if (theta2 > ef_poros2) {
-      _FluxRecharge->matrix[r][c] += (theta2 - ef_poros2) * depth2;
+      _FluxPercolL3->matrix[r][c] += (theta2 - ef_poros2) * depth2;
       // Tracking
       if(ctrl.sw_trck)
 	_FluxL2toL3->matrix[r][c] = (theta2 - ef_poros2) * depth2;
@@ -116,10 +120,12 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
       pond += (theta3 - ef_poros3) * depth3;
       // Subtract the "excess" infiltration" (as seen by L3)
       // it is OK because here SrftoL1>=L1toL2>=L2toL3>=L3toGW
-      _FluxSrftoL1->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
-      _FluxRecharge->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
+      _FluxInfilt->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
+      _FluxPercolL2->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
+      _FluxPercolL3->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
       // Tracking
       if(ctrl.sw_trck){
+	_FluxSrftoL1->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
 	_FluxL1toL2->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
 	_FluxL2toL3->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
 
@@ -127,8 +133,11 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
       theta3 = ef_poros3;
     }
 
+    _FluxRecharge->matrix[r][c] += std::max<double>(0,
+					       max<double>(0,(theta3 - fc3) * depth3) - gw);
     gw = max<double>(0,(theta3 - fc3) * depth3);
 
+    
     return;
 
   } else if (inp > Ks1) {
@@ -172,19 +181,22 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
   pond -= deltaF;
 
   // Tracking
-  _FluxSrftoL1->matrix[r][c] = deltaF;
+  _FluxInfilt->matrix[r][c] += deltaF;
+  if(ctrl.sw_trck)
+    _FluxSrftoL1->matrix[r][c] = deltaF;
 
   if (theta > ef_poros1) {
     theta2 += (theta - ef_poros1) * depth / depth2;
     // Tracking
+    _FluxPercolL2->matrix[r][c] += (theta - ef_poros1) * depth;
     if(ctrl.sw_trck)
       _FluxL1toL2->matrix[r][c] = (theta - ef_poros1) * depth;
     theta = ef_poros1;
   }
   if (theta2 > ef_poros2) {
-    _FluxRecharge->matrix[r][c] = (theta2 - ef_poros2) * depth2;
+    _FluxPercolL3->matrix[r][c] += (theta2 - ef_poros2) * depth2;
     if(ctrl.sw_trck)
-	_FluxL2toL3->matrix[r][c] = (theta2 - ef_poros2) * depth2;
+      _FluxL2toL3->matrix[r][c] = (theta2 - ef_poros2) * depth2;
 
     theta3 += (theta2 - ef_poros2) * depth2 / depth3;
     theta2 = ef_poros2;
@@ -193,16 +205,21 @@ void Basin::Infilt_GreenAmpt(Control &ctrl, double &f, double &F, double &theta,
     pond += (theta3 - ef_poros3) * depth3;
     // Subtract the "excess" infiltration" (as seen by L3)
     // it is OK because here SrftoL1>=L1toL2>=L2toL3
-    _FluxSrftoL1->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
-    _FluxRecharge->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
+    _FluxInfilt->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
+    _FluxPercolL2->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
+    _FluxPercolL3->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
     // Tracking
     if(ctrl.sw_trck){
+      _FluxSrftoL1->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
       _FluxL1toL2->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
       _FluxL2toL3->matrix[r][c] -= (theta3 - ef_poros3) * depth3;
     }
     theta3 = ef_poros3;
   }
 
+  
+  _FluxRecharge->matrix[r][c] += max<double>(0,
+					     max<double>(0,(theta3 - fc3) * depth3) - gw);
   gw = max<double>(0,(theta3 - fc3) * depth3);
 
 }

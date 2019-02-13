@@ -84,7 +84,10 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
   _dailyGwtrOutput.cells.clear();
   _GWupstreamBC->reset();
   _Disch_upstreamBC->reset();
-  // Recharge
+  // Infilt, Percol and Recharge
+  _FluxInfilt->reset();
+  _FluxPercolL2->reset();
+  _FluxPercolL3->reset();
   _FluxRecharge->reset();
   // Set EvapS to zero before looping over baresoil/understory
   _EvaporationS_all->reset();
@@ -143,10 +146,6 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	// goes to GW in L3 (and bedrock leakage if activated)
 	SoilWaterRedistribution(ctrl, accinf, theta, theta2, theta3, ponding, gw, leak, dt, r, c);
 
-	// Store cumulated infitlration flux
-	_FluxInfilt->matrix[r][c] = _FluxSrftoL1->matrix[r][c];
-	_AccInfilt->matrix[r][c] += _FluxInfilt->matrix[r][c];
-
 	// Tracking
 	if(ctrl.sw_trck)
 	  trck.MixingV_down(*this, ctrl, d1, d2, d3, fc, leak, r, c, 0);
@@ -156,11 +155,13 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	_GravityWater->matrix[r][c] = gw;
 	_GrndWater->matrix[r][c] = gw;
 	_BedrockLeakageFlux->matrix[r][c] = leak;
-	
+
+	/*
 	// Calculates the soil moisture profile to derive equivalent water table depth
 	if(ctrl.Rep_WaterTableDepth == 1 || ctrl.RepTs_WaterTableDepth == 1)
 	  CalcSoilMoistureProfile(atm, ctrl, getSoilMoist_av()->matrix[r][c], r,c);
-
+	*/
+	
 	// Tracking
 	if(ctrl.sw_trck)
 	  _soilmoist1->matrix[r][c] = theta; 
@@ -241,7 +242,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	_Temp_s->matrix[r][c] = Tsold; //
 	
 	_Temp_d->matrix[r][c] = Tdold;
-		
+	       
 	// Update surface pool
 	_ponding->matrix[r][c] += SnowOutput(atm, ctrl, trck, mltht, r, c);
 	// Back up before routing

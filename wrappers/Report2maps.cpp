@@ -117,7 +117,7 @@ int Report2Maps(){
   if (oControl->Rep_Esoil_sum)
     WriteMapSeries(oBasin->getEvaporationS_all(), "EvapS", oControl->current_ts_count);
 
-  // Some vertical- lateral fluxes
+  // Internal vertical fluxes
   if (oControl->Rep_GWtoChn)
     WriteMapSeries(oBasin->getFluxGWtoChn(), "GWChn", oControl->current_ts_count);
   if (oControl->Rep_SrftoChn)
@@ -126,14 +126,25 @@ int Report2Maps(){
     WriteMapSeries(oBasin->getFluxInfilt(), "Inf", oControl->current_ts_count);
   if (oControl->Rep_Exfilt)
     WriteMapSeries(oBasin->getFluxExfilt(), "RSrf", oControl->current_ts_count);
+  if (oControl->Rep_PercolL2)
+    WriteMapSeries(oBasin->getFluxPercolL2(), "PrcL2", oControl->current_ts_count);
+  if (oControl->Rep_ReturnL1)
+    WriteMapSeries(oBasin->getFluxL2toL1(), "RL1", oControl->current_ts_count);
+  if (oControl->Rep_PercolL3)
+    WriteMapSeries(oBasin->getFluxPercolL3(), "PrcL3", oControl->current_ts_count);
   if (oControl->Rep_Recharge)
     WriteMapSeries(oBasin->getFluxRecharge(), "Rchg", oControl->current_ts_count);
+  if (oControl->Rep_ReturnL2)
+    WriteMapSeries(oBasin->getFluxL3toL2(), "RL2", oControl->current_ts_count);
+  // Internal lateral fluxes
   if (oControl->Rep_LattoSrf)
     WriteMapSeries(oBasin->getFluxLattoSrf(), "LSrfi", oControl->current_ts_count);
   if (oControl->Rep_LattoChn)
     WriteMapSeries(oBasin->getFluxLattoChn(), "LChni", oControl->current_ts_count);
   if (oControl->Rep_LattoGW)
     WriteMapSeries(oBasin->getFluxLattoGW(), "LGWi", oControl->current_ts_count);
+  if (oControl->Rep_ChntoLat)
+    WriteMapSeries(oBasin->getFluxChntoLat(), "LChno", oControl->current_ts_count);
   if (oControl->Rep_SrftoLat)
     WriteMapSeries(oBasin->getFluxSrftoLat(), "LSrfo", oControl->current_ts_count);
   if (oControl->Rep_GWtoLat)
@@ -147,6 +158,24 @@ int Report2Maps(){
     WriteMapSeries(oBasin->getAccInfilt(), "InfA", oControl->current_ts_count);
   if (oControl->Rep_Exfiltacc)
     WriteMapSeries(oBasin->getAccExfilt(), "RSrfA", oControl->current_ts_count);
+  if (oControl->Rep_PercolL2acc)
+    WriteMapSeries(oBasin->getAccPercolL2(), "PrcL2A", oControl->current_ts_count);
+  if (oControl->Rep_ReturnL1acc)
+    WriteMapSeries(oBasin->getAccL2toL1(), "RL1A", oControl->current_ts_count);
+  if (oControl->Rep_PercolL3acc)
+    WriteMapSeries(oBasin->getAccPercolL3(), "PrcL3A", oControl->current_ts_count);
+  if (oControl->Rep_Rechargeacc)
+    WriteMapSeries(oBasin->getAccRecharge(), "RchgA", oControl->current_ts_count);
+  if (oControl->Rep_ReturnL2acc)
+    WriteMapSeries(oBasin->getAccL3toL2(), "RL2A", oControl->current_ts_count);
+  if (oControl->Rep_EvaporationSacc)
+    WriteMapSeries(oBasin->getAccEvaporationS(), "EsA", oControl->current_ts_count);
+  if (oControl->Rep_TranspiL1acc)
+    WriteMapSeries(oBasin->getAccTranspiL1(), "TrpL1A", oControl->current_ts_count);
+  if (oControl->Rep_TranspiL2acc)
+    WriteMapSeries(oBasin->getAccTranspiL2(), "TrpL2A", oControl->current_ts_count);
+if (oControl->Rep_TranspiL3acc)
+    WriteMapSeries(oBasin->getAccTranspiL3(), "TrpL3A", oControl->current_ts_count);
   if (oControl->Rep_LattoSrfacc)
     WriteMapSeries(oBasin->getAccLattoSrf(), "LSrfiA", oControl->current_ts_count);
   if (oControl->Rep_LattoChnacc)
@@ -157,6 +186,8 @@ int Report2Maps(){
     WriteMapSeries(oBasin->getAccSrftoLat(), "LSrfoA", oControl->current_ts_count);
   if (oControl->Rep_GWtoLatacc)
     WriteMapSeries(oBasin->getAccGWtoLat(), "LGWoA", oControl->current_ts_count);
+  if (oControl->Rep_ChntoLatacc)
+    WriteMapSeries(oBasin->getAccChntoLat(), "LChnoA", oControl->current_ts_count);
 
   if(oControl->sw_trck and oControl->sw_TPD){
     if (oControl->Rep_Moist_MW1)
@@ -815,11 +846,39 @@ int Report2Ts(){
 			      oControl->path_ResultsFolder + "ReturnSrf.tab",
 			      oControl->current_ts_count);
   }
+  if (oControl->RepTs_PercolL2){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "PercolL2.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxPercolL2(),
+			      oControl->path_ResultsFolder + "PercolL2.tab",
+			      oControl->current_ts_count);
+  }
+  if (oControl->RepTs_ReturnL1){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "ReturnL1.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxL2toL1(),
+			      oControl->path_ResultsFolder + "ReturnL1.tab",
+			      oControl->current_ts_count);
+  }
+  if (oControl->RepTs_PercolL3){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "PercolL3.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxPercolL3(),
+			      oControl->path_ResultsFolder + "PercolL3.tab",
+			      oControl->current_ts_count);
+  }
   if (oControl->RepTs_Recharge){
     if(oControl->GetTimeStep() <= oControl->report_times)
       oReport->RenameFile(oControl->path_ResultsFolder + "Recharge.tab");
     oReport->ReportTimeSeries(oBasin->getFluxRecharge(),
 			      oControl->path_ResultsFolder + "Recharge.tab",
+			      oControl->current_ts_count);
+  }
+  if (oControl->RepTs_ReturnL2){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "ReturnL2.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxL3toL2(),
+			      oControl->path_ResultsFolder + "ReturnL2.tab",
 			      oControl->current_ts_count);
   }
   if (oControl->RepTs_LattoSrf){
@@ -843,6 +902,13 @@ int Report2Ts(){
 			      oControl->path_ResultsFolder + "GWLatI.tab",
 			      oControl->current_ts_count);
   }
+  if (oControl->RepTs_ChntoLat){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "ChnLatO.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxChntoLat(),
+            oControl->path_ResultsFolder + "ChnLatO.tab",
+            oControl->current_ts_count);
+  }
   if (oControl->RepTs_SrftoLat){
     if(oControl->GetTimeStep() <= oControl->report_times)
       oReport->RenameFile(oControl->path_ResultsFolder + "SrfLatO.tab");
@@ -857,74 +923,8 @@ int Report2Ts(){
 			      oControl->path_ResultsFolder + "GWLatO.tab",
 			      oControl->current_ts_count);
   }
-  // Cumulative fluxes
-  if (oControl->RepTs_GWtoChnacc){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "GWtoChnA.tab");
-    oReport->ReportTimeSeries(oBasin->getAccGWtoChn(),
-			      oControl->path_ResultsFolder + "GWtoChnA.tab",
-			      oControl->current_ts_count);
-  }
-  if (oControl->RepTs_SrftoChnacc){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "SrftoChnA.tab");
-    oReport->ReportTimeSeries(oBasin->getAccSrftoChn(),
-			      oControl->path_ResultsFolder + "SrftoChnA.tab",
-			      oControl->current_ts_count);
-  }	
 
-  if (oControl->RepTs_Infiltacc){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "InfiltAcc.tab");
-    oReport->ReportTimeSeries(oBasin->getAccInfilt(),
-			      oControl->path_ResultsFolder + "InfiltAcc.tab",
-			      oControl->current_ts_count);
-  }
-  if (oControl->RepTs_Exfiltacc){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "ReturnSrfAcc.tab");
-    oReport->ReportTimeSeries(oBasin->getAccExfilt(),
-			      oControl->path_ResultsFolder + "ReturnSrfAcc.tab",
-			      oControl->current_ts_count);
-  }
-  if (oControl->RepTs_LattoSrfacc){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "SrfLatIAcc.tab");
-    oReport->ReportTimeSeries(oBasin->getAccLattoSrf(),
-			      oControl->path_ResultsFolder + "SrfLatIAcc.tab",
-			      oControl->current_ts_count);
-  }
-  if (oControl->RepTs_LattoChnacc){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "ChnLatIAcc.tab");
-    oReport->ReportTimeSeries(oBasin->getAccLattoChn(),
-			      oControl->path_ResultsFolder + "ChnLatIAcc.tab",
-			      oControl->current_ts_count);
-  }
-  if (oControl->RepTs_LattoGWacc){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "GWLatIAcc.tab");
-    oReport->ReportTimeSeries(oBasin->getAccLattoGW(),
-			      oControl->path_ResultsFolder + "GWLatIAcc.tab",
-			      oControl->current_ts_count);
-  }
-  if (oControl->RepTs_SrftoLatacc){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "SrfLatOAcc.tab");
-    oReport->ReportTimeSeries(oBasin->getAccSrftoLat(),
-			      oControl->path_ResultsFolder + "SrfLatOAcc.tab",
-			      oControl->current_ts_count);
-  }
-  if (oControl->RepTs_GWtoLatacc){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "GWLatOAcc.tab");
-    oReport->ReportTimeSeries(oBasin->getAccGWtoLat(),
-			      oControl->path_ResultsFolder + "GWLatOAcc.tab",
-			      oControl->current_ts_count);
-  }
-
-  // Tracking
-	
+  // Tracking	
   // two-pore domain
   if(oControl->sw_trck and oControl->sw_TPD){
     if (oControl->RepTs_Moist_MW1){

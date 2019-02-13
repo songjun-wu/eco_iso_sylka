@@ -118,7 +118,6 @@ class Basin {
   grid *_SoilWaterDepthL3; //soil moisture depth (m) non-gravitational in the third layer
   grid *_WaterTableDepth; //reconstructed WTD (ignoring perched aquifers)
   grid *_SoilSatDeficit; //soil saturation deficit (1 full deficit - 0 saturation)
-  grid *_AccumInfilt; //Accumulated infiltration m
   grid *_Evaporation; //actual evaporation and transpiration in m s-1
   grid *_EvaporationS_all; //actual soil evaporation in m s-1
   grid *_EvaporationI_all; //actual evaporation from summed vegetation in m s-1
@@ -164,37 +163,50 @@ class Basin {
   grid *_FluxCnptoSnow; // canopy/sky to snowpack
   grid *_FluxSnowtoSrf; // snowmelt to surface
   grid *_FluxSrftoL1; // infiltration from first layer (changes twice during time step)
-  grid *_FluxInfilt; // timestep-summed infiltration from first layer
+  grid *_FluxInfilt; // timestep-cumulated infiltration from first layer
   grid *_FluxL1toL2; // percolation L1 to L2
+  grid *_FluxPercolL2; // timestep-cumulated percolation L1 to L2
   grid *_FluxL2toL3; // percolation L2 to L3
+  grid *_FluxPercolL3; // timestep-cumulated percolation L2 to L3
   //grid *_FluxL2toGW; // recharge L2 to groundwater
   //grid *_FluxL3toGW; // recharge L3 to groundwater
-  grid *_FluxRecharge; // recharge to L3
+  grid *_FluxRecharge; // timstep-cumulated recharge to GW
   // Vertical (intra-cell) fluxes upwards
   grid *_FluxExfilt; // first layer to surface (return flow)
   grid *_FluxL2toL1; // capillary + return flow, L2 to L1
   grid *_FluxL3toL2; // capillary + return flow, L2 to L3
-  grid *_FluxGWtoL2; // return flow, groundwater to L2
-  grid *_FluxGWtoL3; // discharge, groundwater to L2 unsaturated
+  //grid *_FluxGWtoL2; // return flow, groundwater to L2
+  //grid *_FluxGWtoL3; // discharge, groundwater to L2 unsaturated
   // Other intra-cell fluxes
   grid *_FluxGWtoChn; // discharge, groundwater to channel
   grid *_FluxSrftoChn; // overland flow to channel
   // Lateral (inter-cell), for report only
   grid *_FluxLattoChn; //Channel input
   grid *_FluxLattoSrf; //Lateral overland input
-  grid *_FluxLattoGW; //Lateral GW input 
+  grid *_FluxLattoGW; //Lateral GW input
+  grid *_FluxChntoLat; //Lateral stream output (m)
   grid *_FluxSrftoLat; //Lateral overland output
   grid *_FluxGWtoLat; //Lateral overland output
   // Cumulated fluxes, for report only
   grid *_AccInfilt; // Infiltration from surface to first layer
   grid *_AccExfilt; // Exfiltration from first layer to surface
+  grid *_AccPercolL2; // timestep-cumulated percolation L1 to L2
+  grid *_AccL2toL1; // capillary + return flow, L2 to L1
+  grid *_AccPercolL3; // timestep-cumulated percolation L2 to L3
+  grid *_AccL3toL2; // capillary + return flow, L2 to L3
+  grid *_AccRecharge; // timstep-cumulated recharge to GW
   grid *_AccLattoChn; //Channel input
   grid *_AccLattoSrf; //Lateral overland input
   grid *_AccLattoGW; //Lateral GW input 
+  grid *_AccChntoLat; //Lateral overland output
   grid *_AccSrftoLat; //Lateral overland output
   grid *_AccGWtoLat; //Lateral groundwater output
   grid *_AccGWtoChn; //Groundwater seepage to channel
   grid *_AccSrftoChn; //Overland to channel
+  grid *_AccEvaporationS; // Soil evaporation
+  grid *_AccTranspiL1; // Transpiration withdrawal from L1
+  grid *_AccTranspiL2; // Transpiration withdrawal from L2
+  grid *_AccTranspiL3; // Transpiration withdrawal from L3
   // --------------------------------------------------------------------------------------
 
   vectCells SortGridLDD();
@@ -708,9 +720,22 @@ class Basin {
   grid *getFluxExfilt() const {
     return _FluxExfilt;
   }
+  grid *getFluxPercolL2() const {
+    return _FluxPercolL2;
+  }
+  grid *getFluxL2toL1() const {
+    return _FluxL2toL1;
+  }
+  grid *getFluxPercolL3() const {
+    return _FluxPercolL3;
+  }
   grid *getFluxRecharge() const {
     return _FluxRecharge;
   }
+  grid *getFluxL3toL2() const {
+    return _FluxL3toL2;
+  }
+  
   grid *getFluxLattoGW() const {
     return _FluxLattoGW;
   }
@@ -722,6 +747,9 @@ class Basin {
   }
   grid *getFluxGWtoLat() const {
     return _FluxGWtoLat;
+  }
+  grid *getFluxChntoLat() const {
+    return _FluxChntoLat;
   }
   grid *getFluxSrftoLat() const {
     return _FluxSrftoLat;
@@ -739,6 +767,21 @@ class Basin {
   grid *getAccExfilt() const {
     return _AccExfilt;
   }
+  grid *getAccPercolL2() const {
+    return _AccPercolL2;
+  }
+  grid *getAccL2toL1() const {
+    return _AccL2toL1;
+  }
+  grid *getAccPercolL3() const {
+    return _AccPercolL3;
+  }
+  grid *getAccRecharge() const {
+    return _AccRecharge;
+  }
+  grid *getAccL3toL2() const {
+    return _AccL3toL2;
+  }
   grid *getAccLattoGW() const {
     return _AccLattoGW;
   }
@@ -754,11 +797,26 @@ class Basin {
   grid *getAccGWtoLat() const {
     return _AccGWtoLat;
   }
+  grid *getAccChntoLat() const {
+    return _AccChntoLat;
+  }
   grid *getAccGWtoChn() const {
     return _AccGWtoChn;
   }
   grid *getAccSrftoChn() const {
     return _AccSrftoChn;
+  }
+  grid *getAccEvaporationS() const {
+    return _AccEvaporationS;
+  }
+  grid *getAccTranspiL1() const {
+    return _AccTranspiL1;
+  }
+  grid *getAccTranspiL2() const {
+    return _AccTranspiL2;
+  }
+  grid *getAccTranspiL3() const {
+    return _AccTranspiL3;
   }
 
   // Addition tracking
@@ -787,18 +845,12 @@ class Basin {
   //grid *getFluxL3toGW() const {
   //  return _FluxL3toGW;
   //}
-  grid *getFluxL2toL1() const {
-    return _FluxL2toL1;
-  }
-  grid *getFluxL3toL2() const {
-    return _FluxL3toL2;
-  }
-  grid *getFluxGWtoL2() const {
-    return _FluxGWtoL2;
-  }
-  grid *getFluxGWtoL3() const {
-    return _FluxGWtoL3;
-  }
+  //grid *getFluxGWtoL2() const {
+  //  return _FluxGWtoL2;
+  //}
+  //grid *getFluxGWtoL3() const {
+  // return _FluxGWtoL3;
+  //}
 
   // --------------------------------------------------------------------------------------
   // -- Getters of fForest getters
