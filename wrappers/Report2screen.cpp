@@ -87,11 +87,20 @@ int Report2Screen(){
   ofSummary << oBudget->ponding << "\t";
 
   //printf("Soil water (m3): %.2f \t", oBudget->vadose);
-  printf("Soil water (mm): %.2f \t", 1000 * oBudget->vadose / area);
+  printf("Soil water (mm): %.2f \n", 1000 * oBudget->vadose / area);
   ofSummary << oBudget->vadose << "\t";
 
+  // Only for budget summary: each layer
+  ofSummary << oBudget->soilL1 << "\t";
+  ofSummary << oBudget->soilL2 << "\t";
+  ofSummary << oBudget->soilL3 << "\t";
+  
   //printf("of which Groundwater (m3): %.2f \n", oBudget->grndwater);
-  printf("of which Groundwater (mm): %.2f \n", 1000 * oBudget->grndwater / area);
+  printf("of which RootZone water (mm): %.2f \t", 1000 * oBudget->rootzone / area);
+  ofSummary << oBudget->rootzone << "\t";
+  
+  //printf("of which Groundwater (m3): %.2f \n", oBudget->grndwater);
+  printf(", and Groundwater (mm): %.2f \n", 1000 * oBudget->grndwater / area);
   ofSummary << oBudget->grndwater << "\t";
 
   //printf("Total Evapotranspiration (m3): %.2f \t", oBudget->evaporation);

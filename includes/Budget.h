@@ -55,6 +55,7 @@ struct Budget {
   double ponding; //m3
   double vadose; //m3
   double soilL1, soilL2, soilL3; //m3
+  double rootzone; //m3
   //double gravwater; //m3
   double grndwater; //m3
   
@@ -84,6 +85,7 @@ struct Budget {
   double AccountFluxes(const grid *map, const Atmosphere *b);
   double AccountFluxes(const vectCells *timeseries, const Basin *b);
   double AccountStorages(const grid *map, const Basin *b);
+  double AccountStorages(const grid *map1, const grid *map2, const Basin *b);
   double AccountRelArea(const grid *map, const Basin *b);
   
   void TotalPrecipitation(const grid* map, const Atmosphere *b);
@@ -103,6 +105,7 @@ struct Budget {
 			const grid *SoilL3,
 			//const grid *GravWater,
 			const grid *GrndWater,
+			const grid *ProotL1, const grid *ProotL2, const grid *ProotL3,
 			const Basin *b);
   void TotalSaturationArea(const grid* map, const Basin*b);
   void TotalGWtoChn(const grid* map, const Basin*b);
@@ -265,6 +268,7 @@ struct Budget {
     soilL1 = 0;
     soilL2 = 0;
     soilL3 = 0;
+    rootzone = 0;
     //vadose = 0;
     //gravwater = 0;
     grndwater = 0;

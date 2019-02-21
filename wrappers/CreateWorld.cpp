@@ -70,6 +70,10 @@ int CreateWorld(char* argv[]){
   ofSummary << "Intrcp\t";
   ofSummary << "Surface\t";
   ofSummary << "SoilW\t";
+  ofSummary << "SoilL1\t";
+  ofSummary << "SoilL2\t";
+  ofSummary << "SoilL3\t";
+  ofSummary << "RZW\t";
   ofSummary << "GW\t";
   ofSummary << "ET\t";
   ofSummary << "EvapS\t";

@@ -161,6 +161,9 @@ struct Control{
   bool Rep_Soil_Water_Content_L2;
   bool Rep_Soil_Water_Content_L3;
   bool Rep_WaterTableDepth;
+  bool Rep_RootZone_in_L1;
+  bool Rep_RootZone_in_L2;
+  bool Rep_RootZone_in_L3;
   bool Rep_Field_Capacity_L1;
   bool Rep_Field_Capacity_L2;
   bool Rep_Field_Capacity_L3;

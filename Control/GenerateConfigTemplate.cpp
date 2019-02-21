@@ -227,9 +227,14 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Report_Soil_Water_Content_L2 = 0 " << endl;
     ofOut << "Report_Soil_Water_Content_L3 = 0 " << endl;
     ofOut << "Report_WaterTableDepth = 0 " << endl;
+    ofOut << "# Maps of time-constant variables (only reported once) --" << endl;
+    ofOut << "Report_RootZone_in_L1 = 0 " << endl;
+    ofOut << "Report_RootZone_in_L2 = 0 " << endl;
+    ofOut << "Report_RootZone_in_L3 = 0 " << endl;
     ofOut << "Report_Field_Capacity_L1 = 0 " << endl;
     ofOut << "Report_Field_Capacity_L2 = 0 " << endl;
     ofOut << "Report_Field_Capacity_L3 = 0 " << endl;
+    ofOut << "# -------------------------------------------------------" << endl ;
     ofOut << "Report_Soil_Sat_Deficit = 0 " << endl;
     ofOut << "Report_Ground_Water = 0 " << endl;
     ofOut << "Report_Soil_Net_Rad = 0 " << endl;

@@ -120,6 +120,12 @@ Basin::~Basin(){
   //      delete _rootfrac2;
   //if(_Kroot)
   //	delete _Kroot;
+  if(_ProotzoneL1)
+    delete _ProotzoneL1;
+  if(_ProotzoneL2)
+    delete _ProotzoneL2;
+  if(_ProotzoneL3)
+    delete _ProotzoneL3;
   if(_fieldcapL1)
     delete _fieldcapL1;
   if(_fieldcapL2)

@@ -48,20 +48,34 @@ int Report2Maps(){
     WriteMapSeries(oAtmosphere->getMinTemperature(), "TpMin", oControl->current_ts_count);
   if(oControl->Rep_MaxAir_Temperature)
     WriteMapSeries(oAtmosphere->getMaxTemperature(), "TpMax", oControl->current_ts_count);
-  
-  // If exponential porosity profile, give field capacity for each.
-  // Else, it's the same across the profile
-  if(oControl->sw_expPoros){
-    if (oControl->Rep_Field_Capacity_L1) 
-      WriteMapSeries(oBasin->getFieldCapacityL1(), "FCap1", oControl->current_ts_count);
-    if (oControl->Rep_Field_Capacity_L2)
-      WriteMapSeries(oBasin->getFieldCapacityL2(), "FCap2", oControl->current_ts_count);
-    if (oControl->Rep_Field_Capacity_L3)
-      WriteMapSeries(oBasin->getFieldCapacityL3(), "FCap3", oControl->current_ts_count);
-  } else
-    if (oControl->Rep_Field_Capacity_L1 or oControl->Rep_Field_Capacity_L2 or
-	oControl->Rep_Field_Capacity_L3)
-      WriteMapSeries(oBasin->getFieldCapacityL1(), "FCap", oControl->current_ts_count);
+
+  // "Initial" values: stuff that doesn't change over time: only report the first occurence
+  // of reportMap_times
+  if(oControl->current_t_step == oControl->reportMap_times){
+
+    // Whether each pixel-layer is in the root zone
+    // 0 and 1, can be in between when averaging over veg fractions
+    if (oControl->Rep_RootZone_in_L1) 
+      WriteMap(oBasin->getProotzoneL1(), "RootZone_kL1");
+    if (oControl->Rep_RootZone_in_L2)
+      WriteMap(oBasin->getProotzoneL2(), "RootZone_kL2");
+    if (oControl->Rep_RootZone_in_L3)
+      WriteMap(oBasin->getProotzoneL3(), "RootZone_kL3");
+    
+    // If exponential porosity profile, give field capacity for each.
+    // Else, it's the same across the profile
+    if(oControl->sw_expPoros){
+      if (oControl->Rep_Field_Capacity_L1) 
+	WriteMap(oBasin->getFieldCapacityL1(), "FCap1");
+      if (oControl->Rep_Field_Capacity_L2)
+	WriteMap(oBasin->getFieldCapacityL2(), "FCap2");
+      if (oControl->Rep_Field_Capacity_L3)
+	WriteMap(oBasin->getFieldCapacityL3(), "FCap3");
+    } else
+      if (oControl->Rep_Field_Capacity_L1 or oControl->Rep_Field_Capacity_L2 or
+	  oControl->Rep_Field_Capacity_L3)
+	WriteMap(oBasin->getFieldCapacityL1(), "FCap");
+  }
   
   if (oControl->Rep_Canopy_Water_Stor_sum)
     WriteMapSeries(oBasin->getCanopyStorage(), "Cs", oControl->current_ts_count);
@@ -333,24 +347,28 @@ if (oControl->Rep_TranspiL3acc)
 
     if (oControl->Rep_Veget_frac) {
       name << "p" << i << "_";
-      WriteMapSeries(oBasin->getVegetFrac(i), name.str() , oControl->current_ts_count);
+      //WriteMapSeries(oBasin->getVegetFrac(i), name.str() , oControl->current_ts_count);
+      WriteMap(oBasin->getVegetFrac(i), name.str());
       name.str("");
     }
 
     if (oControl->Rep_Stem_Density) {
       name << "ntr" << i << "_";
-      WriteMapSeries(oBasin->getStemDensity(i), name.str() , oControl->current_ts_count);
+      //WriteMapSeries(oBasin->getStemDensity(i), name.str() , oControl->current_ts_count);
+      WriteMap(oBasin->getStemDensity(i), name.str());
       name.str("");
     }
 
     if (oControl->Rep_RootFrac1Species) {
       name << "L1Ro" << i << "_";
-      WriteMapSeries(oBasin->getRootFrac1(i), name.str() , oControl->current_ts_count);
+      //WriteMapSeries(oBasin->getRootFrac1(i), name.str() , oControl->current_ts_count);
+      WriteMap(oBasin->getRootFrac1(i), name.str());
       name.str("");
     }
     if (oControl->Rep_RootFrac2Species) {
       name << "L2Ro" << i << "_";
-      WriteMapSeries(oBasin->getRootFrac2(i), name.str() , oControl->current_ts_count);
+      //WriteMapSeries(oBasin->getRootFrac2(i), name.str() , oControl->current_ts_count);
+      WriteMap(oBasin->getRootFrac2(i), name.str());
       name.str("");
     }
 
@@ -392,13 +410,15 @@ if (oControl->Rep_TranspiL3acc)
 
     if (oControl->Rep_Tree_Height) {
       name << "hgt" << i << "_";
-      WriteMapSeries(oBasin->getTreeHeight(i), name.str() , oControl->current_ts_count);
+      //WriteMapSeries(oBasin->getTreeHeight(i), name.str() , oControl->current_ts_count);
+      WriteMap(oBasin->getTreeHeight(i), name.str());
       name.str("");
     }
 
     if (oControl->Rep_Root_Mass) {
       name << "root" << i << "_";
-      WriteMapSeries(oBasin->getRootMass(i), name.str() , oControl->current_ts_count);
+      //WriteMapSeries(oBasin->getRootMass(i), name.str() , oControl->current_ts_count);
+      WriteMap(oBasin->getRootMass(i), name.str());
       name.str("");
     }
 

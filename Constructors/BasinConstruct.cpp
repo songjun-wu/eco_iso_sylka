@@ -145,6 +145,13 @@ Basin::Basin(Control &ctrl)
     //_rootfrac1 = new grid(*_DEM);
     //_rootfrac2 = new grid(*_DEM);
 
+    // Contribution of each layer to the root zone
+    // should 0 or 1, but averaging over pixel-sharing species
+    // may make it non-binary
+    _ProotzoneL1 = new grid(*_DEM);
+    _ProotzoneL2 = new grid(*_DEM);
+    _ProotzoneL3 = new grid(*_DEM);
+
     _IsSaturated = new grid(*_DEM);  //saturation map
     _soilmoist_av = new grid(*_DEM); //average volumetric soil moisture of the first 10 cm of the soil as calculated using a hydrstatic equilibrium moisture profile
     _soilmoist_12 = new grid(*_DEM); //average volumetric soil moisture of the upper two layers
@@ -396,6 +403,12 @@ Basin::Basin(Control &ctrl)
       //      delete _rootfrac2;
       //if(_Kroot)
       //	delete _Kroot;
+      if(_ProotzoneL1)
+	delete _ProotzoneL1;
+      if(_ProotzoneL2)
+	delete _ProotzoneL2;
+      if(_ProotzoneL3)
+	delete _ProotzoneL3;
       if(_fieldcapL1)
 	delete _fieldcapL1;
       if(_fieldcapL2)

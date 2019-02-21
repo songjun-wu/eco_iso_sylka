@@ -31,15 +31,18 @@
 #include "Budget.h"
 
 void Budget::TotalStorage( const grid *Canopy,
-		const grid *Snow,
-		const grid *Ponding,
-		//const grid *Vadose,
-		const grid *SoilL1,
-		const grid *SoilL2,
-		const grid *SoilL3,
-		//const grid *GravWater,
-		const grid *GrndWater,
-		const Basin *b)
+			   const grid *Snow,
+			   const grid *Ponding,
+			   //const grid *Vadose,
+			   const grid *SoilL1,
+			   const grid *SoilL2,
+			   const grid *SoilL3,
+			   //const grid *GravWater,
+			   const grid *GrndWater,
+			   const grid *ProotzoneL1,
+			   const grid *ProotzoneL2,
+			   const grid *ProotzoneL3,
+			   const Basin *b)
 {
 	canopy = AccountStorages(Canopy, b);
 	snowpack = AccountStorages(Snow, b);
@@ -51,6 +54,12 @@ void Budget::TotalStorage( const grid *Canopy,
 	//gravwater = AccountStorages(GravWater, b);
 	grndwater = AccountStorages(GrndWater, b);
 	vadose = soilL1 + soilL2 + soilL3 + grndwater;
+	// Root zone storage: sums contributions of respective layers.
+	// These fractions do not represent root fraction, but pondered average
+	// of 0 and 1 between species fractions
+	rootzone = AccountStorages(SoilL1, ProotzoneL1, b) +
+	  AccountStorages(SoilL2, ProotzoneL2, b) +
+	  AccountStorages(SoilL3, ProotzoneL3, b) ;
 }
 
 void Budget::TotalStorage_d2H( const grid *Canopy, const grid *Canopy_d2H,

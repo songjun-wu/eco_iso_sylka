@@ -37,11 +37,13 @@ int Basin::CalcRootDistrib(){
   UINT4 s, nsp;
   REAL8 frac1, frac2;
   REAL8 k, d1, d2, d;
+  REAL8 p_veg = 0;
+  REAL8 p = 0;
   
   nsp = fForest->getNumSpecies();
 
 #pragma omp parallel default(none)		\
-  private(s,r,c,k,d,d1,d2,frac1,frac2) \
+  private(s,r,c,k,d,d1,d2,frac1,frac2,p,p_veg)	\
   shared(nsp)
   { 
 #pragma omp for nowait
@@ -54,6 +56,8 @@ int Basin::CalcRootDistrib(){
 	d = _soildepth->matrix[r][c];
 	d1 = _depth_layer1->matrix[r][c];
 	d2 = _depth_layer2->matrix[r][c];
+
+	p_veg = 0;
 	
 	for (s = 0; s < nsp; s++) {
 
@@ -62,15 +66,38 @@ int Basin::CalcRootDistrib(){
 	    frac2 = 0;
 	  } 
 	  else {
+
 	    // use exponential profile
 	    k = fForest->getKRoot(s);
 	    frac1 = (1 - expl(-k*d1))/(1-expl(-k*d));
 	    frac2 = (expl(-k*d1) - expl(-k*(d1+d2)))/(1-expl(-k*d));
+
+	    // Contribution of each layer to rootzone, assuming
+	    // 1. contrib* = 1 whenever frac* > 5%
+	    // 2. an exponentially decaying profile; frac1 >= frac2 >= frac3;
+	    // average over species is made using the vegetated fraction sum (p_veg<=1)
+	    p = fForest->getPropSpecies(s, r, c);
+
+	    _ProotzoneL1->matrix[r][c] += p ;
+	    if(frac2 > 0.05)
+	      _ProotzoneL2->matrix[r][c] += p ;
+	    if(1 - frac1 - frac2 > 0.05)
+	      _ProotzoneL3->matrix[r][c] += p ;
+	    
+	    p_veg += p;
+
 	  }
 
 	  fForest->setRootFrac1Species(s, r, c, frac1);
 	  fForest->setRootFrac2Species(s, r, c, frac2);
-	} 
+	}
+
+	// Average contribution of each layer to root zone storage
+	// (using p_veg allows to discard 100% bare soil pixels in catchment budgets)
+	_ProotzoneL1->matrix[r][c] = p_veg > RNDOFFERR ? _ProotzoneL1->matrix[r][c] / p_veg : 0;
+	_ProotzoneL2->matrix[r][c] = p_veg > RNDOFFERR ? _ProotzoneL2->matrix[r][c] / p_veg : 0;
+	_ProotzoneL3->matrix[r][c] = p_veg > RNDOFFERR ? _ProotzoneL3->matrix[r][c] / p_veg : 0;
+	
 	/*
 	k = _Kroot->matrix[r][c];
 	_rootfrac1->matrix[r][c] = (1 - expl(-k*d1))/(1-expl(-k*d));

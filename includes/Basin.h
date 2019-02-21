@@ -81,6 +81,8 @@ class Basin {
   //grid *_Kroot; // exponential root profile shape (m-1)
   //grid *_rootfrac1; //fraction of roots in soil layer 1
   //grid *_rootfrac2; //fraction of roots in soil layer 2. For layer three it is calculated from layer 1 and 2
+  grid *_ProotzoneL1, *_ProotzoneL2, *_ProotzoneL3;
+  
   grid *_fieldcapL1, *_fieldcapL2, *_fieldcapL3; //field capacity layer 1 (volumetric)
   grid *_paramWc; //empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
   grid *_paramWp; ////empirical parameter in water efficiency function for GPP calculation (see Landsberg and Waring, 1997 or TRIPLEX paper)
@@ -635,6 +637,15 @@ class Basin {
   //grid *getRootFrac2() const {
   //	return _rootfrac2;
   //}
+  grid *getProotzoneL1() const {
+    return _ProotzoneL1;
+  }
+  grid *getProotzoneL2() const {
+    return _ProotzoneL2;
+  }
+  grid *getProotzoneL3() const {
+    return _ProotzoneL3;
+  }
 	
   grid *getEvaporation() const {
     return _Evaporation;

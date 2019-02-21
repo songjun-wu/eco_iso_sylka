@@ -204,9 +204,14 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
     Rep_Soil_Water_Content_L2 = Config.read<bool>("Report_Soil_Water_Content_L2");
     Rep_Soil_Water_Content_L3 = Config.read<bool>("Report_Soil_Water_Content_L3");
     Rep_WaterTableDepth = Config.read<bool>("Report_WaterTableDepth");
+    // Time-constant outputs: only reported once
+    Rep_RootZone_in_L1 = Config.read<bool>("Report_RootZone_in_L1");
+    Rep_RootZone_in_L2 = Config.read<bool>("Report_RootZone_in_L2");
+    Rep_RootZone_in_L3 = Config.read<bool>("Report_RootZone_in_L3");
     Rep_Field_Capacity_L1 = Config.read<bool>("Report_Field_Capacity_L1");
     Rep_Field_Capacity_L2 = Config.read<bool>("Report_Field_Capacity_L2");
     Rep_Field_Capacity_L3 = Config.read<bool>("Report_Field_Capacity_L3");
+    //
     Rep_Soil_Sat_Deficit = Config.read<bool>("Report_Soil_Sat_Deficit");
     Rep_GWater = Config.read<bool>("Report_Ground_Water");
     Rep_Total_ET = Config.read<bool>("Report_Total_ET");

@@ -39,7 +39,7 @@
      _var->grid2PCRMap( (oControl->path_ResultsFolder + ParseString(_s, _tscount)).c_str(), CR_REAL4, VS_SCALAR);
 
 #define WriteMap(_var, _s) \
-     _var->MatrixToMap((pathout + _s).c_str(), CR_REAL4, VS_SCALAR);
+  _var->grid2PCRMap( (oControl->path_ResultsFolder +_s+".map").c_str(), CR_REAL4, VS_SCALAR);
 
 
 struct Report{

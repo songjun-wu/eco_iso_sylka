@@ -51,6 +51,9 @@ int CalculateBudgets(){
 			oBasin->getSoilWaterDepthL3(),
 			//oBasin->getGravityWater(),
 			oBasin->getGrndWater(),
+			oBasin->getProotzoneL1(),
+			oBasin->getProotzoneL2(),
+			oBasin->getProotzoneL3(),
 			oBasin);
   oBudget->TotalSrftoChn(oBasin->getFluxSrftoChn(), oBasin);
   oBudget->TotalGWtoChn(oBasin->getFluxGWtoChn(), oBasin);
