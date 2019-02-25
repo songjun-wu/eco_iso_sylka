@@ -29,6 +29,8 @@
  */
 
 #include "Forest.h"
+#include <errno.h>
+#include <string.h>
 
 Forest::Forest(Control &ctrl)
 {

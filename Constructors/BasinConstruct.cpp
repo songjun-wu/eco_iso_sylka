@@ -37,6 +37,7 @@
 
 Basin::Basin(Control &ctrl)
 {
+
   try{
 
     //Read the base map and writes the dimensions of the grid
@@ -250,6 +251,13 @@ Basin::Basin(Control &ctrl)
 	_fracMW12 = new grid(*_DEM);
       }
     }
+
+    cout << errno << endl ;
+    
+    // reset errno just to make sure that any constructor error here are not
+    // "leftovers" from earlier constrcutors' failures 
+    errno = 0 ;
+    
 
     try{
       //calculate the value of Ksat for each layer (integrated from expo profile)
