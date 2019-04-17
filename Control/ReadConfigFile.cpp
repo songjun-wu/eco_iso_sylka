@@ -107,6 +107,8 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
       reportMap_times = dt;
     }
 
+    reportMap_start = Config.read<float>("ReportMap_starttime");
+
     Config.readInto(MapType, "MapTypes" );
     Config.readInto(ForestStateVarsInputType, "Species_State_Variable_Input_Method");
 

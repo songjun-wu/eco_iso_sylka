@@ -146,9 +146,11 @@ Basin::Basin(Control &ctrl)
     //_rootfrac1 = new grid(*_DEM);
     //_rootfrac2 = new grid(*_DEM);
 
-    // Contribution of each layer to the root zone
-    // should 0 or 1, but averaging over pixel-sharing species
-    // may make it non-binary
+    
+    // Depth at which 95% of roots are found, and 
+    // contribution of each layer to the root zone
+    // (both averaged over pixel-sharing species)
+    _Zroot95 = new grid(*_DEM);
     _ProotzoneL1 = new grid(*_DEM);
     _ProotzoneL2 = new grid(*_DEM);
     _ProotzoneL3 = new grid(*_DEM);
@@ -411,6 +413,8 @@ Basin::Basin(Control &ctrl)
       //      delete _rootfrac2;
       //if(_Kroot)
       //	delete _Kroot;
+      if(_Zroot95)
+	delete _Zroot95;
       if(_ProotzoneL1)
 	delete _ProotzoneL1;
       if(_ProotzoneL2)

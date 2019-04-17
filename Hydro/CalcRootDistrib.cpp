@@ -36,14 +36,14 @@ int Basin::CalcRootDistrib(){
   UINT4 r, c;
   UINT4 s, nsp;
   REAL8 frac1, frac2;
-  REAL8 k, d1, d2, d;
+  REAL8 k, d1, d2, d, d95;
   REAL8 p_veg = 0;
   REAL8 p = 0;
   
   nsp = fForest->getNumSpecies();
 
 #pragma omp parallel default(none)		\
-  private(s,r,c,k,d,d1,d2,frac1,frac2,p,p_veg)	\
+  private(s,r,c,k,d,d1,d2,d95,frac1,frac2,p,p_veg)	\
   shared(nsp)
   { 
 #pragma omp for nowait
@@ -56,6 +56,7 @@ int Basin::CalcRootDistrib(){
 	d = _soildepth->matrix[r][c];
 	d1 = _depth_layer1->matrix[r][c];
 	d2 = _depth_layer2->matrix[r][c];
+	d95 = 0; 
 
 	p_veg = 0;
 	
@@ -72,17 +73,18 @@ int Basin::CalcRootDistrib(){
 	    frac1 = (1 - expl(-k*d1))/(1-expl(-k*d));
 	    frac2 = (expl(-k*d1) - expl(-k*(d1+d2)))/(1-expl(-k*d));
 
-	    // Contribution of each layer to rootzone, assuming
-	    // 1. contrib* = 1 whenever frac* > 5%
-	    // 2. an exponentially decaying profile; frac1 >= frac2 >= frac3;
+	    // Contribution of each layer to rootzone: use depth at which 95% of the roots
+	    // are found
+	    d95 = std::min<double>(d,log2l(0.05+0.95*expl(-k*d))/(-k));
 	    // average over species is made using the vegetated fraction sum (p_veg<=1)
 	    p = fForest->getPropSpecies(s, r, c);
 
-	    _ProotzoneL1->matrix[r][c] += p ;
-	    if(frac2 > 0.05)
-	      _ProotzoneL2->matrix[r][c] += p ;
-	    if(1 - frac1 - frac2 > 0.05)
-	      _ProotzoneL3->matrix[r][c] += p ;
+	    _ProotzoneL1->matrix[r][c] += d95 >= d1 ? p : p*d95/d1 ;
+	    _ProotzoneL2->matrix[r][c] += d95 >= d1+d2 ? p : std::max<double>(0.0,d95-d1)*p/d2 ;
+	    _ProotzoneL3->matrix[r][c] += d95 >= d ? p : std::max<double>(0.0,d95-d1-d2)*p/(d-d1-d2);
+
+	    // Average over species fraction
+	    _Zroot95->matrix[r][c] += p*d95 ;
 	    
 	    p_veg += p;
 
@@ -97,6 +99,7 @@ int Basin::CalcRootDistrib(){
 	_ProotzoneL1->matrix[r][c] = p_veg > RNDOFFERR ? _ProotzoneL1->matrix[r][c] / p_veg : 0;
 	_ProotzoneL2->matrix[r][c] = p_veg > RNDOFFERR ? _ProotzoneL2->matrix[r][c] / p_veg : 0;
 	_ProotzoneL3->matrix[r][c] = p_veg > RNDOFFERR ? _ProotzoneL3->matrix[r][c] / p_veg : 0;
+	_Zroot95->matrix[r][c] = p_veg > RNDOFFERR ? _Zroot95->matrix[r][c] / p_veg : 0;
 	
 	/*
 	k = _Kroot->matrix[r][c];

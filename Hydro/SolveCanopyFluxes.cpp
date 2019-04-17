@@ -210,7 +210,6 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  z0o = powl(treeheight, 1.19) * 0.057544; //powl( 10, -1.24+1.19*log10l(treeheight) );     //treeheight > 1 ? 0.1 : treeheight * 0.1;
 	  zdo = powl(treeheight, 0.98) * 0.707946; //powl( 10, 0.98*log10l(treeheight)-0.15); //treeheight > 1 ? 0.1 : treeheight * 0.7;
        
-	  rootdepth = _soildepth->matrix[r][c];
 	  theta = _soilmoist1->matrix[r][c]; //soil moisture at time t
 	  theta2 = _soilmoist2->matrix[r][c];
 	  theta3 = _soilmoist3->matrix[r][c];
@@ -227,11 +226,13 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  //  ", theta2 : " << theta2 << ", theta3 : " << theta3 << endl;
 
 	  //root depth is the depth of layers that contain 95% of roots
-	  if (froot1 > 0.95)
-	    rootdepth = froot1 > d1;
+	  rootdepth = _Zroot95->matrix[r][c];
+	  /*if (froot1 > 0.95)
+	    rootdepth = d1;
 	  else if ((froot1 + froot2) > 0.95)
 	    rootdepth = d1 + d2;
-       
+	  */
+
 	  ra = CalcAerodynResist(wind, za, 0, 0, z0o, zdo, treeheight,
 				 fForest->getLAISpecies(s, r, c),
 				 getCanopyTemp(s)->matrix[r][c],

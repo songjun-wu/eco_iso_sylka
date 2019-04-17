@@ -48,6 +48,7 @@ struct Control{
   float BC_dt; // time step for spatial climatic inputs (seconds)
   float report_times; //times at which report outputs time series
   float reportMap_times; //times at which report outputs maps
+  float reportMap_start; // absolute time from which report outputs maps
   
   float current_t_step; //current time step (seconds)
   unsigned int current_ts_count; //current count of time step

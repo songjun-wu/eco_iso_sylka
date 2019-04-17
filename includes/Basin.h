@@ -81,6 +81,7 @@ class Basin {
   //grid *_Kroot; // exponential root profile shape (m-1)
   //grid *_rootfrac1; //fraction of roots in soil layer 1
   //grid *_rootfrac2; //fraction of roots in soil layer 2. For layer three it is calculated from layer 1 and 2
+  grid *_Zroot95 ;
   grid *_ProotzoneL1, *_ProotzoneL2, *_ProotzoneL3;
   
   grid *_fieldcapL1, *_fieldcapL2, *_fieldcapL3; //field capacity layer 1 (volumetric)
@@ -637,6 +638,9 @@ class Basin {
   //grid *getRootFrac2() const {
   //	return _rootfrac2;
   //}
+  grid *getZroot95() const {
+    return _Zroot95;
+  }
   grid *getProotzoneL1() const {
     return _ProotzoneL1;
   }

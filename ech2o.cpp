@@ -68,13 +68,15 @@ int main(int argc, char* argv[]) {
 	report_time = 0; //reset the counter
       }
 
-      // Report maps
-      reportMap_time += oControl->dt;
-      if (reportMap_time >= oControl->reportMap_times) { //if report time overdue
-	Report2Maps(); //report results
-	reportMap_time = 0; //reset the counter
+      // Report maps (only from a certain time step, e.g. to avoid spinup map reporting)
+      if (oControl->current_t_step >= oControl->reportMap_start) { 
+	reportMap_time += oControl->dt;
+	if (reportMap_time >= oControl->reportMap_times) { //if report time overdue
+	  Report2Maps(); //report results
+	  reportMap_time = 0; //reset the counter
+	}
       }
-      
+
       cout << "\nEnd time step " << oControl->current_ts_count;
       cout << "\nSimulation time " << oControl->current_t_step
 	   << " seconds (" << oControl->current_t_step / 86400
