@@ -94,7 +94,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
   if(ctrl.sw_trck)
     trck.OutletVals(ctrl, 0, 0, 0);
-    
+
 #pragma omp parallel default(shared) \
   private(r, c, ra, rs, Ts, Tsold, Tdold, LAI, BeersK, Temp_can, emis_can, \
 	  evap, infcap, accinf, theta, theta2, theta3, ponding,leak,  \
@@ -149,7 +149,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	// Tracking
 	if(ctrl.sw_trck)
 	  trck.MixingV_down(*this, ctrl, d1, d2, d3, fc, leak, r, c, 0);
-	
+
 	// Update global objects
 	_ponding->matrix[r][c] = ponding;
 	_GravityWater->matrix[r][c] = gw;
@@ -165,7 +165,7 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	// Tracking
 	if(ctrl.sw_trck)
 	  _soilmoist1->matrix[r][c] = theta; 
-	
+
 	nsp = fForest->getNumSpecies();
 	treeheight = 0;
 	

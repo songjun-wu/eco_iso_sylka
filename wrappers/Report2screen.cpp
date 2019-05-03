@@ -90,7 +90,7 @@ int Report2Screen(){
   printf("Soil water (mm): %.2f \n", 1000 * oBudget->vadose / area);
   ofSummary << oBudget->vadose << "\t";
 
-  // Only for budget summary: each layer
+  // Only for budget Summary: each layer
   ofSummary << oBudget->soilL1 << "\t";
   ofSummary << oBudget->soilL2 << "\t";
   ofSummary << oBudget->soilL3 << "\t";
@@ -167,6 +167,62 @@ int Report2Screen(){
 
   ofSummary << "\n";
 
+  // ==== Basind2HSummary.txt --------------------------------------------------------
+  // -----------------------------------------------------
+  if(oControl->sw_trck and oControl->sw_2H){
+    ofd2HSummary << oBudget->d2HTot << "\t";
+    ofd2HSummary << oBudget->d2Hsnowpack << "\t";
+    ofd2HSummary << oBudget->d2Hcanopy << "\t";
+    ofd2HSummary << oBudget->d2Hponding << "\t";
+    ofd2HSummary << oBudget->d2Hvadose << "\t";
+    ofd2HSummary << oBudget->d2HsoilL1 << "\t";
+    ofd2HSummary << oBudget->d2HsoilL2 << "\t";
+    ofd2HSummary << oBudget->d2HsoilL3 << "\t";
+    ofd2HSummary << oBudget->d2Hrootzone << "\t";
+    ofd2HSummary << oBudget->d2Hgrndwater << "\t";
+    ofd2HSummary << oBudget->d2HET << "\t";
+    ofd2HSummary << oBudget->d2HevapS << "\t";
+    ofd2HSummary << oBudget->d2HevapI << "\t";
+    ofd2HSummary << oBudget->d2HevapT << "\t";
+    ofd2HSummary << oBudget->d2Hleakage << "\t";
+    ofd2HSummary << oBudget->d2HOvlndOut << "\t";
+    ofd2HSummary << oBudget->d2HGWOut << "\t";
+    ofd2HSummary << oBudget->d2HOut << "\t";
+    ofd2HSummary << oBudget->d2Hsrftochn << "\t";
+    ofd2HSummary << oBudget->d2Hgwtochn << "\t";   
+    ofd2HSummary << oBudget->d2Hrecharge << "\t";
+    ofd2HSummary << oBudget->d2Hprecip << "\n";
+
+  }
+
+  // ==== Basind18OSummary.txt --------------------------------------------------------
+  // -----------------------------------------------------
+  if(oControl->sw_trck and oControl->sw_18O){
+    ofd18OSummary << oBudget->d18OTot << "\t";
+    ofd18OSummary << oBudget->d18Osnowpack << "\t";
+    ofd18OSummary << oBudget->d18Ocanopy << "\t";
+    ofd18OSummary << oBudget->d18Oponding << "\t";
+    ofd18OSummary << oBudget->d18Ovadose << "\t";
+    ofd18OSummary << oBudget->d18OsoilL1 << "\t";
+    ofd18OSummary << oBudget->d18OsoilL2 << "\t";
+    ofd18OSummary << oBudget->d18OsoilL3 << "\t";
+    ofd18OSummary << oBudget->d18Orootzone << "\t";
+    ofd18OSummary << oBudget->d18Ogrndwater << "\t";
+    ofd18OSummary << oBudget->d18OET << "\t";
+    ofd18OSummary << oBudget->d18OevapS << "\t";
+    ofd18OSummary << oBudget->d18OevapI << "\t";
+    ofd18OSummary << oBudget->d18OevapT << "\t";
+    ofd18OSummary << oBudget->d18Oleakage << "\t";
+    ofd18OSummary << oBudget->d18OOvlndOut << "\t";
+    ofd18OSummary << oBudget->d18OGWOut << "\t";
+    ofd18OSummary << oBudget->d18OOut << "\t";
+    ofd18OSummary << oBudget->d18Osrftochn << "\t";
+    ofd18OSummary << oBudget->d18Ogwtochn << "\t";   
+    ofd18OSummary << oBudget->d18Orecharge << "\t";
+    ofd18OSummary << oBudget->d18Oprecip << "\n";
+
+  }
+
   // ==== BasinAgeSummary.txt --------------------------------------------------------
   // -----------------------------------------------------
   if(oControl->sw_trck and oControl->sw_Age){
@@ -178,6 +234,7 @@ int Report2Screen(){
     ofAgeSummary << oBudget->AgesoilL1 << "\t";
     ofAgeSummary << oBudget->AgesoilL2 << "\t";
     ofAgeSummary << oBudget->AgesoilL3 << "\t";
+    ofAgeSummary << oBudget->Agerootzone << "\t";
     ofAgeSummary << oBudget->Agegrndwater << "\t";
     ofAgeSummary << oBudget->AgeET << "\t";
     ofAgeSummary << oBudget->AgeevapS << "\t";
@@ -190,7 +247,6 @@ int Report2Screen(){
     ofAgeSummary << oBudget->Agesrftochn << "\t";
     ofAgeSummary << oBudget->Agegwtochn << "\t";   
     ofAgeSummary << oBudget->Agerecharge << "\n";
-
   }
 
   return EXIT_SUCCESS;

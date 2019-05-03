@@ -257,6 +257,15 @@ void Tracking::MixingV_latup(Basin &bsn, Control &ctrl,
 	  InOutMix(pond_old, _d2Hsurface->matrix[r][c], FinSrf, d2Hin, 
 		   ChntoLat+SrftoLat, mixmod): d2Hin;
 
+	// If it's a channel cell, there's no reinfiltration, so that all lateral+snow+exfilt
+	// inputs ultimately feed the channel
+	if(ctrl.sw_channel and bsn.getChannelWidth()->matrix[r][c] > 0){	  
+	  _d2HGWtoChn->matrix[r][c] = GWtoChn > RNDOFFERR ? _d2Hgroundwater->matrix[r][c] : -1000;
+	  _d2HSrftoChn->matrix[r][c] = FinSrf2 > RNDOFFERR ? 
+	    (L1toSrf*_d2H_MW1->matrix[r][c] + _Fd2HLattoSrf->matrix[r][c] + 
+	     SnowtoSrf*_d2Hsnowmelt->matrix[r][c]) / FinSrf2 : -1000;
+	}
+
 	/* if(abs(_d2Hsurface->matrix[r][c])>100 or abs(d_old)>100 )
 	//if(bsn.getChannelWidth()->matrix[r][c] > 0)
 	cout << r << " " << c << "| d2H-MixingRouting2 " << "| pond_old:" << pond_old << 
@@ -277,6 +286,15 @@ void Tracking::MixingV_latup(Basin &bsn, Control &ctrl,
 	_d18Osurface->matrix[r][c] = pond_old > RNDOFFERR ?
 	  InOutMix(pond_old, _d18Osurface->matrix[r][c], FinSrf, d18Oin, 
 		   ChntoLat+SrftoLat, mixmod): d18Oin;
+
+	// If it's a channel cell, there's no reinfiltration, so that all lateral+snow+exfilt
+	// inputs ultimately feed the channel
+	if(ctrl.sw_channel and bsn.getChannelWidth()->matrix[r][c] > 0){	  
+	  _d18OGWtoChn->matrix[r][c] = GWtoChn > RNDOFFERR ? _d18Ogroundwater->matrix[r][c] : -1000;
+	  _d18OSrftoChn->matrix[r][c] = FinSrf2 > RNDOFFERR ? 
+	    (L1toSrf*_d18O_MW1->matrix[r][c] + _Fd18OLattoSrf->matrix[r][c] + 
+	     SnowtoSrf*_d18Osnowmelt->matrix[r][c]) / FinSrf2 : -1000;
+	}
 
 	/* if(abs(_d18Osurface->matrix[r][c])>100 or abs(d_old)>100 )
 	//if(bsn.getChannelWidth()->matrix[r][c] > 0)
@@ -315,6 +333,16 @@ void Tracking::MixingV_latup(Basin &bsn, Control &ctrl,
 	_d2Hsurface->matrix[r][c] = pond_old > RNDOFFERR ?
 	  InOutMix(pond_old, _d2Hsurface->matrix[r][c], FinSrf, d2Hin, 
 		   ChntoLat+SrftoLat, mixmod): d2Hin;
+
+	// If it's a channel cell, there's no reinfiltration, so that all lateral+snow+exfilt
+	// inputs ultimately feed the channel
+	if(ctrl.sw_channel and bsn.getChannelWidth()->matrix[r][c] > 0){	  
+	  _d2HGWtoChn->matrix[r][c] = GWtoChn > RNDOFFERR ? _d2Hgroundwater->matrix[r][c] : -1000;
+	  _d2HSrftoChn->matrix[r][c] = FinSrf2 > RNDOFFERR ? 
+	    (L1toSrf*_d2Hsoil1->matrix[r][c] + _Fd2HLattoSrf->matrix[r][c] + 
+	     SnowtoSrf*_d2Hsnowmelt->matrix[r][c]) / FinSrf2 : -1000;
+	}
+
       }
       
       if(ctrl.sw_18O){
@@ -323,6 +351,16 @@ void Tracking::MixingV_latup(Basin &bsn, Control &ctrl,
 	_d18Osurface->matrix[r][c] = pond_old > RNDOFFERR ?
 	  InOutMix(pond_old, _d18Osurface->matrix[r][c], FinSrf, d18Oin, 
 		   ChntoLat+SrftoLat, mixmod): d18Oin;
+
+	// If it's a channel cell, there's no reinfiltration, so that all lateral+snow+exfilt
+	// inputs ultimately feed the channel
+	if(ctrl.sw_channel and bsn.getChannelWidth()->matrix[r][c] > 0){	  
+	  _d18OGWtoChn->matrix[r][c] = GWtoChn > RNDOFFERR ? _d18Ogroundwater->matrix[r][c] : -1000;
+	  _d18OSrftoChn->matrix[r][c] = FinSrf2 > RNDOFFERR ? 
+	    (L1toSrf*_d18Osoil1->matrix[r][c] + _Fd18OLattoSrf->matrix[r][c] + 
+	     SnowtoSrf*_d18Osnowmelt->matrix[r][c]) / FinSrf2 : -1000;
+	}
+
       }
       
       if(ctrl.sw_Age) {

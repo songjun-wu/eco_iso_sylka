@@ -53,3 +53,13 @@ void Budget::TotalPrecipitation_Age()
   precipitation_Age += precipitation * dt / 86400;
   //precipitation_Age = 0;
 }
+
+// For Basin*Summary.txt
+void Budget::InstPrecipitation_d2H(const grid* map1, const grid* map2, const Basin *b)
+{
+  d2Hprecip = AccountTrckFluxes2(map1, map2, b);
+}
+void Budget::InstPrecipitation_d18O(const grid* map1, const grid* map2, const Basin *b)
+{
+  d18Oprecip = AccountTrckFluxes2(map1, map2, b);
+}

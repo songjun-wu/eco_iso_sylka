@@ -36,7 +36,17 @@ void Budget::TotalSrftoChn(const grid *map, const Basin *b)
   // AccountStorages is used because FluxSrftoChn is already in m/tstep
   // (not needs to multiply by dt)
 }
-// Instantaneous age reporting
+// Instantaneous d2H reporting
+void Budget::InstSrftoChn_d2H(const grid *map1, const grid *map2, const Basin *b)
+{
+  d2Hsrftochn = AccountTrckFluxes2(map1, map2, b);
+}
+// Instantaneous d18O reporting
+void Budget::InstSrftoChn_d18O(const grid *map1, const grid *map2, const Basin *b)
+{
+  d18Osrftochn = AccountTrckFluxes2(map1, map2, b);
+}
+// Instantaneous Age reporting
 void Budget::InstSrftoChn_Age(const grid *map1, const grid *map2, const Basin *b)
 {
   Agesrftochn = AccountTrckFluxes2(map1, map2, b);

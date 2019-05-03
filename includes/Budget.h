@@ -130,6 +130,11 @@ struct Budget {
 			   const grid *mapL3, const grid *mapCL3, 
 			   const grid *mapGW, const grid *mapCGW, 
 			   const Basin *b); 
+  double AccountTrckRootZone(const grid *mapL1, const grid *mapCL1, const grid *mappL1, 
+			     const grid *mapL2, const grid *mapCL2, const grid *mappL2, 
+			     const grid *mapL3, const grid *mapCL3, const grid *mappL3, 
+			     const grid *mapGW, const grid *mapCGW, 
+			     const Basin *b); 
   double AccountTrckDomain(const grid *mapCanopy, const grid *mapCCanopy, 
 			   const grid *mapSnow, const grid *mapCSnow, 
 			   const grid *mapSurface, const grid *mapCSurface, 
@@ -161,10 +166,35 @@ struct Budget {
 			const grid *Snow, const grid *Snow_d2H,
 			const grid *Ponding, const grid *Ponding_d2H,
 			const grid *SoilL1_Water, const grid *SoilL1_d2H,
-			const grid *SoilL2_Water, const grid *SoilL2_d2H,
-			const grid *SoilL3_Water, const grid *SoilL3_d2H,
-			const grid *GWater, const grid *GWater_d2H,
+			 const grid *ProotzoneL1,
+			 const grid *SoilL2, const grid *SoilL2_d2H,
+			 const grid *ProotzoneL2,			       
+			 const grid *SoilL3, const grid *SoilL3_d2H,
+			 const grid *ProotzoneL3,
+			 const grid *GWater, const grid *GWater_d2H,
 			const Basin *b);//, const Control *ctrl);
+  void InstPrecipitation_d2H(const grid* precip, const grid* Cprecip, 
+			     const Basin *b);
+  void InstEvaporation_d2H(const grid* evapS, const grid* CevapS, 
+			    const grid* evapI, const grid* CevapI, 
+			    const grid* evapT, const grid* CevapT, 
+			    const Basin *b);
+  void InstEvaporationS_d2H(const grid* map1, const grid* map2, const Basin *b);
+  void InstEvaporationI_d2H(const grid* map1, const grid* map2, const Basin *b);
+  void InstTranspiration_d2H(const grid* map1, const grid* map2, const Basin *b);
+  void InstBedrockLeakage_d2H(const grid* map1, const grid* map2, const Basin*b);
+  void InstOvlndFlow_d2H(const vectCells *timeseries1, const vectCells *timeseries2);
+  void InstGrndFlow_d2H(const vectCells *timeseries1, const vectCells *timeseries2);
+  void InstOut_d2H(const grid* evapS, const grid* CevapS, 
+			   const grid* evapI, const grid* CevapI, 
+			   const grid* evapT, const grid* CevapT, 
+			   const grid* leakage, const grid* Cleakage,
+			   const vectCells *OvlndOut, const vectCells *COvlndOut,
+			   const vectCells *GWOut, const vectCells *CGWOut, 
+			   const Basin *b);
+  void InstSrftoChn_d2H(const grid* map1, const grid* map2, const Basin*b);
+  void InstGWtoChn_d2H(const grid* map1, const grid* map2, const Basin*b);
+  void InstRecharge_d2H(const grid* map1, const grid* map2, const Basin*b);
 
   void TotalPrecipitation_d18O(const grid* map1, const grid* map2, const Atmosphere *b);
   void TotalEvaporationS_d18O(const grid* map1, const grid* map2, const Basin *b);
@@ -177,10 +207,35 @@ struct Budget {
 			  const grid *Snow, const grid *Snow_d18O,
 			  const grid *Ponding, const grid *Ponding_d18O,
 			  const grid *SoilL1_Water, const grid *SoilL1_d18O,
-			  const grid *SoilL2_Water, const grid *SoilL2_d18O,
-			  const grid *SoilL3_Water, const grid *SoilL3_d18O,
-			  const grid *GWater, const grid *GWater_d18O,
+			  const grid *ProotzoneL1,
+			  const grid *SoilL2, const grid *SoilL2_d18O,
+			  const grid *ProotzoneL2,			       
+			  const grid *SoilL3, const grid *SoilL3_d18O,
+			  const grid *ProotzoneL3,
+ 			  const grid *GWater, const grid *GWater_d18O,
 			  const Basin *b);//, const Control *ctrl);
+  void InstPrecipitation_d18O(const grid* precip, const grid* Cprecip, 
+			      const Basin *b);
+  void InstEvaporation_d18O(const grid* evapS, const grid* CevapS, 
+			    const grid* evapI, const grid* CevapI, 
+			    const grid* evapT, const grid* CevapT, 
+			    const Basin *b);
+  void InstEvaporationS_d18O(const grid* map1, const grid* map2, const Basin *b);
+  void InstEvaporationI_d18O(const grid* map1, const grid* map2, const Basin *b);
+  void InstTranspiration_d18O(const grid* map1, const grid* map2, const Basin *b);
+  void InstBedrockLeakage_d18O(const grid* map1, const grid* map2, const Basin*b);
+  void InstOvlndFlow_d18O(const vectCells *timeseries1, const vectCells *timeseries2);
+  void InstGrndFlow_d18O(const vectCells *timeseries1, const vectCells *timeseries2);
+  void InstOut_d18O(const grid* evapS, const grid* CevapS, 
+			   const grid* evapI, const grid* CevapI, 
+			   const grid* evapT, const grid* CevapT, 
+			   const grid* leakage, const grid* Cleakage,
+			   const vectCells *OvlndOut, const vectCells *COvlndOut,
+			   const vectCells *GWOut, const vectCells *CGWOut, 
+			   const Basin *b);
+  void InstSrftoChn_d18O(const grid* map1, const grid* map2, const Basin*b);
+  void InstGWtoChn_d18O(const grid* map1, const grid* map2, const Basin*b);
+  void InstRecharge_d18O(const grid* map1, const grid* map2, const Basin*b);
 
   void TotalPrecipitation_Age();//const grid* map, const Atmosphere *b);//, const Control *ctrl);
   void TotalEvaporationS_Age(const grid* map1, const grid* map2, const Basin *b);
@@ -193,8 +248,11 @@ struct Budget {
 			 const grid *Snow, const grid *Snow_Age,
 			 const grid *Ponding, const grid *Ponding_Age,
 			 const grid *SoilL1_Water, const grid *SoilL1_Age,
-			 const grid *SoilL2_Water, const grid *SoilL2_Age,
-			 const grid *SoilL3_Water, const grid *SoilL3_Age,
+			 const grid *ProotzoneL1,
+			 const grid *SoilL2, const grid *SoilL2_Age,
+			 const grid *ProotzoneL2,			       
+			 const grid *SoilL3, const grid *SoilL3_Age,
+			 const grid *ProotzoneL3,
 			 const grid *GWater, const grid *GWater_Age,
 			 const Basin *b);//, const Control *ctrl);
   void InstEvaporation_Age(const grid* evapS, const grid* CevapS, 
@@ -244,8 +302,26 @@ struct Budget {
   double ovlndflow_d2H, ovlndflow_d18O, ovlndflow_Age; //m3
   double gwtrflow_d2H, gwtrflow_d18O, gwtrflow_Age; //m3
   
+  // Values specificially for Basind2HSummary.txt
+  double d2Hprecip, d2HTot, d2Hvadose, d2Hrootzone;
+  double d2Hcanopy, d2Hsnowpack, d2Hponding;
+  double d2HsoilL1, d2HsoilL2, d2HsoilL3, d2Hgrndwater;
+  // "instantaneous" output ages
+  double d2HET, d2HevapS, d2HevapI, d2HevapT;
+  double d2Hgwtochn, d2Hsrftochn, d2Hrecharge;
+  double d2Hleakage, d2HOvlndOut, d2HGWOut, d2HOut;
+
+  // Values specificially for Basind18OSummary.txt
+  double d18Oprecip, d18OTot, d18Ovadose, d18Orootzone;
+  double d18Ocanopy, d18Osnowpack, d18Oponding;
+  double d18OsoilL1, d18OsoilL2, d18OsoilL3, d18Ogrndwater;
+  // "instantaneous" output ages
+  double d18OET, d18OevapS, d18OevapI, d18OevapT;
+  double d18Ogwtochn, d18Osrftochn, d18Orecharge;
+  double d18Oleakage, d18OOvlndOut, d18OGWOut, d18OOut;
+
   // Values specificially for BasinAgeSummary.txt
-  double AgeTot, Agevadose;
+  double AgeTot, Agevadose, Agerootzone;
   double Agecanopy, Agesnowpack, Ageponding;
   double AgesoilL1, AgesoilL2, AgesoilL3, Agegrndwater;
   // "instantaneous" output ages
@@ -314,7 +390,30 @@ struct Budget {
       transpiration_d2H = 0;
       leakage_d2H = 0;
       ovlndflow_d2H = 0;
-      gwtrflow_d2H = 0;      
+      gwtrflow_d2H = 0; 
+      // Values for Basind2HSummary.txt
+      d2Hprecip = 0;
+      d2Hcanopy = 0 ;
+      d2Hsnowpack = 0;
+      d2Hponding = 0;
+      d2HsoilL1 = 0;
+      d2HsoilL2 = 0;
+      d2HsoilL3 = 0;
+      d2Hgrndwater = 0;
+      d2HTot = 0;
+      d2Hvadose = 0;
+      d2Hrootzone = 0;
+      d2HET = 0;
+      d2HevapS = 0;
+      d2HevapI = 0;
+      d2HevapT = 0;
+      d2Hleakage = 0;
+      d2HOvlndOut = 0;
+      d2HGWOut = 0;
+      d2Hgwtochn = 0;
+      d2Hsrftochn = 0;
+      d2Hrecharge = 0;
+      d2HOut = 0;     
       //calculate initial storages
       initcanopy_d2H = 0;
       initsnowpack_d2H = AccountTrckStorages(b->getSnowWaterEquiv(), trck->getd2Hsnowpack(), b);
@@ -339,7 +438,30 @@ struct Budget {
       transpiration_d18O = 0;
       leakage_d18O = 0;
       ovlndflow_d18O = 0;
-      gwtrflow_d18O = 0;      
+      gwtrflow_d18O = 0;
+      // Values for Basind18OSummary.txt
+      d18Oprecip = 0;
+      d18Ocanopy = 0 ;
+      d18Osnowpack = 0;
+      d18Oponding = 0;
+      d18OsoilL1 = 0;
+      d18OsoilL2 = 0;
+      d18OsoilL3 = 0;
+      d18Ogrndwater = 0;
+      d18OTot = 0;
+      d18Ovadose = 0;
+      d18Orootzone = 0;
+      d18OET = 0;
+      d18OevapS = 0;
+      d18OevapI = 0;
+      d18OevapT = 0;
+      d18Oleakage = 0;
+      d18OOvlndOut = 0;
+      d18OGWOut = 0;
+      d18Ogwtochn = 0;
+      d18Osrftochn = 0;
+      d18Orecharge = 0;
+      d18OOut = 0;      
       //calculate initial storages
       initcanopy_d18O = 0;
       initsnowpack_d18O = AccountTrckStorages(b->getSnowWaterEquiv(), trck->getd18Osnowpack(), b);
@@ -375,6 +497,7 @@ struct Budget {
       Agegrndwater = 0;
       AgeTot = 0;
       Agevadose = 0;
+      Agerootzone = 0;
       AgeET = 0;
       AgeevapS = 0;
       AgeevapI = 0;
@@ -396,7 +519,7 @@ struct Budget {
       initGW_Age = AccountTrckStorages(b->getInitGroundwater(), trck->getAgegroundwater(), b);
     }
     // ---------------------------------------------------------------------------------------
-
+      
   }
   
 };

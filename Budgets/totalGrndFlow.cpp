@@ -54,7 +54,17 @@ void Budget::TotalGrndFlow_Age(const vectCells* timeseries1, const vectCells* ti
   //gwtrflow_Age = AccountTrckFluxes(timeseries1, timeseries2);
 }
 
-// Instantaneous age reporting
+// Instantaneous d2H reporting
+void Budget::InstGrndFlow_d2H(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  d2HGWOut = AccountTrckFluxes2(timeseries1, timeseries2);
+}
+// Instantaneous d18O reporting
+void Budget::InstGrndFlow_d18O(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  d18OGWOut = AccountTrckFluxes2(timeseries1, timeseries2);
+}
+// Instantaneous Age reporting
 void Budget::InstGrndFlow_Age(const vectCells* timeseries1, const vectCells* timeseries2)
 {
   AgeGWOut = AccountTrckFluxes2(timeseries1, timeseries2);

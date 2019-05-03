@@ -62,9 +62,10 @@ int CalculateBudgets(){
   
   // ---------------------------------------------------------------------------------------------
 
-  // Tracking -------------------------------------------------------------------------------------
+  // ################################################################################################
+  // Tracking ---------------------------------------------------------------------------------------
   if(oControl->sw_trck){
-    // Deuterium
+    // === Deuterium ================================================================================
     if (oControl->sw_2H){
       oBudget->TotalPrecipitation_d2H(oAtmosphere->getPrecipitation(), oAtmosphere->getd2Hprecip(), 
 				     oAtmosphere);
@@ -81,13 +82,47 @@ int CalculateBudgets(){
 			       oBasin->getSnowWaterEquiv(),  oTracking->getd2Hsnowpack(),
 			       oBasin->getPondingWater(), oTracking->getd2Hsurface(),
 			       oBasin->getSoilWaterDepthL1(), oTracking->getd2Hsoil1(),
-			       oBasin->getSoilWaterDepthL2(), oTracking->getd2Hsoil2(),
-			       oBasin->getSoilWaterDepthL3(), oTracking->getd2Hsoil3(),
-			       oBasin->getGrndWater(), oTracking->getd2Hgroundwater(),
+				oBasin->getProotzoneL1(),
+				oBasin->getSoilWaterDepthL2(), oTracking->getd2Hsoil2(),
+				oBasin->getProotzoneL2(),
+				oBasin->getSoilWaterDepthL3(), oTracking->getd2Hsoil3(),
+				oBasin->getProotzoneL3(),
+				oBasin->getGrndWater(), oTracking->getd2Hgroundwater(),
 			       oBasin);//, oControl);
+
+
+      // d2H for Basind2HSummary.txt
+      oBudget->InstEvaporation_d2H(oBasin->getEvaporationS_all(), oTracking->getd2HevapS_sum(), 
+				   oBasin->getEvaporationI_all(), oTracking->getd2HevapI_sum(), 
+				   oBasin->getTranspiration_all(), oTracking->getd2HevapT_sum(), 
+				   oBasin);
+      oBudget->InstEvaporationS_d2H(oBasin->getEvaporationS_all(), oTracking->getd2HevapS_sum(), 
+				     oBasin);
+      oBudget->InstEvaporationI_d2H(oBasin->getEvaporationI_all(), oTracking->getd2HevapI_sum(), 
+				     oBasin);
+      oBudget->InstTranspiration_d2H(oBasin->getTranspiration_all(), oTracking->getd2HevapT_sum(), 
+				      oBasin);
+      oBudget->InstBedrockLeakage_d2H(oBasin->getBedrockLeakage(), oTracking->getd2Hleakage(), 
+				       oBasin);
+
+      oBudget->InstOvlndFlow_d2H(oBasin->getDailyOvlndOutput(), oTracking->getd2HOvlndOutput());
+      oBudget->InstGrndFlow_d2H(oBasin->getDailyGwtrOutput(), oTracking->getd2HGwtrOutput());
+
+      oBudget->InstOut_d2H(oBasin->getEvaporationS_all(), oTracking->getd2HevapS_sum(), 
+			   oBasin->getEvaporationI_all(), oTracking->getd2HevapI_sum(), 
+			   oBasin->getTranspiration_all(), oTracking->getd2HevapT_sum(), 
+			   oBasin->getBedrockLeakage(), oTracking->getd2Hleakage(), 
+			   oBasin->getDailyOvlndOutput(), oTracking->getd2HOvlndOutput(),
+			   oBasin->getDailyGwtrOutput(), oTracking->getd2HGwtrOutput(),
+			   oBasin);
+
+      oBudget->InstSrftoChn_d2H(oBasin->getFluxSrftoChn(), oTracking->getd2HSrftoChn(), oBasin);
+      oBudget->InstGWtoChn_d2H(oBasin->getFluxGWtoChn(), oTracking->getd2HGWtoChn(), oBasin);
+      oBudget->InstRecharge_d2H(oBasin->getFluxRecharge(), oTracking->getd2HRecharge(), oBasin);     
+
     }
 
-    // Oxygen 18
+    // === Oxygen 18 ====================================================================================
     if (oControl->sw_18O){
       oBudget->TotalPrecipitation_d18O(oAtmosphere->getPrecipitation(), oAtmosphere->getd18Oprecip(), 
 				       oAtmosphere);
@@ -105,12 +140,46 @@ int CalculateBudgets(){
 				 oBasin->getSnowWaterEquiv(),  oTracking->getd18Osnowpack(),
 				 oBasin->getPondingWater(), oTracking->getd18Osurface(),
 				 oBasin->getSoilWaterDepthL1(), oTracking->getd18Osoil1(),
+				 oBasin->getProotzoneL1(),
 				 oBasin->getSoilWaterDepthL2(), oTracking->getd18Osoil2(),
+				 oBasin->getProotzoneL2(),
 				 oBasin->getSoilWaterDepthL3(), oTracking->getd18Osoil3(),
+				 oBasin->getProotzoneL3(),
 				 oBasin->getGrndWater(), oTracking->getd18Ogroundwater(),
 				 oBasin);//, oControl);
+
+      // d18O for Basind18OSummary.txt
+      oBudget->InstEvaporation_d18O(oBasin->getEvaporationS_all(), oTracking->getd18OevapS_sum(), 
+				   oBasin->getEvaporationI_all(), oTracking->getd18OevapI_sum(), 
+				   oBasin->getTranspiration_all(), oTracking->getd18OevapT_sum(), 
+				   oBasin);
+      oBudget->InstEvaporationS_d18O(oBasin->getEvaporationS_all(), oTracking->getd18OevapS_sum(), 
+				     oBasin);
+      oBudget->InstEvaporationI_d18O(oBasin->getEvaporationI_all(), oTracking->getd18OevapI_sum(), 
+				     oBasin);
+      oBudget->InstTranspiration_d18O(oBasin->getTranspiration_all(), oTracking->getd18OevapT_sum(), 
+				      oBasin);
+      oBudget->InstBedrockLeakage_d18O(oBasin->getBedrockLeakage(), oTracking->getd18Oleakage(), 
+				       oBasin);
+
+      oBudget->InstOvlndFlow_d18O(oBasin->getDailyOvlndOutput(), oTracking->getd18OOvlndOutput());
+      oBudget->InstGrndFlow_d18O(oBasin->getDailyGwtrOutput(), oTracking->getd18OGwtrOutput());
+
+      oBudget->InstOut_d18O(oBasin->getEvaporationS_all(), oTracking->getd18OevapS_sum(), 
+			   oBasin->getEvaporationI_all(), oTracking->getd18OevapI_sum(), 
+			   oBasin->getTranspiration_all(), oTracking->getd18OevapT_sum(), 
+			   oBasin->getBedrockLeakage(), oTracking->getd18Oleakage(), 
+			   oBasin->getDailyOvlndOutput(), oTracking->getd18OOvlndOutput(),
+			   oBasin->getDailyGwtrOutput(), oTracking->getd18OGwtrOutput(),
+			   oBasin);
+
+      oBudget->InstSrftoChn_d18O(oBasin->getFluxSrftoChn(), oTracking->getd18OSrftoChn(), oBasin);
+      oBudget->InstGWtoChn_d18O(oBasin->getFluxGWtoChn(), oTracking->getd18OGWtoChn(), oBasin);
+      oBudget->InstRecharge_d18O(oBasin->getFluxRecharge(), oTracking->getd18ORecharge(), oBasin);     
+
     }
-    // Age
+
+    // === Age =====================================================================================
     if (oControl->sw_Age){
      // Age for mass balance calculation
       oBudget->TotalPrecipitation_Age();
@@ -135,8 +204,11 @@ int CalculateBudgets(){
 				oBasin->getSnowWaterEquiv(),  oTracking->getAgesnowpack(),
 				oBasin->getPondingWater(), oTracking->getAgesurface(),
 				oBasin->getSoilWaterDepthL1(), oTracking->getAgesoil1(),
+				oBasin->getProotzoneL1(),
 				oBasin->getSoilWaterDepthL2(), oTracking->getAgesoil2(),
+				oBasin->getProotzoneL2(),
 				oBasin->getSoilWaterDepthL3(), oTracking->getAgesoil3(),
+				oBasin->getProotzoneL3(),
 				oBasin->getGrndWater(), oTracking->getAgegroundwater(),
 				oBasin);//, oControl);
       // Age for BasinAgeSummary.txt

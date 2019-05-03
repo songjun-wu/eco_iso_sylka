@@ -54,7 +54,15 @@ void Budget::TotalBedrockLeakage_Age(const grid* map1, const grid* map2, const B
   //leakage_Age = AccountTrckFluxes(map1, map2, b);
 }
 
-// For BasinAgeSummary.txt
+// For Basin*Summary.txt
+void Budget::InstBedrockLeakage_d2H(const grid* map1, const grid* map2, const Basin *b)
+{
+  d2Hleakage = AccountTrckFluxes2(map1, map2, b);
+}
+void Budget::InstBedrockLeakage_d18O(const grid* map1, const grid* map2, const Basin *b)
+{
+  d18Oleakage = AccountTrckFluxes2(map1, map2, b);
+}
 void Budget::InstBedrockLeakage_Age(const grid* map1, const grid* map2, const Basin *b)
 {
   Ageleakage = AccountTrckFluxes2(map1, map2, b);

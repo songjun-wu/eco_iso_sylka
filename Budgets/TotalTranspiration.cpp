@@ -54,8 +54,17 @@ void Budget::TotalTranspiration_Age(const grid* map1, const grid* map2, const Ba
   //transpiration_Age = AccountTrckFluxes(map1, map2, b);
 }
 
-// For BasinAgeSummary.txt
+// For Basin*Summary.txt
+void Budget::InstTranspiration_d2H(const grid* map1, const grid* map2, const Basin *b)
+{
+  d2HevapT = AccountTrckFluxes2(map1, map2, b);
+}
+void Budget::InstTranspiration_d18O(const grid* map1, const grid* map2, const Basin *b)
+{
+  d18OevapT = AccountTrckFluxes2(map1, map2, b);
+}
 void Budget::InstTranspiration_Age(const grid* map1, const grid* map2, const Basin *b)
 {
   AgeevapT = AccountTrckFluxes2(map1, map2, b);
 }
+

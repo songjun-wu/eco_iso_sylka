@@ -64,13 +64,22 @@ void Tracking::MixingV_down(Basin &bsn, Control &ctrl,
   double MW1toMW2 = 0;
 
   double d_old = 0;
-
+ 
+  if(ctrl.sw_2H and step==0){
+    _d2HGWtoChn->reset();
+    _d2HSrftoChn->reset();
+    _d2HRecharge->reset();
+  }
+  if(ctrl.sw_18O and step==0){
+    _d18OGWtoChn->reset();
+    _d18OSrftoChn->reset();
+    _d18ORecharge->reset();
+  }
   if(ctrl.sw_Age and step==0){
     _AgeGWtoChn->reset();
     _AgeSrftoChn->reset();
     _AgeRecharge->reset();
   }
-
     
   if(ctrl.sw_TPD){
     //theta_r = bsn.getSoilMoistR()->matrix[r][c];
@@ -263,16 +272,24 @@ void Tracking::MixingV_down(Basin &bsn, Control &ctrl,
     }
   
     // Layer 3 ------------------------------------------------------------------------
-
+    
     // If two-pore domain activated: only MW2 percolates
     if(ctrl.sw_TPD and L2toL3>RNDOFFERR){
-      if(ctrl.sw_2H)
+      if(ctrl.sw_2H){
 	_d2Hsoil3->matrix[r][c] = InOutMix(theta3_old*d3, _d2Hsoil3->matrix[r][c],
 					   L2toL3, _d2H_MW2->matrix[r][c], leak, mixmod);
-      
-      if(ctrl.sw_18O)
+	_d2HRecharge->matrix[r][c] = step == 0 ? _d2H_MW2->matrix[r][c] :
+	  InputMix(std::max<double>(0.0,bsn.getFluxRecharge()->matrix[r][c] - L2toL3), 
+		   _d2HRecharge->matrix[r][c], L2toL3, _d2H_MW2->matrix[r][c]);
+      }
+
+      if(ctrl.sw_18O){
 	_d18Osoil3->matrix[r][c] = InOutMix(theta3_old*d3, _d18Osoil3->matrix[r][c],
 					    L2toL3, _d18O_MW2->matrix[r][c], leak, mixmod);
+	_d18ORecharge->matrix[r][c] = step == 0 ? _d18O_MW2->matrix[r][c] :
+	  InputMix(std::max<double>(0.0,bsn.getFluxRecharge()->matrix[r][c] - L2toL3), 
+		   _d18ORecharge->matrix[r][c], L2toL3, _d18O_MW2->matrix[r][c]);
+      }
 
       if(ctrl.sw_Age){
 	_Agesoil3->matrix[r][c] = InOutMix(theta3_old*d3, _Agesoil3->matrix[r][c], 
@@ -283,14 +300,22 @@ void Tracking::MixingV_down(Basin &bsn, Control &ctrl,
       }
       
     } else if (L2toL3>RNDOFFERR){
-      if(ctrl.sw_2H)
+      
+      if(ctrl.sw_2H){
 	_d2Hsoil3->matrix[r][c] = InOutMix(theta3_old*d3, _d2Hsoil3->matrix[r][c],
 					   L2toL3, _d2Hsoil2->matrix[r][c], leak, mixmod);
       
-      if(ctrl.sw_18O)
+	_d2HRecharge->matrix[r][c] = step == 0 ? _d2Hsoil2->matrix[r][c] :
+	  InputMix(std::max<double>(0.0,bsn.getFluxRecharge()->matrix[r][c] - L2toL3), 
+		   _d2HRecharge->matrix[r][c], L2toL3, _d2Hsoil2->matrix[r][c]);
+      }
+      if(ctrl.sw_18O){
 	_d18Osoil3->matrix[r][c] = InOutMix(theta3_old*d3, _d18Osoil3->matrix[r][c],
 					    L2toL3, _d18Osoil2->matrix[r][c], leak, mixmod);
-      
+	_d18ORecharge->matrix[r][c] = step == 0 ? _d18Osoil2->matrix[r][c] :
+	  InputMix(std::max<double>(0.0,bsn.getFluxRecharge()->matrix[r][c] - L2toL3), 
+		   _d18ORecharge->matrix[r][c], L2toL3, _d18Osoil2->matrix[r][c]);
+      }
       if(ctrl.sw_Age){
 	_Agesoil3->matrix[r][c] = InOutMix(theta3_old*d3, _Agesoil3->matrix[r][c],
 					   L2toL3, _Agesoil2->matrix[r][c], leak, mixmod);
@@ -299,7 +324,7 @@ void Tracking::MixingV_down(Basin &bsn, Control &ctrl,
 		   _AgeRecharge->matrix[r][c], L2toL3, _Agesoil2->matrix[r][c]);
       }
     }
- 
+
   // Groundwater ------------------------------------------------------------------------
   
     if(ctrl.sw_2H){

@@ -54,6 +54,9 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
   _d2HevapS_sum = NULL;
   _d2HevapI_sum = NULL;
   _d2HevapT_sum = NULL;
+  _d2HGWtoChn = NULL;
+  _d2HSrftoChn = NULL;
+  _d2HRecharge = NULL;
   _d2Hleakage = NULL;
   _Fd2HLattoSrf = NULL;
   _Fd2HLattoChn = NULL;
@@ -76,6 +79,9 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
   _d18OevapS_sum = NULL;
   _d18OevapI_sum = NULL;
   _d18OevapT_sum = NULL;
+  _d18OGWtoChn = NULL;
+  _d18OSrftoChn = NULL;
+  _d18ORecharge = NULL;
   _d18Oleakage = NULL;
   _Fd18OLattoSrf = NULL;
   _Fd18OLattoChn = NULL;
@@ -134,6 +140,9 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
       _d2HevapS_sum = new grid(*bsn.getDEM());
       _d2HevapI_sum = new grid(*bsn.getDEM());
       _d2HevapT_sum = new grid(*bsn.getDEM());
+      _d2HGWtoChn = new grid(*bsn.getDEM());
+      _d2HSrftoChn = new grid(*bsn.getDEM());
+      _d2HRecharge = new grid(*bsn.getDEM());
       _d2Hleakage = new grid(*bsn.getDEM());
       _Fd2HLattoSrf = new grid(*bsn.getDEM());
       _Fd2HLattoChn = new grid(*bsn.getDEM());
@@ -156,13 +165,15 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
       _d18Osoil1 = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Osoil1, ctrl.MapType);
       _d18Osoil2 = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Osoil2, ctrl.MapType);
       _d18Osoil_12 = new grid(*bsn.getDEM());
-
       _d18Osoil3 = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Osoil3, ctrl.MapType);
       _d18OsoilAv = new grid(*bsn.getDEM());
       _d18Ogroundwater = new grid(ctrl.path_BasinFolder + ctrl.fn_d18Ogroundwater, ctrl.MapType);
       _d18OevapS_sum = new grid(*bsn.getDEM());
       _d18OevapI_sum = new grid(*bsn.getDEM());
       _d18OevapT_sum = new grid(*bsn.getDEM());
+      _d18OGWtoChn = new grid(*bsn.getDEM());
+      _d18OSrftoChn = new grid(*bsn.getDEM());
+      _d18ORecharge = new grid(*bsn.getDEM());
       _d18Oleakage = new grid(*bsn.getDEM());	    
       _Fd18OLattoSrf = new grid(*bsn.getDEM());
       _Fd18OLattoChn = new grid(*bsn.getDEM());
@@ -263,6 +274,12 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	delete _d2HevapI_sum;
       if(_d2HevapT_sum)
 	delete _d2HevapT_sum;
+      if(_d2HGWtoChn)
+	delete _d2HGWtoChn;
+      if(_d2HSrftoChn)
+	delete _d2HSrftoChn;
+      if(_d2HRecharge)
+	delete _d2HRecharge;
       if(_d2Hleakage)
 	delete _d2Hleakage;
       if(_Fd2HLattoGW)
@@ -307,6 +324,12 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	delete _d18OevapI_sum;
       if(_d18OevapT_sum)
 	delete _d18OevapT_sum;
+      if(_d18OGWtoChn)
+	delete _d18OGWtoChn;
+      if(_d18OSrftoChn)
+	delete _d18OSrftoChn;
+      if(_d18ORecharge)
+	delete _d18ORecharge;
       if(_d18Oleakage)
 	delete _d18Oleakage;
       if(_Fd18OLattoGW)

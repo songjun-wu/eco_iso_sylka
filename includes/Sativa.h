@@ -47,6 +47,8 @@ extern Report *oReport;
 extern Tracking *oTracking;
 
 extern ofstream ofSummary;
+extern ofstream ofd2HSummary;
+extern ofstream ofd18OSummary;
 extern ofstream ofAgeSummary;
 
 void Splash(int argc, char* argv[]);

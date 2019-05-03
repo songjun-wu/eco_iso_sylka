@@ -55,7 +55,15 @@ void Budget::TotalEvaporationS_Age(const grid* map1, const grid* map2, const Bas
   //evaporationS_Age = AccountTrckFluxes(map1, map2, b);
 }
 
-// Instantaneous age reporting
+// Instantaneous reporting
+void Budget::InstEvaporationS_d2H(const grid* map1, const grid* map2, const Basin *b)
+{
+  d2HevapS = AccountTrckFluxes2(map1, map2, b);
+}
+void Budget::InstEvaporationS_d18O(const grid* map1, const grid* map2, const Basin *b)
+{
+  d18OevapS = AccountTrckFluxes2(map1, map2, b);
+}
 void Budget::InstEvaporationS_Age(const grid* map1, const grid* map2, const Basin *b)
 {
   AgeevapS = AccountTrckFluxes2(map1, map2, b);

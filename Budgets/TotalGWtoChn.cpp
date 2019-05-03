@@ -37,7 +37,15 @@ void Budget::TotalGWtoChn(const grid *map, const Basin *b)
   // (no need to multiply by dt)
 }
 
-// Instantaneous age reporting
+// Instantaneous tracking reporting
+void Budget::InstGWtoChn_d2H(const grid *map1, const grid *map2, const Basin *b)
+{
+  d2Hgwtochn = AccountTrckFluxes2(map1, map2, b);
+}
+void Budget::InstGWtoChn_d18O(const grid *map1, const grid *map2, const Basin *b)
+{
+  d18Ogwtochn = AccountTrckFluxes2(map1, map2, b);
+}
 void Budget::InstGWtoChn_Age(const grid *map1, const grid *map2, const Basin *b)
 {
   Agegwtochn = AccountTrckFluxes2(map1, map2, b);

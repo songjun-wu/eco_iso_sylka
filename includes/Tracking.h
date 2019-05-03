@@ -73,6 +73,8 @@ class Tracking {
   grid *_Fd2HLattoChn, *_Fd18OLattoChn, *_FAgeLattoChn;
   grid *_Fd2HLattoGW, *_Fd18OLattoGW, *_FAgeLattoGW;
   // Internal age contributions
+  grid *_d2HGWtoChn, *_d2HSrftoChn, *_d2HRecharge;
+  grid *_d18OGWtoChn, *_d18OSrftoChn, *_d18ORecharge;
   grid *_AgeGWtoChn, *_AgeSrftoChn, *_AgeRecharge;
 
   //vectors containing signature of water output for each cell with no drainage (ldd value of 5). 
@@ -195,6 +197,15 @@ class Tracking {
   grid *getd2Hleakage() const {
     return _d2Hleakage;
   }
+  grid *getd2HGWtoChn() const {
+    return _d2HGWtoChn;
+  }
+  grid *getd2HSrftoChn() const {
+    return _d2HSrftoChn;
+  }
+  grid *getd2HRecharge() const {
+    return _d2HRecharge;
+  }
   const vectCells *getd2HOvlndOutput() const {
     return &_d2HOvlndOutput;
   }  
@@ -258,6 +269,15 @@ class Tracking {
   }
   grid *getd18Oleakage() const {
     return _d18Oleakage;
+  }
+  grid *getd18OGWtoChn() const {
+    return _d18OGWtoChn;
+  }
+  grid *getd18OSrftoChn() const {
+    return _d18OSrftoChn;
+  }
+  grid *getd18ORecharge() const {
+    return _d18ORecharge;
   }
   const vectCells *getd18OOvlndOutput() const {
     return &_d18OOvlndOutput;

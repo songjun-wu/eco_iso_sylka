@@ -95,9 +95,83 @@ int CreateWorld(char* argv[]){
     ofSummary << "\tAge_MBE";
   ofSummary << "\n";
 
+  // == d2H Summary ==========================================================
+  // ---  
+  if(oControl->sw_trck and oControl->sw_2H){
+    try{
+      ofd2HSummary.open((oControl->path_ResultsFolder + "Basind2HSummary.txt").c_str());
+      if(!ofd2HSummary)
+	throw std::ios::failure("Error opening Basind2HSummary.txt buffer\n");
+      
+    }catch(const std::exception &e){
+      cout << e.what() << endl;
+      throw;
+    }
+    // Headers for BasinSummary
+    ofd2HSummary << "StorAll\t";
+    ofd2HSummary << "Snow\t";
+    ofd2HSummary << "Intercp\t";
+    ofd2HSummary << "Surface\t";
+    ofd2HSummary << "Soil\t";
+    ofd2HSummary << "SoilL1\t";
+    ofd2HSummary << "SoilL2\t";
+    ofd2HSummary << "SoilL3\t";
+    ofd2HSummary << "RZW\t";
+    ofd2HSummary << "GW\t";
+    ofd2HSummary << "ET\t";
+    ofd2HSummary << "EvapS\t";
+    ofd2HSummary << "EvapI\t";
+    ofd2HSummary << "EvapT\t";
+    ofd2HSummary << "Leakage\t";
+    ofd2HSummary << "SrfOut\t";
+    ofd2HSummary << "GWOut\t";
+    ofd2HSummary << "AllOut\t";
+    ofd2HSummary << "SrftoCh\t";
+    ofd2HSummary << "GWtoCh\t";
+    ofd2HSummary << "Rchrge\t";
+    ofd2HSummary << "Precip\n";
+  }
+
+  // == d18O Summary ==========================================================
+  // ---  
+  if(oControl->sw_trck and oControl->sw_18O){
+    try{
+      ofd18OSummary.open((oControl->path_ResultsFolder + "Basind18OSummary.txt").c_str());
+      if(!ofd18OSummary)
+	throw std::ios::failure("Error opening Basind18OSummary.txt buffer\n");
+      
+    }catch(const std::exception &e){
+      cout << e.what() << endl;
+      throw;
+    }
+    // Headers for BasinSummary
+    ofd18OSummary << "StorAll\t";
+    ofd18OSummary << "Snow\t";
+    ofd18OSummary << "Intercp\t";
+    ofd18OSummary << "Surface\t";
+    ofd18OSummary << "Soil\t";
+    ofd18OSummary << "SoilL1\t";
+    ofd18OSummary << "SoilL2\t";
+    ofd18OSummary << "SoilL3\t";
+    ofd18OSummary << "RZW\t";
+    ofd18OSummary << "GW\t";
+    ofd18OSummary << "ET\t";
+    ofd18OSummary << "EvapS\t";
+    ofd18OSummary << "EvapI\t";
+    ofd18OSummary << "EvapT\t";
+    ofd18OSummary << "Leakage\t";
+    ofd18OSummary << "SrfOut\t";
+    ofd18OSummary << "GWOut\t";
+    ofd18OSummary << "AllOut\t";
+    ofd18OSummary << "SrftoCh\t";
+    ofd18OSummary << "GWtoCh\t";
+    ofd18OSummary << "Rchrge\t";
+    ofd18OSummary << "Precip\n";
+  }
+
   // == Age Summary ==========================================================
   // ---  
-  if(oControl->sw_trck and oControl->sw_Age){
+  if(oControl->sw_trck and oControl->sw_2H){
     try{
       ofAgeSummary.open((oControl->path_ResultsFolder + "BasinAgeSummary.txt").c_str());
       if(!ofAgeSummary)
@@ -116,6 +190,7 @@ int CreateWorld(char* argv[]){
     ofAgeSummary << "SoilL1\t";
     ofAgeSummary << "SoilL2\t";
     ofAgeSummary << "SoilL3\t";
+    ofAgeSummary << "RZW\t";
     ofAgeSummary << "GW\t";
     ofAgeSummary << "ET\t";
     ofAgeSummary << "EvapS\t";
@@ -130,7 +205,6 @@ int CreateWorld(char* argv[]){
     ofAgeSummary << "Rchrge\n";
 
   }
-
   
   return EXIT_SUCCESS;
 }

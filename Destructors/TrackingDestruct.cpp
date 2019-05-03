@@ -58,6 +58,12 @@ Tracking::~Tracking(){
 	      delete _d2HevapI_sum;
 	    if(_d2HevapT_sum)
 	      delete _d2HevapT_sum;
+	    if(_d2HGWtoChn)
+	      delete _d2HGWtoChn;
+	    if(_d2HSrftoChn)
+	      delete _d2HSrftoChn;
+	    if(_d2HRecharge)
+	      delete _d2HRecharge;
 	    if(_d2Hleakage)
 	      delete _d2Hleakage;
 	    if(_Fd2HLattoGW)
@@ -101,6 +107,12 @@ Tracking::~Tracking(){
 	      delete _d18OevapI_sum;
 	    if(_d18OevapT_sum)
 	      delete _d18OevapT_sum;
+	    if(_d18OGWtoChn)
+	      delete _d18OGWtoChn;
+	    if(_d18OSrftoChn)
+	      delete _d18OSrftoChn;
+	    if(_d18ORecharge)
+	      delete _d18ORecharge;
 	    if(_d18Oleakage)
 	      delete _d18Oleakage;
 	    if(_Fd18OLattoGW)

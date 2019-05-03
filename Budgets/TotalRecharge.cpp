@@ -37,7 +37,17 @@ void Budget::TotalRecharge(const grid *map, const Basin *b)
   // (no need to multiply by dt)
 }
 
-// Instantaneous age reporting
+// Instantaneous d2H reporting
+void Budget::InstRecharge_d2H(const grid *map1, const grid *map2, const Basin *b)
+{
+  d2Hrecharge = AccountTrckFluxes2(map1, map2, b);
+}
+// Instantaneous d18O reporting
+void Budget::InstRecharge_d18O(const grid *map1, const grid *map2, const Basin *b)
+{
+  d18Orecharge = AccountTrckFluxes2(map1, map2, b);
+}
+// Instantaneous Age reporting
 void Budget::InstRecharge_Age(const grid *map1, const grid *map2, const Basin *b)
 {
   Agerecharge = AccountTrckFluxes2(map1, map2, b);
