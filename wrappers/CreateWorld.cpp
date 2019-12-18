@@ -171,7 +171,7 @@ int CreateWorld(char* argv[]){
 
   // == Age Summary ==========================================================
   // ---  
-  if(oControl->sw_trck and oControl->sw_2H){
+  if(oControl->sw_trck and oControl->sw_Age){
     try{
       ofAgeSummary.open((oControl->path_ResultsFolder + "BasinAgeSummary.txt").c_str());
       if(!ofAgeSummary)
