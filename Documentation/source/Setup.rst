@@ -1,4 +1,4 @@
-A.. |ech2o| replace:: EcH\ :sub:`2`\ O
+.. |ech2o| replace:: EcH\ :sub:`2`\ O
 
 Model set-up
 ============
@@ -452,7 +452,7 @@ lwp_min
 
 lwp_max
     Leaf water potential threshold beyond which stomatal efficiency is maximal, in -MPa. Typical value around 0.069 (-7 m of head)
-    
+
 WiltingPnt
     Volumetric soil water content at wilting point, dependent on plant and soil characteristics.
 
@@ -511,7 +511,10 @@ KBeers
     Light extinction coefficient for the canopy as per Beer’s law
 
 CanopyWatEffic
-     Water use efficiency of the canopy, in terms of grams of carbon assimilated per meter of transpired water, :math:`gCm^{-1}`
+    Water use efficiency of the canopy, in terms of grams of carbon assimilated per meter of transpired water, :math:`gCm^{-1}`
+
+Kroot
+    Exponential root profile coefficient, :math:`m^{-1}`
 
 vegtype
     Switch that indicates if the vegetation type is evergreen trees (0), herbaceous (1) or deciduous trees (2)

@@ -309,22 +309,12 @@ the three layers equals the soil depth at the pixel.
 Here we chose a value of 10 m\ :sup:`-1` for :math:`K_{root}`,
 which, given the depths provided above, results in having ~63%
 and ~23% of the roots in the first and second layers, respectively.
-
-- In the ``master_KrootVeg`` version of the code, :math:`K_{root}` is
-dependent on vegetation species, it is thus read from the
-``SpeciesParams.tab`` file (column 37, preceding the ``vegtype`` switch).
-
-- In the ``master_KrootVeg`` version of the code, :math:`K_{root}` is
-  to be provided as a map:
-  
-::
-
-   pcrcalc Kroot.map = unit.map * 0.1   
+It is thus specified in the ``SpeciesParams.tab`` file
+(column 37, preceding the ``vegtype`` switch).
 
 Finally, for simplicity we further assume that the bedrock at depth of
 the soil is impervious (leakance=0). This parameter varies between 0
 (no flow boundary) and 1 (free drainage).
-
 ::
 
     pcrcalc leakance.map = unit.map * 0.0
@@ -382,9 +372,10 @@ Table 1.
    emissivity , 0.95
    KBeers , 0.55
    CanopyWatEffic(gCm-1) , 800
-   is\_grass , 0
+   Kroot(m-1) , 10
+   vegtype , 0
    DeadGrassLeafTurnoverRate(s-1) , 0
-   DeadGrassLeafTurnoverTempAdjustment (degC) , 0
+   DeadGrassLeafTurnoverTempAdjustment(degC) , 0
 
 The parameters are listed in the order they should appear in the
 vegetation confguration file. Make sure you include in the first line

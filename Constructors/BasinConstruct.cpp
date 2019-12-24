@@ -316,7 +316,6 @@ Basin::Basin(Control &ctrl)
 	}
       }
 
-
     } catch (string e){
       cout << "Check the  " << e << " maps, error " << strerror(errno) << endl;
       throw;

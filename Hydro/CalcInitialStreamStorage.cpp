@@ -45,8 +45,8 @@ int Basin::CalcInitialStreamStorage(){
 	    r = _vSortedGrid.cells[j].row;
 	    c = _vSortedGrid.cells[j].col;
 
-	    sqrtS = powl(_slope->matrix[r][c], 0.5);
 	    w = _channelwidth->matrix[r][c];
+	    sqrtS = powl(_slope->matrix[r][c], 0.5);
 	    n = _Manningn->matrix[r][c];
 
 	    if(w > 0) {
