@@ -35,6 +35,7 @@ int Report2Screen(){
   UINT4 ncell = oBasin->getSortedGrid().cells.size();
   REAL8 dx = oBasin->getCellSize();
   REAL8 area = ncell * dx * dx;
+
   /*
   // A few tracking reports here, so that 
   // the age mass balance check uses beg-of-time-step values, more simple!

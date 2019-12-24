@@ -49,20 +49,29 @@ int SolveTimeStep(){
       oBasin->CalcFracMobileWater();
     }
 
-    if(oControl->sw_2H and 
-       (oControl->Rep_d2HsoilUp || oControl->RepTs_d2HsoilUp))
-      oTracking->Calcd2Hsoil_12(*oBasin);
+    if(oControl->sw_2H){ 
+      if(oControl->Rep_d2HsoilUp || oControl->RepTs_d2HsoilUp)
+	oTracking->Calcd2Hsoil_12(*oBasin);
+      if(oControl->Rep_d2HsoilAv || oControl->RepTs_d2HsoilAv)
+	oTracking->Calcd2Hsoil_Av(*oBasin);
+    }
     
-    if(oControl->sw_18O and
-       (oControl->Rep_d18OsoilUp || oControl->RepTs_d18OsoilUp))
-      oTracking->Calcd18Osoil_12(*oBasin);
-
+    if(oControl->sw_18O){
+      if(oControl->Rep_d18OsoilUp || oControl->RepTs_d18OsoilUp)
+	oTracking->Calcd18Osoil_12(*oBasin);
+      if(oControl->Rep_d18OsoilAv || oControl->RepTs_d18OsoilAv)
+	oTracking->Calcd18Osoil_Av(*oBasin);
+    }
+	  
     if(oControl->sw_Age){
       // Increment age by one time step duration
       oTracking->IncrementAge(*oBasin, *oControl);
       // Reported quantities
       if(oControl->Rep_AgesoilUp || oControl->RepTs_AgesoilUp)
 	oTracking->CalcAgesoil_12(*oBasin);
+      if(oControl->Rep_AgesoilAv || oControl->RepTs_AgesoilAv)
+	oTracking->CalcAgesoil_Av(*oBasin);
+
     }
   }
 
