@@ -254,7 +254,7 @@ Basin::Basin(Control &ctrl)
       }
     }
 
-    cout << errno << endl ;
+    //cout << errno << endl ;
     
     // reset errno just to make sure that any constructor error here are not
     // "leftovers" from earlier constrcutors' failures 

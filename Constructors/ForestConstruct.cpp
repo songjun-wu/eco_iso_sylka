@@ -36,6 +36,8 @@ Forest::Forest(Control &ctrl)
 {
 
   stringstream fn;
+
+  errno = 0;
   
   try{
 

@@ -156,11 +156,11 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	_GrndWater->matrix[r][c] = gw;
 	_BedrockLeakageFlux->matrix[r][c] = leak;
 
-	/*
+	
 	// Calculates the soil moisture profile to derive equivalent water table depth
 	if(ctrl.Rep_WaterTableDepth == 1 || ctrl.RepTs_WaterTableDepth == 1)
 	  CalcSoilMoistureProfile(atm, ctrl, getSoilMoist_av()->matrix[r][c], r,c);
-	*/
+	
 	
 	// Tracking
 	if(ctrl.sw_trck)

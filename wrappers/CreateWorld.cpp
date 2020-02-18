@@ -48,7 +48,7 @@ int CreateWorld(char* argv[]){
 
   oTracking = new Tracking(*oControl, *oBasin);
   if(oControl->sw_trck)
-    cout << "Isotope module created ok... " << "\n";
+    cout << "Tracking created ok... " << "\n";
 
   oBudget = new Budget(oBasin, oControl, oTracking);
   cout << "Budget created ok... " << "\n";

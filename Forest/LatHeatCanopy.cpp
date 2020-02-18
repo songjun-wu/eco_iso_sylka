@@ -43,7 +43,6 @@ double Forest::LatHeatCanopy(Basin &bas, Atmosphere &atm, double soilrelhumid, d
 					ea = SatVaporPressure(atm.getTemperature()->matrix[row][col]) * atm.getRelativeHumidty()->matrix[row][col]; //vapor pressure at air temp in Pa
 					z = bas.getDEM()->matrix[row][col];
 					gamma = PsychrometricConst(101325,z); // replace with Pressure when implemented
-
 					return
 							(1/(ra * gamma)) * airdens * spec_heat_air *(ea - es);
 
