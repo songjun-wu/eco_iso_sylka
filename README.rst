@@ -7,10 +7,11 @@
 The general structure of the model is given in Fig. 1.
 
 .. figure:: ./EcH2O_Model.png
+   :width: 400px
    :align: center
-   :width: 24px
+   :figclass: align-center
 
-	   **Figure 1.** Conceptual diagram of the structure of the |ech2o| model. The grid cells of the simulation domain (a) are laterally connected via overland runoff, streamflow and lateral flow in the saturated profile (DEM-derived drainage network), with for each grid cell a process-oriented description of (b) the energy balance, (c) hydrological transfers and (d) vegetation growth and dynamics. Adapted from Kuppel et al. (2018a) and Douinot et al. (2019).
+   **Figure 1.** Conceptual diagram of the structure of the |ech2o| model. The grid cells of the simulation domain (a) are laterally connected via overland runoff, streamflow and lateral flow in the saturated profile (DEM-derived drainage network), with for each grid cell a process-oriented description of (b) the energy balance, (c) hydrological transfers and (d) vegetation growth and dynamics. Adapted from Kuppel et al. (2018a) and Douinot et al. (2019).
 
 
 The specifity of |ech2o|-iso is the implementation of stable water isotopes (:sup:`2`\ H and :sup:`18`\ O) and age tracking.
@@ -19,13 +20,14 @@ Evaporative fractionation of isotopes is also included.
 
 
 .. figure:: ./EcH2O-iso_Model.png
+   :width: 400px
    :align: center
+   :figclass: align-center
 
-	   **Figure 2.** Water compartments (black rectangles) and fluxes (coloured arrows) as represented in |ech2o| and used for isotope and age tracking in |ech2o|-iso, with the numbers between brackets reflecting the sequence of calculation within a time step. Note that water routing (steps [8] to [13]) differs between cells where a stream is present (◦) or not (∗). 
+   **Figure 2.** Water compartments (black rectangles) and fluxes (coloured arrows) as represented in |ech2o| and used for isotope and age tracking in |ech2o|-iso, with the numbers between brackets reflecting the sequence of calculation within a time step. Note that water routing (steps [8] to [13]) differs between cells where a stream is present (◦) or not (∗). 
 
-
-   
-**Latest Version**
+Latest Version
+##############
 
 The latest stable version can be found in the *master_2.0* branch of the `source repository <https://bitbucket.org/sylka/master_2.0/>`_. 
 
