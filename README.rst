@@ -10,7 +10,8 @@ The general structure of the model is given in Fig. 1.
    :align: center
 
    **Figure 1.** Conceptual diagram of the structure of the |ech2o| model. The grid cells of the simulation domain (a) are laterally connected via overland runoff, streamflow and lateral flow in the saturated profile (DEM-derived drainage network), with for each grid cell a process-oriented description of (b) the energy balance, (c) hydrological transfers and (d) vegetation growth and dynamics. Adapted from Kuppel et al. (2018a) and Douinot et al. (2019).
-   
+
+---
 
 The specifity of |ech2o|-iso is the implementation of stable water isotopes (:sup:`2`\ H and :sup:`18`\ O) and age tracking.
 It is mostly based on an immediate, complete implicit scheme for mixing water transiting between compartments within time steps (Fig. 2).
@@ -21,21 +22,22 @@ Evaporative fractionation of isotopes is also included.
 
    **Figure 2.** Water compartments (black rectangles) and fluxes (coloured arrows) as represented in |ech2o| and used for isotope and age tracking in |ech2o|-iso, with the numbers between brackets reflecting the sequence of calculation within a time step. Note that water routing (steps [8] to [13]) differs between cells where a stream is present (◦) or not (∗). 
 
+---
    
-The Latest Version
-------------------
+# Latest Version
 
 The latest stable version can be found in the *master_2.0* branch of the `source repository <https://bitbucket.org/sylka/master_2.0/>`_. 
 
+---
 
-Documentation
--------------
+# Documentation
 
 The documentation for installing an runnnig |ech2o|-iso, available as of the date of this release, can be found on its `ReadTheDocs webpage <http://ech2o-iso.readthedocs.io/en/latest/>`_.
 
+---
 
-Third-party dependencies
-------------------------
+# Third-party dependencies
+
 
 |ech2o|-iso depends on the following third-party libraries with the following licenses:
   
@@ -44,31 +46,35 @@ Third-party dependencies
   
 For convenience, precompiled versions of the libcsf librairies for Linux, Windows 64 bit, and Mac architectures are distributed with the source code.   
 
+---
 
-Compilation of source code
---------------------------
+# Compilation of source code
 
 Please see the fille called INSTALL.rst
 
-Data Preprocessing
-------------------
+---
+
+# Data Preprocessing
 
 |ech2o|-iso uses the PCRASTER map format (a cross-system format) for data pre- and post-processing, and for visulalization. 
 PCRASTER can be downloaded free of charge from http://pcraster.geo.uu.nl/downloads
 
-Licensing
----------
+---
+
+# Licensing
 
 Please see the file called LICENSE.txt.
 
-Bugs
-____
+---
+
+# Bugs
 
 Should you encounter any bug, please file a ticket `here <https://bitbucket.org/sylka/ech2o_iso/issues>`_.
 Known issues can be found there, as well as on the `main EcH2O page <https://bitbucket.org/maneta/ech2o/issues>`_.
 
-How to Cite
------------
+---
+
+# How to Cite
 
 Please, acknowledge the use of |ech2o|-iso by citing:
 
@@ -82,8 +88,8 @@ Further references (and useful reads!):
 - Maneta, M and Silverman, N (2013). A spatially-distributed model to simulate water, energy and vegetation dynamics using information from regional climate models. Earth Interactions, 17, 1-44.
 - Lozano-Parra, J., Maneta, M. P., and Schnabel, S. (2014). Climate and topographic controls on simulated pasture production in a semiarid Mediterranean watershed with scattered tree cover. Hydrology and Earth System Sciences, 18, 1439.
 
-  
-Contacts
---------
+---
 
-  If you have any questions please, contact marco.maneta@umontana.edu.
+# Contacts
+
+If you have any questions please, contact marco.maneta@umontana.edu.
