@@ -32,7 +32,7 @@ The latest stable version can be found in the *master_2.0* branch of the `source
 
 
 Documentation
----
+-------------
 
 The documentation for installing an runnnig |ech2o|-iso, available as of the date of this release, can be found on its `ReadTheDocs webpage <http://ech2o-iso.readthedocs.io/en/latest/>`_.
 
