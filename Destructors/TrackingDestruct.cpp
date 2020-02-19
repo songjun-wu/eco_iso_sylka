@@ -170,6 +170,8 @@ Tracking::~Tracking(){
 	      delete _FAgeLattoSrf;
 	    if(_FAgeLattoChn)
 	      delete _FAgeLattoChn;
+	    if (_AgeDomain)
+	      delete _AgeDomain;
 	    if(_Age_MW1)
 	      delete _Age_MW1;
 	    if(_Age_MW2)

@@ -346,7 +346,11 @@ struct Control{
   // 0->immediate mixing without volume change with output, (Vag=V(t), Cag=C(t+1))
   // 1->using average "useful" volume (still without sotrage limit if Fin or Fout >> Vt, Vt+1): 
   //    Cag=(C(t)+C(t+1))/2, Vag=(V(t)+Fin+max(0,V(t)-Fout))/2
- 
+
+  // Input map for the ageing domain (allows to have a control volume where allow lateral
+  // inputs enter with age = 0 if desired
+  string fn_AgeDomain;
+    
   string fn_psi_MW; // Transition pressure (in meters of head) from tightly-bound
   // to tightly-bound to mobile water (if sw_TPD =1)
 

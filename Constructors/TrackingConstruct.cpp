@@ -118,6 +118,8 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
   _Age_TB2 = NULL;
   _Age_TB12 = NULL;
 
+  _AgeDomain = NULL ;
+  
   if(!ctrl.sw_trck){
     ctrl.sw_2H = 0;
     ctrl.sw_18O = 0;
@@ -209,6 +211,16 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
       _FAgeLattoSrf = new grid(*bsn.getDEM());
       _FAgeLattoChn = new grid(*bsn.getDEM());
       _FAgeLattoGW = new grid(*bsn.getDEM());
+
+      // Age domain
+      if (access((ctrl.path_BasinFolder + ctrl.fn_AgeDomain).c_str(), F_OK) != -1) {
+	printf("Age domain file found! Ages will only be incremented in this 'control volume'...\n");
+	_AgeDomain = new grid(ctrl.path_BasinFolder + ctrl.fn_AgeDomain, ctrl.MapType);
+      }
+      else{
+	printf("Age domain file not found! Using the whole simulation domain as 'control volume'...\n");
+	_AgeDomain = new grid(ctrl.path_BasinFolder + ctrl.fn_dem, ctrl.MapType);
+      }
 	
       if(ctrl.sw_TPD){
 	_Age_MW1 = new grid(*bsn.getDEM());
@@ -387,6 +399,8 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	delete _FAgeLattoSrf;
       if(_FAgeLattoChn)
 	delete _FAgeLattoChn;
+      if(_AgeDomain)
+	delete _AgeDomain;
       if(_Age_MW1)
 	delete _Age_MW1;
       if(_Age_MW2)

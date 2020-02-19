@@ -83,6 +83,9 @@ class Tracking {
   vectCells _d2HOvlndOutput, _d18OOvlndOutput, _AgeOvlndOutput; // surface output
   vectCells _d2HGwtrOutput, _d18OGwtrOutput, _AgeGwtrOutput; // groundwater output
 
+  // Control volume (area) from transit/residence times tracking: only where _Age_domain > 0
+  // are water ages incremented. By default, it is the whole simulation domain
+  grid *_AgeDomain ;
   
   //check maps mainly to make sure no nodata values are in the domain.
   void CheckMapsTrck(Control &ctrl, Basin &bsn);
@@ -132,7 +135,7 @@ class Tracking {
 		 REAL8 &di_old, REAL8 &di_new, REAL8 &di_evap,
 		 REAL8 &Ts, int r, int c, int iso);
   
-  // Age increment at end of tiem step
+  // Age increment at end of time step
   int IncrementAge(Basin &bsn, Control &ctrl);
   
   // Soil averaged quantities
@@ -347,6 +350,11 @@ class Tracking {
   }
   grid *getAgeRecharge() const {
     return _AgeRecharge;
+  }
+
+  // Age domain
+  grid *getAgeDomain() const {
+    return _AgeDomain;
   }
 
   const vectCells *getAgeOvlndOutput() const {

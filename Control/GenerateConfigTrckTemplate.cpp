@@ -90,6 +90,11 @@ void GenerateConfigTrckTemplate(const char *fn){
     ofOut << "d2H_precip = d2H.bin" << endl;
     ofOut << "d18O_precip = d18O.bin" << endl;
     ofOut << "#" << endl;
+    ofOut << "# Domain (where value != NA) where water ages, in order to track transit / residence" << endl;
+    ofOut << "# times there only (precipitation / lateral inputs have both age zero)" << endl;
+    ofOut << "# (if the file doesn't exist, the whole simulation domain -the DEM- is used by default)" << endl;
+    ofOut << "Age_Domain = AgeDomain.map" << endl;
+    ofOut << "#" << endl ; 
     ofOut << "# Initial states: " << endl;
     ofOut << "# map files to be contained in folder pointed by Maps_Folder (see main config file)" << endl;
     ofOut << "#" << endl;

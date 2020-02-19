@@ -198,6 +198,8 @@ int Control::ReadConfigTrck(string confilename /*= "configTrck.ini"*/)
 
     if(sw_Age){
 
+      // Aging domain, where ALL inputs arrive with age 0 (including lateral inputs)
+      ConfigTrck.readInto(fn_AgeDomain, "Age_Domain");
       // Initial values
       //ConfigTrck.readInto(fn_Agecanopy, "init_Age_canopy");
       ConfigTrck.readInto(fn_Agesnowpack, "init_Age_snowpack");

@@ -39,6 +39,7 @@
 
 float report_time = 0; //resets to zero when Report_interval time interval passes
 float reportMap_time = 0; //resets to zero when ReportMap_interval time interval passes
+float map_era = 0; //flag when maps starts to be reported
 float advance_climate = 0; // resets to zero when Clim_input_tstep passess
 
 time_t start, theend;
@@ -69,11 +70,16 @@ int main(int argc, char* argv[]) {
       }
 
       // Report maps (only from a certain time step, e.g. to avoid spinup map reporting)
-      if (oControl->current_t_step >= oControl->reportMap_start) { 
-	reportMap_time += oControl->dt;
-	if (reportMap_time >= oControl->reportMap_times) { //if report time overdue
+      if (oControl->current_t_step >= oControl->reportMap_start) {
+	if(map_era == 0){ // starts the first map report
 	  Report2Maps(); //report results
-	  reportMap_time = 0; //reset the counter
+	  map_era = 1;
+	} else { // next map reports at reportMap_times intervals
+	  reportMap_time += oControl->dt;
+	  if (reportMap_time >= oControl->reportMap_times) { //if report time overdue
+	    Report2Maps(); //report results
+	    reportMap_time = 0; //reset the counter
+	  }
 	}
       }
 
