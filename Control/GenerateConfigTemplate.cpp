@@ -87,11 +87,13 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Channel = 1" << endl ;
     ofOut << "# Exponential profiles: if set to 0, vertically-uniform with value equal to" << endl;
     ofOut << "# the top-of-profile open (see corresponding map inputs below)" << endl;
-    ofOut << "Hydraulic_Conductivity_profile = 0" << endl ;
-    ofOut << "Porosity_profile = 0" << endl << endl;
+    ofOut << "Hydraulic_Conductivity_profile = 0" << endl << endl;
 
     ofOut << "# TOGGLE SWITCHES:" << endl << endl;
-    ofOut << "#Vegetation dynamics (via allocation): 3 modes" << endl;
+    ofOut << "# Porosity: three modes: 0=constant, 1=exponential profile," << endl;
+    ofOut << "# 2=defined for each layer_profile" << endl ;
+    ofOut << "Porosity_profile = 0 " << endl;
+    ofOut << "# Vegetation dynamics (via allocation): 3 modes" << endl;
     ofOut << "# 0 -> desactivated, no dynamic allocation and constant LAI to initial value" <<endl;
     ofOut << "# 1 -> fully activated" << endl;
     ofOut << "# 2 -> partially activated, except that LAI is prescribed via an input file" << endl;
@@ -169,7 +171,9 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Vert_Horz_Anis_ratio = KvKh.map " << endl;
     ofOut << "Terrain_Random_Roughness = randrough.map " << endl;
     ofOut << "Top-of-profile_Porosity = poros.map " << endl;
-    ofOut << "Porosity_Profile_Coeff = kporos.map " << endl;
+    ofOut << "Porosity_Profile_Coeff = kporos.map # if poros profile = 1" << endl;
+    ofOut << "Porosity_Layer2 = poros.L2.map # if poros profile = 2" << endl;
+    ofOut << "Porosity_Layer3 = poros.L3.map # if poros profile = 2" << endl;
     ofOut << "Air_entry_pressure = psi_ae.map " << endl;
     ofOut << "Brooks_Corey_lambda = BClambda.map " << endl;
     ofOut << "Residual_soil_moisture = theta_r.map " << endl;
@@ -248,6 +252,9 @@ void GenerateConfigTemplate(const char *fn){
 
     ofOut << "Report_Total_ET = 0 " << endl;
     ofOut << "Report_Transpiration_sum = 0 " << endl;
+    ofOut << "Report_Transpiration_Layer1 = 0 " << endl;
+    ofOut << "Report_Transpiration_Layer2 = 0 " << endl;
+    ofOut << "Report_Transpiration_Layer3 = 0 " << endl;
     ofOut << "Report_Einterception_sum = 0 " << endl;
     ofOut << "Report_Esoil_sum = 0 " << endl;
     ofOut << "Report_Net_Rad_sum = 0 " << endl ;
@@ -352,6 +359,9 @@ void GenerateConfigTemplate(const char *fn){
 
     ofOut << "Ts_Total_ET = 1 " << endl;
     ofOut << "Ts_Transpiration_sum = 1 " << endl;
+    ofOut << "Ts_Transpiration_Layer1 = 0 " << endl;
+    ofOut << "Ts_Transpiration_Layer2 = 0 " << endl;
+    ofOut << "Ts_Transpiration_Layer3 = 0 " << endl;
     ofOut << "Ts_Einterception_sum = 1 " << endl;
     ofOut << "Ts_Esoil_sum = 1 " << endl;
     ofOut << "Ts_Net_Rad_sum = 0 " << endl ;

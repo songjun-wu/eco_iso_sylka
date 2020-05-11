@@ -55,7 +55,7 @@ void Basin::CalcSoilMoistureProfile(Atmosphere &atm, Control &ctrl, REAL8 theta,
   REAL8 fH, dfH;
   UINT4 k = 0;
 
-  if(ctrl.sw_expPoros){
+  if(ctrl.toggle_Poros==1){
     kp = _kporos->matrix[row][col];
     poros = kp*poros0/d*(1-expl(-d/kp));
     theta_r = 1/d * (_depth_layer1->matrix[row][col]*_theta_rL1->matrix[row][col] +

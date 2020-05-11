@@ -77,7 +77,7 @@ Forest::Forest(Control &ctrl)
 	}
 	
 	//Initiate LAI map
-	cout << "species " << i << ", input LAI file: " << fn.str() << endl ;
+	//cout << "species " << i << ", input LAI file: " << fn.str() << endl ;
 	InitiateLAIMap(_species[i].ifLAI, *_species[i]._LAI);
       }
     }

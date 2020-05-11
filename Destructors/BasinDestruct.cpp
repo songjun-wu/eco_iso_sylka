@@ -224,6 +224,12 @@ Basin::~Basin(){
     delete _FluxRecharge;
   if(_FluxL3toL2)
     delete _FluxL3toL2;
+  if(_FluxTranspiL1)
+    delete _FluxTranspiL1;
+  if(_FluxTranspiL2)
+    delete _FluxTranspiL2;
+  if(_FluxTranspiL3)
+    delete _FluxTranspiL3;
   if(_FluxLattoSrf)
     delete _FluxLattoSrf;
   if(_FluxLattoGW)

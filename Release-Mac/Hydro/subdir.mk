@@ -15,6 +15,7 @@ CPP_SRCS += \
 ../Hydro/CalcPropLayers.cpp \
 ../Hydro/CalculateForestGrowth.cpp \
 ../Hydro/CalculateSatArea.cpp \
+../Hydro/CalculateWaterTableDepth.cpp \
 ../Hydro/CanopyInterception.cpp \
 ../Hydro/GWrouting.cpp \
 ../Hydro/Infilt_GreenAmpt.cpp \
@@ -36,6 +37,7 @@ OBJS += \
 ./Hydro/CalcRootDistrib.o \
 ./Hydro/CalculateForestGrowth.o \
 ./Hydro/CalcSoilMoistureProfile.o \
+./Hydro/CalculateWaterTableDepth.o \
 ./Hydro/CalcPropLayers.o \
 ./Hydro/CalculateSatArea.o \
 ./Hydro/CanopyInterception.o \
@@ -61,6 +63,7 @@ CPP_DEPS += \
 ./Hydro/CalcPropLayers.d \
 ./Hydro/CalculateForestGrowth.d \
 ./Hydro/CalculateSatArea.d \
+./Hydro/CalculateWaterTableDepth.d \
 ./Hydro/CanopyInterception.d \
 ./Hydro/GWrouting.d \
 ./Hydro/Infilt_GreenAmpt.d \

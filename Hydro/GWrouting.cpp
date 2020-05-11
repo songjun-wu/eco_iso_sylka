@@ -344,7 +344,8 @@ int Basin::DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck) {
     _soilmoist1->matrix[r][c] = theta1;
     _soilmoist2->matrix[r][c] = theta2;
     _soilmoist3->matrix[r][c] = theta3 + hj1i1 / d3;
-    _GrndWater->matrix[r][c] = hj1i1;
+    _GrndWater->matrix[r][c] = hj1i1 ;
+    //_GrndWater->matrix[r][c] = std::max<double>(0.0,_soilmoist3->matrix[r][c] - fc)*d3;
 
     // Save river discharge
     _Disch_old->matrix[r][c] = Qk1;

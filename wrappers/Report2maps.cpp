@@ -51,7 +51,7 @@ int Report2Maps(){
 
   // "Initial" values: stuff that doesn't change over time: only report the first occurence
   // of reportMap_times
-  if(oControl->current_t_step == oControl->reportMap_times){
+  if(oControl->current_t_step < oControl->reportMap_times){
 
     // Whether each pixel-layer is in the root zone
     // 0 and 1, can be in between when averaging over veg fractions
@@ -64,7 +64,7 @@ int Report2Maps(){
     
     // If exponential porosity profile, give field capacity for each.
     // Else, it's the same across the profile
-    if(oControl->sw_expPoros){
+    if(oControl->toggle_Poros>0){
       if (oControl->Rep_Field_Capacity_L1) 
 	WriteMap(oBasin->getFieldCapacityL1(), "FCap1");
       if (oControl->Rep_Field_Capacity_L2)
@@ -100,7 +100,7 @@ int Report2Maps(){
   if (oControl->Rep_Soil_Water_Content_L3)
     WriteMapSeries(oBasin->getSoilMoist3(), "SWC3_", oControl->current_ts_count);
   if (oControl->Rep_WaterTableDepth)
-    WriteMapSeries(oBasin->getWaterTableDepth(), "WTD_", oControl->current_ts_count);
+    WriteMapSeries(oBasin->getWaterTableDepth(*oControl), "WTD_", oControl->current_ts_count);
   if (oControl->Rep_Soil_Sat_Deficit)
     WriteMapSeries(oBasin->getSaturationDeficit(), "SatDef", oControl->current_ts_count);
   if (oControl->Rep_GWater)
@@ -126,11 +126,17 @@ int Report2Maps(){
     WriteMapSeries(oBasin->getEvaporation(), "Evap", oControl->current_ts_count);
   if (oControl->Rep_Transpiration_sum)
     WriteMapSeries(oBasin->getTranspiration_all(), "EvapT", oControl->current_ts_count);
+  if (oControl->Rep_Transpi_sum_L1)
+    WriteMapSeries(oBasin->getFluxTranspiL1(), "EvTL1", oControl->current_ts_count);
+  if (oControl->Rep_Transpi_sum_L2)
+    WriteMapSeries(oBasin->getFluxTranspiL2(), "EvTL2", oControl->current_ts_count);
+  if (oControl->Rep_Transpi_sum_L3)
+    WriteMapSeries(oBasin->getFluxTranspiL3(), "EvTL3", oControl->current_ts_count);
   if (oControl->Rep_Einterception_sum)
     WriteMapSeries(oBasin->getEvaporationI_all(), "EvapI", oControl->current_ts_count);
   if (oControl->Rep_Esoil_sum)
     WriteMapSeries(oBasin->getEvaporationS_all(), "EvapS", oControl->current_ts_count);
-
+ 
   // Internal vertical fluxes
   if (oControl->Rep_GWtoChn)
     WriteMapSeries(oBasin->getFluxGWtoChn(), "GWChn", oControl->current_ts_count);
@@ -515,36 +521,36 @@ if (oControl->Rep_TranspiL3acc)
 	name.str("");
       }
       if (oControl->sw_2H && oControl->Rep_d2HevapT) {
-	name << "dHeT" << i << "_";
+	name << "dHEt" << i << "_";
 	WriteMapSeries(oBasin->getd2HevapT(i), name.str() , oControl->current_ts_count);
 	name.str("");
       }
 
       if (oControl->sw_18O && oControl->Rep_d18OevapT) {
-	name << "dOeT" << i << "_";
+	name << "dOEt" << i << "_";
 	WriteMapSeries(oBasin->getd18OevapT(i), name.str() , oControl->current_ts_count);
 	name.str("");
       }
 
       if (oControl->sw_Age && oControl->Rep_AgeevapT) {
-	name << "AgeeT" << i << "_";
+	name << "AgEt" << i << "_";
 	WriteMapSeries(oBasin->getAgeevapT(i), name.str() , oControl->current_ts_count);
 	name.str("");
       }
       if (oControl->sw_2H && oControl->Rep_d2HevapS) {
-	name << "dHeS" << i << "_";
+	name << "dHEs" << i << "_";
 	WriteMapSeries(oBasin->getd2HevapS(i), name.str() , oControl->current_ts_count);
 	name.str("");
       }
 
       if (oControl->sw_18O && oControl->Rep_d18OevapS) {
-	name << "dOeS" << i << "_";
+	name << "dOEs" << i << "_";
 	WriteMapSeries(oBasin->getd18OevapS(i), name.str() , oControl->current_ts_count);
 	name.str("");
       }
 
       if (oControl->sw_Age && oControl->Rep_AgeevapS) {
-	name << "AgeeS" << i << "_";
+	name << "AgEs" << i << "_";
 	WriteMapSeries(oBasin->getAgeevapS(i), name.str() , oControl->current_ts_count);
 	name.str("");
       }
@@ -625,7 +631,7 @@ int Report2Ts(){
 
   // If exponential porosity profile, give field capacity for each.
   // Else, it's the same across the profile
-  if(oControl->sw_expPoros){
+  if(oControl->toggle_Poros>0){
     if (oControl->RepTs_Field_Capacity_L1){
       if(oControl->GetTimeStep() <= oControl->report_times)
 	oReport->RenameFile(oControl->path_ResultsFolder + "FieldCapL1.tab");
@@ -731,7 +737,7 @@ int Report2Ts(){
   if (oControl->RepTs_WaterTableDepth){
     if(oControl->GetTimeStep() <= oControl->report_times)
       oReport->RenameFile(oControl->path_ResultsFolder + "WaterTableDepth.tab");
-    oReport->ReportTimeSeries(oBasin->getWaterTableDepth(),
+    oReport->ReportTimeSeries(oBasin->getWaterTableDepth(*oControl),
 			      oControl->path_ResultsFolder + "WaterTableDepth.tab",
 			      oControl->current_ts_count);
   }
@@ -822,6 +828,27 @@ int Report2Ts(){
 			      oControl->path_ResultsFolder + "EvapT.tab",
 			      oControl->current_ts_count);
   }
+  if (oControl->RepTs_Transpi_sum_L1){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "EvapT_L1.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxTranspiL1(),
+			      oControl->path_ResultsFolder + "EvapT_L1.tab",
+			      oControl->current_ts_count);
+  }
+  if (oControl->RepTs_Transpi_sum_L2){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "EvapT_L2.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxTranspiL2(),
+			      oControl->path_ResultsFolder + "EvapT_L2.tab",
+			      oControl->current_ts_count);
+  }
+  if (oControl->RepTs_Transpi_sum_L3){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "EvapT_L3.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxTranspiL3(),
+			      oControl->path_ResultsFolder + "EvapT_L3.tab",
+			      oControl->current_ts_count);
+  }
   if (oControl->RepTs_Einterception_sum){
     if(oControl->GetTimeStep() <= oControl->report_times)
       oReport->RenameFile(oControl->path_ResultsFolder + "EvapI.tab");
@@ -901,11 +928,11 @@ int Report2Ts(){
 			      oControl->path_ResultsFolder + "ReturnL2.tab",
 			      oControl->current_ts_count);
   }
-  if (oControl->RepTs_LattoSrf){
+  if (oControl->RepTs_ReturnL2){
     if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "SrfLatI.tab");
-    oReport->ReportTimeSeries(oBasin->getFluxLattoSrf(),
-			      oControl->path_ResultsFolder + "SrfLatI.tab",
+      oReport->RenameFile(oControl->path_ResultsFolder + "ReturnL2.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxL3toL2(),
+			      oControl->path_ResultsFolder + "ReturnL2.tab",
 			      oControl->current_ts_count);
   }
   if (oControl->RepTs_LattoChn){

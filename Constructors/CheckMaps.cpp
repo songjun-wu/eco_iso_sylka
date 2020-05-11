@@ -80,18 +80,29 @@ void Basin::CheckMaps(Control &ctrl) {
 		 "Slope map contains negative or zero values inside the valid domain...\n");
 	throw e;
       }
-
-      if (_porosity0->matrix[r][c] == _porosity0->nodata) {
-	string e(
-		 "Base porosity map contains no data values inside the valid domain...\n");
-	throw e;
+      if(ctrl.toggle_Poros!=1){
+	if (_porosityL1->matrix[r][c] == _porosityL1->nodata) {
+	  string e(
+		   "Layer 1 porosity map contains no data values inside the valid domain...\n");
+	  throw e;
+	}
+	if (_porosityL1->matrix[r][c] <= 0) {
+	  string e(
+		   "Layer 1 porosity map contains negative or zero values inside the valid domain...\n");
+	  throw e;
+	}
       }
-      if (_porosity0->matrix[r][c] <= 0) {
-	string e(
-		 "Base porosity map contains negative or zero values inside the valid domain...\n");
-	throw e;
-      }
-      if(ctrl.sw_expPoros){
+      if(ctrl.toggle_Poros==1){
+	if (_porosity0->matrix[r][c] == _porosity0->nodata) {
+	  string e(
+		   "Top-of-profile porosity map contains no data values inside the valid domain...\n");
+	  throw e;
+	}
+	if (_porosity0->matrix[r][c] <= 0) {
+	  string e(
+		   "Top-of-profile porosity map contains negative or zero values inside the valid domain...\n");
+	  throw e;
+	}
 	if (_kporos->matrix[r][c] == _kporos->nodata) {
 	  string e(
 		   "Porosity profile map contains no data values inside the valid domain...\n");
@@ -103,7 +114,28 @@ void Basin::CheckMaps(Control &ctrl) {
 	  throw e;
 	}
       }
-
+      if(ctrl.toggle_Poros==2){
+	if (_porosityL2->matrix[r][c] == _porosityL2->nodata) {
+	  string e(
+		   "Layer 2 porosity map contains no data values inside the valid domain...\n");
+	  throw e;
+	}
+	if (_porosityL3->matrix[r][c] == _porosityL3->nodata) {
+	  string e(
+		   "Layer 3 porosity map contains no data values inside the valid domain...\n");
+	  throw e;
+	}
+	if (_porosityL2->matrix[r][c] <= 0) {
+	  string e(
+		   "Layer 2 porosity map contains negative or zero values inside the valid domain...\n");
+	  throw e;
+	}
+	if (_porosityL3->matrix[r][c] <= 0) {
+	  string e(
+		   "Layer 3 porosity map contains negative or zero values inside the valid domain...\n");
+	  throw e;
+	}
+      }
       if (_psi_ae->matrix[r][c] == _psi_ae->nodata) {
 	string e(
 		 "Air entry pressure map contains no data values inside the valid domain...\n");
@@ -260,12 +292,12 @@ void Basin::CheckMaps(Control &ctrl) {
       }
       if (_theta_rL1->matrix[r][c] <= 0) {
 	string e(
-		 "residual moisture map (L1) contains negative or zero values inside the valid domain...\n");
+		 "Residual moisture map (L1) contains negative or zero values inside the valid domain...\n");
 	throw e;
       }
-      if (_theta_rL1->matrix[r][c] > _porosity0->matrix[r][c]) {
+      if (_theta_rL1->matrix[r][c] > _porosityL1->matrix[r][c]) {
 	string e(
-		 "residual soil moisture (L1) map is larger than top-of-profile porosity inside the valid domain...\n");
+		 "Residual soil moisture (L1) map is larger than porosity inside the valid domain...\n");
 	throw e;
       }
       

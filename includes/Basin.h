@@ -178,6 +178,9 @@ class Basin {
   grid *_FluxExfilt; // first layer to surface (return flow)
   grid *_FluxL2toL1; // capillary + return flow, L2 to L1
   grid *_FluxL3toL2; // capillary + return flow, L2 to L3
+  grid *_FluxTranspiL1; // Transpiration withdrawal from L1
+  grid *_FluxTranspiL2; // Transpiration withdrawal from L2
+  grid *_FluxTranspiL3; // Transpiration withdrawal from L3
   //grid *_FluxGWtoL2; // return flow, groundwater to L2
   //grid *_FluxGWtoL3; // discharge, groundwater to L2 unsaturated
   // Other intra-cell fluxes
@@ -316,7 +319,8 @@ class Basin {
 
   //int DailySurfaceRouting(Atmosphere &atm, Control &ctrl);
   int DailyGWRouting(Atmosphere &atm, Control &ctrl, Tracking &trck);
-  int CalculateSatArea(Atmosphere &atm, Control &ctrl);
+  int CalculateWaterTableDepth(Control &ctrl);
+  int CalculateSatArea(Control &ctrl);
 
   int CalcFracMobileWater();
 
@@ -563,53 +567,91 @@ class Basin {
     return _GrndWater;
   }
 
-  grid *getWaterTableDepth() const {
-    /*int r, c;
-    double depth, fc1, fc2, fc3, eta1, eta2, eta3;
-      double d1, d2, d3;
-      #pragma omp parallel for						\
-	default(none) private(r, c, fc1, fc2, fc3, \
-			      eta1, eta2, eta3, depth, d1, d2, d3)
-      for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
+  grid *getWaterTableDepth(Control &ctrl) const {
+
+    /*
+    int r, c;
+    double theta, eta1, eta2, eta3, fc1, fc2, fc3 ;
+    double d, d1, d2;
+    double step, area, denom, th_r, phi0, kphi;
+#pragma omp parallel for			   \
+  default(none) private(r, c, fc1, fc2, fc3,			\
+			theta, eta1, eta2, eta3, d, d1, d2,	\
+			step, area, denom, th_r, phi0, kphi) \
+  shared(ctrl)
+    for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
       r = _vSortedGrid.cells[j].row;
       c = _vSortedGrid.cells[j].col;
-      fc1 = _fieldcapL1->matrix[r][c];
-      fc2 = _fieldcapL2->matrix[r][c];
       fc3 = _fieldcapL3->matrix[r][c];
       eta1 = _porosityL1->matrix[r][c];
       eta2 = _porosityL2->matrix[r][c];
       eta3 = _porosityL3->matrix[r][c];
-      depth = _soildepth->matrix[r][c];
+      d = _soildepth->matrix[r][c];
       // If the theta3 is not above field cap, then no water table within the profile
       if(fc3 - _soilmoist3->matrix[r][c] > 0)
-	_WaterTableDepth->matrix[r][c] = depth;
-      else{
+	_WaterTableDepth->matrix[r][c] = d ;
+      else{ // Calculate taking into account the variable porosity along depth
+	// with approximated integral of the "local" hGW (1000 steps)
 	d1 = _depth_layer1->matrix[r][c];
 	d2 = _depth_layer2->matrix[r][c];
-	d3 = depth - d1 - d2;
+	denom = 1 - powl(_psi_ae->matrix[r][c]/3.36,1/_BClambda->matrix[r][c]);
+	phi0 = _porosity0->matrix[r][c];
+	kphi = _kporos->matrix[r][c];
+	area = 0.0;  // signed area
 	// If theta3 below porosity, water table within third layer
-	if(fabs(eta3 - _soilmoist3->matrix[r][c]) > RNDOFFERR)
-	  _WaterTableDepth->matrix[r][c] =
-	    d1 + d2 + d3*(eta3 - _soilmoist3->matrix[r][c])/(eta3 - fc3);
-	// If layer 3 saturated...
-	else{
+	if(fabs(eta3 - _soilmoist3->matrix[r][c]) > RNDOFFERR) {
+	  theta = _soilmoist3->matrix[r][c];
+	  if(ctrl.sw_expPoros){
+	    th_r = _theta_rL3->matrix[r][c];
+	    step = (d - d1 - d2) / 1000;  // width of each small rectangle
+	    // intregal approximation
+	    for (int i = 0; i < 1000; i ++)
+	      area += step/(1-(th_r/phi0)*expl((d1+d2+(i+0.5)*step)/kphi));
+	    // sum up each small rectangle
+	    _WaterTableDepth->matrix[r][c] =  area*(1-theta/eta3)/denom;
+	  } else
+	    _WaterTableDepth->matrix[r][c] = 
+	      d1 + d2 + (d-d1-d2)*(eta3 - theta)/(eta3 - fc3);
+	  // If layer 3 saturated...
+	} else{
 	  // If theta2 below porosity, water table within third layer
-	  if(fabs(eta2 - _soilmoist2->matrix[r][c]) > RNDOFFERR)
-	    _WaterTableDepth->matrix[r][c] =
-	      d1 + d2*(eta2 - _soilmoist2->matrix[r][c])/(eta2 - fc2);
-	  // If layer 2 saturated, water table within first layer
-	  else
-	    _WaterTableDepth->matrix[r][c] =
-	      d1*(eta1 - _soilmoist1->matrix[r][c])/(eta1 - fc1);
+	  if(fabs(eta2 - _soilmoist2->matrix[r][c]) > RNDOFFERR) {
+	    fc2 = _fieldcapL2->matrix[r][c];
+	    theta = _soilmoist2->matrix[r][c];
+	    if(ctrl.sw_expPoros){
+	      th_r = _theta_rL2->matrix[r][c];
+	      step = d2 / 1000;  // width of each small rectangle
+	      // intregal approximation
+	      for (int i = 0; i < 1000; i ++)
+		area += step/(1-(th_r/phi0)*expl((d1+(i+0.5)*step)/kphi));
+	      // sum up each small rectangle
+	      _WaterTableDepth->matrix[r][c] = area*(1-theta/eta2)/denom;
+	    } else
+	      _WaterTableDepth->matrix[r][c] = d1 + d2*(eta2 - theta)/(eta2 - fc2);
+	    // If layer 2 saturated, water table within first layer
+	  } else {
+	    fc1 = _fieldcapL1->matrix[r][c];
+	    theta = _soilmoist1->matrix[r][c];
+	    if(ctrl.sw_expPoros){
+	      th_r = _theta_rL1->matrix[r][c];
+	      step = d1 / 1000;  // width of each small rectangle
+	      // intregal approximation
+	      for (int i = 0; i < 1000; i ++)
+		area += step/(1-(th_r/phi0)*expl(((i+0.5)*step)/kphi));
+	      // sum up each small rectangle
+	      _WaterTableDepth->matrix[r][c] = area*(1-theta/eta1)/denom;
+	    } else
+	      _WaterTableDepth->matrix[r][c] = d1*(eta1 - theta)/(eta1 - fc1);
+	  }
 	}
       }
-      }
-    */
-      return _WaterTableDepth;
+    }*/
+   
+    return _WaterTableDepth;
   }
-
+  
   grid * getSaturationDeficit() const {
-
+    
     int r, c;
     for (unsigned int j = 0; j < _vSortedGrid.cells.size(); j++) {
       r = _vSortedGrid.cells[j].row;
@@ -853,6 +895,15 @@ class Basin {
   }
   grid *getFluxL2toL3() const {
     return _FluxL2toL3;
+  }
+  grid *getFluxTranspiL1() const {
+    return _FluxTranspiL1;
+  }
+  grid *getFluxTranspiL2() const {
+    return _FluxTranspiL2;
+  }
+  grid *getFluxTranspiL3() const {
+    return _FluxTranspiL3;
   }
   //grid *getFluxL2toGW() const {
   //	return _FluxL2toGW;

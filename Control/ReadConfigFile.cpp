@@ -68,7 +68,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
     sw_reinfilt = Config.read<bool>("Reinfiltration");
     sw_channel = Config.read<bool>("Channel");
     sw_expKsat = Config.read<bool>("Hydraulic_Conductivity_profile");
-    sw_expPoros = Config.read<bool>("Porosity_profile");
+    toggle_Poros = Config.read<int>("Porosity_profile");
 
     // Vegetation dynamics 
     toggle_veg_dyn = Config.read<int>("Vegetation_dynamics");
@@ -125,8 +125,12 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
     Config.readInto(fn_randrough, "Terrain_Random_Roughness");
     Config.readInto(fn_slope, "Slope");
     Config.readInto(fn_poros0, "Top-of-profile_Porosity");
-    if(sw_expPoros)
+    if(toggle_Poros==1)
       Config.readInto(fn_kporos, "Porosity_Profile_Coeff");
+    if(toggle_Poros==2){
+      Config.readInto(fn_porosL2, "Porosity_Layer2");
+      Config.readInto(fn_porosL3, "Porosity_Layer3");
+    }
     Config.readInto(fn_psi_ae, "Air_entry_pressure");
     Config.readInto(fn_BClambda, "Brooks_Corey_lambda");
     Config.readInto(fn_theta_r, "Residual_soil_moisture");
@@ -226,6 +230,9 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
     Rep_Skin_Temperature = Config.read<bool>("Report_Skin_Temperature");
 
     Rep_Transpiration_sum = Config.read<bool>("Report_Transpiration_sum");
+    Rep_Transpi_sum_L1 = Config.read<bool>("Report_Transpiration_Layer1");
+    Rep_Transpi_sum_L2 = Config.read<bool>("Report_Transpiration_Layer2");
+    Rep_Transpi_sum_L3 = Config.read<bool>("Report_Transpiration_Layer3");
     Rep_Einterception_sum = Config.read<bool>("Report_Einterception_sum");
     Rep_Esoil_sum = Config.read<bool>("Report_Esoil_sum");
     Rep_Net_Rad_sum = Config.read<bool>("Report_Net_Rad_sum");
@@ -327,6 +334,9 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 
     RepTs_Total_ET = Config.read<bool>("Ts_Total_ET");
     RepTs_Transpiration_sum = Config.read<bool>("Ts_Transpiration_sum");
+    RepTs_Transpi_sum_L1 = Config.read<bool>("Ts_Transpiration_Layer1");
+    RepTs_Transpi_sum_L2 = Config.read<bool>("Ts_Transpiration_Layer2");
+    RepTs_Transpi_sum_L3 = Config.read<bool>("Ts_Transpiration_Layer3");
     RepTs_Einterception_sum = Config.read<bool>("Ts_Einterception_sum");
     RepTs_Esoil_sum = Config.read<bool>("Ts_Esoil_sum");
     RepTs_Net_Rad_sum = Config.read<bool>("Ts_Net_Rad_sum");

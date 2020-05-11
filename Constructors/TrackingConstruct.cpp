@@ -213,7 +213,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
       _FAgeLattoGW = new grid(*bsn.getDEM());
 
       // Age domain
-      if (access((ctrl.path_BasinFolder + ctrl.fn_AgeDomain).c_str(), F_OK) != -1) {
+      if (access((ctrl.path_BasinFolder + ctrl.fn_AgeDomain).c_str(), F_OK) >0) {
 	printf("Age domain file found! Ages will only be incremented in this 'control volume'...\n");
 	_AgeDomain = new grid(ctrl.path_BasinFolder + ctrl.fn_AgeDomain, ctrl.MapType);
       }

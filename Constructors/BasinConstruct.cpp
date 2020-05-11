@@ -48,7 +48,7 @@ Basin::Basin(Control &ctrl)
 
     _ldd = new grid(ctrl.path_BasinFolder + ctrl.fn_ldd, ctrl.MapType);
 
-    printf("Checking if file %s exists...\n", (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+    printf("Checking if file %s exists...", (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
     /*
      * Checks if there is a _vSordtedGrid object with the correct name in the spatial folder
      */
@@ -57,7 +57,7 @@ Basin::Basin(Control &ctrl)
       loadSortedGrid(_vSortedGrid, (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
     }
     else{
-      printf("File not found!. Initializing and sorting grid...\n");
+      printf("\nFile not found!. Initializing and sorting grid...\n");
       printf("WARNING -- if the progress bar stalls for too long, please consider checking your DEM map: it should\n");
       printf("contain a buffer of at least 1 cell of no-data (mv) around the valid domain (see documentation) --\n");
       /*sorts the basin with data cells according
@@ -73,20 +73,41 @@ Basin::Basin(Control &ctrl)
 
     /*basin parameters and properties*/
     _slope = new grid(ctrl.path_BasinFolder + ctrl.fn_slope, ctrl.MapType);
-
+    // Hydraulic conductivity
+    _KsatL1 = new grid(*_DEM);
+    _KsatL2 = new grid(*_DEM);
+    _KsatL3 = new grid(*_DEM);
     _Ksat0 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
     _kKsat = NULL;
     if(ctrl.sw_expKsat)
       _kKsat = new grid(ctrl.path_BasinFolder + ctrl.fn_kKsat, ctrl.MapType);
-
     _KvKs = new grid(ctrl.path_BasinFolder + ctrl.fn_kvkh, ctrl.MapType);
-    _random_roughness = new grid(ctrl.path_BasinFolder + ctrl.fn_randrough, ctrl.MapType);
 
-    _porosity0 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
+
+    // Porosity
+    _porosity0 = NULL;
     _kporos = NULL;
-    if(ctrl.sw_expPoros)
+    if(ctrl.toggle_Poros==0){
+      // Constant porosity
+      _porosityL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
+      _porosityL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
+      _porosityL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
+    }
+    if(ctrl.toggle_Poros==1){
+      // Exponential profile
+      _porosity0 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
       _kporos = new grid(ctrl.path_BasinFolder + ctrl.fn_kporos, ctrl.MapType);
-
+      _porosityL1 = new grid(*_DEM);
+      _porosityL2 = new grid(*_DEM);
+      _porosityL3 = new grid(*_DEM);
+    }
+    if(ctrl.toggle_Poros==2){
+      // Layer-specificied
+      _porosityL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
+      _porosityL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_porosL2, ctrl.MapType);
+      _porosityL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_porosL3, ctrl.MapType);
+    }
+    
     _psi_ae = new grid(ctrl.path_BasinFolder + ctrl.fn_psi_ae, ctrl.MapType);
     _BClambda = new grid(ctrl.path_BasinFolder + ctrl.fn_BClambda, ctrl.MapType);
     _theta_rL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);
@@ -99,7 +120,7 @@ Basin::Basin(Control &ctrl)
     _paramWc = new grid(ctrl.path_BasinFolder + ctrl.fn_paramWc, ctrl.MapType);
     _paramWp = new grid(ctrl.path_BasinFolder + ctrl.fn_paramWp, ctrl.MapType);
     _meltCoeff = new grid(ctrl.path_BasinFolder + ctrl.fn_snowCf, ctrl.MapType);
-
+    _random_roughness = new grid(ctrl.path_BasinFolder + ctrl.fn_randrough, ctrl.MapType);
     //_rootfrac1 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay1, ctrl.MapType);
     //_rootfrac2 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay2, ctrl.MapType);
     //_Kroot = new grid(ctrl.path_BasinFolder + ctrl.fn_Kroot, ctrl.MapType);
@@ -125,12 +146,6 @@ Basin::Basin(Control &ctrl)
 
     /*state variables initialized with the base map*/
     _catcharea = new grid(*_DEM);
-    _KsatL1 = new grid(*_DEM);
-    _KsatL2 = new grid(*_DEM);
-    _KsatL3 = new grid(*_DEM);
-    _porosityL1 = new grid(*_DEM);
-    _porosityL2 = new grid(*_DEM);
-    _porosityL3 = new grid(*_DEM);
     _fieldcapL1 = new grid(*_DEM);
     _fieldcapL2 = new grid(*_DEM);
     _fieldcapL3 = new grid(*_DEM);
@@ -185,6 +200,9 @@ Basin::Basin(Control &ctrl)
     _FluxPercolL3 = new grid(*_DEM); // L2 to L3 (summed over timestep)
     _FluxRecharge = new grid(*_DEM); // Recharge to GW
     _FluxL3toL2 = new grid(*_DEM); // return from L3 to L2
+    _FluxTranspiL1 = new grid(*_DEM);
+    _FluxTranspiL2 = new grid(*_DEM);
+    _FluxTranspiL3 = new grid(*_DEM);
     _FluxLattoChn = new grid(*_DEM); // channel inflow
     _FluxLattoSrf = new grid(*_DEM); // surface run-on (excluding streamflow)
     _FluxLattoGW = new grid(*_DEM); // groundwater lateral outflow
@@ -259,7 +277,6 @@ Basin::Basin(Control &ctrl)
     // reset errno just to make sure that any constructor error here are not
     // "leftovers" from earlier constrcutors' failures 
     errno = 0 ;
-    
 
     try{
       //calculate the value of Ksat for each layer (integrated from expo profile)
@@ -269,10 +286,13 @@ Basin::Basin(Control &ctrl)
 	throw string("Ksat, soil depths, kKsat");
       }
       //calculate the value of porosity for each layer (integrated from expo profile)
-      CalcPorosLayers(ctrl);
-      if(errno!=0){
-	cout << "Error creating Kporos for each layer: " << endl;
-	throw string("porosm, kporos, soil depths");
+      // only call if exponential profile, otherwise it's already specified
+      if(ctrl.toggle_Poros==1){
+	CalcPorosLayers(ctrl);
+	if(errno!=0){
+	  cout << "Error creating Kporos for each layer: " << endl;
+	  throw string("porosm, kporos, soil depths");
+	}
       }
       //Partial check of maps mainly to make sure no no data is written within the valid domain
       CheckMaps(ctrl);
@@ -320,7 +340,6 @@ Basin::Basin(Control &ctrl)
       cout << "Check the  " << e << " maps, error " << strerror(errno) << endl;
       throw;
     }
-
 
   }catch (std::bad_alloc &)
     { cerr << " Cleaning basin objects..." << "\n";
@@ -517,6 +536,12 @@ Basin::Basin(Control &ctrl)
 	delete _FluxRecharge;
       if(_FluxL3toL2)
 	delete _FluxL3toL2;
+      if(_FluxTranspiL1)
+	delete _FluxTranspiL1;
+      if(_FluxTranspiL2)
+	delete _FluxTranspiL2;
+      if(_FluxTranspiL3)
+	delete _FluxTranspiL3;
       if(_FluxLattoSrf)
 	delete _FluxLattoSrf;
       if(_FluxLattoGW)

@@ -103,6 +103,9 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
   REAL8 theta_MW1, theta_MW2;
   // Initialize to zero
   _Rn_sum->reset();
+  _FluxTranspiL1->reset();
+  _FluxTranspiL2->reset();
+  _FluxTranspiL3->reset();
   if(ctrl.sw_trck){
     //For tracking
     _FluxCnptoSrf->reset(); // canopy/sky to surface
@@ -330,13 +333,12 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  theta2 -= dth2 ; //soil moisture at t=t+1
 	  theta3 -= dth3 ; //soil moisture at t=t+1
 
-	  // Cumulative values: taken here to separate layers contributions
-	  _AccTranspiL1->matrix[r][c] += dth1 * d1;
-	  _AccTranspiL2->matrix[r][c] += dth2 * d2;
-	  _AccTranspiL3->matrix[r][c] += dth3 * d3;
+	  // Separate layers contributions
+	  _FluxTranspiL1->matrix[r][c] += dth1 * d1;
+	  _FluxTranspiL2->matrix[r][c] += dth2 * d2;
+	  _FluxTranspiL3->matrix[r][c] += dth3 * d3;
 	  
-	  // Tracking (evapT):
-       
+	  // Tracking (evapT):       
 	  if(ctrl.sw_trck){
 	    // If two-pore domain activated: weighted contribution using
 	    // relative pore volume + transfer-mixing to tightly-bound domain if needed		
@@ -460,9 +462,14 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	_ponding->matrix[r][c] += rain * dt * p;
      
       } //end for over species
-   
-      _Evaporation->matrix[r][c] = evap_f + transp_f; //total evaporation for the entire cell
+
+      // Cumulative values of layer contribution to transpiration
+      _AccTranspiL1->matrix[r][c] += _FluxTranspiL1->matrix[r][c];
+      _AccTranspiL2->matrix[r][c] += _FluxTranspiL2->matrix[r][c];
+      _AccTranspiL3->matrix[r][c] += _FluxTranspiL3->matrix[r][c];
+      
       // Vegetation-summed values
+      _Evaporation->matrix[r][c] = evap_f + transp_f; //total evaporation for the entire cell
       _Transpiration_all->matrix[r][c]  = transp_f ;
       _EvaporationI_all->matrix[r][c] = evap_f ;
       // applies for tracking as well

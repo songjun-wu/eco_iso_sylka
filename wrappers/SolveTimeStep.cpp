@@ -32,13 +32,17 @@
 
 
 int SolveTimeStep(){
-
+  
   oBasin->SolveCanopyFluxes(*oAtmosphere, *oControl, *oTracking);
   oBasin->SolveSurfaceFluxes(*oAtmosphere, *oControl, *oTracking);
   oBasin->CalculateGrowForest(*oAtmosphere, *oControl);
   oBasin->DailyGWRouting(*oAtmosphere, *oControl, *oTracking);
-  oBasin->CalculateSatArea(*oAtmosphere, *oControl);
 
+  if(oControl->Rep_WaterTableDepth || oControl->RepTs_WaterTableDepth)
+    oBasin->CalculateWaterTableDepth(*oControl);
+  
+  oBasin->CalculateSatArea(*oControl);
+  
   // If tracking...	  
   if(oControl->sw_trck){
     // If Two-pore...

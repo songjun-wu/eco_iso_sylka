@@ -62,7 +62,7 @@ struct Control{
   bool sw_reinfilt; //switch to turn on and off the reinfiltration option
   bool sw_channel; //switch to turn on and off the channel option
   bool sw_expKsat; //switch to turn on and off the exponential profile for hydraulic conductivity
-  bool sw_expPoros; //switch to turn on and off the exponential profile for porosity
+  int toggle_Poros; // swtich for porosity profile: 0=constant, 1:exponential, 2:layer by layer
 
   /*multiple option switches*/
   //int toggle_soil_water_profile; //toggle between different soil moisture profile calculation
@@ -87,8 +87,10 @@ struct Control{
   string fn_kvkh; //vertical to horizontal ksat anisotropy ratio
   string fn_randrough; //terrain base random roughness to calcualte aerodynamic resistance (m)
   string fn_slope; //surface slope m m-1
-  string fn_poros0; //top-of-column porosity (m3.m-3)
-  string fn_kporos; // porosity profile coeff (m)
+  string fn_poros0; //top-of-column, first-layer or profile porosity (m3.m-3)
+  string fn_porosL2; // layer 2 porosity (if specified)(m3.m-3)
+  string fn_porosL3; // layer 3 porosity (if specified)(m3.m-3)
+  string fn_kporos; // porosity profile coeff (if activated) (m)
   string fn_psi_ae; //soil air entry pressure m
   string fn_BClambda; //brooks and corey lambda param
   string fn_theta_r; //residual soil moisture
@@ -219,6 +221,9 @@ struct Control{
   bool Rep_Net_Rad_sum;
   bool Rep_Total_ET;
   bool Rep_Transpiration_sum;
+  bool Rep_Transpi_sum_L1;
+  bool Rep_Transpi_sum_L2;
+  bool Rep_Transpi_sum_L3;
   bool Rep_Einterception_sum;
   bool Rep_Esoil_sum;
   bool Rep_Canopy_Water_Stor_sum;
@@ -302,6 +307,9 @@ struct Control{
   bool RepTs_Net_Rad_sum;
   bool RepTs_Total_ET;
   bool RepTs_Transpiration_sum;
+  bool RepTs_Transpi_sum_L1;
+  bool RepTs_Transpi_sum_L2;
+  bool RepTs_Transpi_sum_L3;
   bool RepTs_Einterception_sum;
   bool RepTs_Esoil_sum;
   bool RepTs_Canopy_Water_Stor_sum;
