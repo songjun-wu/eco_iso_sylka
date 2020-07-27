@@ -4,6 +4,6 @@
 
 USER_OBJS :=
 
-LIBS := -lcsf -lboost_serialization -larmadillo #-llapack -lblas
-
+LIBS := -lcsf -larmadillo -llapack -lblas -lboost_serialization 
+#-lgfortran
 # only uncomment lapack and blas calls if armadillo prompts linker errors (arma:: etc.) 

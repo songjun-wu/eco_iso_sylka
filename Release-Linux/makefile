@@ -58,7 +58,7 @@ all: ech2o_iso
 ech2o_iso: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"../lib" -L"/usr/local/lib" -fopenmp -o "ech2o_iso" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"../lib" -L"/nfs/home/sylvain.kuppel/LIB/armadillo-9.880.1" -fopenmp -o "ech2o_iso" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
