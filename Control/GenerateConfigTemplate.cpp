@@ -84,14 +84,12 @@ void GenerateConfigTemplate(const char *fn){
 
     ofOut << "#== Boolean switches" << endl;
     ofOut << "Reinfiltration = 1" << endl;
-    ofOut << "Channel = 1" << endl ;
-    ofOut << "# Exponential profiles: if set to 0, vertically-uniform with value equal to" << endl;
-    ofOut << "# the top-of-profile open (see corresponding map inputs below)" << endl;
-    ofOut << "Hydraulic_Conductivity_profile = 0" << endl << endl;
+    ofOut << "Channel = 1" << endl << endl << endl;
 
     ofOut << "# TOGGLE SWITCHES:" << endl << endl;
-    ofOut << "# Porosity: three modes: 0=constant, 1=exponential profile," << endl;
-    ofOut << "# 2=defined for each layer_profile" << endl ;
+    ofOut << "# Hydraulic conductivity and porosity profiles --> 3 options each: " << endl ;
+    ofOut << "# 0=constant, 1=exponential profile, 2=defined for each layer" << endl ;
+    ofOut << "Hydraulic_Conductivity_profile = 0" << endl ;
     ofOut << "Porosity_profile = 0 " << endl;
     ofOut << "# Vegetation dynamics (via allocation): 3 modes" << endl;
     ofOut << "# 0 -> desactivated, no dynamic allocation and constant LAI to initial value" <<endl;
@@ -166,8 +164,10 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "#   " << endl;
     ofOut << "DEM = DEM.map" << endl;
     ofOut << "Slope = slope.map " << endl;
-    ofOut << "Top-of-profile_Horiz_Hydraulic_Conductivity = Keff.map " << endl;
-    ofOut << "Horiz_Hydraulic_Conductivity_Profile_Coeff = kKsat.map " << endl;
+    ofOut << "Top-of-profile_Horiz_Hydraulic_Conductivity = Ksat.map " << endl;
+    ofOut << "Horiz_Hydraulic_Conductivity_Profile_Coeff = kKsat.map # if Ksat profile = 1" << endl;
+    ofOut << "Horiz_Hydraulic_Conductivity_Layer2 = Ksat.L2.map # if Ksat profile = 2" << endl;
+    ofOut << "Horiz_Hydraulic_Conductivity_Layer3 = Ksat.L3.map # if Ksat profile = 2" << endl;
     ofOut << "Vert_Horz_Anis_ratio = KvKh.map " << endl;
     ofOut << "Terrain_Random_Roughness = randrough.map " << endl;
     ofOut << "Top-of-profile_Porosity = poros.map " << endl;

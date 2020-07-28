@@ -32,6 +32,7 @@
 
 
 // Layer-integrated saturated hydraulic conductivities based on exponentially-decreasing profile
+// Called only if profile option=1
 int Basin::CalcKsatLayers(Control &ctrl){
 
   UINT4 r, c;
@@ -49,23 +50,15 @@ int Basin::CalcKsatLayers(Control &ctrl){
 
 	K0 = _Ksat0->matrix[r][c];
 
-	// Check if profile option is activated: exponential profile
-	if(ctrl.sw_expKsat){
-
-	  d = _soildepth->matrix[r][c];
-	  d1 = _depth_layer1->matrix[r][c];
-	  d2 = _depth_layer2->matrix[r][c];
-	  k = _kKsat->matrix[r][c];
-	  
-	  if(abs(k) > RNDOFFERR){	  
-	    _KsatL1->matrix[r][c] = k*K0 * (1 - expl(-d1/k))/ d1;
-	    _KsatL2->matrix[r][c] = k*K0 * (expl(-d1/k) - expl(-(d1+d2)/k)) / d2;
-	    _KsatL3->matrix[r][c] = k*K0 * (expl(-(d1+d2)/k) - expl(-d/k)) / (d-d1-d2);
-	  } else {
-	    _KsatL1->matrix[r][c] = K0 ;
-	    _KsatL2->matrix[r][c] = K0 ;
-	    _KsatL3->matrix[r][c] = K0 ;
-	  }
+	d = _soildepth->matrix[r][c];
+	d1 = _depth_layer1->matrix[r][c];
+	d2 = _depth_layer2->matrix[r][c];
+	k = _kKsat->matrix[r][c];
+	
+	if(abs(k) > RNDOFFERR){	  
+	  _KsatL1->matrix[r][c] = k*K0 * (1 - expl(-d1/k))/ d1;
+	  _KsatL2->matrix[r][c] = k*K0 * (expl(-d1/k) - expl(-(d1+d2)/k)) / d2;
+	  _KsatL3->matrix[r][c] = k*K0 * (expl(-(d1+d2)/k) - expl(-d/k)) / (d-d1-d2);
 	} else {
 	  _KsatL1->matrix[r][c] = K0 ;
 	  _KsatL2->matrix[r][c] = K0 ;
@@ -79,6 +72,7 @@ int Basin::CalcKsatLayers(Control &ctrl){
 }
 
 // Layer-integrated porosities based on exponentially-decreasing profile
+// Called only if profile option=1
 int Basin::CalcPorosLayers(Control &ctrl){
 
   UINT4 r, c;
@@ -95,9 +89,6 @@ int Basin::CalcPorosLayers(Control &ctrl){
 	c = _vSortedGrid.cells[j].col;
 
 	phi0 = _porosity0->matrix[r][c];
-
-	// Check if profile option is activated: exponential profile
-	// if(ctrl.toggle_Poros==1){
 
 	d = _soildepth->matrix[r][c];
 	d1 = _depth_layer1->matrix[r][c];

@@ -74,13 +74,28 @@ Basin::Basin(Control &ctrl)
     /*basin parameters and properties*/
     _slope = new grid(ctrl.path_BasinFolder + ctrl.fn_slope, ctrl.MapType);
     // Hydraulic conductivity
-    _KsatL1 = new grid(*_DEM);
-    _KsatL2 = new grid(*_DEM);
-    _KsatL3 = new grid(*_DEM);
-    _Ksat0 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
+    _Ksat0 = NULL;
     _kKsat = NULL;
-    if(ctrl.sw_expKsat)
+    if(ctrl.toggle_Ksat==0){
+      // Constant porosity
+      _KsatL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
+      _KsatL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
+      _KsatL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
+    }
+    if(ctrl.toggle_Ksat==1){
+      // Exponential profile
+      _Ksat0 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
       _kKsat = new grid(ctrl.path_BasinFolder + ctrl.fn_kKsat, ctrl.MapType);
+      _KsatL1 = new grid(*_DEM);
+      _KsatL2 = new grid(*_DEM);
+      _KsatL3 = new grid(*_DEM);
+    }
+    if(ctrl.toggle_Ksat==2){
+      // Layer-specificied
+      _KsatL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
+      _KsatL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_KsatL2, ctrl.MapType);
+      _KsatL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_KsatL3, ctrl.MapType);
+    }
     _KvKs = new grid(ctrl.path_BasinFolder + ctrl.fn_kvkh, ctrl.MapType);
 
 
@@ -280,10 +295,13 @@ Basin::Basin(Control &ctrl)
 
     try{
       //calculate the value of Ksat for each layer (integrated from expo profile)
-      CalcKsatLayers(ctrl); 
-      if(errno!=0){
-	cout << "Error creating Ksat for each layer: " << endl;
-	throw string("Ksat, soil depths, kKsat");
+      // only call if exponential profile, otherwise it's already specified
+      if(ctrl.toggle_Ksat==1){
+	CalcKsatLayers(ctrl); 
+	if(errno!=0){
+	  cout << "Error creating Ksat for each layer: " << endl;
+	  throw string("Ksat, soil depths, kKsat");
+	}
       }
       //calculate the value of porosity for each layer (integrated from expo profile)
       // only call if exponential profile, otherwise it's already specified

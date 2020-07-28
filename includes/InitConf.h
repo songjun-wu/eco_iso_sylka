@@ -61,11 +61,11 @@ struct Control{
   /*Option switches*/
   bool sw_reinfilt; //switch to turn on and off the reinfiltration option
   bool sw_channel; //switch to turn on and off the channel option
-  bool sw_expKsat; //switch to turn on and off the exponential profile for hydraulic conductivity
-  int toggle_Poros; // swtich for porosity profile: 0=constant, 1:exponential, 2:layer by layer
 
   /*multiple option switches*/
   //int toggle_soil_water_profile; //toggle between different soil moisture profile calculation
+  int toggle_Ksat; // handle for hydrualic conductivity profile: 0=uniform, 1=exponential, 2:layer by layer
+  int toggle_Poros; // handle for porosity profile: 0=constant, 1:exponential, 2:layer by layer
   int toggle_veg_dyn; //switch to turn on and off the dynamic vegetation module (allocation and lai calculation)
   int toggle_ra; //toggle between aerodynamic resistance options
   int toggle_rs; //toggle between different soil resistance option
@@ -84,6 +84,8 @@ struct Control{
   /*Soil properties and parameters*/
   string fn_Ksat0; //top-of-column soil hydraulic conductivity ms-1
   string fn_kKsat; //soil hydraulic conductivity profile coeff m
+  string fn_KsatL2; // layer 2 hydraulic conductivity (if specified)(m.s-1)
+  string fn_KsatL3; // layer 3 hydraulic conductivity (if specified)(m.s-1)
   string fn_kvkh; //vertical to horizontal ksat anisotropy ratio
   string fn_randrough; //terrain base random roughness to calcualte aerodynamic resistance (m)
   string fn_slope; //surface slope m m-1

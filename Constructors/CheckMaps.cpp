@@ -63,23 +63,64 @@ void Basin::CheckMaps(Control &ctrl) {
 	throw e;
       }
 
-      if (_Ksat0->matrix[r][c] == _Ksat0->nodata) {
-	string e(
-		 "Ksat0 map contains no data values inside the valid domain...\n");
-	throw e;
+      if(ctrl.toggle_Ksat!=1){
+	if (_KsatL1->matrix[r][c] == _KsatL1->nodata) {
+	  string e(
+		   "Layer 1 hydraulic conductivity map contains no data values inside the valid domain...\n");
+	  throw e;
+	}
+	if (_KsatL1->matrix[r][c] <= 0) {
+	  string e(
+		   "Layer 1 hydraulic conductivity map contains negative or zero values inside the valid domain...\n");
+	  throw e;
+	}
       }
-      if(ctrl.sw_expKsat){
+      if(ctrl.toggle_Ksat==1){
+	if (_Ksat0->matrix[r][c] == _Ksat0->nodata) {
+	  string e(
+		   "Top-of-profile Ksat map contains no data values inside the valid domain...\n");
+	  throw e;
+	}
+	if (_Ksat0->matrix[r][c] <= 0) {
+	  string e(
+		   "Top-of-profile Ksat map contains negative or zero values inside the valid domain...\n");
+	  throw e;
+	}
 	if (_kKsat->matrix[r][c] == _kKsat->nodata) {
 	  string e(
 		   "Ksat profile map contains no data values inside the valid domain...\n");
 	  throw e;
 	}
+	if (_kKsat->matrix[r][c] <= 0) {
+	  string e(
+		   "Ksat profile map contains negative or zero values inside the valid domain...\n");
+	  throw e;
+	}
       }
-      if (_slope->matrix[r][c] <= 0) {
-	string e(
-		 "Slope map contains negative or zero values inside the valid domain...\n");
-	throw e;
+      if(ctrl.toggle_Ksat==2){
+	if (_KsatL2->matrix[r][c] == _KsatL2->nodata) {
+	  string e(
+		   "Layer 2 Ksat map contains no data values inside the valid domain...\n");
+	  throw e;
+	}
+	if (_KsatL3->matrix[r][c] == _KsatL3->nodata) {
+	  string e(
+		   "Layer 3 Ksat map contains no data values inside the valid domain...\n");
+	  throw e;
+	}
+	if (_KsatL2->matrix[r][c] <= 0) {
+	  string e(
+		   "Layer 2 Ksat map contains negative or zero values inside the valid domain...\n");
+	  throw e;
+	}
+	if (_KsatL3->matrix[r][c] <= 0) {
+	  string e(
+		   "Layer 3 Ksat map contains negative or zero values inside the valid domain...\n");
+	  throw e;
+	}
       }
+
+
       if(ctrl.toggle_Poros!=1){
 	if (_porosityL1->matrix[r][c] == _porosityL1->nodata) {
 	  string e(

@@ -67,7 +67,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 
     sw_reinfilt = Config.read<bool>("Reinfiltration");
     sw_channel = Config.read<bool>("Channel");
-    sw_expKsat = Config.read<bool>("Hydraulic_Conductivity_profile");
+    toggle_Ksat = Config.read<bool>("Hydraulic_Conductivity_profile");
     toggle_Poros = Config.read<int>("Porosity_profile");
 
     // Vegetation dynamics 
@@ -119,8 +119,12 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
     Config.readInto(fn_patches, "ForestPatches");
 
     Config.readInto(fn_Ksat0, "Top-of-profile_Horiz_Hydraulic_Conductivity");
-    if(sw_expKsat)
+    if(toggle_Ksat==1)
       Config.readInto(fn_kKsat, "Horiz_Hydraulic_Conductivity_Profile_Coeff");
+    if(toggle_Ksat==2){
+      Config.readInto(fn_KsatL2, "Horiz_Hydraulic_Conductivity_Layer2");
+      Config.readInto(fn_KsatL3, "Horiz_Hydraulic_Conductivity_Layer3");
+    }
     Config.readInto(fn_kvkh, "Vert_Horz_Anis_ratio");
     Config.readInto(fn_randrough, "Terrain_Random_Roughness");
     Config.readInto(fn_slope, "Slope");
