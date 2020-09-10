@@ -164,10 +164,10 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "#   " << endl;
     ofOut << "DEM = DEM.map" << endl;
     ofOut << "Slope = slope.map " << endl;
-    ofOut << "Top-of-profile_Horiz_Hydraulic_Conductivity = Ksat.map " << endl;
-    ofOut << "Horiz_Hydraulic_Conductivity_Profile_Coeff = kKsat.map # if Ksat profile = 1" << endl;
-    ofOut << "Horiz_Hydraulic_Conductivity_Layer2 = Ksat.L2.map # if Ksat profile = 2" << endl;
-    ofOut << "Horiz_Hydraulic_Conductivity_Layer3 = Ksat.L3.map # if Ksat profile = 2" << endl;
+    ofOut << "Top-of-profile_Horiz_Hydraulic_Conductivity = Khsat.map " << endl;
+    ofOut << "Horiz_Hydraulic_Conductivity_Profile_Coeff = kKhsat.map # if Ksat profile = 1" << endl;
+    ofOut << "Horiz_Hydraulic_Conductivity_Layer2 = Khsat.L2.map # if Ksat profile = 2" << endl;
+    ofOut << "Horiz_Hydraulic_Conductivity_Layer3 = Khsat.L3.map # if Ksat profile = 2" << endl;
     ofOut << "Vert_Horz_Anis_ratio = KvKh.map " << endl;
     ofOut << "Terrain_Random_Roughness = randrough.map " << endl;
     ofOut << "Top-of-profile_Porosity = poros.map " << endl;
@@ -242,9 +242,12 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "# -------------------------------------------------------" << endl ;
     ofOut << "Report_Soil_Sat_Deficit = 0 " << endl;
     ofOut << "Report_Ground_Water = 0 " << endl;
-    ofOut << "Report_Soil_Net_Rad = 0 " << endl;
-    ofOut << "Report_Soil_LE = 0 " << endl;
-    ofOut << "Report_Sens_Heat = 0 " << endl;
+    ofOut << "Report_Surface_Net_Rad = 0 " << endl;
+    ofOut << "Report_Vegetation_Net_Rad = 0 " << endl;
+    ofOut << "Report_Surface_Latent_Heat = 0 " << endl;
+    ofOut << "Report_Vegetation_Latent_Heat = 0 " << endl;
+    ofOut << "Report_Surface_Sens_Heat = 0 " << endl;
+    ofOut << "Report_Vegetation_Sens_Heat = 0 " << endl;
     ofOut << "Report_Grnd_Heat = 0 " << endl;
     ofOut << "Report_Snow_Heat = 0 " << endl;
     ofOut << "Report_Soil_Temperature = 0 " << endl;
@@ -257,7 +260,6 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Report_Transpiration_Layer3 = 0 " << endl;
     ofOut << "Report_Einterception_sum = 0 " << endl;
     ofOut << "Report_Esoil_sum = 0 " << endl;
-    ofOut << "Report_Net_Rad_sum = 0 " << endl ;
     ofOut << "Report_Canopy_Water_Stor_sum = 0 " << endl << endl;
 
     ofOut << "Report_Veget_frac = 0 " << endl;
@@ -349,9 +351,12 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Ts_Field_Capacity_L3 = 0 " << endl;
     ofOut << "Ts_Soil_Sat_Deficit = 0 " << endl;
     ofOut << "Ts_Ground_Water = 0 " << endl;
-    ofOut << "Ts_Soil_Net_Rad = 0 " << endl;
-    ofOut << "Ts_Soil_LE = 0 " << endl;
-    ofOut << "Ts_Sens_Heat = 0 " << endl;
+    ofOut << "Ts_Surface_Net_Rad = 0 " << endl;
+    ofOut << "Ts_Vegetation_Net_Rad = 0 " << endl;
+    ofOut << "Ts_Surface_Latent_Heat = 0 " << endl;
+    ofOut << "Ts_Vegetation_Latent_Heat = 0 " << endl;
+    ofOut << "Ts_Surface_Sens_Heat = 0 " << endl;
+    ofOut << "Ts_Vegetation_Sens_Heat = 0 " << endl;
     ofOut << "Ts_Grnd_Heat = 0 " << endl;
     ofOut << "Ts_Snow_Heat = 0 " << endl;
     ofOut << "Ts_Soil_Temperature = 0 " << endl;
@@ -364,7 +369,6 @@ void GenerateConfigTemplate(const char *fn){
     ofOut << "Ts_Transpiration_Layer3 = 0 " << endl;
     ofOut << "Ts_Einterception_sum = 1 " << endl;
     ofOut << "Ts_Esoil_sum = 1 " << endl;
-    ofOut << "Ts_Net_Rad_sum = 0 " << endl ;
     ofOut << "Ts_Canopy_Water_Stor_sum = 0 " << endl << endl;
 
     ofOut << "Ts_Veget_frac = 0 " << endl;

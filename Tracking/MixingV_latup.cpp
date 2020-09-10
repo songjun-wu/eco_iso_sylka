@@ -73,7 +73,7 @@ void Tracking::MixingV_latup(Basin &bsn, Control &ctrl,
   double L3toMW2 = 0;
   double MW2toTB1 = 0;
   double MW2toMW1 = 0;
-  double MW1toSrf = 0;
+  //double MW1toSrf = 0;
 
   double d_old = 0;
 
@@ -90,7 +90,7 @@ void Tracking::MixingV_latup(Basin &bsn, Control &ctrl,
 				std::max<double>(0,d1*(theta_MW1-theta1_old)));
     MW2toMW1 = std::max<double>(0,L2toL1 - MW2toTB1);
     // Return flow to surface: : only from mobile water in L1
-    MW1toSrf = L1toSrf;
+    // MW1toSrf = L1toSrf;
   }
 
   // Layer 3 (GW included) --------------------------------------------------------------------

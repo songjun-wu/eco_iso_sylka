@@ -22,7 +22,7 @@
  *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
- * SolveEnergyBalance.cpp
+ * SolveSurfaceFluxes.cpp
  *
  *  Created on: Nov 20, 2009
  *      Author: marco.maneta
@@ -233,9 +233,9 @@ int Basin::SolveSurfaceFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	_soilmoist2->matrix[r][c] = theta2;
 	_soilmoist3->matrix[r][c] = theta3;
 	
-	_Rn->matrix[r][c] = nr;
-	_latheat->matrix[r][c] = le;
-	_sensheat->matrix[r][c] = sens;
+	_netrad_srf->matrix[r][c] = nr;
+	_latheat_srf->matrix[r][c] = le;
+	_sensheat_srf->matrix[r][c] = sens;
 	_grndheat->matrix[r][c] = grndh;
 	_snwheat->matrix[r][c] = snowh;
 	_Temp_s_old->matrix[r][c] = Tsold;

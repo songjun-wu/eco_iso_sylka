@@ -96,7 +96,8 @@ class Forest {
 				 REAL8 theta_r1, REAL8 theta_r2, REAL8 theta_r3,
 				 REAL8 rootdepth, 
 				 REAL8 psiae, REAL8 bclambda, REAL8 ra, 
-				 REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a, REAL8 &netR_a,
+				 REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a,
+				 REAL8 &LE_a, REAL8 &H_a, REAL8 &netR_a,
 				 UINT4 s, UINT4 r, UINT4 c);
   int CanopyInterception(Atmosphere &atm, Control &ctrl, REAL8 &DelCanStor, REAL8 &D, UINT4 s, UINT4 r, UINT4 c);
   int GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl);

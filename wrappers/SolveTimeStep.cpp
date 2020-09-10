@@ -32,12 +32,12 @@
 
 
 int SolveTimeStep(){
-  
+
   oBasin->SolveCanopyFluxes(*oAtmosphere, *oControl, *oTracking);
   oBasin->SolveSurfaceFluxes(*oAtmosphere, *oControl, *oTracking);
   oBasin->CalculateGrowForest(*oAtmosphere, *oControl);
   oBasin->DailyGWRouting(*oAtmosphere, *oControl, *oTracking);
-
+  
   if(oControl->Rep_WaterTableDepth || oControl->RepTs_WaterTableDepth)
     oBasin->CalculateWaterTableDepth(*oControl);
   

@@ -67,7 +67,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 
     sw_reinfilt = Config.read<bool>("Reinfiltration");
     sw_channel = Config.read<bool>("Channel");
-    toggle_Ksat = Config.read<bool>("Hydraulic_Conductivity_profile");
+    toggle_Ksat = Config.read<int>("Hydraulic_Conductivity_profile");
     toggle_Poros = Config.read<int>("Porosity_profile");
 
     // Vegetation dynamics 
@@ -116,7 +116,7 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
 
     Config.readInto(fn_dem, "DEM");
     Config.readInto(fn_climzones, "ClimateZones");
-    Config.readInto(fn_patches, "ForestPatches");
+    Config.readInto(fn_patches, "ForestPatches"); 
 
     Config.readInto(fn_Ksat0, "Top-of-profile_Horiz_Hydraulic_Conductivity");
     if(toggle_Ksat==1)
@@ -225,9 +225,12 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
     Rep_Soil_Sat_Deficit = Config.read<bool>("Report_Soil_Sat_Deficit");
     Rep_GWater = Config.read<bool>("Report_Ground_Water");
     Rep_Total_ET = Config.read<bool>("Report_Total_ET");
-    Rep_Soil_Net_Rad = Config.read<bool>("Report_Soil_Net_Rad");
-    Rep_Soil_LE = Config.read<bool>("Report_Soil_LE");
-    Rep_Sens_Heat = Config.read<bool>("Report_Sens_Heat");
+    Rep_Net_Rad_srf = Config.read<bool>("Report_Surface_Net_Rad");
+    Rep_Net_Rad_veg = Config.read<bool>("Report_Vegetation_Net_Rad");
+    Rep_Latent_Heat_srf = Config.read<bool>("Report_Surface_Latent_Heat");
+    Rep_Latent_Heat_veg = Config.read<bool>("Report_Vegetation_Latent_Heat");
+    Rep_Sens_Heat_srf = Config.read<bool>("Report_Surface_Sens_Heat");
+    Rep_Sens_Heat_veg = Config.read<bool>("Report_Vegetation_Sens_Heat");
     Rep_Grnd_Heat = Config.read<bool>("Report_Grnd_Heat");
     Rep_Snow_Heat = Config.read<bool>("Report_Snow_Heat");
     Rep_Soil_Temperature = Config.read<bool>("Report_Soil_Temperature");
@@ -239,7 +242,6 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
     Rep_Transpi_sum_L3 = Config.read<bool>("Report_Transpiration_Layer3");
     Rep_Einterception_sum = Config.read<bool>("Report_Einterception_sum");
     Rep_Esoil_sum = Config.read<bool>("Report_Esoil_sum");
-    Rep_Net_Rad_sum = Config.read<bool>("Report_Net_Rad_sum");
     Rep_Canopy_Water_Stor_sum = Config.read<bool>("Report_Canopy_Water_Stor_sum");
 
     Rep_Veget_frac = Config.read<bool>("Report_Veget_frac");
@@ -328,14 +330,15 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
     RepTs_Field_Capacity_L3 = Config.read<bool>("Ts_Field_Capacity_L3");
     RepTs_Soil_Sat_Deficit = Config.read<bool>("Ts_Soil_Sat_Deficit");
     RepTs_GroundWater = Config.read<bool>("Ts_Ground_Water");
-    RepTs_Soil_Net_Rad = Config.read<bool>("Ts_Soil_Net_Rad");
-    RepTs_Soil_LE = Config.read<bool>("Ts_Soil_LE");
-    RepTs_Sens_Heat = Config.read<bool>("Ts_Sens_Heat");
-    RepTs_Grnd_Heat = Config.read<bool>("Ts_Grnd_Heat");
-    RepTs_Snow_Heat = Config.read<bool>("Ts_Snow_Heat");
+
+    RepTs_Net_Rad_srf = Config.read<bool>("Ts_Surface_Net_Rad");
+    RepTs_Net_Rad_veg = Config.read<bool>("Ts_Vegetation_Net_Rad");
+    RepTs_Latent_Heat_srf = Config.read<bool>("Ts_Surface_Latent_Heat");
+    RepTs_Latent_Heat_veg = Config.read<bool>("Ts_Vegetation_Latent_Heat");
+    RepTs_Sens_Heat_srf = Config.read<bool>("Ts_Surface_Sens_Heat");
+    RepTs_Sens_Heat_veg = Config.read<bool>("Ts_Vegetation_Sens_Heat");
     RepTs_Soil_Temperature = Config.read<bool>("Ts_Soil_Temperature");
     RepTs_Skin_Temperature = Config.read<bool>("Ts_Skin_Temperature");
-
     RepTs_Total_ET = Config.read<bool>("Ts_Total_ET");
     RepTs_Transpiration_sum = Config.read<bool>("Ts_Transpiration_sum");
     RepTs_Transpi_sum_L1 = Config.read<bool>("Ts_Transpiration_Layer1");
@@ -343,7 +346,6 @@ int Control::ReadConfigFile(string confilename /*= "config.ini"*/)
     RepTs_Transpi_sum_L3 = Config.read<bool>("Ts_Transpiration_Layer3");
     RepTs_Einterception_sum = Config.read<bool>("Ts_Einterception_sum");
     RepTs_Esoil_sum = Config.read<bool>("Ts_Esoil_sum");
-    RepTs_Net_Rad_sum = Config.read<bool>("Ts_Net_Rad_sum");
     RepTs_Canopy_Water_Stor_sum = Config.read<bool>("Ts_Canopy_Water_Stor_sum");
 
     RepTs_Veget_frac = Config.read<bool>("Ts_Veget_frac");

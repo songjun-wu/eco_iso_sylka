@@ -134,10 +134,12 @@ class Basin {
   grid *_GrndWater; //water stored in the gw system at the end of the time step (m)
   grid *_GWupstreamBC; //gw flux upstream boundary condition (m2.s-1)
 
-  grid *_Rn; //Net radiation for the soil surface Wm-2
-  grid *_Rn_sum; //Net radiation summed at the top of the canopy Wm-2
-  grid *_latheat; //latent heat flux into the atmosphere Wm-2
-  grid *_sensheat; //sensible heat into the atmosphere Wm-2
+  grid *_netrad_srf; // Surface-level net radiation for the soil surface Wm-2
+  grid *_netrad_veg; // canopy-level net radiation summed at the top of the canopy Wm-2
+  grid *_latheat_srf; // surface-level latent heat flux into the atmosphere Wm-2
+  grid *_latheat_veg; // canopy-level (summed) latent heat flux into the atmosphere Wm-2
+  grid *_sensheat_srf; // surface-level sensible heat into the atmosphere Wm-2
+  grid *_sensheat_veg; // canopy-level (summed) sensible heat into the atmosphere Wm-2
   grid *_grndheat; //ground heat flux Wm-2
   grid *_snwheat; //snow heat flux Wm-2
   grid *_Temp_s; //temperature of the surface in dg C
@@ -357,20 +359,28 @@ class Basin {
     return _depth_layer2;
   }
 
-  grid *getNetRad() const {
-    return _Rn;
+  grid *getNetRad_srf() const {
+    return _netrad_srf;
   }
 
-  grid *getNetRad_sum() const {
-    return _Rn_sum;
+  grid *getNetRad_veg() const {
+    return _netrad_veg;
   }
 
-  grid *getLatheat() const {
-    return _latheat;
+  grid *getLatheat_srf() const {
+    return _latheat_srf;
   }
 
-  grid *getSensHeat() const {
-    return _sensheat;
+  grid *getLatheat_veg() const {
+    return _latheat_veg;
+  }
+
+  grid *getSensHeat_srf() const {
+    return _sensheat_srf;
+  }
+  
+  grid *getSensHeat_veg() const {
+    return _sensheat_veg;
   }
 
   grid *getGrndHeat() const {

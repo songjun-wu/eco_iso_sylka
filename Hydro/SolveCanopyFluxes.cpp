@@ -47,6 +47,8 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 
   REAL8 evap = 0; //evaporation for the tree groves
   REAL8 transp = 0; //transpiratin for the tree groves
+  REAL8 LE = 0; //latent heat flux for the tree groves (evapI + transpi)
+  REAL8 H = 0; //sensible heat flux for the tree groves
   REAL8 netR = 0; //net radiation for the tree groves
   REAL8 evap_f = 0; //total evaporation for the entire cell
   REAL8 transp_f = 0; //total transpiration for the entire cell
@@ -102,7 +104,9 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
   REAL8 dth1, dth2, dth3;
   REAL8 theta_MW1, theta_MW2;
   // Initialize to zero
-  _Rn_sum->reset();
+  _latheat_veg->reset();
+  _sensheat_veg->reset();
+  _netrad_veg->reset();
   _FluxTranspiL1->reset();
   _FluxTranspiL2->reset();
   _FluxTranspiL3->reset();
@@ -115,7 +119,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 #pragma omp parallel default(none)					\
   private( s, r,c, p,  treeheight, wind, za, z0o, zdo,			\
 	   Tp, maxTp, minTp, snow, rain, sno_rain_thres, evap,		\
-	   transp, netR, evap_f, transp_f, D, DelCanStor, theta, theta2, theta3, theta_available, ra, \
+	   transp, LE, H, netR, evap_f, transp_f, D, DelCanStor, theta, theta2, theta3, theta_available, ra, \
 	   psi_ae, bclambda, rootdepth, froot1, froot2, froot3, d1, d2, d3, \
 	   theta_r1, theta_r2, theta_r3, fc3,					\
 	   pTrp1, pTrp2, pTrp3, veg_p, d2HevapT_f, d18OevapT_f, AgeevapT_f, \
@@ -196,6 +200,7 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	D = 0;
 	evap = 0;
 	transp = 0;
+	LE = H = 0 ;
 	netR = 0;
      
 	if (s == nsp - 1) { //if this is bare ground set D to precip and skip the tree stuff
@@ -276,13 +281,15 @@ int Basin::SolveCanopyFluxes(Atmosphere &atm, Control &ctrl, Tracking &trck) {
 	  fForest->SolveCanopyEnergyBalance(*this, atm, ctrl, 
 					    theta_r1, theta_r2, theta_r3,
 					    rootdepth, psi_ae, bclambda, 
-					    ra, DelCanStor, evap, transp, netR, 
+					    ra, DelCanStor, evap, transp, LE, H, netR, 
 					    s, r, c);
        
 	  // Canopy evap-related update etc.
 	  _CanopyStorage->matrix[r][c] += DelCanStor * p;
        
-	  _Rn_sum->matrix[r][c] += netR * p ;
+	  _latheat_veg->matrix[r][c] += LE * p ;
+	  _sensheat_veg->matrix[r][c] += H * p ;
+	  _netrad_veg->matrix[r][c] += netR * p ;
        
 	  if (_CanopyStorage->matrix[r][c] < RNDOFFERR)
 	    _CanopyStorage->matrix[r][c] = 0.0;

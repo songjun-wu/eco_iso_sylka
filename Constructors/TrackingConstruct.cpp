@@ -157,7 +157,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_d2H_TB2 = new grid(*bsn.getDEM());
       }
     }
-	  
+
     if(ctrl.sw_18O){
       //_d18Oinput = new grid(*bsn.getDEM(), -60);
       _d18Ocanopy_sum = new grid(*bsn.getDEM());
@@ -188,7 +188,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	_d18O_TB2 = new grid(*bsn.getDEM());	    
       }
     }
-	  
+
     if(ctrl.sw_Age){
       //_Ageinput = new grid(*bsn.getDEM(), -60);
       _Agecanopy_sum = new grid(*bsn.getDEM());
@@ -213,7 +213,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
       _FAgeLattoGW = new grid(*bsn.getDEM());
 
       // Age domain
-      if (access((ctrl.path_BasinFolder + ctrl.fn_AgeDomain).c_str(), F_OK) >0) {
+      if (access((ctrl.path_BasinFolder + ctrl.fn_AgeDomain).c_str(), F_OK) != -1) {
 	printf("Age domain file found! Ages will only be incremented in this 'control volume'...\n");
 	_AgeDomain = new grid(ctrl.path_BasinFolder + ctrl.fn_AgeDomain, ctrl.MapType);
       }
@@ -221,7 +221,7 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 	printf("Age domain file not found! Using the whole simulation domain as 'control volume'...\n");
 	_AgeDomain = new grid(ctrl.path_BasinFolder + ctrl.fn_dem, ctrl.MapType);
       }
-	
+
       if(ctrl.sw_TPD){
 	_Age_MW1 = new grid(*bsn.getDEM());
 	_Age_MW2 = new grid(*bsn.getDEM());
@@ -236,18 +236,18 @@ Tracking::Tracking(Control &ctrl, Basin &bsn)
 
       //Partial check of maps mainly to make sure no no data is written within the valid domain
       CheckMapsTrck(ctrl, bsn);
-      if(errno!=0){
+      /*if(errno!=0){
 	cout << "Error creating tracking maps: " << endl;
 	throw string("  ");
-      }
-            
+      }*/
+      
       // If Two-pore domain, initialize the maps based on inputs maps
       if(ctrl.sw_TPD){
 	CalcInitTPD(bsn, ctrl);
-	if(errno!=0){
+	/*if(errno!=0){
 	  cout << "Error calculating the initial tightly-bound / mobile tracking signatures: " << endl;
 	  throw string("  ");
-	}
+	  }*/
       }
       
     } catch (string e){

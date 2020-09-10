@@ -48,13 +48,14 @@ Basin::Basin(Control &ctrl)
 
     _ldd = new grid(ctrl.path_BasinFolder + ctrl.fn_ldd, ctrl.MapType);
 
-    printf("Checking if file %s exists...", (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+    printf("Checking if file %s exists...", (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf\n").c_str());
     /*
      * Checks if there is a _vSordtedGrid object with the correct name in the spatial folder
      */
     if (access((ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str(), F_OK) != -1) {
-      printf("File Found!. Loading object...\n");
+      printf("File Found!. Loading object...");
       loadSortedGrid(_vSortedGrid, (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+      printf(" done.\n");
     }
     else{
       printf("\nFile not found!. Initializing and sorting grid...\n");
@@ -67,7 +68,11 @@ Basin::Basin(Control &ctrl)
       printf("Sorting done. Saving serialized sorted grid object for subsequent runs...\n");
 
       saveSortedGrid(_vSortedGrid, (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+      printf(" done.\n");
     }
+
+    //reset errno flag after access trips it to check if svf file exists
+    errno=0;
 
     fForest = new Forest(ctrl); //constructs the Forest object
 
@@ -164,10 +169,12 @@ Basin::Basin(Control &ctrl)
     _fieldcapL1 = new grid(*_DEM);
     _fieldcapL2 = new grid(*_DEM);
     _fieldcapL3 = new grid(*_DEM);
-    _Rn = new grid(*_DEM);
-    _Rn_sum = new grid(*_DEM);
-    _latheat = new grid(*_DEM);
-    _sensheat = new grid(*_DEM);
+    _netrad_srf = new grid(*_DEM);
+    _netrad_veg = new grid(*_DEM);
+    _latheat_srf = new grid(*_DEM);
+    _latheat_veg = new grid(*_DEM);
+    _sensheat_srf = new grid(*_DEM);
+    _sensheat_veg = new grid(*_DEM);
     _grndheat = new grid(*_DEM);
     _snwheat = new grid(*_DEM);
     _Temp_s = new grid(*_DEM);
@@ -367,14 +374,18 @@ Basin::Basin(Control &ctrl)
 	delete _ldd;
       if(_snow)
 	delete _snow;
-      if(_Rn)
-	delete _Rn;
-      if(_Rn_sum)
-	delete _Rn_sum;
-      if(_latheat)
-	delete _latheat;
-      if(_sensheat)
-	delete _sensheat;
+      if(_netrad_srf)
+	delete _netrad_srf;
+      if(_netrad_veg)
+	delete _netrad_veg;
+      if(_latheat_srf)
+	delete _latheat_srf;
+      if(_latheat_veg)
+	delete _latheat_veg;
+      if(_sensheat_srf)
+	delete _sensheat_srf;
+      if(_sensheat_veg)
+	delete _sensheat_veg;
       if(_grndheat)
 	delete _grndheat;
       if(_snwheat)

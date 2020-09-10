@@ -57,19 +57,19 @@ void Tracking::MixingV_evapS(Atmosphere &atm, Basin &bsn, Control &ctrl,
   double d2H_MWevap, d18O_MWevap;//, Age_MWevap;
   
   double theta_MW1 = 0;
-  double poros = 0;
+  //double poros = 0;
 
   double d_old = 0;
 
   if(ctrl.sw_TPD){
     theta_MW1 = bsn.getMoistureMW1()->matrix[r][c];
-    poros = bsn.getPorosityL1()->matrix[r][c];
+    //poros = bsn.getPorosityL1()->matrix[r][c];
     V_TBold = min<double>(V_old, theta_MW1*d1);
     V_MWold = max<double>(0, V_old - V_TBold);
     //evapS_MW = min<double>(evapS*(poros - theta_MW1)/(poros - bsn.getSoilMoistR()->matrix[r][c]),
     //			   V_MWold);
     // Evaporation takes from both domains proportionnally to their content (and not of 
-    // relavitve pore volume, as before)
+    // relative pore volume, as before)
     evapS_MW = evapS * V_MWold / V_old;
     evapS_TB = evapS - evapS_MW;
     V_MWnew = V_MWold - evapS_MW;

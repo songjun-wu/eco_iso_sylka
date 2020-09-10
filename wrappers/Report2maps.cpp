@@ -105,14 +105,18 @@ int Report2Maps(){
     WriteMapSeries(oBasin->getSaturationDeficit(), "SatDef", oControl->current_ts_count);
   if (oControl->Rep_GWater)
     WriteMapSeries(oBasin->getGrndWater(), "GW", oControl->current_ts_count);
-  if (oControl->Rep_Soil_Net_Rad)
-    WriteMapSeries(oBasin->getNetRad(), "NRs", oControl->current_ts_count);
-  if (oControl->Rep_Net_Rad_sum)
-    WriteMapSeries(oBasin->getNetRad_sum(), "NRtot", oControl->current_ts_count);
-  if (oControl->Rep_Soil_LE)
-    WriteMapSeries(oBasin->getLatheat(), "LEs", oControl->current_ts_count);
-  if (oControl->Rep_Sens_Heat)
-    WriteMapSeries(oBasin->getSensHeat(), "SensH", oControl->current_ts_count);
+  if (oControl->Rep_Net_Rad_srf)
+    WriteMapSeries(oBasin->getNetRad_srf(), "NRs", oControl->current_ts_count);
+  if (oControl->Rep_Net_Rad_veg)
+    WriteMapSeries(oBasin->getNetRad_veg(), "NRv", oControl->current_ts_count);
+  if (oControl->Rep_Latent_Heat_srf)
+    WriteMapSeries(oBasin->getLatheat_srf(), "LatHs", oControl->current_ts_count);
+  if (oControl->Rep_Latent_Heat_veg)
+    WriteMapSeries(oBasin->getLatheat_veg(), "LatHv", oControl->current_ts_count);
+  if (oControl->Rep_Sens_Heat_srf)
+    WriteMapSeries(oBasin->getSensHeat_srf(), "SenHs", oControl->current_ts_count);
+  if (oControl->Rep_Sens_Heat_veg)
+    WriteMapSeries(oBasin->getSensHeat_veg(), "SenHv", oControl->current_ts_count);
   if (oControl->Rep_Grnd_Heat)
     WriteMapSeries(oBasin->getGrndHeat(), "GrndH", oControl->current_ts_count);
   if (oControl->Rep_Snow_Heat)
@@ -755,35 +759,51 @@ int Report2Ts(){
 			      oControl->path_ResultsFolder + "GroundWater.tab",
 			      oControl->current_ts_count);
   }
-  if (oControl->RepTs_Soil_Net_Rad){
+  if (oControl->RepTs_Net_Rad_srf){
     if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "NetRadS.tab");
-    oReport->ReportTimeSeries(oBasin->getNetRad(),
-			      oControl->path_ResultsFolder + "NetRadS.tab",
+      oReport->RenameFile(oControl->path_ResultsFolder + "NetRad_srf.tab");
+    oReport->ReportTimeSeries(oBasin->getNetRad_srf(),
+			      oControl->path_ResultsFolder + "NetRad_srf.tab",
 			      oControl->current_ts_count);
   }
-  if (oControl->RepTs_Net_Rad_sum){
+  if (oControl->RepTs_Net_Rad_veg){
     if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "NetRadtot.tab");
-    oReport->ReportTimeSeries(oBasin->getNetRad_sum(),
-			      oControl->path_ResultsFolder + "NetRadtot.tab",
+      oReport->RenameFile(oControl->path_ResultsFolder + "NetRad_veg.tab");
+    oReport->ReportTimeSeries(oBasin->getNetRad_veg(),
+			      oControl->path_ResultsFolder + "NetRad_veg.tab",
 			      oControl->current_ts_count);
   }
 
-  if (oControl->RepTs_Soil_LE){
+  if (oControl->RepTs_Latent_Heat_srf){
     if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "LatHeat.tab");
-    oReport->ReportTimeSeries(oBasin->getLatheat(),
-			      oControl->path_ResultsFolder + "LatHeat.tab",
+      oReport->RenameFile(oControl->path_ResultsFolder + "LatHeat_srf.tab");
+    oReport->ReportTimeSeries(oBasin->getLatheat_srf(),
+			      oControl->path_ResultsFolder + "LatHeat_srf.tab",
 			      oControl->current_ts_count);
   }
-  if (oControl->RepTs_Sens_Heat){
+  if (oControl->RepTs_Latent_Heat_veg){
     if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "SensHeat.tab");
-    oReport->ReportTimeSeries(oBasin->getSensHeat(),
-			      oControl->path_ResultsFolder + "SensHeat.tab",
+      oReport->RenameFile(oControl->path_ResultsFolder + "LatHeat_veg.tab");
+    oReport->ReportTimeSeries(oBasin->getLatheat_veg(),
+			      oControl->path_ResultsFolder + "LatHeat_veg.tab",
 			      oControl->current_ts_count);
   }
+
+  if (oControl->RepTs_Sens_Heat_srf){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "SensHeat_srf.tab");
+    oReport->ReportTimeSeries(oBasin->getSensHeat_srf(),
+			      oControl->path_ResultsFolder + "SensHeat_srf.tab",
+			      oControl->current_ts_count);
+  }
+  if (oControl->RepTs_Sens_Heat_veg){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "SensHeat_veg.tab");
+    oReport->ReportTimeSeries(oBasin->getSensHeat_veg(),
+			      oControl->path_ResultsFolder + "SensHeat_veg.tab",
+			      oControl->current_ts_count);
+  }
+  
   if (oControl->RepTs_Grnd_Heat){
     if(oControl->GetTimeStep() <= oControl->report_times)
       oReport->RenameFile(oControl->path_ResultsFolder + "GrndHeat.tab");

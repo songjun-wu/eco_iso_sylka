@@ -44,12 +44,12 @@ double Basin::MeltHeat(Atmosphere &atm, Control &ctrl, const double &Ts, const d
 
 	L1 = rho_w * lat_heat_fus * swe / ctrl.dt;
 	L2 = rho_w * lat_heat_fus * M * Ts;
-
+	
 	if (L1 < L2)
-		return -L1;
+	  return -L1;
 	else
-		return -L2;
-
-								//	-1*min<double>(rho_w * lat_heat_fus * swe / ctrl.dt, rho_w * lat_heat_fus * M * Ts);
-
+	  return -L2;
+	
+	//	-1*min<double>(rho_w * lat_heat_fus * swe / ctrl.dt, rho_w * lat_heat_fus * M * Ts);
+	
 }

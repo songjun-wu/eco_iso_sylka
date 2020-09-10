@@ -174,9 +174,12 @@ struct Control{
   bool Rep_Field_Capacity_L3;
   bool Rep_Soil_Sat_Deficit;
   bool Rep_GWater;
-  bool Rep_Soil_Net_Rad;
-  bool Rep_Soil_LE;
-  bool Rep_Sens_Heat;
+  bool Rep_Net_Rad_srf;
+  bool Rep_Net_Rad_veg;
+  bool Rep_Latent_Heat_srf;
+  bool Rep_Latent_Heat_veg;
+  bool Rep_Sens_Heat_srf;
+  bool Rep_Sens_Heat_veg;
   bool Rep_Grnd_Heat;
   bool Rep_Snow_Heat;
   bool Rep_Soil_Temperature;
@@ -220,7 +223,6 @@ struct Control{
   bool Rep_SrftoLatacc;
   bool Rep_GWtoLatacc;
 
-  bool Rep_Net_Rad_sum;
   bool Rep_Total_ET;
   bool Rep_Transpiration_sum;
   bool Rep_Transpi_sum_L1;
@@ -280,9 +282,12 @@ struct Control{
   bool RepTs_Field_Capacity_L3;
   bool RepTs_Soil_Sat_Deficit;
   bool RepTs_GroundWater;
-  bool RepTs_Soil_Net_Rad;
-  bool RepTs_Soil_LE;
-  bool RepTs_Sens_Heat;
+  bool RepTs_Net_Rad_srf;
+  bool RepTs_Net_Rad_veg;
+  bool RepTs_Latent_Heat_srf;
+  bool RepTs_Latent_Heat_veg;
+  bool RepTs_Sens_Heat_srf;
+  bool RepTs_Sens_Heat_veg;
   bool RepTs_Grnd_Heat;
   bool RepTs_Snow_Heat;
   bool RepTs_Soil_Temperature;
@@ -306,7 +311,6 @@ struct Control{
   bool RepTs_SrftoLat;
   bool RepTs_GWtoLat;
 
-  bool RepTs_Net_Rad_sum;
   bool RepTs_Total_ET;
   bool RepTs_Transpiration_sum;
   bool RepTs_Transpi_sum_L1;

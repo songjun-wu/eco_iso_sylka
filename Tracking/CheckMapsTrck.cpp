@@ -19,13 +19,13 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
- * CheckMaps.cpp
+ * CheckMapsTrck.cpp
  *
- *  Created on: Feb 10, 2011
- *      Author: Marco.Maneta
+ *  Created on: Nov 14, 2016
+ *      Author: Sylvain Kuppel
  */
 
 #include "Tracking.h"

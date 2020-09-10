@@ -37,8 +37,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 				       REAL8 theta_r1, REAL8 theta_r2, REAL8 theta_r3,
 				       REAL8 rootdepth,
 				       REAL8 psiae, REAL8 bclambda, REAL8 ra, 
-				       REAL8 &DelCanStor, REAL8 &evap_a, 
-				       REAL8 &transp_a, REAL8 &netR_a,
+				       REAL8 &DelCanStor, REAL8 &evap_a, REAL8 &transp_a,
+				       REAL8 &LE_a, REAL8 &H_a, REAL8 &netR_a,
 				       UINT4 s, UINT4 r, UINT4 c) {
 
   //some constants
@@ -99,9 +99,11 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
   UINT4 nsp = getNumSpecies();
 
   if (s == nsp - 1) //for bare soil, water reaching the ground is pp times its proportion of the cell
-    evap_a = transp_a = netR_a = 0;
+    evap_a = transp_a = LE_a = H_a = netR_a = 0;
+  else if (_species[s]._LAI->matrix[r][c] < RNDOFFERR )
+    evap_a = transp_a = LE_a = H_a = netR_a = 0;
   else {
-
+   
     airTp = atm.getTemperature()->matrix[r][c];
     rho_a = AirDensity(airTp); //kgm-3
     z = bas.getDEM()->matrix[r][c];
@@ -110,11 +112,10 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
     ea = SatVaporPressure(airTp) * airRH;
 
-
+    LAI = _species[s]._LAI->matrix[r][c];
     albedo = _species[s].albedo;
     emissivity = _species[s].emissivity;
     BeerK = _species[s].KBeers;
-    LAI = _species[s]._LAI->matrix[r][c];
 
     lwp_min = _species[s].lwp_min;
     lwp_max = _species[s].lwp_max;
@@ -299,13 +300,15 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
     DelCanStor -= evap_a * ctrl.dt;
 
-    netR_a = NetRadCanopy(atm, x[2], emissivity,	albedo, BeerK, LAI, r, c);
-
+    // Variables used for later fraction-weighted mean
+    LE_a = LE + LET ;
+    H_a = SensHeatCanopy(atm, ra, x[2], r, c);
+    netR_a = NetRadCanopy(atm, x[2], emissivity, albedo, BeerK, LAI, r, c);
+    
     _species[s]._NetR_Can->matrix[r][c] = netR_a ; //Net radiation
     _species[s]._LatHeat_CanE->matrix[r][c] = LE ; // Latent heat of canopy evap
     _species[s]._LatHeat_CanT->matrix[r][c] = LET; // Latent heat of transpiration
-    _species[s]._SensHeat_Can->matrix[r][c] = SensHeatCanopy(atm, ra, x[2],
-							     r, c);
+    _species[s]._SensHeat_Can->matrix[r][c] = H_a ; //SensHeatCanopy(atm, ra, x[2], r, c);
 
     //Updates canopy conductance with final values of soil potential
     CalculateCanopyConduct(bas, atm, ctrl, x[1], dgcdfgspsi, s, r, c); 

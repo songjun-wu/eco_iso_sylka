@@ -84,7 +84,6 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
   //REAL8 thetar; //residual moisture content
   REAL8 beta; // adjustment of soil relative humidity to account for pores (hs=beta+(1-beta)*ha)
   //REAL8 ea; //emissivity of air
-  REAL8 nrad_a; // net radiation
   REAL8 rho_a; //density of air
   //REAL8 RainIntensity; //ms-1
   //REAL8 exfilt;
@@ -189,12 +188,7 @@ int Basin::SolveSurfaceEnergyBalance(Atmosphere &atm,
     std::cout << "WARNING: non-convergence in surface energy balance at cell row: " << r << " col: " << c << " closure err: " << (Ts1 - Ts) << endl;
   
   //Td = -G/( C* (d + d0) )* dt + Td;
-  nrad_a = NetRad(atm, Ts1, Kbeers, lai, emis_can, Temp_can, r, c);
-  
-  if(s == fForest->getNumSpecies()-1)
-    _Rn_sum->matrix[r][c] += nrad_a * p;
-  
-  nrad += nrad_a * p;
+  nrad += NetRad(atm, Ts1, Kbeers, lai, emis_can, Temp_can, r, c) * p;
   latheat += LE * p;
   sensheat += SensHeat(atm, ra, Ts1, r, c) * p; //SensHeat(atm, ra, Ts1, r, c) * p;
   grndheat += GrndHeat(atm, ctrl, theta, Ts1, Td, r, c) * p;

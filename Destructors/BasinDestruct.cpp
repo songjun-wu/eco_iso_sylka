@@ -38,14 +38,18 @@ Basin::~Basin(){
     delete _ldd;
   if(_snow)
     delete _snow;
-  if(_Rn)
-    delete _Rn;
-  if(_Rn_sum)
-    delete _Rn_sum;
-  if(_latheat)
-    delete _latheat;
-  if(_sensheat)
-    delete _sensheat;
+  if(_netrad_srf)
+    delete _netrad_srf;
+  if(_netrad_veg)
+    delete _netrad_veg;
+  if(_latheat_srf)
+    delete _latheat_srf;
+  if(_latheat_veg)
+    delete _latheat_veg;
+  if(_sensheat_srf)
+    delete _sensheat_srf;
+  if(_sensheat_veg)
+    delete _sensheat_veg;
   if(_grndheat)
     delete _grndheat;
   if(_snwheat)
