@@ -75,7 +75,7 @@ int Basin::CalcRootDistrib(){
 
 	    // Contribution of each layer to rootzone: use depth at which 95% of the roots
 	    // are found
-	    d95 = std::min<double>(d,log2l(0.05+0.95*expl(-k*d))/(-k));
+	    d95 = std::min<double>(d,logl(0.05+0.95*expl(-k*d))/(-k));
 	    // average over species is made using the vegetated fraction sum (p_veg<=1)
 	    p = fForest->getPropSpecies(s, r, c);
 

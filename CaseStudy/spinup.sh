@@ -9,24 +9,24 @@ do
 	xterm -e ech2o config.ini
 	
 	echo "finished run, copying files"
-	cp -f ./Results/root0_00.365 ./Spatial/root_0.map
-	cp -f ./Results/p0_00000.365 ./Spatial/p_0.map
-	cp -f ./Results/ntr0_000.365 ./Spatial/ntr_0.map
-	cp -f ./Results/lai0_000.365 ./Spatial/lai_0.map
-	cp -f ./Results/hgt0_000.365 ./Spatial/hgt_0.map
-	cp -f ./Results/bas0_000.365 ./Spatial/bas_0.map
-	cp -f ./Results/age0_000.365 ./Spatial/age_0.map
+	cp -f ./Outputs/root0_00.365 ./Spatial/root_0.map
+	cp -f ./Outputs/p0_00000.365 ./Spatial/p_0.map
+	cp -f ./Outputs/ntr0_000.365 ./Spatial/ntr_0.map
+	cp -f ./Outputs/lai0_000.365 ./Spatial/lai_0.map
+	cp -f ./Outputs/hgt0_000.365 ./Spatial/hgt_0.map
+	cp -f ./Outputs/bas0_000.365 ./Spatial/bas_0.map
+	cp -f ./Outputs/age0_000.365 ./Spatial/age_0.map
 
-	cp -f ./Results/SWE00000.365 ./Spatial/SWE.map
-	cp -f ./Results/SWC1_000.365 ./Spatial/Soil_moisture_1.map
-	cp -f ./Results/SWC2_000.365 ./Spatial/Soil_moisture_2.map
-	cp -f ./Results/SWC3_000.365 ./Spatial/Soil_moisture_3.map
-	cp -f ./Results/Ts000000.365 ./Spatial/soiltemp.map
-	cp -f ./Results/Q0000000.365 ./Spatial/streamflow.map
+	cp -f ./Outputs/SWE00000.365 ./Spatial/SWE.map
+	cp -f ./Outputs/SWC1_000.365 ./Spatial/Soil_moisture_1.map
+	cp -f ./Outputs/SWC2_000.365 ./Spatial/Soil_moisture_2.map
+	cp -f ./Outputs/SWC3_000.365 ./Spatial/Soil_moisture_3.map
+	cp -f ./Outputs/Ts000000.365 ./Spatial/soiltemp.map
+	cp -f ./Outputs/Q0000000.365 ./Spatial/streamflow.map
 
-	cat ./Results/lai_0.tab >> ./Results/laiaccum.txt
-	cat ./Results/NPP_0.tab >> ./Results/NPPaccum.txt
-	cat ./Results/SoilMoistureAv.tab >> ./Results/SWCaccum.txt
+	cat ./Outputs/lai_0.tab >> ./Outputs/laiaccum.txt
+	cat ./Outputs/NPP_0.tab >> ./Outputs/NPPaccum.txt
+	cat ./Outputs/SoilMoistureAv.tab >> ./Outputs/SWCaccum.txt
 
 
 	let "COUNT++"
