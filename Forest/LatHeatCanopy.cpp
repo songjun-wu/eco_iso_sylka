@@ -32,18 +32,18 @@
 
 double Forest::LatHeatCanopy(Basin &bas, Atmosphere &atm, double soilrelhumid, double ra, const double &Ts, int row, int col){
 
-	double airdens = 0; //density of air in kgm-3
-	double es = 0; //saturated vapor pressure at temperature Ts
-	double ea = 0; //vapor pressure at air temperature
-	double gamma = 0;
-	double z = 0;
-
-					airdens = AirDensity(atm.getTemperature()->matrix[row][col]); //kgm-3
-					es = SatVaporPressure(Ts) * soilrelhumid; //saturated vapor pressure at temp Ts in Pa
-					ea = SatVaporPressure(atm.getTemperature()->matrix[row][col]) * atm.getRelativeHumidty()->matrix[row][col]; //vapor pressure at air temp in Pa
-					z = bas.getDEM()->matrix[row][col];
-					gamma = PsychrometricConst(101325,z); // replace with Pressure when implemented
-					return
-							(1/(ra * gamma)) * airdens * spec_heat_air *(ea - es);
-
+  double airdens = 0; //density of air in kgm-3
+  double es = 0; //saturated vapor pressure at temperature Ts
+  double ea = 0; //vapor pressure at air temperature
+  double gamma = 0;
+  double z = 0;
+  
+  airdens = AirDensity(atm.getTemperature()->matrix[row][col]); //kgm-3
+  es = SatVaporPressure(Ts) * soilrelhumid; //saturated vapor pressure at temp Ts in Pa
+  ea = SatVaporPressure(atm.getTemperature()->matrix[row][col]) * atm.getRelativeHumidty()->matrix[row][col]; //vapor pressure at air temp in Pa
+  z = bas.getDEM()->matrix[row][col];
+  gamma = PsychrometricConst(101325,z); // replace with Pressure when implemented
+  return
+    (1/(ra * gamma)) * airdens * spec_heat_air *(ea - es);
+  
 }

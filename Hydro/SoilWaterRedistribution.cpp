@@ -132,9 +132,11 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
     theta2 += (theta3 - poros3) * d3/d2;
 
     // Tracking : remove the excess
-    _FluxPercolL3->matrix[r][c] -= (theta3 - poros3) * d3 ;
+    _FluxPercolL3->matrix[r][c] = max<REAL8>(0.0, _FluxPercolL3->matrix[r][c] -
+					     (theta3 - poros3) * d3);
     if(ctrl.sw_trck)
-      _FluxL2toL3->matrix[r][c] -= (theta3 - poros3) * d3 ;
+      _FluxL2toL3->matrix[r][c] = max<REAL8>(0.0, _FluxL2toL3->matrix[r][c] -
+					     (theta3 - poros3) * d3);
 
     theta3 = poros3;
   }
@@ -143,9 +145,11 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
     theta1 += (theta2 - poros2) * d2/d1;
 
     // Tracking
-    _FluxPercolL2->matrix[r][c] -= (theta2 - poros2) * d2;
+    _FluxPercolL2->matrix[r][c] = max<REAL8>(0.0,_FluxPercolL2->matrix[r][c] -
+					     (theta3 - poros3) * d3);
     if(ctrl.sw_trck)
-      _FluxL1toL2->matrix[r][c] -= (theta2 - poros2) * d2;
+      _FluxL1toL2->matrix[r][c] = max<REAL8>(0.0,_FluxL1toL2->matrix[r][c] -
+					     (theta3 - poros3) * d3);
 
     theta2 = poros2;
   }
@@ -154,9 +158,11 @@ void Basin::SoilWaterRedistribution(Control &ctrl, const double &F, double &thet
     pond += -(poros1 - theta1) * d1;
 
     // Tracking
-    _FluxInfilt->matrix[r][c] -= (theta1 - poros1) * d1;
+    _FluxInfilt->matrix[r][c] = max<REAL8>(0.0,_FluxInfilt->matrix[r][c] -
+					   (theta3 - poros3) * d3);
     if(ctrl.sw_trck)
-      _FluxSrftoL1->matrix[r][c] -= (theta1 - poros1) * d1;
+      _FluxSrftoL1->matrix[r][c] = max<REAL8>(0.0,_FluxSrftoL1->matrix[r][c] -
+					      (theta3 - poros3) * d3);
 
     theta1 = poros1;
   }

@@ -180,22 +180,22 @@ agui
 }*/
 
 extern double rlog(double u_za, double z_a, double z_d, double z_0, int option) {
-	double k2 = vonkarman * vonkarman;
-		if (option == 0) {
-			if (u_za < 0.01)
-				u_za = 0.01; //minimum wind velocity to avoid division by zero
-
-			return (powl(log((z_a - z_d) / z_0), 2) / (k2 * u_za));
-
-		} else if (option == 1) {
-
-			return (4.72 * powl(log((z_a - z_d) / z_0), 2) * (1 / (1 + 0.54	* u_za))); //accounts for free convection when u_za->0. From Thom and Oliver 1977 and Jackson et al 1988
-
-		} else {
-			std::cout << "Wrong option in the Aerodyn_resist_opt toggle switch. Please verify the configuration file" << std::endl;
-			exit(EXIT_FAILURE);
-
-		}
+  double k2 = vonkarman * vonkarman;
+  if (option == 0) {
+    if (u_za < 0.01)
+      u_za = 0.01; //minimum wind velocity to avoid division by zero
+    
+    return (powl(log((z_a - z_d) / z_0), 2) / (k2 * u_za));
+    
+  } else if (option == 1) {
+    
+    return (4.72 * powl(log((z_a - z_d) / z_0), 2) * (1 / (1 + 0.54	* u_za))); //accounts for free convection when u_za->0. From Thom and Oliver 1977 and Jackson et al 1988
+    
+  } else {
+    std::cout << "Wrong option in the Aerodyn_resist_opt toggle switch. Please verify the configuration file" << std::endl;
+    exit(EXIT_FAILURE);
+    
+  }
 }
 
 extern double Calculate_beta(const double &theta, const double &fieldcap){

@@ -87,7 +87,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
   REAL8 gc = 0;
   REAL8 lwp_min, lwp_max; // lower and higher boundaries for linear lwp stomatal model
   REAL8 dgcdfgspsi = 0;
-  
+  REAL8 dgs_psidpsi = 0;
+
   REAL8 theta1 = bas.getSoilMoist1()->matrix[r][c];
   REAL8 theta2 = bas.getSoilMoist2()->matrix[r][c];
   REAL8 theta3 = bas.getSoilMoist3()->matrix[r][c];
@@ -180,7 +181,7 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
      * state variables:
      * x[0]: S - (degree of saturation at time t+1)
      * x[1]: psi_s - soil water potential
-     * x[3]: Ts - Leaf temperature
+     * x[2]: Ts - Leaf temperature
      ***/
 
     colvec x(3);
@@ -190,7 +191,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
     //provide initial guess  for loop
     x[0] = Sold;
-    x[1] = psiae * 0.0098 / powl(x[0], bclambda); // 0.0098 convert from m to MPa
+    //x[1] = psiae * 0.0098 / powl(x[0], bclambda); // 0.0098 convert from m to MPa
+    x[1] = psiae / powl(x[0], bclambda);
     x[2] = airTp;
 
     //used to calculate the gc factors other than f_lwp
@@ -201,9 +203,11 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
       lambda = x[2] < 0 ? lat_heat_vap + lat_heat_fus : lat_heat_vap;
 
-      gc = dgcdfgspsi*std::max<REAL8>(0,std::min<REAL8>(1,(lwp_min - x[1]) /
-							(lwp_min - lwp_max)));
+      //gc = dgcdfgspsi*std::max<REAL8>(0,std::min<REAL8>(1,(lwp_min - x[1]) /
+      //							(lwp_min - lwp_max)));
+      gc = dgcdfgspsi * Calculate_gs_lwp(x[1], lwp_max, lwp_min);
       //gc = dgcdfgspsi * 1 / (1 + powl(x[1]/lwp_den, lwp_c));
+      dgs_psidpsi = (x[1] > lwp_min) || (x[1] < lwp_max) ? 0 : - 1/ (lwp_min - lwp_max);
 
       if (gc < 1e-13)
 	gc = 1e-13;
@@ -229,7 +233,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
 
 
       F[0] = (x[0] - Sold) * maxAv * rootdepth / dt + E;
-      F[1] = psiae * 0.0098 / powl(x[0], bclambda) - x[1];
+      //F[1] = psiae * 0.0098 / powl(x[0], bclambda) - x[1];
+      F[1] = psiae / powl(x[0], bclambda) - x[1];
       F[2] = NetRadCanopy(atm, x[2], emissivity, albedo, BeerK, LAI, r, c)
 	+ LE + H + LET;
 
@@ -244,15 +249,22 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
       es = SatVaporPressure(x[2]);
       desdTs = es * ((17.3 / (x[2] + 237.3)) - 17.3 * x[2] / (powl(x[2] + 237.3, 2)));
 
-      //dgcdlwp = gc == 1e-13 ? 0 : - dgcdfgspsi * lwp_c * powl(x[1]/lwp_den, lwp_c) / (x[1] * ( powl(x[1]/lwp_den, lwp_c) + 1) * ( powl(x[1]/lwp_den, lwp_c) + 1));
-      if (gc < 1e-12 || x[1] > lwp_min)
-	dLETdlwp = LET = E = 0;
-      else if (x[1] < lwp_max)
-	dLETdlwp = -spec_heat_air * rho_a * (ea - es) * (lwp_min - lwp_max)
-	  / (gamma * dgcdfgspsi * (lwp_min - lwp_max) * (lwp_min - lwp_max) * ra_t * ra_t);
+      // dgcdlwp = gc == 1e-13 ? 0 : - dgcdfgspsi * lwp_c * powl(x[1]/lwp_den, lwp_c) / (x[1] * ( powl(x[1]/lwp_den, lwp_c) + 1) * ( powl(x[1]/lwp_den, lwp_c) + 1));
+
+      // if (gc < 1e-12 || x[1] > lwp_min)
+      //  	dLETdlwp = LET = E = 0;
+      // else if (x[1] < lwp_max)
+      //  	dLETdlwp = -spec_heat_air * rho_a * (ea - es) //* (lwp_min - lwp_max)
+      //  	  / (gamma * dgcdfgspsi * (lwp_min - lwp_max) * ra_t * ra_t) ;// * (lwp_min - lwp_max) );
+      // else
+      //  	dLETdlwp = -spec_heat_air * rho_a * (ea - es) * (lwp_min - lwp_max)
+      //  	  / (gamma * dgcdfgspsi * (lwp_min - x[1])  * (lwp_min - x[1]) * ra_t * ra_t);
+
+      if ((dgcdfgspsi == 0) || (dgs_psidpsi == 0))
+	dLETdlwp = 0;
       else
-	dLETdlwp = -spec_heat_air * rho_a * (ea - es) * (lwp_min - lwp_max)
-	  / (gamma * dgcdfgspsi * (lwp_min - x[1])  * (lwp_min - x[1]) * ra_t * ra_t);
+	dLETdlwp = -spec_heat_air * rho_a * (ea - es) * dgcdfgspsi * dgs_psidpsi/ \
+	  (gc * gc * gamma *ra_t * ra_t);
 
       dLETdT = - rho_a * spec_heat_air / (ra_t * gamma) * (desdTs*leafRH + es*dleafRHdT);
 
@@ -264,7 +276,8 @@ UINT4 Forest::SolveCanopyEnergyBalance(Basin &bas, Atmosphere &atm, Control &ctr
       J(0,1) = E==0 ?  0 : dEdlwp;
       J(0,2) = E==0 ? 0 : dEdT;
 
-      J(1,0) = -bclambda * psiae * 0.0098 * powl(x[0], -(bclambda + 1));
+      //J(1,0) = -bclambda * psiae * 0.0098 * powl(x[0], -(bclambda + 1));
+      J(1,0) = -bclambda * psiae * powl(x[0], -(bclambda + 1));
       J(1,1) = -1;
 
       J(2,1) = dLETdlwp;

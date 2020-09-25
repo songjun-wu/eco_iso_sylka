@@ -163,6 +163,7 @@ class Basin {
   grid *_fracMW2; // of _soilmoist2
   grid *_fracMW12; // average over 2 upper layers
 
+  // "FLuxes" in vertical m/timestep
   // Vertical (intra-cell) fluxes downwards
   grid *_FluxCnptoSrf; // canopy/sky to surface
   grid *_FluxCnptoSnow; // canopy/sky to snowpack

@@ -50,22 +50,22 @@ REAL8 Basin::CalcAerodynResist(REAL8 u_za, REAL8 z_a, REAL8 z_0u, REAL8 z_du, RE
 	if(LAI > 0){ //if there is overstory, calculate the resistance associated with the exponential profile
 
 	  //average leaf separation assuming an average leave with of 5 cm (0.05 m)
-		lm = sqrt(4*0.05*Ht/(PI*LAI)); 
-		// conductance at the top of the tree, which is the bottom of the overstory wind log profile
-		vt = u_za * vonkarman * vonkarman * (Ht - z_do) / log( (z_a - z_do)/z_0o );
-		//wind extinction factor as per foken 2008, Campbell and Norman 1998
-		a = min<double>(max<double>(1.0,0.2 * LAI * Ht / lm), 4); 
-
-		rexp = (1 / (a * vt) ) * Ht * expl(a) * ( expl(-a * ( zt ) / Ht) - expl(-a * (z_do + z_0o) / Ht));
-		// add the resistance due to the logarithmic profile over the
-		rlog_o = rlog(u_za, z_a, z_do, z_0o, option); 
-
-		//rlog_u=0; //for the time being the exponential profile goes all the way down to 0 velocity (zt = z_du+z_0u) for surface
-
+	  lm = sqrt(4*0.05*Ht/(PI*LAI)); 
+	  // conductance at the top of the tree, which is the bottom of the overstory wind log profile
+	  vt = u_za * vonkarman * vonkarman * (Ht - z_do) / log( (z_a - z_do)/z_0o );
+	  //wind extinction factor as per foken 2008, Campbell and Norman 1998
+	  a = min<double>(max<double>(1.0,0.2 * LAI * Ht / lm), 4); 
+	  
+	  rexp = (1 / (a * vt) ) * Ht * expl(a) * ( expl(-a * ( zt ) / Ht) - expl(-a * (z_do + z_0o) / Ht));
+	  // add the resistance due to the logarithmic profile over the
+	  rlog_o = rlog(u_za, z_a, z_do, z_0o, option); 
+	  
+	  //rlog_u=0; //for the time being the exponential profile goes all the way down to 0 velocity (zt = z_du+z_0u) for surface
+	  
 	}
 	//otherwise resistance is simply the aerodynamic resistance associated with a logarithmic wind profile
-
-		return (rlog_u + rexp + rlog_o);
+	
+	return (rlog_u + rexp + rlog_o);
 
 
 }

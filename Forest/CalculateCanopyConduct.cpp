@@ -83,8 +83,11 @@ int Forest::CalculateCanopyConduct(const Basin &bas, const Atmosphere &atm,
 			gs < gsmin ?
 					gsmin : gs;
 
+	//if(r==41 and c==42){
+	//  cout << "lwp: " << lwp << ", lwp_min: " << f_lwp_low << ", lwp_max: " << f_lwp_high << ", gs: " << gs << ", f_psi: " << f_psi << endl;
+	//}
+	
 	dgsdlwp =  gsmax * lai* shelter_factor * f_light * f_temp * f_vpd;
-
 
 	return EXIT_SUCCESS;
 }

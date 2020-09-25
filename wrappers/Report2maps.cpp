@@ -906,25 +906,11 @@ int Report2Ts(){
 			      oControl->path_ResultsFolder + "Infilt.tab",
 			      oControl->current_ts_count);
   }
-  if (oControl->RepTs_Exfilt){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "ReturnSrf.tab");
-    oReport->ReportTimeSeries(oBasin->getFluxExfilt(),
-			      oControl->path_ResultsFolder + "ReturnSrf.tab",
-			      oControl->current_ts_count);
-  }
   if (oControl->RepTs_PercolL2){
     if(oControl->GetTimeStep() <= oControl->report_times)
       oReport->RenameFile(oControl->path_ResultsFolder + "PercolL2.tab");
     oReport->ReportTimeSeries(oBasin->getFluxPercolL2(),
 			      oControl->path_ResultsFolder + "PercolL2.tab",
-			      oControl->current_ts_count);
-  }
-  if (oControl->RepTs_ReturnL1){
-    if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "ReturnL1.tab");
-    oReport->ReportTimeSeries(oBasin->getFluxL2toL1(),
-			      oControl->path_ResultsFolder + "ReturnL1.tab",
 			      oControl->current_ts_count);
   }
   if (oControl->RepTs_PercolL3){
@@ -941,11 +927,18 @@ int Report2Ts(){
 			      oControl->path_ResultsFolder + "Recharge.tab",
 			      oControl->current_ts_count);
   }
-  if (oControl->RepTs_ReturnL2){
+  if (oControl->RepTs_Exfilt){
     if(oControl->GetTimeStep() <= oControl->report_times)
-      oReport->RenameFile(oControl->path_ResultsFolder + "ReturnL2.tab");
-    oReport->ReportTimeSeries(oBasin->getFluxL3toL2(),
-			      oControl->path_ResultsFolder + "ReturnL2.tab",
+      oReport->RenameFile(oControl->path_ResultsFolder + "ReturnSrf.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxExfilt(),
+			      oControl->path_ResultsFolder + "ReturnSrf.tab",
+			      oControl->current_ts_count);
+  }
+  if (oControl->RepTs_ReturnL1){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "ReturnL1.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxL2toL1(),
+			      oControl->path_ResultsFolder + "ReturnL1.tab",
 			      oControl->current_ts_count);
   }
   if (oControl->RepTs_ReturnL2){
@@ -960,6 +953,13 @@ int Report2Ts(){
       oReport->RenameFile(oControl->path_ResultsFolder + "ChnLatI.tab");
     oReport->ReportTimeSeries(oBasin->getFluxLattoChn(),
 			      oControl->path_ResultsFolder + "ChnLatI.tab",
+			      oControl->current_ts_count);
+  }
+  if (oControl->RepTs_LattoSrf){
+    if(oControl->GetTimeStep() <= oControl->report_times)
+      oReport->RenameFile(oControl->path_ResultsFolder + "SrfLatI.tab");
+    oReport->ReportTimeSeries(oBasin->getFluxLattoSrf(),
+			      oControl->path_ResultsFolder + "SrfLatI.tab",
 			      oControl->current_ts_count);
   }
   if (oControl->RepTs_LattoGW){
