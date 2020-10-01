@@ -74,20 +74,21 @@ Known issues can be found there, as well as on the `main EcH2O page <https://bit
 Please, acknowledge the use of |ech2o|-iso by citing:
 
 - Kuppel, S, Tetzlaff, D, Maneta, MP & Soulsby, C (2018). |ech2o|-iso 1.0: Water isotopes and age tracking in a process-based, distributed ecohydrological model, Geosci. Model Dev., 11, 3045-3069, `<https://doi.org/10.5194/gmd-11-3045-2018>`_.
+  
+Further references documenting previous/specific developments and/or application of the code:
 
-Further reference documenting aspects or uses of the code (and useful reads!):
-
-- Kuppel, S et al. (2020). Critical zone storage controls on the water ages of ecohydrological outputs. Geophysical Research Letters, 47, e2020GL088897 `<https://doi.org/10.1029/2020GL088897>`_.
+- Douinot A et al. (2019). Ecohydrological modelling with EcH2O-iso to quantify forest and grassland effects on water partitioning and flux ages. Hydrological Processes 33 (16): 2174–2191, `<https://doi.org/10.1002/hyp.13480>`_.
 - Knighton, J et al. (2020). Using isotopes to incorporate tree water storage and mixing dynamics into a distributed ecohydrologic modelling framework. Ecohydrology, 13(3), e2201 `<https://doi.org/10.1002/eco.2201>`_.
-- Smith, A et al. (2020). Isotope‐aided modelling of ecohydrologic fluxes and water ages under mixed land use in central Europe: the 2018 drought and its recovery. Hydrological Processes, 34(16), 3406-3425 `< https://doi.org/10.1002/hyp.13838>`_.
-- Neill, AJ et al. (2020), An agent-based model that simulates the spatio-temporal dynamics of sources and transfer mechanisms contributing faecal indicator organisms to streams. Part 1: Background and model description. Journal of environmental management, 270, 110903 `<https://doi.org/10.1016/j.jenvman.2020.110903>`_.
-- Neill, AJ et al. (2020), An agent-based model that simulates the spatio-temporal dynamics of sources and transfer mechanisms contributing faecal indicator organisms to streams. Part 2: Application to a small agricultural catchment. Journal of environmental management, 270, 110905 `<https://doi.org/10.1016/j.jenvman.2020.110905>`_.
-- Smith A et al. (2019), Assessing the influence of soil freeze–thaw cycles on catchment water storage–flux–age interactions using a tracer-aided ecohydrological model. Hydrology and Earth System Sciences 23 (8): 3319–3334, `<https://doi.org/10.5194/hess-23-3319-2019>`_.
-- Douinot A et al. (2019), Ecohydrological modelling with EcH2O-iso to quantify forest and grassland effects on water partitioning and flux ages. Hydrological Processes 33 (16): 2174–2191, `<https://doi.org/10.1002/hyp.13480>`_.
-- Maneta, MP et al. (2018). Conceptualizing catchment storage dynamics and nonlinearities. Hydrological Processes, 32, 3299–3303, `<https://doi.org/10.1002/hyp.13262>`_.
 - Kuppel, S et al. (2018). What can we learn from multi-data calibration of a process-based ecohydrological model?. Environmental Modelling & Software, 101, 301–316, `<https://doi.org/10.1016/j.envsoft.2018.01.001>`_.
+- Kuppel, S et al. (2020). Critical zone storage controls on the water ages of ecohydrological outputs. Geophysical Research Letters, 47, e2020GL088897 `<https://doi.org/10.1029/2020GL088897>`_.
 - Lozano-Parra, J, Maneta, MP & Schnabel, S (2014). Climate and topographic controls on simulated pasture production in a semiarid Mediterranean watershed with scattered tree cover. Hydrology and Earth System Sciences, 18, 1439, `<https://doi.org/10.5194/hess-18-1439-2014>`_.
 - Maneta, MP & Silverman, N (2013). A spatially-distributed model to simulate water, energy and vegetation dynamics using information from regional climate models. Earth Interactions, 17, 1-44, `<https://doi.org/10.1175/2012EI000472.1>`_.
+- Maneta, MP et al. (2018). Conceptualizing catchment storage dynamics and nonlinearities. Hydrological Processes, 32, 3299–3303, `<https://doi.org/10.1002/hyp.13262>`_.
+- Neill, AJ et al. (2020). An agent-based model that simulates the spatio-temporal dynamics of sources and transfer mechanisms contributing faecal indicator organisms to streams. Part 1: Background and model description. Journal of environmental management, 270, 110903 `<https://doi.org/10.1016/j.jenvman.2020.110903>`_.
+- Neill, AJ et al. (2020). An agent-based model that simulates the spatio-temporal dynamics of sources and transfer mechanisms contributing faecal indicator organisms to streams. Part 2: Application to a small agricultural catchment. Journal of environmental management, 270, 110905 `<https://doi.org/10.1016/j.jenvman.2020.110905>`_.
+- Simeone, C et al. (2019). Coupled ecohydrology and plant hydraulics modeling predicts ponderosa pine seedling mortality and lower treeline in the US Northern Rocky Mountains. New Phytologist, 221(4), 1814-1830, `<https://doi.org/10.1111/nph.15499>`_.
+- Smith A et al. (2019). Assessing the influence of soil freeze–thaw cycles on catchment water storage–flux–age interactions using a tracer-aided ecohydrological model. Hydrology and Earth System Sciences 23 (8): 3319–3334, `<https://doi.org/10.5194/hess-23-3319-2019>`_.
+- Smith, A et al. (2020). Isotope‐aided modelling of ecohydrologic fluxes and water ages under mixed land use in central Europe: the 2018 drought and its recovery. Hydrological Processes, 34(16), 3406-3425 `< https://doi.org/10.1002/hyp.13838>`_.
 
 **Contacts**
 
